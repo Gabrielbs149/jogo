@@ -5,7 +5,8 @@ Regras do projeto para os **dois** Claudes: o do Gabriel e o do <AMIGO>. Cada um
 ## O projeto
 - **Godot 4.7.2**, fixado em `.godot-version`. Os dois sempre na mesma versão; atualizar é decisão conjunta, em commit próprio.
 - **GDScript com tipagem estática.** Sem C#.
-- Design: `docs/GDD.md` (ideia ainda em aberto, inclusive 2D x 3D). Fases: `docs/ROADMAP.md`. Git: `docs/FLUXO.md`.
+- **3D em terceira pessoa** (D007). Personagem: `actors/player/` (`Player` + `CameraRig`). Fase de teste: `levels/sandbox/`.
+- Design: `docs/GDD.md` (ideia ainda em aberto). Fases: `docs/ROADMAP.md`. Git: `docs/FLUXO.md`.
 - Equipe: Gabriel (`@Gabrielbs149`) e <AMIGO> (`@<usuario-github-amigo>`). Os dois mexem em tudo, ao mesmo tempo.
 - Idioma: conversa, docs, commits e comentários em **PT-BR**. Identificadores (variáveis, funções, nós, arquivos, pastas) em **inglês**, combinando com a API do Godot.
 

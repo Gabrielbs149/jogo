@@ -6,8 +6,9 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
-**D007: 2D ou 3D** · pendente · decidir na Fase 1, depois dos protótipos.
-Junto: renderer (Compatibility para 2D leve/web; Forward+ para 3D), resolução base e plataforma alvo.
+**D007: 3D em terceira pessoa** · 2026-10-04 · Gabriel
+Renderer Forward+. Base: `actors/player` (CharacterBody3D + câmera orbital com SpringArm3D) e fase de teste `levels/sandbox` em greybox (CSG + shader de grade de 1 m). Física interpolada ligada (câmera segue a posição interpolada, sem tremer). Controles: WASD/setas + mouse, ou controle (analógicos, A pula, L3 corre).
+Pendente: resolução base e plataforma alvo.
 
 **D006: Arquivos grandes no Git LFS** · 2026-10-04 · Gabriel + <AMIGO>
 Áudio, fontes de arte, modelos 3D, fontes e vídeo vão pro LFS. PNG/JPG ficam no Git normal.

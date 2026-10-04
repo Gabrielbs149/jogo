@@ -1,6 +1,11 @@
 extends Node
-## Cena de entrada. Por enquanto só prova que o projeto roda; vira o boot/menu quando o jogo existir.
+## Cena de entrada: carrega a primeira fase. Qual fase é se escolhe no Inspector (first_level).
+
+@export var first_level: PackedScene
 
 
 func _ready() -> void:
-	print("Projeto rodando: Godot %s" % Engine.get_version_info().string)
+	if first_level == null:
+		push_error("Main: escolha a first_level no Inspector.")
+		return
+	add_child(first_level.instantiate())
