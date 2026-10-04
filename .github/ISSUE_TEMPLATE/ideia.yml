@@ -1,0 +1,30 @@
+name: 💡 Ideia
+description: Mecânica, história, arte, som... qualquer coisa. Sem filtro.
+title: "[Ideia] "
+labels: ["ideia"]
+body:
+  - type: textarea
+    id: ideia
+    attributes:
+      label: A ideia
+      description: Explica como se fosse numa call. Pode ser curto.
+    validations:
+      required: true
+  - type: textarea
+    id: porque
+    attributes:
+      label: Por que deixa o jogo melhor
+  - type: textarea
+    id: referencias
+    attributes:
+      label: Referências
+      description: Jogos, vídeos, imagens (pode colar print aqui).
+  - type: dropdown
+    id: tamanho
+    attributes:
+      label: Tamanho estimado
+      options:
+        - Não sei
+        - Pequena (horas)
+        - Média (dias)
+        - Grande (semanas)

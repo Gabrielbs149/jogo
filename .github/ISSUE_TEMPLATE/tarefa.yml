@@ -1,0 +1,23 @@
+name: 🔨 Tarefa
+description: Trabalho decidido, com dono e critério de pronto.
+labels: ["tarefa"]
+body:
+  - type: textarea
+    id: oque
+    attributes:
+      label: O que fazer
+    validations:
+      required: true
+  - type: textarea
+    id: pronto
+    attributes:
+      label: Pronto quando
+      description: Como testar no jogo que ficou certo.
+      placeholder: "- Aperto espaço no ar e o personagem pula de novo\n- Só 1 pulo extra"
+    validations:
+      required: true
+  - type: input
+    id: ideia
+    attributes:
+      label: Veio de qual ideia/GDD?
+      placeholder: "#12 ou docs/GDD.md#loop-central"

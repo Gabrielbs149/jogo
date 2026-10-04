@@ -1,0 +1,30 @@
+name: 🐛 Bug
+description: Algo quebrado ou estranho no jogo.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: passos
+    attributes:
+      label: Como acontece
+      placeholder: "1. Abro a fase forest\n2. Pulo na plataforma da esquerda\n3. ..."
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: O que devia acontecer
+    validations:
+      required: true
+  - type: dropdown
+    id: gravidade
+    attributes:
+      label: Gravidade
+      options:
+        - Bloqueante (trava/impede de jogar)
+        - Importante
+        - Detalhe
+  - type: input
+    id: commit
+    attributes:
+      label: Versão
+      description: "Saída de: git log -1 --oneline"

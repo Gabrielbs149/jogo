@@ -1,0 +1,17 @@
+#!/bin/sh
+# Antes de mandar pro GitHub: a mesma checagem do CI (tools/check.ps1) e depois o upload do LFS.
+# Se falhar, o push não acontece. Não use --no-verify: conserte (ou peça pro Claude consertar).
+
+command -v git-lfs >/dev/null 2>&1 || {
+  echo >&2 "git-lfs não encontrado. Reinstale o Git for Windows (o LFS vem junto)."
+  exit 2
+}
+
+# < /dev/null: o stdin do hook é do git lfs (lista do que está sendo enviado), o PowerShell não pode consumir
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/check.ps1 -PrePush < /dev/null || {
+  echo >&2 ""
+  echo >&2 "Push cancelado: a checagem falhou (veja acima). Nada foi perdido; seus commits continuam aqui."
+  exit 1
+}
+
+git lfs pre-push "$@"

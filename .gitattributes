@@ -1,0 +1,43 @@
+# Texto: sempre LF no repo e no disco (é o que o Godot grava), igual nos dois PCs
+* text=auto eol=lf
+
+# Scripts do Windows precisam de CRLF
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Godot: diff com contexto de função
+*.gd diff=python
+
+# Imagens: Git normal (pixel art é pequeno). Ver D006 em docs/DECISOES.md
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.svg  text
+
+# Arquivos grandes -> Git LFS
+## Áudio
+*.wav  filter=lfs diff=lfs merge=lfs -text
+*.ogg  filter=lfs diff=lfs merge=lfs -text
+*.mp3  filter=lfs diff=lfs merge=lfs -text
+*.flac filter=lfs diff=lfs merge=lfs -text
+## Fontes de arte (vivem em art_src/)
+*.aseprite filter=lfs diff=lfs merge=lfs -text
+*.ase      filter=lfs diff=lfs merge=lfs -text
+*.psd      filter=lfs diff=lfs merge=lfs -text
+*.kra      filter=lfs diff=lfs merge=lfs -text
+*.xcf      filter=lfs diff=lfs merge=lfs -text
+*.blend    filter=lfs diff=lfs merge=lfs -text
+## 3D
+*.glb filter=lfs diff=lfs merge=lfs -text
+*.fbx filter=lfs diff=lfs merge=lfs -text
+*.exr filter=lfs diff=lfs merge=lfs -text
+*.hdr filter=lfs diff=lfs merge=lfs -text
+## Fontes tipográficas e vídeo
+*.ttf  filter=lfs diff=lfs merge=lfs -text
+*.otf  filter=lfs diff=lfs merge=lfs -text
+*.mp4  filter=lfs diff=lfs merge=lfs -text
+*.webm filter=lfs diff=lfs merge=lfs -text
+*.ogv  filter=lfs diff=lfs merge=lfs -text
+*.zip  filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    paths-ignore: ["docs/**", "**/*.md"]
+  pull_request:
+    paths-ignore: ["docs/**", "**/*.md"]
+  workflow_dispatch:
+
+# Push novo cancela o anterior da mesma branch (economiza minuto de CI)
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Projeto compila + testes
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          lfs: true
+
+      - name: Versão do Godot (.godot-version)
+        id: godot
+        run: echo "version=$(tr -d '[:space:]' < .godot-version)" >> "$GITHUB_OUTPUT"
+
+      - uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ steps.godot.outputs.version }}
+          use-dotnet: false
+
+      - name: Import
+        run: godot --headless --quiet --path . --import
+
+      - name: .uid/.import commitados
+        run: |
+          soltos=$(git status --porcelain --untracked-files=all -- '*.uid' '*.import')
+          if [ -n "$soltos" ]; then
+            echo "::error::O Godot gerou arquivos que não estão no Git. Rode tools/check.ps1 e commite:"
+            echo "$soltos"
+            exit 1
+          fi
+
+      - name: Todos os scripts compilam
+        run: godot --headless --path . -s res://tools/check_scripts.gd
+
+      - name: Testes (GUT)
+        if: hashFiles('addons/gut/gut_cmdln.gd') != ''
+        run: godot --headless --path . -s res://addons/gut/gut_cmdln.gd -gdir=res://tests -ginclude_subdirs -gexit

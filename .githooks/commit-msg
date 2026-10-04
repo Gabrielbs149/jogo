@@ -1,0 +1,19 @@
+#!/bin/sh
+# Recusa mensagem de commit fora do padrão  tipo(escopo): descrição   (ver docs/FLUXO.md)
+
+primeira=$(head -n 1 "$1")
+
+case "$primeira" in
+  Merge*|Revert*|fixup!*|squash!*|amend!*) exit 0 ;;
+esac
+
+if printf '%s' "$primeira" | grep -Eq '^(feat|fix|refactor|perf|test|docs|chore|ci|asset|level)(\([a-z0-9_./-]+\))?!?: .+'; then
+  exit 0
+fi
+
+echo >&2 "Mensagem fora do padrão: $primeira"
+echo >&2 ""
+echo >&2 "Use:   tipo(escopo): descrição"
+echo >&2 "Ex.:   feat(player): adiciona pulo duplo"
+echo >&2 "Tipos: feat fix refactor perf test docs chore ci asset level"
+exit 1

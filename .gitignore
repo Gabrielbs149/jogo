@@ -1,0 +1,20 @@
+# Godot: cache e import gerados na hora (os .uid e .import ficam no Git!)
+.godot/
+/android/
+
+# Builds exportadas
+/build/
+
+# Claude Code: o que é pessoal de cada um
+CLAUDE.local.md
+.claude/settings.local.json
+
+# VS Code: só a lista de extensões recomendadas é compartilhada
+.vscode/*
+!.vscode/extensions.json
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store
+*.tmp
