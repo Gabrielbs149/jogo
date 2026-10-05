@@ -1,6 +1,6 @@
 # Jogo (codinome)
 
-Jogo do Gabriel e do <AMIGO>, feito em **Godot 4.7.2** + GDScript: suspense 2D em pixel art preto e branco, com uma câmera cujo flash revela, em negativo, o que o olho não vê. Estilo em [docs/ESTILO.md](docs/ESTILO.md), design em [docs/GDD.md](docs/GDD.md).
+Jogo do Gabriel e do John, feito em **Godot 4.7.2** + GDScript: suspense 2D em pixel art preto e branco, com uma câmera cujo flash revela, em negativo, o que o olho não vê. Estilo em [docs/ESTILO.md](docs/ESTILO.md), design em [docs/GDD.md](docs/GDD.md).
 
 ## Controles
 | | Teclado | Controle |
@@ -33,4 +33,4 @@ Siga o [docs/SETUP.md](docs/SETUP.md) (≈ 30 min).
 | Quem | GitHub |
 |---|---|
 | Gabriel | @Gabrielbs149 |
-| <AMIGO> | @JohnG-404 |
+| John | @JohnG-404 |

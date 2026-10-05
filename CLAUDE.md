@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Regras do projeto para os **dois** Claudes: o do Gabriel e o do <AMIGO>. Cada um roda na própria conta, no próprio clone. Vocês **não compartilham memória nem conversa**: o que precisa valer para os dois mora no repo (aqui, em `docs/`, nas issues e no histórico do Git). Decidiu algo que o outro precisa saber? Registre em `docs/DECISOES.md` no mesmo commit.
+Regras do projeto para os **dois** Claudes: o do Gabriel e o do John. Cada um roda na própria conta, no próprio clone. Vocês **não compartilham memória nem conversa**: o que precisa valer para os dois mora no repo (aqui, em `docs/`, nas issues e no histórico do Git). Decidiu algo que o outro precisa saber? Registre em `docs/DECISOES.md` no mesmo commit.
 
 ## O projeto
 - **Godot 4.7.2**, fixado em `.godot-version`. Os dois sempre na mesma versão; atualizar é decisão conjunta, em commit próprio.
@@ -13,7 +13,7 @@ Regras do projeto para os **dois** Claudes: o do Gabriel e o do <AMIGO>. Cada um
 - **Componentes:** `Interactable` (examinar/conversar), `Door` (trocar de fase ou trancada), `Revealable` (só existe na foto).
 - **Arte provisória** vem de `tools/art/generate.js`. Os humanos vão redesenhar por cima, no mesmo PNG. **Não rode o gerador** depois que um arquivo foi redesenhado à mão (ele sobrescreve); nesse caso, edite o gerador só para os arquivos que ainda são provisórios.
 - Design: `docs/GDD.md` (ideia ainda em aberto). Fases: `docs/ROADMAP.md`. Git: `docs/FLUXO.md`.
-- Equipe: Gabriel (`@Gabrielbs149`) e <AMIGO> (`@JohnG-404`). Os dois mexem em tudo, ao mesmo tempo.
+- Equipe: Gabriel (`@Gabrielbs149`) e John (`@JohnG-404`). Os dois mexem em tudo, ao mesmo tempo.
 - Idioma: conversa, docs, commits e comentários em **PT-BR**. Identificadores (variáveis, funções, nós, arquivos, pastas) em **inglês**, combinando com a API do Godot.
 
 ## Ferramentas instaladas no projeto

@@ -1,10 +1,10 @@
 # Setup: do zero ao primeiro commit
 
-Leva uns 30–40 min cada. Os dois estão no Windows. Quem faz o quê: 🅖 Gabriel · 🅐 <AMIGO> · 🅖🅐 os dois.
+Leva uns 30–40 min cada. Os dois estão no Windows. Quem faz o quê: 🅖 Gabriel · 🅐 John · 🅖🅐 os dois.
 
 > ⚠️ **O projeto mora em `C:\dev\`, fora do OneDrive/Google Drive.** Pasta sincronizada + Git + Godot = arquivo travado, cópia `(conflito).tscn` e `.git` corrompido. A nuvem do projeto é o GitHub. (`tools/preparar.ps1` se recusa a rodar dentro do OneDrive.)
 
-Atalho: depois do passo 2, dá para abrir o Claude Code e pedir *"segue o docs/SETUP.md, parte do Gabriel"* (ou *"parte do <AMIGO>"*). Ele executa e para onde precisar de você.
+Atalho: depois do passo 2, dá para abrir o Claude Code e pedir *"segue o docs/SETUP.md, parte do Gabriel"* (ou *"parte do John"*). Ele executa e para onde precisar de você.
 
 ## 1. Contas 🅖🅐
 - Uma conta no GitHub para cada um, com **2FA ligado**.
@@ -80,7 +80,7 @@ gh label create depois --color C5DEF5 --description "Boa ideia, mas não agora" 
 
 **Board:** no repo → *Projects → New project → Board*. Colunas: **Ideias · A fazer · Fazendo · Feito**. Em *Settings → Manage access*, adicione o 🅐 como *Write*.
 
-## 4. O <AMIGO> entra 🅐
+## 4. O John entra 🅐
 Aceite o convite (chega por e-mail ou em github.com/notifications). Depois:
 ```powershell
 New-Item -ItemType Directory -Force C:\dev | Out-Null

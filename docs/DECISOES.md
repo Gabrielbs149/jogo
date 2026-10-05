@@ -23,7 +23,7 @@ Só cinza e preto: do preto até um cinza claro (~80%), sem branco e sem cor. Ga
 Renderer Forward+. Base: `actors/player` (CharacterBody3D + câmera orbital com SpringArm3D) e fase de teste `levels/sandbox` em greybox (CSG + shader de grade de 1 m). Física interpolada ligada (câmera segue a posição interpolada, sem tremer). Controles: WASD/setas + mouse, ou controle (analógicos, A pula, L3 corre).
 Pendente: resolução base e plataforma alvo.
 
-**D006: Arquivos grandes no Git LFS** · 2026-10-04 · Gabriel + <AMIGO>
+**D006: Arquivos grandes no Git LFS** · 2026-10-04 · Gabriel + John
 Áudio, fontes de arte, modelos 3D, fontes e vídeo vão pro LFS. PNG/JPG ficam no Git normal.
 Porquê: o repo fica leve para clonar. PNG de jogo 2D é pequeno; se o jogo for 3D com textura grande, a gente revê.
 

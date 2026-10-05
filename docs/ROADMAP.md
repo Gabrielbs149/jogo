@@ -3,7 +3,7 @@
 Cada fase tem um critério de saída ("fecha quando..."). As tarefas viram issues no board; este arquivo é o mapa. Fechou uma fase: atualiza aqui e cria a tag.
 
 **Divisão:** vocês querem mexer em tudo junto, então a divisão é **por tarefa**, não por área fixa. Toda tarefa tem **um dono da vez** (o assignee da issue), mas os dois podem tocar em tudo. As marcações abaixo são sugestões de quem puxa:
-🅖 Gabriel · 🅐 <AMIGO> · 🅖🅐 juntos (call + Live Share)
+🅖 Gabriel · 🅐 John · 🅖🅐 juntos (call + Live Share)
 
 ---
 
