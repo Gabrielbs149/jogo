@@ -67,6 +67,17 @@ func play_intro(title: String, lines: PackedStringArray) -> void:
 	_intro.hide()
 
 
+## Mostra/esconde tudo do combate (a abertura do capítulo é à parte).
+func set_combat_visible(on: bool) -> void:
+	for child: Node in $Root.get_children():
+		if child != _intro and child is Control:
+			(child as Control).visible = on
+	if on:
+		_tooltip.hide()
+		_result.hide()
+		_log.text = ""
+
+
 func set_result_texts(victory: String, defeat: String) -> void:
 	_victory_text = victory
 	_defeat_text = defeat

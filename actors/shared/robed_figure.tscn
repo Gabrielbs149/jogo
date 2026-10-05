@@ -1,7 +1,6 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://actors/shared/robed_figure.gd" id="1_r"]
-[ext_resource type="Script" path="res://actors/shared/scarf.gd" id="2_r"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
 albedo_color = Color(0.75, 0.12, 0.08, 1)
@@ -95,7 +94,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.055, 1.31, -0.215)
 mesh = SubResource("SphereMesh_6")
 material_override = SubResource("StandardMaterial3D_1")
 cast_shadow = 0
-
-[node name="Scarf" type="Node3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.12, 0.1)
-script = ExtResource("2_r")

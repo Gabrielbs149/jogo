@@ -1,32 +1,31 @@
-# Guia de estilo: Journey nas dunas
+# Guia de estilo: Plano do Fogo
 
-O jogo é **3D com câmera de cima e combate por turnos** (estilo Baldur's Gate 3) com o **visual do Journey**: deserto dourado ao entardecer, figuras de manto com cachecol que voa, olhos que brilham, ruínas com runas acesas, poeira de areia no vento, uma montanha com um feixe de luz no horizonte. História em `docs/HISTORIA.md`.
+O jogo é **3D com câmera de cima, no esquema do Baldur's Gate 3**: o grupo **explora em tempo real** (clique no chão para andar, clique nas coisas para examinar) e o jogo **só entra em turnos quando começa uma luta**. A ambientação é o **Plano do Fogo** da campanha (`docs/HISTORIA.md`): deserto ocre ao entardecer, rochas de obsidiana, brasas no ar, ruínas com runas e braseiros acesos.
+
+> Referências usadas *com moderação*: a luz quente e o vazio contemplativo do Journey. Nada de copiar as marcas registradas dele (figura de manto sem rosto com olhos brilhando, cachecol voando, montanha com feixe de luz). Decisão D014.
 
 ## Luz e cor
-- **Hora dourada sempre.** Sol baixo (≈17°), vindo de trás à direita da câmera: sombras longas para a frente-esquerda. Céu de azul profundo no alto a laranja-rosado no horizonte.
-- **Areia:** laranja profundo nas encostas em sombra, dourado claro no topo das dunas, marcas de vento e brilho de grãos que muda com a câmera (`assets/shaders/sand.gdshader`).
-- **Tudo num lugar só:** `assets/environment/journey_sky.tres` (céu, névoa leve, brilho, contraste). Mexa lá para mudar o clima do jogo inteiro.
-- **Cor de destaque é luz,** não tinta: runas, olhos, anéis de seleção e magia usam emissão (brilho), em dourado/creme. Vermelho e laranja quente para ataque inimigo.
+- **Entardecer quente, mas legível.** Céu roxo-acinzentado no alto e laranja no horizonte. Sol baixo vindo de trás à direita, com sombras longas.
+- **Saturação contida.** Areia ocre-marrom, não vermelho puro. Se a tela ficar "de uma cor só", baixe a saturação em `assets/environment/fire_sky.tres` antes de mexer no resto.
+- **Brilho só onde tem fogo ou magia:** fogueira, braseiros, runas, olhos de inimigos de pedra, efeitos de habilidade. Roupa e equipamento não brilham.
+- Arquivos: céu/névoa/contraste em `assets/environment/fire_sky.tres`; areia em `assets/shaders/sand.gdshader`.
 
 ## Personagens
-- **Silhueta primeiro.** Todo herói é um manto (cone) com capuz, rosto escuro, dois olhos brilhando e cachecol. A personalidade vem da **cor do manto + um acessório que se lê de cima**:
-  - Tico-Lirou: pequeno (0,72), verde-folha, brotos no capuz, focinho e rabo de kobold.
-  - Naumfode: ocre, óculos de latão, mochila com engrenagem, burrinho mecânico do lado.
-  - Chumasso: enorme (1,45), azul, rosto cinza de golias, martelo de ouro e ombreiras.
-  - José Maria: verde-floresta, arco, aljava e perna de pau.
-  - Bahamut: dragão de tecido creme e dourado que flutua e ondula.
-- Modelos base: `actors/shared/robed_figure.tscn` (cores e proporções no Inspector) e `actors/bahamut/`. Inimigos de **pedra** com olho de brasa: `actors/enemies/`.
-- Movimento: deslizar suave na areia (0,24 s por casa); nada de pulo ou corrida.
+- **Cada herói tem modelo próprio, feito no Blender**, com proporção de desenho (cabeça grande, olhos expressivos), cores sólidas e foscas, e silhueta que se lê de cima.
+  - **Tico-Lirou:** feito (`actors/tico_lirou/`), a partir da ilustração do Gabriel. Kobold verde de pintas, olho azul, chifres, crista rosa, capuz verde com ponta de folha, manto aberto, barriga cor de pêssego, perneiras, mochila com saco de dormir e cogumelo rosa.
+  - **Tika Muro:** feita (`actors/tika_muro/`). Mesma base, roxo, olhos rosa, cogumelo grande e espadas nas costas.
+  - Naumfode, Chumasso, José Maria e Bahamut ainda usam os bonecos provisórios (manto com acessórios, dragão de tecido) até ganharem modelo próprio.
+- Fluxo do Blender: `tools/blender/kobolds.py` monta os modelos por script e exporta `.glb`. Para ajustar à mão, abra `art_src/<nome>.blend`, edite e exporte para o mesmo `.glb`. Convenção: **pés na origem, frente para +Y no Blender** (vira −Z no Godot).
+
+## Cenário
+- Ruínas de pedra clara com runas acesas e braseiros; rochas de obsidiana brilhante; brasas subindo no ar; acampamento com fogueira.
+- Tudo que bloqueia caminho tem colisão na camada **props** (3) e fica num nó do grupo `nav_source`, para o mapa de navegação contornar.
 
 ## Interface
 - Painéis marrom-escuros translúcidos, cantos arredondados, linha fina dourada. Texto creme.
-- Títulos e nomes: **Cinzel** (`TitleLabel` no tema). Texto corrido: **Lato**. Licença OFL, em `assets/fonts/`.
-- Tema único: `ui/theme/journey_theme.tres`.
+- Títulos e nomes em **Cinzel** (`TitleLabel` no tema); texto corrido em **Lato**. Licença OFL, em `assets/fonts/`.
+- **Exploração:** grupo à esquerda (F1–F5), painel de história embaixo, dicas no alto. **Combate:** ordem dos turnos no alto, habilidades embaixo, registro à direita.
 
-## Câmera e combate
-- Câmera tática a −50°, distância 15,5 (roda do mouse 7–34), Q/E giram, WASD movem. Segue quem está jogando.
-- Grade invisível de casas de 1,6 m; aparece só quando se escolhe andar ou mirar (casas claras = andar; laranja = alcance; vermelho = área).
-
-## Arte provisória e como trocar
-- Dunas: `tools/art/generate_dunes.js` gera `levels/dunes_arena/art/dunes.obj`. Pode trocar por um terreno do Blender com o mesmo nome (manter o centro plano para a grade).
-- Personagens e ruínas são primitivas do Godot (cones, esferas, caixas). Dá para trocar cada `Model` por um `.glb` do Blender mantendo a origem nos pés e a frente para −Z.
+## Câmera
+- Câmera tática a −50°, distância 13 (roda do mouse de 7 a 34), Q/E giram, WASD movem. Na exploração segue o líder; no combate, quem está jogando.
+- Na luta, a grade aparece no chão: casas claras para andar, laranja para o alcance, vermelho para a área.

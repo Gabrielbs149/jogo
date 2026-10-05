@@ -6,6 +6,12 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D015: Modelos dos heróis no Blender, por script** · 2026-10-05 · Gabriel
+`tools/blender/kobolds.py` monta Tico-Lirou e Tika Muro a partir da ilustração do Gabriel e exporta `.glb` (+ `.blend` em `art_src/`). O MCP do Blender (`mcp-for-blender`, telemetria desligada) está no `.mcp.json` para modelar interativamente com o Blender aberto. Os outros heróis seguem o mesmo caminho quando tiverem referência.
+
+**D014: Exploração em tempo real + combate por turnos só na luta (Baldur's Gate 3), e menos Journey** · 2026-10-05 · Gabriel · ajusta D012
+O grupo anda livre (clique no chão; o líder vai na frente e os outros em formação, com o mapa de navegação do Godot). Ao chegar perto de um `Encounter`, a grade aparece e começa o combate por turnos; vencendo, volta a exploração e quem caiu levanta com 1 de vida. Tiramos as marcas do Journey (figura sem rosto de olhos brilhando, cachecol voando, montanha com feixe). Ambientação: Plano do Fogo (`docs/ESTILO.md`). Equilíbrio com o novo começo: IA dos heróis vence ~53% em ~10 rodadas.
+
 **D013: História = a campanha "A Noite Sem Nome" do grupo** · 2026-10-05 · Gabriel
 O jogo adapta a temporada do Plano do Fogo: cinco heróis que perderam as sombras, a caçada aos Astros (um por capítulo), os três caminhos do fim e o selo de Ethera como capítulo de abertura. Caiaque, Umu e Juca têm destaque (acampamento entre batalhas, proposto). Tudo em `docs/HISTORIA.md`. Dados pessoais da conversa original não entram no repo.
 

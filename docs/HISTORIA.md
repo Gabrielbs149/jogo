@@ -41,7 +41,7 @@ E fragmentos do dia a dia da cidade, que fazem Ethera parecer viva (estilo Journ
 ## O grupo
 | Personagem | Na campanha | No jogo |
 |---|---|---|
-| **Tico-Lirou** | ladino kobold, 97% planta. Tem **Tika Muro** ao lado | Ataque furtivo, Espinhos, Camuflagem |
+| **Tico-Lirou** | ladino kobold, 97% planta. Tem **Tika Muro** ao lado | Ataque furtivo, Espinhos, Camuflagem. Modelo próprio feito da ilustração do Gabriel |
 | **Naumfode** | artífice que ataca com burros | Coice de burro, Estouro de burros, Burro de reparo |
 | **Chumasso** | clérigo guerreiro, golias enorme | Martelo sagrado, Bênção, Escudo da fé |
 | **José Maria** | patrulheiro de arco, perna de pau | Flecha, Tiro duplo |
@@ -62,7 +62,7 @@ São os NPCs favoritos da mesa ("#teamcaiaque", "as crônicas do Caiaque") e os 
 
 ## Outros nomes da campanha
 - **Fenrir:** joga junto com Bahamut e Tico-Lirou em algumas sessões. É personagem ou NPC?
-- **Tika Muro:** companheira do Tico-Lirou.
+- **Tika Muro:** companheira do Tico-Lirou (kobold de roxo, olhos rosa). *(proposta)* No jogo ela espera no acampamento, ao lado da fogueira.
 - NPCs citados na enquete do grupo: Blenk, Blonk, Baba/Bebe/Bibi/Bobo/Bubu, Tonhonhonho, **Robinho** (morreu pelo povo, ao se jogar de uma casa de dois andares), Lancelot, Golias.
 - **Cindralich:** os perseguidores do grupo desde o começo (e a primeira cidade anotada na caderneta do mestre).
 - Do lado secundário da campanha existe um culto ("aquele que dorme continua sonhando"), em segundo plano.

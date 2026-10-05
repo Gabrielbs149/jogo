@@ -1,35 +1,41 @@
 extends GutTest
-## A arena de verdade, com a IA jogando pelos dois lados e sem animação, tem que terminar com um vencedor.
+## A fase de verdade: a luta de Ethera, com a IA jogando pelos dois lados e sem animação, tem que terminar.
 
-const ARENA: PackedScene = preload("res://levels/dunes_arena/dunes_arena.tscn")
+const LEVEL: PackedScene = preload("res://levels/ethera/ethera.tscn")
 
 var _ended: bool = false
 var _victory: bool = false
 
 
-func test_full_battle_ends_with_a_winner() -> void:
-	Dice.rng.seed = 2026
-	var arena := ARENA.instantiate()
-	var combat := arena.get_node("Combat") as CombatManager
+func _load_level() -> Node3D:
+	var level := LEVEL.instantiate() as Node3D
+	var combat := level.get_node("Combat") as CombatManager
 	combat.auto_heroes = true
 	combat.animate = false
+	add_child_autofree(level)
+	var party := level.get_node("Party") as PartyController
+	await wait_until(func() -> bool: return party.enabled, 15.0)
+	return level
+
+
+func test_full_battle_ends_with_a_winner() -> void:
+	Dice.rng.seed = 2026
+	var level := await _load_level()
+	var combat := level.get_node("Combat") as CombatManager
 	combat.combat_ended.connect(func(victory: bool) -> void:
 		_ended = true
 		_victory = victory)
-	add_child_autofree(arena)
+	level.start_encounter(level.get_node("EtheraRuins") as Encounter)
 	await wait_until(func() -> bool: return _ended, 60.0)
 	assert_true(_ended, "a batalha terminou")
-	assert_gt(combat.units.size(), 10, "achou heróis e inimigos")
+	assert_eq(combat.units.size(), 12, "5 heróis + 7 inimigos")
 	assert_gt(combat.round_number, 1, "durou mais de uma rodada")
-	gut.p("Resultado: %s em %d rodadas" % ["heróis venceram" if _victory else "inimigos venceram", combat.round_number])
 
 
-func test_everyone_stands_on_a_free_cell() -> void:
-	var arena := ARENA.instantiate()
-	var combat := arena.get_node("Combat") as CombatManager
-	combat.auto_heroes = true
-	combat.animate = false
-	add_child_autofree(arena)
+func test_everyone_starts_on_a_free_cell() -> void:
+	var level := await _load_level()
+	var combat := level.get_node("Combat") as CombatManager
+	level.start_encounter(level.get_node("EtheraRuins") as Encounter)
 	await wait_until(func() -> bool: return combat.order.size() > 0, 10.0)
 	var seen := {}
 	for u: Unit in combat.units:

@@ -1,7 +1,7 @@
 @tool
 class_name RobedFigure
 extends Node3D
-## Personagem de manto estilo Journey: manto em cone, capuz, rosto escuro com olhos brilhando, cachecol.
+## Personagem de manto e capuz (provisório até o modelo do Blender de cada herói ficar pronto).
 ## Cores e proporções no Inspector (aparecem no editor). Acessórios de cada herói são nós filhos extras na fase.
 
 @export var cloth_color: Color = Color(0.75, 0.12, 0.08):
@@ -12,12 +12,12 @@ extends Node3D
 	set(value):
 		trim_color = value
 		_apply()
-@export var eye_color: Color = Color(1.0, 0.95, 0.85):
+@export var eye_color: Color = Color(0.12, 0.08, 0.06):
 	set(value):
 		eye_color = value
 		_apply()
-## Cor do rosto (escuro no Journey; outra cor para quem tem pele aparecendo).
-@export var face_color: Color = Color(0.06, 0.04, 0.04):
+## Cor da pele do rosto.
+@export var face_color: Color = Color(0.82, 0.62, 0.48):
 	set(value):
 		face_color = value
 		_apply()
@@ -74,9 +74,9 @@ func _apply() -> void:
 	var cloth := _material(cloth_color, 0.0)
 	for path: String in ["Body/Robe", "Body/Hood"]:
 		_set_material(path, cloth)
-	_set_material("Body/Hem", _material(trim_color, 1.6))
+	_set_material("Body/Hem", _material(trim_color, 0.25))
 	_set_material("Body/Face", _material(face_color, 0.0))
-	var eyes := _material(eye_color, 5.0)
+	var eyes := _material(eye_color, 0.0)
 	_set_material("Body/EyeLeft", eyes)
 	_set_material("Body/EyeRight", eyes)
 	# Pernas: só aparecem se o manto estiver levantado

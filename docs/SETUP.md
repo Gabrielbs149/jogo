@@ -110,6 +110,17 @@ O VS Code vai sugerir as extensões do projeto (godot-tools e Live Share) quando
 - **Feed no Discord:** no canal → *Editar canal → Integrações → Webhooks → Novo* → copie a URL. No GitHub: *Settings → Webhooks → Add webhook* → Payload URL = `<url-do-discord>/github`, content type `application/json`, eventos: pushes, issues, pull requests.
 - **Proteger a `main`** (precisa de GitHub Pro em repo privado): *Settings → Rules → New ruleset* → alvo `main` → marcar *Block force pushes* e *Restrict deletions*.
 
+## 7. Blender (modelos dos personagens, opcional)
+```powershell
+winget install --id BlenderFoundation.Blender -e
+python -m pip install --user uv
+uvx mcp-for-blender install-addon
+```
+No Blender: *Edit → Preferences → Add-ons* → ligar **MCP for Blender**. Para o Claude mexer no Blender ao vivo: painel N → **Start MCP Server**. Regerar os kobolds por script (sem abrir o Blender):
+```powershell
+& "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" --background --factory-startup --python tools\blender\kobolds.py -- C:\dev\jogo
+```
+
 ## Problemas comuns
 | Sintoma | Resolve |
 |---|---|

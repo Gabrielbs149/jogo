@@ -5,11 +5,13 @@ Regras do projeto para os **dois** Claudes: o do Gabriel e o do John. Cada um ro
 ## O projeto
 - **Godot 4.7.2**, fixado em `.godot-version`. Os dois sempre na mesma versão; atualizar é decisão conjunta, em commit próprio.
 - **GDScript com tipagem estática.** Sem C#.
-- **3D, câmera de cima, combate por turnos estilo Baldur's Gate 3, visual do Journey** (D012). **Leia `docs/ESTILO.md` antes de mexer em arte, fase ou interface.**
+- **3D, câmera de cima, no esquema do Baldur's Gate 3** (D012, D014): **exploração em tempo real** (clique no chão; o grupo segue o líder em formação pelo mapa de navegação) e **combate por turnos só quando começa uma luta** (`Encounter`). Ambientação: Plano do Fogo. **Leia `docs/ESTILO.md` antes de mexer em arte, fase ou interface.** Nada de copiar as marcas do Journey.
 - **História: a campanha "A Noite Sem Nome" do grupo** (D013), em `docs/HISTORIA.md`. Personagens jogáveis: Tico-Lirou, Naumfode, Chumasso, José Maria e Bahamut. NPCs com destaque: **Caiaque, Umu e Juca**. **Não invente fatos da campanha:** o que for invenção para o jogo vai marcado como *(proposta)* no doc, e o humano confirma.
 - **Combate** (`combat/`): `CombatManager` (turnos, entrada do mouse, sinais), `CombatRules` (regras puras: acerto, alvos, rolagens), `CombatAI`, `CombatGrid` (casas, alcance, linha de visão), `Unit` (atributos no Inspector), `Ability` (`.tres` em `data/abilities/`), `GridObstacle` (ruína que bloqueia, com `inscription` opcional), `CellHighlighter`, `CombatFX`. Interface: `ui/combat_hud/`. Câmera: `systems/camera/tactics_camera.gd`.
 - **Regras e números de batalha moram em `.tres` e no Inspector** (`Unit`, `Ability`), nunca enterrados no código. Mexeu em número de inimigo/herói? Rode `tools/simulate_battles.gd` e registre o resultado em `DECISOES.md` (meta: IA dos heróis vence ~55–70%).
-- **Fase:** `levels/dunes_arena/` (abertura do capítulo, textos da história no Inspector da raiz). Gerador provisório do terreno: `tools/art/generate_dunes.js`.
+- **Exploração** (`exploration/`): `PartyController` (clique para andar, F1–F5 escolhem o líder, clique em pedra com `inscription` para ler) e `Encounter` (luta começa quando o líder chega a `radius` metros; inimigos são filhos dele). Interface: `ui/exploration_hud/`.
+- **Fase:** `levels/ethera/` (acampamento ao sul, ruínas de Ethera no centro). O script da raiz faz a abertura → exploração → combate → exploração e monta o mapa de navegação (grupo `nav_source`). Terreno provisório: `tools/art/generate_dunes.js`.
+- **Modelos dos heróis:** Blender por script, `tools/blender/kobolds.py` (Tico-Lirou, Tika Muro) → `actors/<nome>/<nome>.glb` + `art_src/<nome>.blend`. Frente para +Y no Blender (−Z no Godot), pés na origem.
 - Design: `docs/GDD.md`. Fases do projeto: `docs/ROADMAP.md`. Git: `docs/FLUXO.md`.
 - Equipe: Gabriel (`@Gabrielbs149`) e John (`@JohnG-404`). Os dois mexem em tudo, ao mesmo tempo.
 - Idioma: conversa, docs, commits e comentários em **PT-BR**. Identificadores (variáveis, funções, nós, arquivos, pastas) em **inglês**, combinando com a API do Godot.
@@ -17,6 +19,7 @@ Regras do projeto para os **dois** Claudes: o do Gabriel e o do John. Cada um ro
 ## Ferramentas instaladas no projeto
 - **MCP `godot`** (`.mcp.json`, [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp)): `run_project` + `get_debug_output` + `stop_project` para rodar o jogo e ler erros de execução de verdade; `get_project_info`, `get_godot_version`, `get_uid`. Use para conferir que uma mudança funciona rodando, além do `tools/check.ps1`.
   - **Não use** `create_scene`, `add_node`, `load_sprite` ou `save_scene` para montar fase ou cenário: isso fere o editor-first. Só para algo mecânico que o humano pediu. (Elas pedem confirmação de propósito.)
+- **MCP `blender`** (`mcp-for-blender`, telemetria desligada): com o Blender aberto (painel N → *Start MCP Server*) dá para modelar e ver ao vivo. Ele roda Python dentro do Blender: salve antes. Para algo repetível, prefira script em `tools/blender/` rodando com `blender --background`.
 - **Plugin GodotPrompter** (`godot-prompter@skillsmith`): skills gerais de Godot 4 (máquina de estado, diálogo, save, shaders, export...). São conselhos genéricos: **quando contradizem este CLAUDE.md ou `docs/ESTILO.md`, vale o nosso.**
 
 ## Começo de toda sessão
@@ -35,10 +38,11 @@ O hook de início mostra `git status` e os últimos commits do remoto. Se aparec
 ## Estrutura de pastas
 ```
 res://
-├─ actors/        shared/ (manto, cachecol), bahamut/, naumfode/ (burro), enemies/ — modelos de cada um
+├─ actors/        tico_lirou/, tika_muro/ (Blender), shared/ (manto provisório), bahamut/, naumfode/, enemies/, props/
 ├─ combat/        regras, grade, IA, unidades e efeitos do combate por turnos
+├─ exploration/   grupo em tempo real e encontros
 ├─ levels/        fases montadas no editor: levels/<nome>/<nome>.tscn + levels/<nome>/art/
-├─ ui/            combat_hud/, theme/ (tema Journey com Cinzel + Lato)
+├─ ui/            combat_hud/, exploration_hud/, theme/ (Cinzel + Lato)
 ├─ systems/       camera/ (câmera tática)
 ├─ data/          abilities/*.tres — habilidades de heróis e inimigos
 ├─ assets/        SÓ o que várias cenas compartilham: fonts/, music/, sfx/, shaders/, themes/

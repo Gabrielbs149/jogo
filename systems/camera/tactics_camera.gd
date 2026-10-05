@@ -3,7 +3,7 @@ extends Node3D
 ## Câmera tática vista de cima (estilo Baldur's Gate). Este nó é o ponto que a câmera olha.
 ## WASD/setas movem, Q/E giram, roda do mouse aproxima, botão do meio arrastado gira.
 
-@export var distance: float = 15.5
+@export var distance: float = 13.0
 @export var min_distance: float = 7.0
 @export var max_distance: float = 34.0
 @export_range(-85.0, -20.0) var pitch_degrees: float = -50.0
@@ -36,7 +36,7 @@ func focus_on(point: Vector3) -> void:
 func _process(delta: float) -> void:
 	var input := Input.get_vector("cam_left", "cam_right", "cam_forward", "cam_back")
 	if input != Vector2.ZERO:
-		_target += Vector3(input.x, 0.0, input.y).rotated(Vector3.UP, _yaw) * pan_speed * delta * (distance / 15.5)
+		_target += Vector3(input.x, 0.0, input.y).rotated(Vector3.UP, _yaw) * pan_speed * delta * (distance / 13.0)
 		_clamp_target()
 	_yaw += Input.get_axis("cam_rotate_right", "cam_rotate_left") * rotate_speed * delta
 	var weight := 1.0 - exp(-smoothing * delta)

@@ -46,20 +46,39 @@ func _ready() -> void:
 		start.call_deferred()
 
 
-func start() -> void:
+## Começa a luta. participants vazio = todo mundo do grupo "unit" (testes e arena isolada).
+## Quem estiver fora da grade ou em cima de ruína vai para a casa livre mais próxima.
+func start(participants: Array[Unit] = []) -> void:
 	# A colisão do terreno precisa existir antes da grade medir as alturas
 	await get_tree().physics_frame
 	await get_tree().physics_frame
 	grid.build()
+	state = State.IDLE
+	round_number = 1
+	_turn_index = -1
 	units.clear()
-	for node: Node in get_tree().get_nodes_in_group("unit"):
-		var unit := node as Unit
+	if participants.is_empty():
+		for node: Node in get_tree().get_nodes_in_group("unit"):
+			participants.append(node as Unit)
+	var taken := {}
+	for unit: Unit in participants:
+		if not unit.is_alive():
+			continue
 		units.append(unit)
-		unit.cell = grid.world_to_cell(unit.global_position)
-		unit.global_position = grid.cell_to_world(unit.cell)
-		unit.changed.connect(func() -> void: unit_changed.emit(unit))
-		unit.died.connect(_on_unit_died.bind(unit))
+		unit.cell = _free_cell_near(grid.world_to_cell(unit.global_position), taken)
+		taken[unit.cell] = true
+		unit.statuses.clear()
+		if animate:
+			var tween := create_tween()
+			tween.tween_property(unit, "global_position", grid.cell_to_world(unit.cell), 0.35)
+		else:
+			unit.global_position = grid.cell_to_world(unit.cell)
+		if not unit.changed.is_connected(_on_unit_changed):
+			unit.changed.connect(_on_unit_changed.bind(unit))
+			unit.died.connect(_on_unit_died.bind(unit))
 		unit.initiative = Dice.d20() + unit.initiative_bonus
+	if animate:
+		await get_tree().create_timer(0.4).timeout
 	order = units.duplicate()
 	order.sort_custom(func(a: Unit, b: Unit) -> bool:
 		return a.initiative > b.initiative or (a.initiative == b.initiative and a.initiative_bonus > b.initiative_bonus))
@@ -98,6 +117,23 @@ func select_ability(index: int) -> void:
 	if _target_cells.is_empty():
 		message.emit("Nenhum alvo ao alcance de %s." % ability.title)
 	_refresh_preview()
+
+
+## Depois da vitória: limpa a grade e levanta quem caiu com 1 de vida (como no Baldur's Gate).
+func finish_and_reset() -> void:
+	highlighter.clear_all()
+	if _ring:
+		_ring.visible = false
+	for unit: Unit in units:
+		if unit.team == Unit.Team.HEROES and not unit.is_alive():
+			unit.hp = 1
+			unit.visible = true
+			unit.scale = Vector3.ONE
+			unit.global_position = grid.cell_to_world(unit.cell)
+			unit.changed.emit()
+		unit.statuses.clear()
+	active = null
+	state = State.IDLE
 
 
 func end_turn_pressed() -> void:
@@ -253,6 +289,27 @@ func _apply(unit: Unit, ability: Ability, result: Dictionary) -> void:
 			if animate:
 				fx.floating_text(at, ability.title, Color(1.0, 0.9, 0.7))
 				fx.rising_glow(at, ability.vfx_color)
+
+
+func _on_unit_changed(unit: Unit) -> void:
+	unit_changed.emit(unit)
+
+
+## Casa livre mais perto de c (dentro da grade, fora de ruína, sem ninguém).
+func _free_cell_near(c: Vector2i, taken: Dictionary) -> Vector2i:
+	var start := Vector2i(clampi(c.x, 0, grid.size.x - 1), clampi(c.y, 0, grid.size.y - 1))
+	var frontier: Array[Vector2i] = [start]
+	var seen := {start: true}
+	while not frontier.is_empty():
+		var current: Vector2i = frontier.pop_front()
+		if not grid.is_blocked(current) and not taken.has(current):
+			return current
+		for d: Vector2i in CombatGrid.DIRECTIONS:
+			var n := current + d
+			if grid.in_bounds(n) and not seen.has(n):
+				seen[n] = true
+				frontier.append(n)
+	return start
 
 
 func _on_unit_died(unit: Unit) -> void:

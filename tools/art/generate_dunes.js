@@ -1,4 +1,4 @@
-// Gera o terreno de dunas (levels/dunes_arena/art/dunes.obj). Rodar 1 vez: node tools/art/generate_dunes.js
+// Gera o terreno de dunas (levels/ethera/art/dunes.obj). Rodar 1 vez: node tools/art/generate_dunes.js
 // O centro (a arena da batalha) fica quase plano; em volta, dunas de crista suave que crescem até o horizonte.
 // É um asset como outro qualquer: dá para trocar por um terreno feito no Blender com o mesmo nome.
 'use strict';
@@ -32,9 +32,13 @@ function height(x, z) {
   // dunas crescem com a distância (horizonte mais dramático)
   const dist = Math.sqrt(x * x + z * z);
   h *= 1 + smoothstep(30, 90, dist) * 1.6;
-  // arena: quase plana, ondulação de no máximo ~30 cm
+  // arena + vale até o acampamento ao sul: quase planos, ondulação de no máximo ~30 cm
   const dx = Math.max(Math.abs(x) - ARENA.w / 2, 0), dz = Math.max(Math.abs(z) - ARENA.d / 2, 0);
-  const outside = Math.sqrt(dx * dx + dz * dz);
+  const arena = Math.sqrt(dx * dx + dz * dz);
+  const vx = Math.max(Math.abs(x - Math.sin(z * 0.08) * 3) - 5, 0), vz = Math.max(Math.abs(z - 26) - 14, 0);
+  const valley = Math.sqrt(vx * vx + vz * vz);
+  const camp = Math.max(Math.hypot(x - 1, z - 34) - 9, 0);
+  const outside = Math.min(arena, valley, camp);
   const gentle = 0.18 * Math.sin(x * 0.35) * Math.cos(z * 0.28) + 0.12 * fbm(x * 0.2, z * 0.2);
   const m = smoothstep(0, ARENA.fade, outside);
   return gentle * (1 - m) + (h - 2.2) * m;
@@ -57,7 +61,7 @@ for (let j = 0; j < n - 1; j++) for (let i = 0; i < n - 1; i++) {
   faces.push(`f ${a}/${a}/${a} ${c}/${c}/${c} ${b}/${b}/${b}`);
   faces.push(`f ${b}/${b}/${b} ${c}/${c}/${c} ${d}/${d}/${d}`);
 }
-const out = path.join(process.cwd(), 'levels/dunes_arena/art/dunes.obj');
+const out = path.join(process.cwd(), 'levels/ethera/art/dunes.obj');
 fs.mkdirSync(path.dirname(out), { recursive: true });
 fs.writeFileSync(out, ['# Dunas geradas por tools/art/generate_dunes.js', 'o Dunes', ...verts, ...uvs, ...norms, 's 1', ...faces].join('\n') + '\n');
 console.log(`ok ${out} (${n * n} vértices, ${faces.length} triângulos)`);

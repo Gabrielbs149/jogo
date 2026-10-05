@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://actors/tico_lirou/tico_lirou.glb" id="1_model"]
+
+[node name="TicoLirou" type="Node3D"]
+
+[node name="Mesh" parent="." instance=ExtResource("1_model")]

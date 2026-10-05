@@ -6,6 +6,13 @@
       "env": {
         "GODOT_PATH": "${GODOT:-}"
       }
+    },
+    "blender": {
+      "command": "cmd",
+      "args": ["/c", "uvx", "mcp-for-blender"],
+      "env": {
+        "DISABLE_TELEMETRY": "true"
+      }
     }
   }
 }

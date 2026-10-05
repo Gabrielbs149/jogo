@@ -1,17 +1,17 @@
-// Areia estilo Journey: dourado quente, ondulações do vento e brilho cintilante que muda com a câmera.
+// Areia do Plano do Fogo: ocre avermelhado, ondulações do vento e alguns grãos que brilham com a luz.
 shader_type spatial;
 render_mode diffuse_lambert_wrap, specular_schlick_ggx;
 
-uniform vec3 sand_light : source_color = vec3(0.95, 0.6, 0.34);
-uniform vec3 sand_dark : source_color = vec3(0.62, 0.27, 0.15);
+uniform vec3 sand_light : source_color = vec3(0.76, 0.55, 0.38);
+uniform vec3 sand_dark : source_color = vec3(0.4, 0.24, 0.16);
 uniform vec3 crest_tint : source_color = vec3(1.0, 0.86, 0.66);
 // Ondulações do vento (marcas na areia)
 uniform float ripple_frequency = 2.2;
 uniform float ripple_strength = 0.28;
 uniform vec2 wind_direction = vec2(0.85, 0.5);
 // Brilho dos grãos
-uniform float glitter_density : hint_range(0.9, 1.0) = 0.992;
-uniform float glitter_strength = 6.0;
+uniform float glitter_density : hint_range(0.9, 1.0) = 0.997;
+uniform float glitter_strength = 1.5;
 uniform float glitter_scale = 38.0;
 
 varying vec3 world_pos;

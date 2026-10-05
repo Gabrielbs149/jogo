@@ -1,15 +1,23 @@
 # Jogo (codinome)
 
-Jogo do Gabriel e do John, feito em **Godot 4.7.2** + GDScript: combate tático por turnos (estilo Baldur's Gate 3) com o visual do Journey, baseado na campanha **A Noite Sem Nome** do grupo. História em [docs/HISTORIA.md](docs/HISTORIA.md), estilo em [docs/ESTILO.md](docs/ESTILO.md), design em [docs/GDD.md](docs/GDD.md).
+Jogo do Gabriel e do John, feito em **Godot 4.7.2** + GDScript: RPG tático no esquema do Baldur's Gate 3 (explora em tempo real, luta por turnos) no Plano do Fogo, baseado na campanha **A Noite Sem Nome** do grupo. História em [docs/HISTORIA.md](docs/HISTORIA.md), estilo em [docs/ESTILO.md](docs/ESTILO.md), design em [docs/GDD.md](docs/GDD.md).
 
 ## Controles
+**Explorando** (tempo real)
+| | |
+|---|---|
+| Andar com o grupo | clique no chão |
+| Ler inscrição / examinar | clique na pedra ou na pessoa |
+| Quem lidera | F1–F5 ou clique no nome |
+| Câmera | WASD/setas movem, Q/E giram, roda aproxima |
+
+**Lutando** (por turnos, começa ao chegar perto dos inimigos)
 | | |
 |---|---|
 | Andar | clique numa casa clara |
-| Habilidade | botão na barra ou teclas 1–4, depois clique no alvo |
+| Habilidade | botão ou 1–4, depois clique no alvo |
 | Cancelar mira | botão direito ou Esc |
 | Encerrar turno | Espaço |
-| Câmera | WASD/setas movem, Q/E giram, roda aproxima, botão do meio arrastado gira |
 | Recomeçar | R |
 
 ## Primeira vez

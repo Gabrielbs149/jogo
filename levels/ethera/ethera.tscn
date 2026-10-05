@@ -1,0 +1,1302 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/ethera/ethera.gd" id="1_r"]
+[ext_resource type="Environment" path="res://assets/environment/fire_sky.tres" id="2_r"]
+[ext_resource type="ArrayMesh" path="res://levels/ethera/art/dunes.obj" id="3_r"]
+[ext_resource type="Shader" path="res://assets/shaders/sand.gdshader" id="4_r"]
+[ext_resource type="Script" path="res://combat/combat_grid.gd" id="5_r"]
+[ext_resource type="Script" path="res://combat/cell_highlighter.gd" id="6_r"]
+[ext_resource type="Script" path="res://combat/combat_fx.gd" id="7_r"]
+[ext_resource type="Script" path="res://combat/combat_manager.gd" id="8_r"]
+[ext_resource type="Script" path="res://systems/camera/tactics_camera.gd" id="9_r"]
+[ext_resource type="Script" path="res://combat/unit.gd" id="10_r"]
+[ext_resource type="Script" path="res://combat/grid_obstacle.gd" id="11_r"]
+[ext_resource type="Script" path="res://combat/ability.gd" id="12_r"]
+[ext_resource type="Script" path="res://exploration/party_controller.gd" id="13_r"]
+[ext_resource type="Script" path="res://exploration/encounter.gd" id="14_r"]
+[ext_resource type="Script" path="res://actors/props/flicker_light.gd" id="15_r"]
+[ext_resource type="PackedScene" path="res://actors/shared/robed_figure.tscn" id="16_r"]
+[ext_resource type="PackedScene" path="res://actors/naumfode/donkey.tscn" id="17_r"]
+[ext_resource type="PackedScene" path="res://actors/bahamut/bahamut.tscn" id="18_r"]
+[ext_resource type="PackedScene" path="res://actors/tico_lirou/tico_lirou.tscn" id="19_r"]
+[ext_resource type="PackedScene" path="res://actors/tika_muro/tika_muro.tscn" id="20_r"]
+[ext_resource type="PackedScene" path="res://actors/enemies/beetle.tscn" id="21_r"]
+[ext_resource type="PackedScene" path="res://actors/enemies/sentinel.tscn" id="22_r"]
+[ext_resource type="PackedScene" path="res://actors/enemies/colossus.tscn" id="23_r"]
+[ext_resource type="PackedScene" path="res://ui/combat_hud/combat_hud.tscn" id="24_r"]
+[ext_resource type="PackedScene" path="res://ui/exploration_hud/exploration_hud.tscn" id="25_r"]
+[ext_resource type="FontFile" path="res://assets/fonts/cinzel.ttf" id="26_r"]
+[ext_resource type="Resource" path="res://data/abilities/ataque_furtivo.tres" id="27_r"]
+[ext_resource type="Resource" path="res://data/abilities/espinhos.tres" id="28_r"]
+[ext_resource type="Resource" path="res://data/abilities/camuflagem.tres" id="29_r"]
+[ext_resource type="Resource" path="res://data/abilities/coice_de_burro.tres" id="30_r"]
+[ext_resource type="Resource" path="res://data/abilities/estouro_de_burros.tres" id="31_r"]
+[ext_resource type="Resource" path="res://data/abilities/burro_de_reparo.tres" id="32_r"]
+[ext_resource type="Resource" path="res://data/abilities/martelo_sagrado.tres" id="33_r"]
+[ext_resource type="Resource" path="res://data/abilities/bencao.tres" id="34_r"]
+[ext_resource type="Resource" path="res://data/abilities/escudo_da_fe.tres" id="35_r"]
+[ext_resource type="Resource" path="res://data/abilities/flecha.tres" id="36_r"]
+[ext_resource type="Resource" path="res://data/abilities/tiro_duplo.tres" id="37_r"]
+[ext_resource type="Resource" path="res://data/abilities/garras.tres" id="38_r"]
+[ext_resource type="Resource" path="res://data/abilities/sopro_dourado.tres" id="39_r"]
+[ext_resource type="Resource" path="res://data/abilities/mordida.tres" id="40_r"]
+[ext_resource type="Resource" path="res://data/abilities/raio_vigia.tres" id="41_r"]
+[ext_resource type="Resource" path="res://data/abilities/pancada.tres" id="42_r"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
+render_priority = 0
+shader = ExtResource("4_r")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
+albedo_color = Color(0.78, 0.52, 0.4, 1)
+roughness = 0.95
+rim_enabled = true
+rim = 0.2
+rim_tint = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.5, 0.33, 0.26, 1)
+roughness = 0.95
+rim_enabled = true
+rim = 0.2
+rim_tint = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
+albedo_color = Color(1.0, 0.62, 0.3, 1)
+roughness = 0.85
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.6
+emission_enabled = true
+emission = Color(1.0, 0.62, 0.3, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
+albedo_color = Color(0.07, 0.06, 0.08, 1)
+roughness = 0.18
+metallic = 0.25
+rim_enabled = true
+rim = 0.3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
+albedo_color = Color(0.32, 0.2, 0.12, 1)
+roughness = 0.9
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7"]
+albedo_color = Color(0.18, 0.16, 0.15, 1)
+roughness = 1.0
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8"]
+albedo_color = Color(0.42, 0.36, 0.33, 1)
+roughness = 0.95
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_9"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.75, 0.3, 0.9)
+emission_enabled = true
+emission = Color(1, 0.55, 0.15, 1)
+emission_energy_multiplier = 6.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_10"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.95, 0.6, 0.95)
+emission_enabled = true
+emission = Color(1, 0.85, 0.4, 1)
+emission_energy_multiplier = 8.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11"]
+albedo_color = Color(0.35, 0.18, 0.15, 1)
+roughness = 0.95
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_12"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(1, 0.6, 0.25, 1)
+emission_enabled = true
+emission = Color(1, 0.45, 0.15, 1)
+emission_energy_multiplier = 4.0
+billboard_mode = 3
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_13"]
+material = SubResource("StandardMaterial3D_12")
+size = Vector2(0.06, 0.06)
+
+[sub_resource type="Gradient" id="Gradient_14"]
+colors = PackedColorArray(1, 0.8, 0.4, 1, 1, 0.35, 0.1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_15"]
+gradient = SubResource("Gradient_14")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_16"]
+emission_shape = 3
+emission_box_extents = Vector3(36, 0.5, 40)
+direction = Vector3(0.3, 1, 0.1)
+spread = 25.0
+initial_velocity_min = 0.4
+initial_velocity_max = 1.4
+gravity = Vector3(0.25, 0.35, 0.1)
+scale_min = 0.4
+scale_max = 1.2
+color_ramp = SubResource("GradientTexture1D_15")
+turbulence_enabled = true
+turbulence_noise_strength = 0.6
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_17"]
+emission_shape = 1
+emission_sphere_radius = 0.25
+direction = Vector3(0, 1, 0)
+spread = 15.0
+initial_velocity_min = 0.8
+initial_velocity_max = 2.0
+gravity = Vector3(0, 0.6, 0)
+scale_min = 0.6
+scale_max = 1.6
+color_ramp = SubResource("GradientTexture1D_15")
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_18"]
+geometry_parsed_geometry_type = 1
+geometry_collision_mask = 5
+geometry_source_geometry_mode = 1
+geometry_source_group_name = &"nav_source"
+cell_size = 0.25
+cell_height = 0.25
+agent_height = 1.5
+agent_radius = 0.5
+agent_max_climb = 0.5
+agent_max_slope = 40.0
+filter_baking_aabb = AABB(-36, -10, -28, 72, 40, 78)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_19"]
+top_radius = 0.09
+bottom_radius = 0.09
+height = 1.0
+radial_segments = 8
+
+[sub_resource type="SphereMesh" id="SphereMesh_20"]
+radius = 0.13
+height = 0.22
+radial_segments = 7
+rings = 4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_21"]
+top_radius = 0.55
+bottom_radius = 0.6
+height = 0.04
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_22"]
+top_radius = 0.0
+bottom_radius = 0.26
+height = 0.7
+radial_segments = 8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_23"]
+top_radius = 0.0
+bottom_radius = 0.14
+height = 0.45
+radial_segments = 8
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_24"]
+radius = 0.22
+height = 1.6
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_25"]
+radius = 0.22
+height = 1.6
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_26"]
+radius = 0.22
+height = 1.6
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_27"]
+size = Vector3(0.7, 1.2, 0.7)
+
+[sub_resource type="SphereMesh" id="SphereMesh_28"]
+radius = 1.0
+height = 2.0
+radial_segments = 6
+rings = 4
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_29"]
+size = Vector3(2.1, 1.96, 1.96)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_30"]
+size = Vector3(2.7, 2.52, 2.52)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_31"]
+size = Vector3(1.65, 1.54, 1.54)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_32"]
+size = Vector3(1.95, 1.82, 1.82)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_33"]
+size = Vector3(3, 2.8, 2.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_34"]
+size = Vector3(2.4, 2.24, 2.24)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_35"]
+size = Vector3(3.3, 3.08, 3.08)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_36"]
+size = Vector3(2.85, 2.66, 2.66)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_37"]
+size = Vector3(2.4, 2.24, 2.24)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_38"]
+size = Vector3(3.45, 3.22, 3.22)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_39"]
+size = Vector3(1.2, 1.12, 1.12)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_40"]
+size = Vector3(1.35, 1.26, 1.26)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_41"]
+top_radius = 0.42
+bottom_radius = 0.5
+height = 1.0
+radial_segments = 10
+rings = 1
+
+[sub_resource type="TorusMesh" id="TorusMesh_42"]
+inner_radius = 0.47
+outer_radius = 0.53
+rings = 20
+ring_segments = 4
+
+[sub_resource type="BoxMesh" id="BoxMesh_43"]
+size = Vector3(1, 1, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_44"]
+top_radius = 0.42
+bottom_radius = 0.22
+height = 0.3
+radial_segments = 10
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_45"]
+radius = 0.5
+height = 3.4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_46"]
+top_radius = 0.0
+bottom_radius = 0.20800000000000002
+height = 0.5599999999999999
+radial_segments = 8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_47"]
+top_radius = 0.0
+bottom_radius = 0.11200000000000002
+height = 0.36000000000000004
+radial_segments = 8
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_48"]
+radius = 0.5
+height = 2.1
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_49"]
+radius = 0.5
+height = 4.2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_50"]
+top_radius = 0.0
+bottom_radius = 0.20800000000000002
+height = 0.5599999999999999
+radial_segments = 8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_51"]
+top_radius = 0.0
+bottom_radius = 0.11200000000000002
+height = 0.36000000000000004
+radial_segments = 8
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_52"]
+radius = 0.5
+height = 1.4
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_53"]
+radius = 0.5
+height = 2.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_54"]
+size = Vector3(1.6, 0.12, 0.03)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_55"]
+size = Vector3(2.9, 2.2, 2.6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_56"]
+albedo_color = Color(1.0, 0.65, 0.3, 1)
+roughness = 0.35
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.6
+metallic = 0.7
+emission_enabled = true
+emission = Color(1.0, 0.65, 0.3, 1)
+emission_energy_multiplier = 0.3
+
+[sub_resource type="TorusMesh" id="TorusMesh_57"]
+inner_radius = 0.035
+outer_radius = 0.06
+rings = 12
+ring_segments = 6
+
+[sub_resource type="BoxMesh" id="BoxMesh_58"]
+size = Vector3(0.36, 0.42, 0.22)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_59"]
+albedo_color = Color(0.35, 0.22, 0.12, 1)
+roughness = 0.85
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_60"]
+albedo_color = Color(0.95, 0.78, 0.45, 1)
+roughness = 0.35
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.6
+metallic = 0.7
+emission_enabled = true
+emission = Color(0.95, 0.78, 0.45, 1)
+emission_energy_multiplier = 0.2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_61"]
+top_radius = 0.03
+bottom_radius = 0.03
+height = 1.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_62"]
+albedo_color = Color(0.35, 0.22, 0.12, 1)
+roughness = 0.85
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_63"]
+size = Vector3(0.26, 0.2, 0.42)
+
+[sub_resource type="TorusMesh" id="TorusMesh_64"]
+inner_radius = 0.55
+outer_radius = 0.6
+rings = 24
+ring_segments = 4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_65"]
+top_radius = 0.08
+bottom_radius = 0.07
+height = 0.55
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_66"]
+albedo_color = Color(0.4, 0.25, 0.12, 1)
+roughness = 0.85
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.6
+
+[node name="Ethera" type="Node3D"]
+script = ExtResource("1_r")
+chapter_title = "Ruínas de Ethera"
+intro_lines = PackedStringArray("Há seis meses, cinco desconhecidos perderam suas sombras no mesmo dia.", "Recuperaram. E descobriram que eram os heróis de uma profecia antiga.", "No Plano do Fogo, as estrelas se voltaram contra eles. Agora o grupo caça os Astros, um por um.", "Caiaque, Umu e Juca esperam do outro lado das dunas.", "Mas antes há Ethera, onde um guardião ainda protege um selo que já não existe.")
+victory_text = "O Último Guardião descansa. Ethera pode descansar também.
+Caiaque, Umu e Juca vão querer ouvir essa história."
+defeat_text = "O vento cobre os passos de vocês.
+Esta noite, as estrelas brilham um pouco mais."
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_r")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.8064, -0.168, 0.567, 0, 0.9588, 0.2842, -0.5914, 0.2291, -0.7732, 0, 20, 0)
+light_color = Color(1, 0.62, 0.42, 1)
+light_energy = 1.5
+shadow_enabled = true
+shadow_blur = 1.5
+directional_shadow_max_distance = 80.0
+
+[node name="Navigation" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_18")
+
+[node name="Terrain" type="MeshInstance3D" parent="." groups=["nav_source"]]
+mesh = ExtResource("3_r")
+material_override = SubResource("ShaderMaterial_1")
+
+[node name="Embers" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 6)
+amount = 260
+lifetime = 5.0
+preprocess = 5.0
+visibility_aabb = AABB(-40, -2, -45, 80, 14, 90)
+process_material = SubResource("ParticleProcessMaterial_16")
+draw_pass_1 = SubResource("QuadMesh_13")
+cast_shadow = 0
+
+[node name="Camp" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 34)
+
+[node name="Log0" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(0.1151, -0.9484, 0.2955, 0.9927, 0.1205, 0, -0.03561, 0.2934, 0.9553, 0, 0.12, 0)
+mesh = SubResource("CylinderMesh_19")
+material_override = SubResource("StandardMaterial3D_6")
+
+[node name="Log1" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(0.02048, -0.1687, 0.9854, 0.9927, 0.1205, 0, -0.1187, 0.9783, 0.17, 0, 0.12, 0)
+mesh = SubResource("CylinderMesh_19")
+material_override = SubResource("StandardMaterial3D_6")
+
+[node name="Log2" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(-0.09654, 0.7953, 0.5985, 0.9927, 0.1205, 0, -0.07212, 0.5941, -0.8011, 0, 0.12, 0)
+mesh = SubResource("CylinderMesh_19")
+material_override = SubResource("StandardMaterial3D_6")
+
+[node name="Stone0" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 0.06, 0)
+mesh = SubResource("SphereMesh_20")
+material_override = SubResource("StandardMaterial3D_8")
+
+[node name="Stone1" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4979, 0.06, 0.4178)
+mesh = SubResource("SphereMesh_20")
+material_override = SubResource("StandardMaterial3D_8")
+
+[node name="Stone2" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1129, 0.06, 0.6401)
+mesh = SubResource("SphereMesh_20")
+material_override = SubResource("StandardMaterial3D_8")
+
+[node name="Stone3" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.325, 0.06, 0.5629)
+mesh = SubResource("SphereMesh_20")
+material_override = SubResource("StandardMaterial3D_8")
+
+[node name="Stone4" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6108, 0.06, 0.2223)
+mesh = SubResource("SphereMesh_20")
+material_override = SubResource("StandardMaterial3D_8")
+
+[node name="Stone5" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6108, 0.06, -0.2223)
+mesh = SubResource("SphereMesh_20")
+material_override = SubResource("StandardMaterial3D_8")
+
+[node name="Stone6" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.325, 0.06, -0.5629)
+mesh = SubResource("SphereMesh_20")
+material_override = SubResource("StandardMaterial3D_8")
+
+[node name="Stone7" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1129, 0.06, -0.6401)
+mesh = SubResource("SphereMesh_20")
+material_override = SubResource("StandardMaterial3D_8")
+
+[node name="Stone8" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4979, 0.06, -0.4178)
+mesh = SubResource("SphereMesh_20")
+material_override = SubResource("StandardMaterial3D_8")
+
+[node name="Ash" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+mesh = SubResource("CylinderMesh_21")
+material_override = SubResource("StandardMaterial3D_7")
+
+[node name="Fire" type="Node3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+
+[node name="Flame" type="MeshInstance3D" parent="Camp/Fire"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_22")
+material_override = SubResource("StandardMaterial3D_9")
+cast_shadow = 0
+
+[node name="Core" type="MeshInstance3D" parent="Camp/Fire"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.24, 0)
+mesh = SubResource("CylinderMesh_23")
+material_override = SubResource("StandardMaterial3D_10")
+cast_shadow = 0
+
+[node name="Sparks" type="GPUParticles3D" parent="Camp/Fire"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+amount = 30
+lifetime = 1.6
+process_material = SubResource("ParticleProcessMaterial_17")
+draw_pass_1 = SubResource("QuadMesh_13")
+cast_shadow = 0
+
+[node name="Light" type="OmniLight3D" parent="Camp/Fire"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+light_color = Color(1, 0.55, 0.25, 1)
+light_energy = 3.2
+omni_range = 10.0
+shadow_enabled = true
+script = ExtResource("15_r")
+base_energy = 3.2
+
+[node name="Bedroll0" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(0.9211, 0.3894, -7.867e-07, 0, -3.673e-06, -0.55, -0.3894, 0.9211, -1.861e-06, -2.2, 0.18, 1)
+mesh = SubResource("CapsuleMesh_24")
+material_override = SubResource("StandardMaterial3D_11")
+
+[node name="Bedroll1" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(0.8776, -0.4794, 9.686e-07, 0, -3.673e-06, -0.55, 0.4794, 0.8776, -1.773e-06, 2, 0.18, 1.6)
+mesh = SubResource("CapsuleMesh_25")
+material_override = SubResource("StandardMaterial3D_11")
+
+[node name="Bedroll2" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(-0.0292, 0.9996, -2.019e-06, 0, -3.673e-06, -0.55, -0.9996, -0.0292, 5.899e-08, 0.4, 0.18, -2.3)
+mesh = SubResource("CapsuleMesh_26")
+material_override = SubResource("StandardMaterial3D_11")
+
+[node name="TikaMuro" type="Node3D" parent="Camp"]
+transform = Transform3D(-0.5885, 0, -0.8085, 0, 1, 0, 0.8085, 0, -0.5885, 2.6, 0, -0.9)
+script = ExtResource("11_r")
+inscription = "Tika Muro confere a mochila do Tico pela terceira vez. O cogumelo continua lá."
+
+[node name="Model" parent="Camp/TikaMuro" instance=ExtResource("20_r")]
+
+[node name="Body" type="StaticBody3D" parent="Camp/TikaMuro"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Camp/TikaMuro/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("BoxShape3D_27")
+
+[node name="Rocks" type="Node3D" parent="." groups=["nav_source"]]
+
+[node name="Rock0" type="Node3D" parent="Rocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 18)
+
+[node name="Mesh" type="MeshInstance3D" parent="Rocks/Rock0"]
+transform = Transform3D(1.384, -0.1674, 0, 0.2092, 1.107, 0, 0, 0, 1.26, 0, 0.63, 0)
+mesh = SubResource("SphereMesh_28")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Body" type="StaticBody3D" parent="Rocks/Rock0"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Rocks/Rock0/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+shape = SubResource("BoxShape3D_29")
+
+[node name="Rock1" type="Node3D" parent="Rocks"]
+transform = Transform3D(0.2675, 0, 0.9636, 0, 1, 0, -0.9636, 0, 0.2675, 9, 0, 21)
+
+[node name="Mesh" type="MeshInstance3D" parent="Rocks/Rock1"]
+transform = Transform3D(1.78, -0.2152, 0, 0.2636, 1.395, -0.3218, 0.05344, 0.2829, 1.588, 0, 0.81, 0)
+mesh = SubResource("SphereMesh_28")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Body" type="StaticBody3D" parent="Rocks/Rock1"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Rocks/Rock1/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("BoxShape3D_30")
+
+[node name="Rock2" type="Node3D" parent="Rocks"]
+transform = Transform3D(-0.8569, 0, 0.5155, 0, 1, 0, -0.5155, 0, -0.8569, -7, 0, 27)
+
+[node name="Mesh" type="MeshInstance3D" parent="Rocks/Rock2"]
+transform = Transform3D(1.088, -0.1315, 0, 0.1514, 0.8014, -0.3855, 0.06401, 0.3388, 0.9119, 0, 0.495, 0)
+mesh = SubResource("SphereMesh_28")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Body" type="StaticBody3D" parent="Rocks/Rock2"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Rocks/Rock2/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+shape = SubResource("BoxShape3D_31")
+
+[node name="Rock3" type="Node3D" parent="Rocks"]
+transform = Transform3D(-0.7259, 0, -0.6878, 0, 1, 0, 0.6878, 0, -0.7259, 8.5, 0, 30)
+
+[node name="Mesh" type="MeshInstance3D" parent="Rocks/Rock3"]
+transform = Transform3D(1.285, -0.1554, 0, 0.1943, 1.028, 0, 0, 0, 1.17, 0, 0.585, 0)
+mesh = SubResource("SphereMesh_28")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Body" type="StaticBody3D" parent="Rocks/Rock3"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Rocks/Rock3/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
+shape = SubResource("BoxShape3D_32")
+
+[node name="Rock4" type="Node3D" parent="Rocks"]
+transform = Transform3D(0.4685, 0, -0.8835, 0, 1, 0, 0.8835, 0, 0.4685, -5.5, 0, 40)
+
+[node name="Mesh" type="MeshInstance3D" parent="Rocks/Rock4"]
+transform = Transform3D(1.978, -0.2391, 0, 0.2929, 1.55, -0.3576, 0.05938, 0.3143, 1.764, 0, 0.9, 0)
+mesh = SubResource("SphereMesh_28")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Body" type="StaticBody3D" parent="Rocks/Rock4"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Rocks/Rock4/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_33")
+
+[node name="Rock5" type="Node3D" parent="Rocks"]
+transform = Transform3D(0.9766, 0, 0.2151, 0, 1, 0, -0.2151, 0, 0.9766, 10, 0, 39)
+
+[node name="Mesh" type="MeshInstance3D" parent="Rocks/Rock5"]
+transform = Transform3D(1.582, -0.1913, 0, 0.2202, 1.166, -0.5608, 0.09311, 0.4929, 1.326, 0, 0.72, 0)
+mesh = SubResource("SphereMesh_28")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Body" type="StaticBody3D" parent="Rocks/Rock5"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Rocks/Rock5/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("BoxShape3D_34")
+
+[node name="Rock6" type="Node3D" parent="Rocks"]
+transform = Transform3D(0.05396, 0, 0.9985, 0, 1, 0, -0.9985, 0, 0.05396, -17, 0, 6)
+
+[node name="Mesh" type="MeshInstance3D" parent="Rocks/Rock6"]
+transform = Transform3D(2.175, -0.263, 0, 0.3288, 1.74, 0, 0, 0, 1.98, 0, 0.99, 0)
+mesh = SubResource("SphereMesh_28")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Body" type="StaticBody3D" parent="Rocks/Rock6"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Rocks/Rock6/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("BoxShape3D_35")
+
+[node name="Rock7" type="Node3D" parent="Rocks"]
+transform = Transform3D(-0.9477, 0, 0.3191, 0, 1, 0, -0.3191, 0, -0.9477, 17, 0, -2)
+
+[node name="Mesh" type="MeshInstance3D" parent="Rocks/Rock7"]
+transform = Transform3D(1.879, -0.2271, 0, 0.2783, 1.473, -0.3397, 0.05641, 0.2986, 1.676, 0, 0.855, 0)
+mesh = SubResource("SphereMesh_28")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Body" type="StaticBody3D" parent="Rocks/Rock7"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Rocks/Rock7/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("BoxShape3D_36")
+
+[node name="Rock8" type="Node3D" parent="Rocks"]
+transform = Transform3D(-0.561, 0, -0.8278, 0, 1, 0, 0.8278, 0, -0.561, -15, 0, -10)
+
+[node name="Mesh" type="MeshInstance3D" parent="Rocks/Rock8"]
+transform = Transform3D(1.582, -0.1913, 0, 0.2202, 1.166, -0.5608, 0.09311, 0.4929, 1.326, 0, 0.72, 0)
+mesh = SubResource("SphereMesh_28")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Body" type="StaticBody3D" parent="Rocks/Rock8"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Rocks/Rock8/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("BoxShape3D_37")
+
+[node name="Rock9" type="Node3D" parent="Rocks"]
+transform = Transform3D(0.6476, 0, -0.762, 0, 1, 0, 0.762, 0, 0.6476, 16, 0, -12)
+
+[node name="Mesh" type="MeshInstance3D" parent="Rocks/Rock9"]
+transform = Transform3D(2.274, -0.275, 0, 0.3437, 1.819, 0, 0, 0, 2.07, 0, 1.035, 0)
+mesh = SubResource("SphereMesh_28")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Body" type="StaticBody3D" parent="Rocks/Rock9"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Rocks/Rock9/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
+shape = SubResource("BoxShape3D_38")
+
+[node name="Rock10" type="Node3D" parent="Rocks"]
+transform = Transform3D(0.9074, 0, 0.4202, 0, 1, 0, -0.4202, 0, 0.9074, -4, 0, 15.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="Rocks/Rock10"]
+transform = Transform3D(0.791, -0.09564, 0, 0.1172, 0.6202, -0.143, 0.02375, 0.1257, 0.7056, 0, 0.36, 0)
+mesh = SubResource("SphereMesh_28")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Body" type="StaticBody3D" parent="Rocks/Rock10"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Rocks/Rock10/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+shape = SubResource("BoxShape3D_39")
+
+[node name="Rock11" type="Node3D" parent="Rocks"]
+transform = Transform3D(-0.1621, 0, 0.9868, 0, 1, 0, -0.9868, 0, -0.1621, 5, 0, 14.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="Rocks/Rock11"]
+transform = Transform3D(0.8899, -0.1076, 0, 0.1239, 0.6557, -0.3154, 0.05237, 0.2772, 0.7461, 0, 0.405, 0)
+mesh = SubResource("SphereMesh_28")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Body" type="StaticBody3D" parent="Rocks/Rock11"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Rocks/Rock11/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("BoxShape3D_40")
+
+[node name="Ruins" type="Node3D" parent="." groups=["nav_source"]]
+
+[node name="Pillar1" type="Node3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0, -5.6)
+script = ExtResource("11_r")
+footprint = Vector2i(1, 1)
+inscription = "Inscrição: «O preço da farinha aumentou novamente.
+Caso continue assim, será necessário diminuir o tamanho dos pães.»"
+
+[node name="Stone" type="MeshInstance3D" parent="Ruins/Pillar1"]
+transform = Transform3D(0.9988, -0.1699, 0, 0.04998, 3.396, 0, 0, 0, 1, 0, 1.4, 0)
+mesh = SubResource("CylinderMesh_41")
+material_override = SubResource("StandardMaterial3D_2")
+
+[node name="Glyph" type="MeshInstance3D" parent="Ruins/Pillar1"]
+transform = Transform3D(0.9988, -0.04998, 0, 0.04998, 0.9988, 0, 0, 0, 1, 0, 1.87, 0)
+mesh = SubResource("TorusMesh_42")
+material_override = SubResource("StandardMaterial3D_4")
+cast_shadow = 0
+
+[node name="Body" type="StaticBody3D" parent="Ruins/Pillar1"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Ruins/Pillar1/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+shape = SubResource("CylinderShape3D_45")
+
+[node name="Brazier" type="MeshInstance3D" parent="Ruins/Pillar1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+mesh = SubResource("CylinderMesh_44")
+material_override = SubResource("StandardMaterial3D_3")
+
+[node name="Fire" type="Node3D" parent="Ruins/Pillar1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, 0)
+
+[node name="Flame" type="MeshInstance3D" parent="Ruins/Pillar1/Fire"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.28, 0)
+mesh = SubResource("CylinderMesh_46")
+material_override = SubResource("StandardMaterial3D_9")
+cast_shadow = 0
+
+[node name="Core" type="MeshInstance3D" parent="Ruins/Pillar1/Fire"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.192, 0)
+mesh = SubResource("CylinderMesh_47")
+material_override = SubResource("StandardMaterial3D_10")
+cast_shadow = 0
+
+[node name="Sparks" type="GPUParticles3D" parent="Ruins/Pillar1/Fire"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+amount = 30
+lifetime = 1.6
+process_material = SubResource("ParticleProcessMaterial_17")
+draw_pass_1 = SubResource("QuadMesh_13")
+cast_shadow = 0
+
+[node name="Light" type="OmniLight3D" parent="Ruins/Pillar1/Fire"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.72, 0)
+light_color = Color(1, 0.55, 0.25, 1)
+light_energy = 2.2
+omni_range = 7.0
+shadow_enabled = true
+script = ExtResource("15_r")
+base_energy = 2.2
+
+[node name="Pillar2" type="Node3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0, 5.6)
+script = ExtResource("11_r")
+footprint = Vector2i(1, 1)
+inscription = "Inscrição: «Hoje perdi outra aposta para Bren.
+Continuo dizendo que ele trapaceia.»"
+
+[node name="Stone" type="MeshInstance3D" parent="Ruins/Pillar2"]
+transform = Transform3D(0.9968, 0.1678, 0, -0.07991, 2.093, 0, 0, 0, 1, 0, 0.75, 0)
+mesh = SubResource("CylinderMesh_41")
+material_override = SubResource("StandardMaterial3D_2")
+
+[node name="Glyph" type="MeshInstance3D" parent="Ruins/Pillar2"]
+transform = Transform3D(0.9968, 0.07991, 0, -0.07991, 0.9968, 0, 0, 0, 1, 0, 1.155, 0)
+mesh = SubResource("TorusMesh_42")
+material_override = SubResource("StandardMaterial3D_4")
+cast_shadow = 0
+
+[node name="Body" type="StaticBody3D" parent="Ruins/Pillar2"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Ruins/Pillar2/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("CylinderShape3D_48")
+
+[node name="Pillar3" type="Node3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -7.2)
+script = ExtResource("11_r")
+footprint = Vector2i(1, 1)
+inscription = "Inscrição: «Nenhum selo é eterno.
+O mar sempre exige um novo preço.»"
+
+[node name="Stone" type="MeshInstance3D" parent="Ruins/Pillar3"]
+transform = Transform3D(1, 0, 0, 0, 4.2, 0, 0, 0, 1, 0, 1.8, 0)
+mesh = SubResource("CylinderMesh_41")
+material_override = SubResource("StandardMaterial3D_2")
+
+[node name="Glyph" type="MeshInstance3D" parent="Ruins/Pillar3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.31, 0)
+mesh = SubResource("TorusMesh_42")
+material_override = SubResource("StandardMaterial3D_4")
+cast_shadow = 0
+
+[node name="Body" type="StaticBody3D" parent="Ruins/Pillar3"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Ruins/Pillar3/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+shape = SubResource("CylinderShape3D_49")
+
+[node name="Brazier" type="MeshInstance3D" parent="Ruins/Pillar3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.05, 0)
+mesh = SubResource("CylinderMesh_44")
+material_override = SubResource("StandardMaterial3D_3")
+
+[node name="Fire" type="Node3D" parent="Ruins/Pillar3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, 0)
+
+[node name="Flame" type="MeshInstance3D" parent="Ruins/Pillar3/Fire"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.28, 0)
+mesh = SubResource("CylinderMesh_50")
+material_override = SubResource("StandardMaterial3D_9")
+cast_shadow = 0
+
+[node name="Core" type="MeshInstance3D" parent="Ruins/Pillar3/Fire"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.192, 0)
+mesh = SubResource("CylinderMesh_51")
+material_override = SubResource("StandardMaterial3D_10")
+cast_shadow = 0
+
+[node name="Sparks" type="GPUParticles3D" parent="Ruins/Pillar3/Fire"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+amount = 30
+lifetime = 1.6
+process_material = SubResource("ParticleProcessMaterial_17")
+draw_pass_1 = SubResource("QuadMesh_13")
+cast_shadow = 0
+
+[node name="Light" type="OmniLight3D" parent="Ruins/Pillar3/Fire"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.72, 0)
+light_color = Color(1, 0.55, 0.25, 1)
+light_energy = 2.2
+omni_range = 7.0
+shadow_enabled = true
+script = ExtResource("15_r")
+base_energy = 2.2
+
+[node name="Pillar4" type="Node3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 7.2)
+script = ExtResource("11_r")
+footprint = Vector2i(1, 1)
+inscription = "Inscrição: «Meu filho, quando voltar da guerra, prometo ensinar você a trabalhar o vidro.
+Espero que ainda exista uma cidade para isso.»"
+
+[node name="Stone" type="MeshInstance3D" parent="Ruins/Pillar4"]
+transform = Transform3D(0.9928, -0.1676, 0, 0.1197, 1.39, 0, 0, 0, 1, 0, 0.4, 0)
+mesh = SubResource("CylinderMesh_41")
+material_override = SubResource("StandardMaterial3D_2")
+
+[node name="Glyph" type="MeshInstance3D" parent="Ruins/Pillar4"]
+transform = Transform3D(0.9928, -0.1197, 0, 0.1197, 0.9928, 0, 0, 0, 1, 0, 0.77, 0)
+mesh = SubResource("TorusMesh_42")
+material_override = SubResource("StandardMaterial3D_4")
+cast_shadow = 0
+
+[node name="Body" type="StaticBody3D" parent="Ruins/Pillar4"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Ruins/Pillar4/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+shape = SubResource("CylinderShape3D_52")
+
+[node name="Pillar5" type="Node3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2, 0, 8.8)
+script = ExtResource("11_r")
+footprint = Vector2i(1, 1)
+inscription = "Inscrição: «O poço voltou a derreter moedas.
+Os sacerdotes dizem que isso é um bom presságio.»"
+
+[node name="Stone" type="MeshInstance3D" parent="Ruins/Pillar5"]
+transform = Transform3D(0.9992, 0.104, 0, -0.03999, 2.598, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CylinderMesh_41")
+material_override = SubResource("StandardMaterial3D_2")
+
+[node name="Glyph" type="MeshInstance3D" parent="Ruins/Pillar5"]
+transform = Transform3D(0.9992, 0.03999, 0, -0.03999, 0.9992, 0, 0, 0, 1, 0, 1.43, 0)
+mesh = SubResource("TorusMesh_42")
+material_override = SubResource("StandardMaterial3D_4")
+cast_shadow = 0
+
+[node name="Body" type="StaticBody3D" parent="Ruins/Pillar5"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Ruins/Pillar5/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CylinderShape3D_53")
+
+[node name="Wall" type="Node3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0, -0.8)
+script = ExtResource("11_r")
+footprint = Vector2i(2, 2)
+inscription = "O altar de Ethera, partido.
+Inscrição: «...o círculo foi rompido. Não por falha da magia, mas pela destruição da pedra que o sustentava.»"
+
+[node name="Base" type="MeshInstance3D" parent="Ruins/Wall"]
+transform = Transform3D(2.867, 0, 0.3885, 0, 1.6, 0, -0.4334, 0, 2.571, 0.8, 0.5, 0.8)
+mesh = SubResource("BoxMesh_43")
+material_override = SubResource("StandardMaterial3D_3")
+
+[node name="Top" type="MeshInstance3D" parent="Ruins/Wall"]
+transform = Transform3D(1.646, -0.09924, 0.6231, 0.2155, 0.8935, 0, -0.6959, 0.04196, 1.474, 0.5, 1.6, 1)
+mesh = SubResource("BoxMesh_43")
+material_override = SubResource("StandardMaterial3D_2")
+
+[node name="Rune" type="MeshInstance3D" parent="Ruins/Wall"]
+transform = Transform3D(0.9888, 0, 0.1494, 0, 1, 0, -0.1494, 0, 0.9888, 0.8, 0.9, -0.47)
+mesh = SubResource("BoxMesh_54")
+material_override = SubResource("StandardMaterial3D_4")
+cast_shadow = 0
+
+[node name="Body" type="StaticBody3D" parent="Ruins/Wall"]
+collision_layer = 4
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Ruins/Wall/Body"]
+transform = Transform3D(0.9888, 0, 0.1494, 0, 1, 0, -0.1494, 0, 0.9888, 0.8, 1, 0.8)
+shape = SubResource("BoxShape3D_55")
+
+[node name="Grid" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.4, 0, -11.2)
+script = ExtResource("5_r")
+size = Vector2i(18, 14)
+cell_size = 1.6
+
+[node name="Highlighter" type="Node3D" parent="." node_paths=PackedStringArray("grid")]
+script = ExtResource("6_r")
+grid = NodePath("../Grid")
+
+[node name="FX" type="Node3D" parent="."]
+script = ExtResource("7_r")
+font = ExtResource("26_r")
+
+[node name="CameraRig" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 34)
+script = ExtResource("9_r")
+physics_interpolation_mode = 2
+bounds = Rect2(-36, -26, 72, 74)
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig"]
+fov = 50.0
+far = 600.0
+
+[node name="Combat" type="Node" parent="." node_paths=PackedStringArray("grid", "highlighter", "fx", "camera")]
+script = ExtResource("8_r")
+grid = NodePath("../Grid")
+highlighter = NodePath("../Highlighter")
+fx = NodePath("../FX")
+camera = NodePath("../CameraRig")
+autostart = false
+
+[node name="Party" type="Node" parent="." node_paths=PackedStringArray("heroes_root", "camera")]
+script = ExtResource("13_r")
+heroes_root = NodePath("../Heroes")
+camera = NodePath("../CameraRig")
+
+[node name="CombatHUD" parent="." node_paths=PackedStringArray("manager") instance=ExtResource("24_r")]
+manager = NodePath("../Combat")
+
+[node name="ExplorationHUD" parent="." instance=ExtResource("25_r")]
+
+[node name="Heroes" type="Node3D" parent="."]
+
+[node name="Tico" type="Node3D" parent="Heroes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0, 31.4)
+script = ExtResource("10_r")
+display_name = "Tico-Lirou"
+team = 0
+max_hp = 16
+armor_class = 15
+speed = 7
+initiative_bonus = 4
+attack_bonus = 6
+flying = false
+color = Color(0.2, 0.5, 0.42, 1)
+abilities = Array[ExtResource("12_r")]([ExtResource("27_r"), ExtResource("28_r"), ExtResource("29_r")])
+
+[node name="Model" parent="Heroes/Tico" instance=ExtResource("19_r")]
+
+[node name="Naumfode" type="Node3D" parent="Heroes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0, 31.6)
+script = ExtResource("10_r")
+display_name = "Naumfode"
+team = 0
+max_hp = 18
+armor_class = 14
+speed = 5
+initiative_bonus = 1
+attack_bonus = 6
+flying = false
+color = Color(0.78, 0.5, 0.25, 1)
+abilities = Array[ExtResource("12_r")]([ExtResource("30_r"), ExtResource("31_r"), ExtResource("32_r")])
+
+[node name="Model" parent="Heroes/Naumfode" instance=ExtResource("16_r")]
+cloth_color = Color(0.62, 0.38, 0.18, 1)
+trim_color = Color(1.0, 0.6, 0.3, 1)
+
+[node name="GoggleL" type="MeshInstance3D" parent="Heroes/Naumfode/Model"]
+transform = Transform3D(1, 0, 0, 0, -3.673e-06, -1, 0, 1, -3.673e-06, -0.07, 1.42, -0.17)
+mesh = SubResource("TorusMesh_57")
+material_override = SubResource("StandardMaterial3D_56")
+cast_shadow = 0
+
+[node name="GoggleR" type="MeshInstance3D" parent="Heroes/Naumfode/Model"]
+transform = Transform3D(1, 0, 0, 0, -3.673e-06, -1, 0, 1, -3.673e-06, 0.07, 1.42, -0.17)
+mesh = SubResource("TorusMesh_57")
+material_override = SubResource("StandardMaterial3D_56")
+cast_shadow = 0
+
+[node name="Pack" type="MeshInstance3D" parent="Heroes/Naumfode/Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0.24)
+mesh = SubResource("BoxMesh_58")
+material_override = SubResource("StandardMaterial3D_59")
+
+[node name="Companion" parent="Heroes/Naumfode/Model" instance=ExtResource("17_r")]
+transform = Transform3D(0.5732, 0, 0.1773, 0, 0.6, 0, -0.1773, 0, 0.5732, 0.75, 0, 0.45)
+
+[node name="Chumasso" type="Node3D" parent="Heroes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 29.8)
+script = ExtResource("10_r")
+display_name = "Chumasso"
+team = 0
+max_hp = 34
+armor_class = 17
+speed = 5
+initiative_bonus = 0
+attack_bonus = 6
+flying = false
+color = Color(0.3, 0.42, 0.72, 1)
+abilities = Array[ExtResource("12_r")]([ExtResource("33_r"), ExtResource("34_r"), ExtResource("35_r")])
+
+[node name="Model" parent="Heroes/Chumasso" instance=ExtResource("16_r")]
+cloth_color = Color(0.2, 0.28, 0.48, 1)
+trim_color = Color(1.0, 0.85, 0.5, 1)
+face_color = Color(0.42, 0.45, 0.5, 1)
+body_scale = 1.45
+robe_width = 1.25
+
+[node name="Handle" type="MeshInstance3D" parent="Heroes/Chumasso/Model"]
+transform = Transform3D(0.9689, -0.2474, 0, 0.2474, 0.9689, 0, 0, 0, 1, 0.42, 0.8, -0.05)
+mesh = SubResource("CylinderMesh_61")
+material_override = SubResource("StandardMaterial3D_62")
+
+[node name="HammerHead" type="MeshInstance3D" parent="Heroes/Chumasso/Model"]
+transform = Transform3D(0.9689, -0.2474, 0, 0.2474, 0.9689, 0, 0, 0, 1, 0.55, 1.3, -0.05)
+mesh = SubResource("BoxMesh_63")
+material_override = SubResource("StandardMaterial3D_60")
+
+[node name="JoseMaria" type="Node3D" parent="Heroes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0, 33.2)
+script = ExtResource("10_r")
+display_name = "José Maria"
+team = 0
+max_hp = 20
+armor_class = 14
+speed = 4
+initiative_bonus = 3
+attack_bonus = 7
+flying = false
+color = Color(0.3, 0.56, 0.36, 1)
+abilities = Array[ExtResource("12_r")]([ExtResource("36_r"), ExtResource("37_r")])
+
+[node name="Model" parent="Heroes/JoseMaria" instance=ExtResource("16_r")]
+cloth_color = Color(0.18, 0.36, 0.24, 1)
+trim_color = Color(0.95, 0.82, 0.5, 1)
+leg_height = 0.22
+peg_leg = true
+
+[node name="Bow" type="MeshInstance3D" parent="Heroes/JoseMaria/Model"]
+transform = Transform3D(4.722e-12, 3.673e-06, 1, 0.35, -3.673e-06, 0, 1.286e-06, 1, -3.673e-06, -0.3, 1, -0.15)
+mesh = SubResource("TorusMesh_64")
+material_override = SubResource("StandardMaterial3D_6")
+
+[node name="Quiver" type="MeshInstance3D" parent="Heroes/JoseMaria/Model"]
+transform = Transform3D(0.9394, -0.3429, 0, 0.3429, 0.9394, 0, 0, 0, 1, 0.12, 1.1, 0.26)
+mesh = SubResource("CylinderMesh_65")
+material_override = SubResource("StandardMaterial3D_66")
+
+[node name="Bahamut" type="Node3D" parent="Heroes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 0, 33.4)
+script = ExtResource("10_r")
+display_name = "Bahamut"
+team = 0
+max_hp = 28
+armor_class = 15
+speed = 6
+initiative_bonus = 1
+attack_bonus = 6
+flying = true
+color = Color(0.97, 0.8, 0.4, 1)
+abilities = Array[ExtResource("12_r")]([ExtResource("38_r"), ExtResource("39_r")])
+
+[node name="Model" parent="Heroes/Bahamut" instance=ExtResource("18_r")]
+
+[node name="EtheraRuins" type="Node3D" parent="."]
+script = ExtResource("14_r")
+radius = 14.0
+grid_size = Vector2i(18, 14)
+
+[node name="Beetle1" type="Node3D" parent="EtheraRuins"]
+transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, -5.6, 0, -7.2)
+script = ExtResource("10_r")
+display_name = "Escaravelho de cinza"
+team = 1
+max_hp = 16
+armor_class = 13
+speed = 5
+initiative_bonus = 1
+attack_bonus = 4
+flying = false
+color = Color(0.55, 0.45, 0.38, 1)
+abilities = Array[ExtResource("12_r")]([ExtResource("40_r")])
+
+[node name="Model" parent="EtheraRuins/Beetle1" instance=ExtResource("21_r")]
+
+[node name="Beetle2" type="Node3D" parent="EtheraRuins"]
+transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 7.2, 0, -5.6)
+script = ExtResource("10_r")
+display_name = "Escaravelho de cinza"
+team = 1
+max_hp = 16
+armor_class = 13
+speed = 5
+initiative_bonus = 1
+attack_bonus = 4
+flying = false
+color = Color(0.55, 0.45, 0.38, 1)
+abilities = Array[ExtResource("12_r")]([ExtResource("40_r")])
+
+[node name="Model" parent="EtheraRuins/Beetle2" instance=ExtResource("21_r")]
+
+[node name="Beetle3" type="Node3D" parent="EtheraRuins"]
+transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, -4, 0, -0.8)
+script = ExtResource("10_r")
+display_name = "Escaravelho de cinza"
+team = 1
+max_hp = 16
+armor_class = 13
+speed = 5
+initiative_bonus = 1
+attack_bonus = 4
+flying = false
+color = Color(0.55, 0.45, 0.38, 1)
+abilities = Array[ExtResource("12_r")]([ExtResource("40_r")])
+
+[node name="Model" parent="EtheraRuins/Beetle3" instance=ExtResource("21_r")]
+
+[node name="Beetle4" type="Node3D" parent="EtheraRuins"]
+transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 7.2, 0, 0.8)
+script = ExtResource("10_r")
+display_name = "Escaravelho de cinza"
+team = 1
+max_hp = 16
+armor_class = 13
+speed = 5
+initiative_bonus = 1
+attack_bonus = 4
+flying = false
+color = Color(0.55, 0.45, 0.38, 1)
+abilities = Array[ExtResource("12_r")]([ExtResource("40_r")])
+
+[node name="Model" parent="EtheraRuins/Beetle4" instance=ExtResource("21_r")]
+
+[node name="Sentinel1" type="Node3D" parent="EtheraRuins"]
+transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, -8.8, 0, -8.8)
+script = ExtResource("10_r")
+display_name = "Sentinela estelar"
+team = 1
+max_hp = 22
+armor_class = 13
+speed = 3
+initiative_bonus = 2
+attack_bonus = 6
+flying = true
+color = Color(0.62, 0.5, 0.42, 1)
+abilities = Array[ExtResource("12_r")]([ExtResource("41_r")])
+
+[node name="Model" parent="EtheraRuins/Sentinel1" instance=ExtResource("22_r")]
+
+[node name="Sentinel2" type="Node3D" parent="EtheraRuins"]
+transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 10.4, 0, -8.8)
+script = ExtResource("10_r")
+display_name = "Sentinela estelar"
+team = 1
+max_hp = 22
+armor_class = 13
+speed = 3
+initiative_bonus = 2
+attack_bonus = 6
+flying = true
+color = Color(0.62, 0.5, 0.42, 1)
+abilities = Array[ExtResource("12_r")]([ExtResource("41_r")])
+
+[node name="Model" parent="EtheraRuins/Sentinel2" instance=ExtResource("22_r")]
+
+[node name="Colossus" type="Node3D" parent="EtheraRuins"]
+transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 0.8, 0, -5.6)
+script = ExtResource("10_r")
+display_name = "Último Guardião"
+team = 1
+max_hp = 38
+armor_class = 15
+speed = 4
+initiative_bonus = -1
+attack_bonus = 6
+flying = false
+color = Color(0.7, 0.5, 0.38, 1)
+abilities = Array[ExtResource("12_r")]([ExtResource("42_r")])
+
+[node name="Model" parent="EtheraRuins/Colossus" instance=ExtResource("23_r")]
