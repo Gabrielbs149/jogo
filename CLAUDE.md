@@ -13,7 +13,7 @@ Regras do projeto para os **dois** Claudes: o do Gabriel e o do <AMIGO>. Cada um
 - **Componentes:** `Interactable` (examinar/conversar), `Door` (trocar de fase ou trancada), `Revealable` (só existe na foto).
 - **Arte provisória** vem de `tools/art/generate.js`. Os humanos vão redesenhar por cima, no mesmo PNG. **Não rode o gerador** depois que um arquivo foi redesenhado à mão (ele sobrescreve); nesse caso, edite o gerador só para os arquivos que ainda são provisórios.
 - Design: `docs/GDD.md` (ideia ainda em aberto). Fases: `docs/ROADMAP.md`. Git: `docs/FLUXO.md`.
-- Equipe: Gabriel (`@Gabrielbs149`) e <AMIGO> (`@<usuario-github-amigo>`). Os dois mexem em tudo, ao mesmo tempo.
+- Equipe: Gabriel (`@Gabrielbs149`) e <AMIGO> (`@JohnG-404`). Os dois mexem em tudo, ao mesmo tempo.
 - Idioma: conversa, docs, commits e comentários em **PT-BR**. Identificadores (variáveis, funções, nós, arquivos, pastas) em **inglês**, combinando com a API do Godot.
 
 ## Começo de toda sessão

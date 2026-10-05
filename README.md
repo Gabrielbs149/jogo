@@ -33,4 +33,4 @@ Siga o [docs/SETUP.md](docs/SETUP.md) (≈ 30 min).
 | Quem | GitHub |
 |---|---|
 | Gabriel | @Gabrielbs149 |
-| <AMIGO> | @<usuario-github-amigo> |
+| <AMIGO> | @JohnG-404 |

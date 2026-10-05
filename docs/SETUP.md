@@ -51,7 +51,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\instalar-gut.ps1
 ```
 Depois, no Godot: *Project → Project Settings → Plugins → GUT → Enable*.
 
-**Preencha os placeholders:** troque `<AMIGO>`, `Gabrielbs149` e `<usuario-github-amigo>` no `CLAUDE.md`, no `README.md` e em `docs/`. Dá para pedir: *"troca os placeholders: amigo = Fulano, github dele = fulano123, meu = gabriel123"*.
+**Preencha os placeholders:** troque `<AMIGO>`, `Gabrielbs149` e `JohnG-404` no `CLAUDE.md`, no `README.md` e em `docs/`. Dá para pedir: *"troca os placeholders: amigo = Fulano, github dele = fulano123, meu = gabriel123"*.
 
 **Primeiro commit:**
 ```powershell
@@ -65,7 +65,7 @@ Confira a aba **Actions** no GitHub: o CI tem que ficar verde.
 
 **Convide o 🅐:** *Settings → Collaborators → Add people* → usuário dele, ou:
 ```powershell
-gh api -X PUT repos/Gabrielbs149/jogo/collaborators/<usuario-github-amigo> -f permission=push
+gh api -X PUT repos/Gabrielbs149/jogo/collaborators/JohnG-404 -f permission=push
 ```
 
 **Labels:**
