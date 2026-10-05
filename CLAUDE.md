@@ -5,9 +5,13 @@ Regras do projeto para os **dois** Claudes: o do Gabriel e o do <AMIGO>. Cada um
 ## O projeto
 - **Godot 4.7.2**, fixado em `.godot-version`. Os dois sempre na mesma versão; atualizar é decisão conjunta, em commit próprio.
 - **GDScript com tipagem estática.** Sem C#.
-- **3D em terceira pessoa** (D007). Personagem: `actors/player/` (`Player` + `CameraRig`). Fase de teste: `levels/sandbox/`. Fase de exemplo: `levels/mist_field/`.
-- **Visual só em tons de cinza** (D008): do preto até cinza claro (~`#CCCCCC`), **nunca branco puro, nunca cor**. Toda fase usa o `WorldEnvironment` com `assets/environment/gray_world.tres` (tira a saturação e limita o brilho; os tons se ajustam no gradiente dele). Material novo: `albedo_color` cinza (R = G = B). UI: texto até `Color(0.78, 0.78, 0.78)`, fundo preto translúcido.
-- **Ritmo lento, focado em história** (D009): nada de corrida/ação rápida sem o humano pedir. História entra por `Interactable` (`components/interactable/`) + autoload `Dialogue` (`ui/dialogue/`); as falas ficam no Inspector, não no código.
+- **2D lateral, pixel art preto e branco, suspense** (D010). **Leia `docs/ESTILO.md` antes de mexer em arte, fase ou interface.** Tela 320×180; paleta de 6 tons (Breu `#0A0A0A` → Osso `#E8E8E8`), nunca cor, nunca degradê liso.
+- **A câmera fotográfica é a mecânica central** (D011): foto gasta filme, flash, cena em negativo revela os `Revealable`, foto vai para o álbum com legenda.
+- **Ritmo lento, focado em história** (D009): andar devagar, sem corrida nem pulo sem o humano pedir. As falas ficam no Inspector (`Interactable.lines`), não no código.
+- **Sistemas (autoloads):** `Screen` (pós-processo: paleta, escuro, negativo, flash, fade), `Game` (troca de fase com fade), `Dialogue` (caixa de diálogo + aviso "E ..."), `Photo` (filme, foto, álbum).
+- **Fases:** raiz com `systems/level/level.gd` (`dark`, limites da câmera, `Spawns/` com Marker2D). Exemplos: `levels/road/` (exterior, névoa) e `levels/hallway/` (interior, escuro).
+- **Componentes:** `Interactable` (examinar/conversar), `Door` (trocar de fase ou trancada), `Revealable` (só existe na foto).
+- **Arte provisória** vem de `tools/art/generate.js`. Os humanos vão redesenhar por cima, no mesmo PNG. **Não rode o gerador** depois que um arquivo foi redesenhado à mão (ele sobrescreve); nesse caso, edite o gerador só para os arquivos que ainda são provisórios.
 - Design: `docs/GDD.md` (ideia ainda em aberto). Fases: `docs/ROADMAP.md`. Git: `docs/FLUXO.md`.
 - Equipe: Gabriel (`@Gabrielbs149`) e <AMIGO> (`@<usuario-github-amigo>`). Os dois mexem em tudo, ao mesmo tempo.
 - Idioma: conversa, docs, commits e comentários em **PT-BR**. Identificadores (variáveis, funções, nós, arquivos, pastas) em **inglês**, combinando com a API do Godot.
@@ -28,13 +32,11 @@ O hook de início mostra `git status` e os últimos commits do remoto. Se aparec
 ## Estrutura de pastas
 ```
 res://
-├─ main/          cena de entrada (main.tscn) e boot
-├─ autoload/      singletons registrados em project.godot (Events, Game, Save...)
-├─ actors/        player/, enemies/<nome>/, npcs/<nome>/ — cada um com .tscn + .gd + arte/som próprios
-├─ levels/        fases montadas no editor: levels/<nome>/<nome>.tscn
-├─ components/    pedaços reutilizáveis por composição (HealthComponent, Hitbox...)
-├─ ui/            hud/, menus/, dialog/
-├─ systems/       lógica sem cena própria (save, inventory...)
+├─ actors/        player/, figure/, npcs/<nome>/ — cada um com .tscn + .gd + arte/som próprios
+├─ levels/        fases montadas no editor: levels/<nome>/<nome>.tscn + levels/<nome>/art/
+├─ components/    interactable/, door/, revealable/ — pedaços reutilizáveis por composição
+├─ ui/            dialogue/, theme/ (tema pixel com a fonte Tiny5)
+├─ systems/       screen/, game/, photo/, level/ — os autoloads e a base das fases
 ├─ data/          Resources .tres (stats, itens) e tabelas de balanceamento
 ├─ assets/        SÓ o que várias cenas compartilham: fonts/, music/, sfx/, shaders/, themes/
 ├─ prototypes/    protótipos de 1 dia (Fase 1); apagar os que não vingarem
@@ -74,6 +76,11 @@ Arquivo sempre minúsculo: o Windows não diferencia `Player.png` de `player.png
 - Erro real: `push_error`/`push_warning`. `print` de debug não entra em commit.
 - Comentário explica o **porquê**. `##` em classes e funções públicas.
 
+### Pixel perfeito
+- Posições e tamanhos em pixel inteiro; nada de `scale` fracionário nem rotação em sprite (exceção: algo deliberadamente distante numa camada de parallax).
+- Texturas sem filtro (já é o padrão do projeto). Cor em UI/arte só da paleta (`docs/ESTILO.md`).
+- Chão: estrada y = 148, corredor y = 152. Pés dos personagens na origem do nó.
+
 ### Armadilhas Godot 3 → 4 (use SEMPRE a coluna da direita)
 | Godot 3 (errado aqui) | Godot 4 (certo) |
 |---|---|
@@ -81,6 +88,7 @@ Arquivo sempre minúsculo: o Windows não diferencia `Player.png` de `player.png
 | `yield(obj, "sig")` | `await obj.sig` |
 | `connect("sig", self, "_f")` / `emit_signal("sig", a)` | `sig.connect(_f)` / `sig.emit(a)` |
 | `KinematicBody2D` + `move_and_slide(vel)` | `CharacterBody2D`: `velocity = ...` e `move_and_slide()` sem argumento |
+| `ParallaxBackground` / `ParallaxLayer` | `Parallax2D` |
 | `.instance()` | `.instantiate()` |
 | `setget` | `var hp: int: set = _set_hp` |
 | `rand_range`, `deg2rad`, `stepify` | `randf_range`, `deg_to_rad`, `snapped` |

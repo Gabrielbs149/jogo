@@ -6,13 +6,20 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
-**D009: Ritmo lento, focado em história** · 2026-10-04 · Gabriel
+**D011: Câmera fotográfica é a mecânica central** · 2026-10-04 · Gabriel
+Cada foto gasta filme (12 por rolo), dá um flash e mostra a cena em negativo por ~1 s, revelando os `Revealable`. A foto vai para o álbum (Tab) com a legenda do que apareceu nela, e o álbum é onde a história se monta. Controles: A/D ou setas andam, E interage, F fotografa, Tab abre o álbum (controle: analógico/direcional, A, RB ou X, Back).
+
+**D010: 2D lateral, pixel art preto e branco "Negativo + Névoa"** · 2026-10-04 · Gabriel · substitui D007 e D008
+2D visto de lado, 320×180 ampliado em inteiro, paleta de 6 tons (Breu → Osso), pontilhado no lugar de degradê, suspense sinistro. Exteriores brancos de névoa ("escuro = perto"); interiores no breu, só contornos. Tudo garantido pelo pós-processo `systems/screen/screen.gdshader`. Referências: proposta "Três caminhos no escuro" (Caminho 3 + névoa do 2) e a prancha de estilo do Gabriel (traço e caixa de diálogo com retrato). Tema da história ainda em aberto (o folclore da prancha era só exemplo de estilo). Guia completo: `docs/ESTILO.md`. Renderer: Compatibility. Fonte: Tiny5 (OFL).
+Porquê: visual, mecânica e história são a mesma coisa (é fotografia), e isso faz o jogo ser reconhecível por um print. O 3D anterior fica no histórico do Git (commit 6457f42).
+
+**D009: Ritmo lento, focado em história** · 2026-10-04 · Gabriel · continua valendo; números de 3D substituídos pela D010
 Andar 2,4 m/s (Shift = 3,6, passo apressado), aceleração baixa (corpo com peso), pulo de 1 m, câmera mais perto, sobre o ombro e mais suave (FOV 58). A história chega por objetos para examinar e personagens para conversar (`Interactable` + caixa de diálogo com texto letra a letra). O jogador fica parado durante o diálogo.
 
-**D008: Visual em tons de cinza** · 2026-10-04 · Gabriel
+**D008: Visual em tons de cinza** · 2026-10-04 · Gabriel · substituída pela D010
 Só cinza e preto: do preto até um cinza claro (~80%), sem branco e sem cor. Garantido no motor por `assets/environment/gray_world.tres`: saturação 0 + gradiente de correção (preto → cinza 38% → cinza 80%). Mesmo um asset colorido sai cinza. Para ajustar o contraste do jogo inteiro, mexa nos pontos desse gradiente. Névoa cinza densa faz parte da identidade.
 
-**D007: 3D em terceira pessoa** · 2026-10-04 · Gabriel
+**D007: 3D em terceira pessoa** · 2026-10-04 · Gabriel · substituída pela D010
 Renderer Forward+. Base: `actors/player` (CharacterBody3D + câmera orbital com SpringArm3D) e fase de teste `levels/sandbox` em greybox (CSG + shader de grade de 1 m). Física interpolada ligada (câmera segue a posição interpolada, sem tremer). Controles: WASD/setas + mouse, ou controle (analógicos, A pula, L3 corre).
 Pendente: resolução base e plataforma alvo.
 

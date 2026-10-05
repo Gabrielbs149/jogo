@@ -1,0 +1,125 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://systems/photo/photo.gd" id="1_photo"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_box"]
+content_margin_left = 4.0
+content_margin_top = 1.0
+content_margin_right = 4.0
+content_margin_bottom = 2.0
+bg_color = Color(0.039, 0.039, 0.039, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.463, 0.463, 0.463, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_frame"]
+draw_center = false
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.91, 0.91, 0.91, 1)
+
+[node name="Photo" type="CanvasLayer"]
+layer = 70
+script = ExtResource("1_photo")
+
+[node name="Counter" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+offset_left = 254.0
+offset_top = 6.0
+offset_right = 314.0
+offset_bottom = 20.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_box")
+
+[node name="CounterLabel" type="Label" parent="Counter"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "FILME 12"
+horizontal_alignment = 1
+
+[node name="Album" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Background" type="ColorRect" parent="Album"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.039, 0.039, 0.039, 1)
+
+[node name="AlbumPhoto" type="TextureRect" parent="Album"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 320.0
+offset_bottom = 180.0
+mouse_filter = 2
+stretch_mode = 2
+
+[node name="Frame" type="Panel" parent="Album"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_frame")
+
+[node name="Title" type="PanelContainer" parent="Album"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 160.0
+offset_bottom = 22.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_box")
+
+[node name="AlbumTitle" type="Label" parent="Album/Title"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "ÁLBUM   1/1"
+
+[node name="Hint" type="PanelContainer" parent="Album"]
+layout_mode = 0
+offset_left = 228.0
+offset_top = 8.0
+offset_right = 312.0
+offset_bottom = 22.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_box")
+
+[node name="HintLabel" type="Label" parent="Album/Hint"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.671, 0.671, 0.671, 1)
+text = "A D trocar   TAB"
+horizontal_alignment = 2
+
+[node name="Caption" type="PanelContainer" parent="Album"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 144.0
+offset_right = 312.0
+offset_bottom = 172.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_box")
+
+[node name="AlbumCaption" type="Label" parent="Album/Caption"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 1
+text = "Legenda."
+autowrap_mode = 2

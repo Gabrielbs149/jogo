@@ -7,9 +7,9 @@ _Ainda não definido._
 
 ## Pilares (3, no máximo)
 O que o jogo SEMPRE tem que ser. Toda feature nova é checada contra isto.
-1. **Mundo em cinza e preto**: sem cor, névoa, silêncio (D008).
+1. **Preto e branco nos extremos**: névoa branca lá fora, breu dentro de casa. Sinistro, silencioso (D010).
 2. **Ritmo lento**: o jogador anda, observa, examina. Nada de pressa (D009).
-3. **História no centro**: o mundo conta a história por objetos e conversas.
+3. **A câmera mostra o que o olho não vê**: cada foto revela algo, e a história se monta no álbum (D011).
 
 ## Loop central
 O que o jogador faz a cada 30 segundos, a cada 5 minutos e a cada sessão.
@@ -20,7 +20,7 @@ Jogos, filmes, artes. O que pegar de cada um.
 ## Escopo
 - Duração alvo:
 - Plataforma:
-- 2D ou 3D: _(ver D007 em DECISOES.md)_
+- 2D, visto de lado, pixel art 320×180 (D010, docs/ESTILO.md)
 - O que o jogo **NÃO** é (corta discussão futura):
 
 ## Direção de arte e som

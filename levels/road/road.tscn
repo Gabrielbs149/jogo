@@ -1,0 +1,157 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://systems/level/level.gd" id="1_r"]
+[ext_resource type="Texture2D" path="res://levels/road/art/far_trees.png" id="2_r"]
+[ext_resource type="Texture2D" path="res://levels/road/art/mid_trees.png" id="3_r"]
+[ext_resource type="Texture2D" path="res://levels/road/art/fog.png" id="4_r"]
+[ext_resource type="Texture2D" path="res://levels/road/art/near_trees.png" id="5_r"]
+[ext_resource type="Texture2D" path="res://levels/road/art/ground.png" id="6_r"]
+[ext_resource type="Texture2D" path="res://levels/road/art/house.png" id="7_r"]
+[ext_resource type="Texture2D" path="res://levels/road/art/sign.png" id="8_r"]
+[ext_resource type="PackedScene" path="res://actors/player/player.tscn" id="9_r"]
+[ext_resource type="PackedScene" path="res://actors/figure/figure.tscn" id="10_r"]
+[ext_resource type="PackedScene" path="res://components/interactable/interactable.tscn" id="11_r"]
+[ext_resource type="PackedScene" path="res://components/door/door.tscn" id="12_r"]
+[ext_resource type="Texture2D" path="res://actors/player/portrait.png" id="13_r"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_floor"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
+size = Vector2(16, 400)
+
+[node name="Road" type="Node2D"]
+script = ExtResource("1_r")
+camera_right = 960
+
+[node name="Sky" type="ColorRect" parent="."]
+offset_left = -100.0
+offset_top = -20.0
+offset_right = 1060.0
+offset_bottom = 200.0
+mouse_filter = 2
+color = Color(0.91, 0.91, 0.91, 1)
+
+[node name="FarTrees" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.2, 1)
+repeat_size = Vector2(480, 0)
+repeat_times = 3
+
+[node name="Art" type="Sprite2D" parent="FarTrees"]
+position = Vector2(0, 0)
+texture = ExtResource("2_r")
+centered = false
+
+[node name="FogBack" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.35, 1)
+repeat_size = Vector2(480, 0)
+repeat_times = 3
+
+[node name="Art" type="Sprite2D" parent="FogBack"]
+position = Vector2(0, -6)
+texture = ExtResource("4_r")
+centered = false
+
+[node name="MidTrees" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.55, 1)
+repeat_size = Vector2(480, 0)
+repeat_times = 3
+
+[node name="Art" type="Sprite2D" parent="MidTrees"]
+position = Vector2(0, 0)
+texture = ExtResource("3_r")
+centered = false
+
+[node name="MidFigure" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.55, 1)
+
+[node name="Figure" parent="MidFigure" instance=ExtResource("10_r")]
+position = Vector2(470, 146)
+scale = Vector2(0.8, 0.8)
+caption = "Tinha alguém parado entre as árvores."
+
+[node name="FogFront" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.75, 1)
+repeat_size = Vector2(480, 0)
+repeat_times = 3
+
+[node name="Art" type="Sprite2D" parent="FogFront"]
+position = Vector2(0, 6)
+texture = ExtResource("4_r")
+centered = false
+
+[node name="Ground" type="Sprite2D" parent="."]
+position = Vector2(0, 146)
+texture = ExtResource("6_r")
+centered = false
+
+[node name="House" type="Sprite2D" parent="."]
+position = Vector2(740, 20)
+texture = ExtResource("7_r")
+centered = false
+
+[node name="Sign" type="Sprite2D" parent="."]
+position = Vector2(200, 118)
+texture = ExtResource("8_r")
+centered = false
+
+[node name="Bounds" type="Node2D" parent="."]
+
+[node name="Floor" type="StaticBody2D" parent="Bounds"]
+position = Vector2(0, 148)
+
+[node name="Shape" type="CollisionShape2D" parent="Bounds/Floor"]
+shape = SubResource("WorldBoundaryShape2D_floor")
+
+[node name="WallLeft" type="StaticBody2D" parent="Bounds"]
+position = Vector2(-8, 0)
+
+[node name="Shape" type="CollisionShape2D" parent="Bounds/WallLeft"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="WallRight" type="StaticBody2D" parent="Bounds"]
+position = Vector2(968, 0)
+
+[node name="Shape" type="CollisionShape2D" parent="Bounds/WallRight"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="Interactables" type="Node2D" parent="."]
+
+[node name="ReadSign" parent="Interactables" instance=ExtResource("11_r")]
+position = Vector2(209, 132)
+prompt = "ler"
+lines = PackedStringArray("Uma placa torta. A tinta escorreu com a chuva.", "\"NÃO FOTOGRAFE A CASA.\"", "...alguém riscou o NÃO.")
+
+[node name="Thoughts" parent="Interactables" instance=ExtResource("11_r")]
+position = Vector2(70, 132)
+prompt = "pensar"
+portrait = ExtResource("13_r")
+lines = PackedStringArray("A estrada some na névoa dos dois lados.", "Ainda tenho doze fotos no filme. F tira uma foto, Tab abre o álbum.")
+
+[node name="HouseDoor" parent="Interactables" instance=ExtResource("12_r")]
+position = Vector2(828, 128)
+prompt = "entrar"
+target_scene = "res://levels/hallway/hallway.tscn"
+target_spawn = "Entrance"
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="Start" type="Marker2D" parent="Spawns"]
+position = Vector2(40, 148)
+
+[node name="FromHouse" type="Marker2D" parent="Spawns"]
+position = Vector2(828, 148)
+scale = Vector2(-1, 1)
+
+[node name="Player" parent="." instance=ExtResource("9_r")]
+position = Vector2(40, 148)
+
+[node name="NearTrees" type="Parallax2D" parent="."]
+z_index = 10
+scroll_scale = Vector2(1.25, 1)
+repeat_size = Vector2(480, 0)
+repeat_times = 3
+
+[node name="Art" type="Sprite2D" parent="NearTrees"]
+position = Vector2(0, 0)
+texture = ExtResource("5_r")
+centered = false

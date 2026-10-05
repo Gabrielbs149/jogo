@@ -1,125 +1,94 @@
 class_name Player
-extends CharacterBody3D
-## Personagem em terceira pessoa, ritmo lento e pesado (jogo focado em história).
-## Anda relativo à câmera, vira o modelo para onde anda, examina/conversa com Interactables
-## e fica parado enquanto um diálogo está aberto.
+extends CharacterBody2D
+## Personagem visto de lado. Anda devagar, examina coisas (E), fotografa (F) e abre o álbum (Tab).
+## Fica parado durante diálogo, foto, álbum e troca de fase.
 
-@export_group("Chão")
-@export var walk_speed: float = 2.4
-## Shift / L3: um passo mais apressado, não uma corrida.
-@export var hurry_speed: float = 3.6
-## Quanto rápido chega na velocidade máxima (m/s²). Baixo = corpo com peso.
-@export var acceleration: float = 9.0
-## Quanto rápido para quando solta o direcional (m/s²).
-@export var deceleration: float = 12.0
-## Quanto rápido o modelo vira para a direção do movimento.
-@export var turn_speed: float = 6.0
+## Velocidade andando (pixels por segundo; o personagem tem 20 px de largura).
+@export var walk_speed: float = 34.0
+## Quanto rápido chega na velocidade (px/s²). Baixo = corpo com peso.
+@export var acceleration: float = 200.0
+## Quanto rápido para quando solta a direção (px/s²).
+@export var deceleration: float = 320.0
 
-@export_group("Pulo")
-## Altura do pulo segurando o botão até o topo (metros).
-@export var jump_height: float = 1.0
-## Soltar o botão no meio da subida multiplica a velocidade vertical por isto (pulo curto).
-@export_range(0.0, 1.0) var jump_cut: float = 0.5
-## Gravidade extra na descida: queda mais firme, menos "flutuante".
-@export var fall_gravity_multiplier: float = 1.6
-## Fração da aceleração que vale no ar.
-@export_range(0.0, 1.0) var air_control: float = 0.3
-## Tempo depois de sair da beirada em que ainda dá para pular (segundos).
-@export var coyote_time: float = 0.12
-## Tempo em que um pulo apertado antes de tocar o chão fica guardado (segundos).
-@export var jump_buffer_time: float = 0.12
-
-var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
-var _coyote_left: float = 0.0
-var _jump_buffer_left: float = 0.0
+var _gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
 var _focused: Interactable
 
-@onready var _model: Node3D = %Model
-@onready var _camera_rig: CameraRig = %CameraRig
-@onready var _interaction_area: Area3D = %InteractionArea
-
-
-## Converte o direcional (x = lado, y = frente/trás como no Input.get_vector) numa direção
-## no chão, girada pelo yaw da câmera. "Frente" é sempre para onde a câmera olha.
-static func direction_from_input(input_dir: Vector2, camera_yaw: float) -> Vector3:
-	return Vector3(input_dir.x, 0.0, input_dir.y).rotated(Vector3.UP, camera_yaw)
+@onready var _sprite: AnimatedSprite2D = %Sprite
+@onready var _camera: Camera2D = %Camera
+@onready var _interaction_area: Area2D = %InteractionArea
 
 
 func _ready() -> void:
-	_camera_rig.follow(self)
+	Screen.light_target = self
 	Dialogue.finished.connect(_on_dialogue_finished)
 
 
+## Algo está acontecendo e o jogador não deve andar nem interagir.
+func is_busy() -> bool:
+	return Dialogue.is_open() or Photo.is_busy() or Game.is_changing()
+
+
+## 1 = olhando para a direita, -1 = esquerda.
+func face(direction: int) -> void:
+	_sprite.flip_h = direction < 0
+
+
+func set_camera_limits(left: int, right: int) -> void:
+	_camera.limit_left = left
+	_camera.limit_right = right
+	_camera.limit_top = 0
+	_camera.limit_bottom = 180
+	_camera.reset_smoothing()
+
+
 func _unhandled_input(event: InputEvent) -> void:
-	if Dialogue.is_open():
+	if is_busy():
 		return
 	if event.is_action_pressed("interact") and _focused:
 		get_viewport().set_input_as_handled()
 		_focused.interact()
-	elif event.is_action_pressed("jump"):
-		_jump_buffer_left = jump_buffer_time
-	elif event.is_action_released("jump") and velocity.y > 0.0:
-		velocity.y *= jump_cut
+	elif event.is_action_pressed("photo"):
+		get_viewport().set_input_as_handled()
+		Photo.take()
+	elif event.is_action_pressed("album"):
+		get_viewport().set_input_as_handled()
+		Photo.open_album()
 
 
 func _physics_process(delta: float) -> void:
-	var input_dir := Vector2.ZERO
-	if not Dialogue.is_open():
-		input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
-	var direction := Player.direction_from_input(input_dir, _camera_rig.get_yaw())
-
-	_update_horizontal(direction, delta)
-	_update_vertical(delta)
+	var direction := 0.0 if is_busy() else Input.get_axis("move_left", "move_right")
+	var rate := acceleration if direction != 0.0 else deceleration
+	velocity.x = move_toward(velocity.x, direction * walk_speed, rate * delta)
+	if not is_on_floor():
+		velocity.y += _gravity * delta
 	move_and_slide()
-	_turn_model(direction, delta)
+
+	if direction != 0.0:
+		face(int(signf(direction)))
+	_update_animation()
 	_update_focus()
 
 
-func _update_horizontal(direction: Vector3, delta: float) -> void:
-	var max_speed := hurry_speed if Input.is_action_pressed("sprint") else walk_speed
-	var target := direction * max_speed
-	var rate := acceleration if direction != Vector3.ZERO else deceleration
-	if not is_on_floor():
-		rate *= air_control
-	var horizontal := Vector3(velocity.x, 0.0, velocity.z).move_toward(target, rate * delta)
-	velocity.x = horizontal.x
-	velocity.z = horizontal.z
-
-
-func _update_vertical(delta: float) -> void:
-	if is_on_floor():
-		_coyote_left = coyote_time
+func _update_animation() -> void:
+	if Photo.is_shooting():
+		_sprite.play("photo")
+	elif absf(velocity.x) > 4.0:
+		_sprite.play("walk")
 	else:
-		_coyote_left -= delta
-		var multiplier := fall_gravity_multiplier if velocity.y < 0.0 else 1.0
-		velocity.y -= _gravity * multiplier * delta
-
-	_jump_buffer_left -= delta
-	if _jump_buffer_left > 0.0 and _coyote_left > 0.0:
-		velocity.y = sqrt(2.0 * _gravity * jump_height)
-		_jump_buffer_left = 0.0
-		_coyote_left = 0.0
-
-
-func _turn_model(direction: Vector3, delta: float) -> void:
-	if direction.length_squared() < 0.01:
-		return
-	# O modelo olha para -Z; atan2 dá o ângulo de -Z até a direção.
-	var target_yaw := atan2(-direction.x, -direction.z)
-	_model.rotation.y = lerp_angle(_model.rotation.y, target_yaw, 1.0 - exp(-turn_speed * delta))
+		_sprite.play("idle")
 
 
 ## Escolhe o Interactable mais perto dentro da área e mostra o aviso dele.
 func _update_focus() -> void:
-	if Dialogue.is_open():
+	if is_busy():
 		return
 	var best: Interactable = null
 	var best_distance := INF
-	for area: Area3D in _interaction_area.get_overlapping_areas():
+	for area: Area2D in _interaction_area.get_overlapping_areas():
 		var candidate := area as Interactable
 		if candidate == null or not candidate.enabled:
 			continue
-		var distance := global_position.distance_squared_to(candidate.global_position)
+		var distance := absf(global_position.x - candidate.global_position.x)
 		if distance < best_distance:
 			best = candidate
 			best_distance = distance
@@ -133,5 +102,5 @@ func _update_focus() -> void:
 
 
 func _on_dialogue_finished() -> void:
-	# Força reavaliar no próximo frame, para o aviso voltar se ainda estiver perto.
+	# Força reavaliar: o aviso volta se ainda estiver perto
 	_focused = null
