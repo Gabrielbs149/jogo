@@ -16,6 +16,13 @@ func _initialize() -> void:
 	for path: String in scripts:
 		if path == own_path:
 			continue
+		if ResourceLoader.has_cached(path):
+			# Já carregado (ex.: autoload rodando): não dá para recompilar com instância viva,
+			# mas se tem instância é porque compilou; can_instantiate() confirma.
+			var cached := load(path) as GDScript
+			if cached == null or not cached.can_instantiate():
+				failed.append(path)
+			continue
 		var script := ResourceLoader.load(path, "GDScript", ResourceLoader.CACHE_MODE_IGNORE) as GDScript
 		# load() devolve o script mesmo com erro de parse; reload() é quem diz se compila.
 		if script == null or script.reload() != OK:

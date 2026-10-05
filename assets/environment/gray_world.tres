@@ -1,0 +1,35 @@
+[gd_resource type="Environment" format=3]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gray"]
+sky_top_color = Color(0.36, 0.36, 0.36, 1)
+sky_horizon_color = Color(0.62, 0.62, 0.62, 1)
+sky_curve = 0.12
+ground_bottom_color = Color(0.08, 0.08, 0.08, 1)
+ground_horizon_color = Color(0.62, 0.62, 0.62, 1)
+sun_angle_max = 1.0
+
+[sub_resource type="Sky" id="Sky_gray"]
+sky_material = SubResource("ProceduralSkyMaterial_gray")
+
+[sub_resource type="Gradient" id="Gradient_tones"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.38, 0.38, 0.38, 1, 0.8, 0.8, 0.8, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_tones"]
+gradient = SubResource("Gradient_tones")
+
+[resource]
+background_mode = 2
+sky = SubResource("Sky_gray")
+ambient_light_source = 3
+ambient_light_energy = 0.8
+tonemap_mode = 2
+ssao_enabled = true
+ssao_intensity = 1.6
+fog_enabled = true
+fog_light_color = Color(0.58, 0.58, 0.58, 1)
+fog_density = 0.035
+fog_sky_affect = 0.85
+adjustment_enabled = true
+adjustment_saturation = 0.0
+adjustment_color_correction = SubResource("GradientTexture1D_tones")

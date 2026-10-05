@@ -49,7 +49,7 @@ func test_falls_and_lands_on_floor() -> void:
 func test_walks_forward() -> void:
 	await wait_physics_frames(20)
 	Input.action_press("move_forward")
-	await wait_physics_frames(30)
+	await wait_physics_frames(60)
 	assert_lt(_player.global_position.z, -1.0, "andou para -Z (frente da câmera)")
 	assert_almost_eq(_player.global_position.x, 0.0, 0.05)
 
@@ -61,6 +61,6 @@ func test_jumps() -> void:
 	press.pressed = true
 	Input.parse_input_event(press)
 	await wait_physics_frames(10)
-	assert_gt(_player.global_position.y, 0.5, "subiu")
+	assert_gt(_player.global_position.y, 0.3, "subiu")
 	await wait_physics_frames(90)
 	assert_true(_player.is_on_floor(), "voltou para o chão")

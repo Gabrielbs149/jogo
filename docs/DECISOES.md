@@ -6,6 +6,12 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D009: Ritmo lento, focado em história** · 2026-10-04 · Gabriel
+Andar 2,4 m/s (Shift = 3,6, passo apressado), aceleração baixa (corpo com peso), pulo de 1 m, câmera mais perto, sobre o ombro e mais suave (FOV 58). A história chega por objetos para examinar e personagens para conversar (`Interactable` + caixa de diálogo com texto letra a letra). O jogador fica parado durante o diálogo.
+
+**D008: Visual em tons de cinza** · 2026-10-04 · Gabriel
+Só cinza e preto: do preto até um cinza claro (~80%), sem branco e sem cor. Garantido no motor por `assets/environment/gray_world.tres`: saturação 0 + gradiente de correção (preto → cinza 38% → cinza 80%). Mesmo um asset colorido sai cinza. Para ajustar o contraste do jogo inteiro, mexa nos pontos desse gradiente. Névoa cinza densa faz parte da identidade.
+
 **D007: 3D em terceira pessoa** · 2026-10-04 · Gabriel
 Renderer Forward+. Base: `actors/player` (CharacterBody3D + câmera orbital com SpringArm3D) e fase de teste `levels/sandbox` em greybox (CSG + shader de grade de 1 m). Física interpolada ligada (câmera segue a posição interpolada, sem tremer). Controles: WASD/setas + mouse, ou controle (analógicos, A pula, L3 corre).
 Pendente: resolução base e plataforma alvo.

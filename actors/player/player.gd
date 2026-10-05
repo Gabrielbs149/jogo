@@ -1,27 +1,29 @@
 class_name Player
 extends CharacterBody3D
-## Personagem em terceira pessoa: anda relativo à câmera, vira o modelo para onde anda
-## e pula com altura variável, coyote time e buffer de pulo.
+## Personagem em terceira pessoa, ritmo lento e pesado (jogo focado em história).
+## Anda relativo à câmera, vira o modelo para onde anda, examina/conversa com Interactables
+## e fica parado enquanto um diálogo está aberto.
 
 @export_group("Chão")
-@export var walk_speed: float = 5.0
-@export var sprint_speed: float = 8.5
-## Quanto rápido chega na velocidade máxima (m/s²).
-@export var acceleration: float = 40.0
+@export var walk_speed: float = 2.4
+## Shift / L3: um passo mais apressado, não uma corrida.
+@export var hurry_speed: float = 3.6
+## Quanto rápido chega na velocidade máxima (m/s²). Baixo = corpo com peso.
+@export var acceleration: float = 9.0
 ## Quanto rápido para quando solta o direcional (m/s²).
-@export var deceleration: float = 50.0
+@export var deceleration: float = 12.0
 ## Quanto rápido o modelo vira para a direção do movimento.
-@export var turn_speed: float = 12.0
+@export var turn_speed: float = 6.0
 
 @export_group("Pulo")
 ## Altura do pulo segurando o botão até o topo (metros).
-@export var jump_height: float = 1.6
+@export var jump_height: float = 1.0
 ## Soltar o botão no meio da subida multiplica a velocidade vertical por isto (pulo curto).
-@export_range(0.0, 1.0) var jump_cut: float = 0.45
+@export_range(0.0, 1.0) var jump_cut: float = 0.5
 ## Gravidade extra na descida: queda mais firme, menos "flutuante".
-@export var fall_gravity_multiplier: float = 1.8
+@export var fall_gravity_multiplier: float = 1.6
 ## Fração da aceleração que vale no ar.
-@export_range(0.0, 1.0) var air_control: float = 0.35
+@export_range(0.0, 1.0) var air_control: float = 0.3
 ## Tempo depois de sair da beirada em que ainda dá para pular (segundos).
 @export var coyote_time: float = 0.12
 ## Tempo em que um pulo apertado antes de tocar o chão fica guardado (segundos).
@@ -30,9 +32,11 @@ extends CharacterBody3D
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 var _coyote_left: float = 0.0
 var _jump_buffer_left: float = 0.0
+var _focused: Interactable
 
 @onready var _model: Node3D = %Model
 @onready var _camera_rig: CameraRig = %CameraRig
+@onready var _interaction_area: Area3D = %InteractionArea
 
 
 ## Converte o direcional (x = lado, y = frente/trás como no Input.get_vector) numa direção
@@ -43,27 +47,36 @@ static func direction_from_input(input_dir: Vector2, camera_yaw: float) -> Vecto
 
 func _ready() -> void:
 	_camera_rig.follow(self)
+	Dialogue.finished.connect(_on_dialogue_finished)
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("jump"):
+	if Dialogue.is_open():
+		return
+	if event.is_action_pressed("interact") and _focused:
+		get_viewport().set_input_as_handled()
+		_focused.interact()
+	elif event.is_action_pressed("jump"):
 		_jump_buffer_left = jump_buffer_time
 	elif event.is_action_released("jump") and velocity.y > 0.0:
 		velocity.y *= jump_cut
 
 
 func _physics_process(delta: float) -> void:
-	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	var input_dir := Vector2.ZERO
+	if not Dialogue.is_open():
+		input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var direction := Player.direction_from_input(input_dir, _camera_rig.get_yaw())
 
 	_update_horizontal(direction, delta)
 	_update_vertical(delta)
 	move_and_slide()
 	_turn_model(direction, delta)
+	_update_focus()
 
 
 func _update_horizontal(direction: Vector3, delta: float) -> void:
-	var max_speed := sprint_speed if Input.is_action_pressed("sprint") else walk_speed
+	var max_speed := hurry_speed if Input.is_action_pressed("sprint") else walk_speed
 	var target := direction * max_speed
 	var rate := acceleration if direction != Vector3.ZERO else deceleration
 	if not is_on_floor():
@@ -94,3 +107,31 @@ func _turn_model(direction: Vector3, delta: float) -> void:
 	# O modelo olha para -Z; atan2 dá o ângulo de -Z até a direção.
 	var target_yaw := atan2(-direction.x, -direction.z)
 	_model.rotation.y = lerp_angle(_model.rotation.y, target_yaw, 1.0 - exp(-turn_speed * delta))
+
+
+## Escolhe o Interactable mais perto dentro da área e mostra o aviso dele.
+func _update_focus() -> void:
+	if Dialogue.is_open():
+		return
+	var best: Interactable = null
+	var best_distance := INF
+	for area: Area3D in _interaction_area.get_overlapping_areas():
+		var candidate := area as Interactable
+		if candidate == null or not candidate.enabled:
+			continue
+		var distance := global_position.distance_squared_to(candidate.global_position)
+		if distance < best_distance:
+			best = candidate
+			best_distance = distance
+	if best == _focused:
+		return
+	_focused = best
+	if _focused:
+		Dialogue.show_prompt(_focused.prompt)
+	else:
+		Dialogue.hide_prompt()
+
+
+func _on_dialogue_finished() -> void:
+	# Força reavaliar no próximo frame, para o aviso voltar se ainda estiver perto.
+	_focused = null

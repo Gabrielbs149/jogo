@@ -5,7 +5,9 @@ Regras do projeto para os **dois** Claudes: o do Gabriel e o do <AMIGO>. Cada um
 ## O projeto
 - **Godot 4.7.2**, fixado em `.godot-version`. Os dois sempre na mesma versão; atualizar é decisão conjunta, em commit próprio.
 - **GDScript com tipagem estática.** Sem C#.
-- **3D em terceira pessoa** (D007). Personagem: `actors/player/` (`Player` + `CameraRig`). Fase de teste: `levels/sandbox/`.
+- **3D em terceira pessoa** (D007). Personagem: `actors/player/` (`Player` + `CameraRig`). Fase de teste: `levels/sandbox/`. Fase de exemplo: `levels/mist_field/`.
+- **Visual só em tons de cinza** (D008): do preto até cinza claro (~`#CCCCCC`), **nunca branco puro, nunca cor**. Toda fase usa o `WorldEnvironment` com `assets/environment/gray_world.tres` (tira a saturação e limita o brilho; os tons se ajustam no gradiente dele). Material novo: `albedo_color` cinza (R = G = B). UI: texto até `Color(0.78, 0.78, 0.78)`, fundo preto translúcido.
+- **Ritmo lento, focado em história** (D009): nada de corrida/ação rápida sem o humano pedir. História entra por `Interactable` (`components/interactable/`) + autoload `Dialogue` (`ui/dialogue/`); as falas ficam no Inspector, não no código.
 - Design: `docs/GDD.md` (ideia ainda em aberto). Fases: `docs/ROADMAP.md`. Git: `docs/FLUXO.md`.
 - Equipe: Gabriel (`@Gabrielbs149`) e <AMIGO> (`@<usuario-github-amigo>`). Os dois mexem em tudo, ao mesmo tempo.
 - Idioma: conversa, docs, commits e comentários em **PT-BR**. Identificadores (variáveis, funções, nós, arquivos, pastas) em **inglês**, combinando com a API do Godot.

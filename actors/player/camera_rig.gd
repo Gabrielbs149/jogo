@@ -5,22 +5,24 @@ extends Node3D
 ## Fica com top_level = true na cena: não herda a rotação do personagem.
 
 ## Radianos por pixel de mouse.
-@export var mouse_sensitivity: float = 0.0025
+@export var mouse_sensitivity: float = 0.0018
 ## Radianos por segundo com o analógico no máximo.
-@export var stick_sensitivity: float = 3.0
+@export var stick_sensitivity: float = 2.0
 ## Inverte o eixo vertical (mouse e analógico).
 @export var invert_y: bool = false
 ## Limite olhando de cima (negativo = câmera acima do personagem).
-@export_range(-89.0, 0.0) var min_pitch_degrees: float = -70.0
+@export_range(-89.0, 0.0) var min_pitch_degrees: float = -55.0
 ## Limite olhando de baixo.
-@export_range(0.0, 89.0) var max_pitch_degrees: float = 35.0
+@export_range(0.0, 89.0) var max_pitch_degrees: float = 25.0
 ## Altura do ponto que a câmera orbita, a partir do pé do personagem.
-@export var pivot_height: float = 1.5
+@export var pivot_height: float = 1.55
+## Desloca a órbita para o lado (positivo = câmera sobre o ombro direito).
+@export var shoulder_offset: float = 0.45
 ## Quanto mais alto, mais grudada no personagem (sem atraso).
-@export var follow_sharpness: float = 18.0
+@export var follow_sharpness: float = 7.0
 
 var _target: Node3D
-var _pitch: float = deg_to_rad(-18.0)
+var _pitch: float = deg_to_rad(-12.0)
 
 @onready var _spring_arm: SpringArm3D = $SpringArm3D
 
@@ -76,4 +78,4 @@ func _apply_pitch() -> void:
 
 func _pivot_position() -> Vector3:
 	# Posição interpolada: o personagem anda no tick de física e a câmera no frame; sem isso treme.
-	return _target.get_global_transform_interpolated().origin + Vector3.UP * pivot_height
+	return _target.get_global_transform_interpolated().origin + Vector3.UP * pivot_height + global_basis.x * shoulder_offset

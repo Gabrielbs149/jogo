@@ -1,0 +1,550 @@
+[gd_scene format=3]
+
+[ext_resource type="Environment" path="res://assets/environment/gray_world.tres" id="1_env"]
+[ext_resource type="PackedScene" path="res://components/interactable/interactable.tscn" id="2_interact"]
+[ext_resource type="PackedScene" path="res://actors/player/player.tscn" id="3_player"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_ground"]
+albedo_color = Color(0.2, 0.2, 0.2, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_path"]
+albedo_color = Color(0.4, 0.4, 0.4, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="Mat_bark"]
+albedo_color = Color(0.06, 0.06, 0.06, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_stone"]
+albedo_color = Color(0.3, 0.3, 0.3, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_wood"]
+albedo_color = Color(0.15, 0.15, 0.15, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_metal"]
+albedo_color = Color(0.05, 0.05, 0.05, 1)
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="Mat_figure"]
+albedo_color = Color(0.01, 0.01, 0.01, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_paper"]
+albedo_color = Color(0.72, 0.72, 0.72, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_lamp"]
+albedo_color = Color(0.8, 0.8, 0.8, 1)
+roughness = 0.3
+emission_enabled = true
+emission = Color(0.8, 0.8, 0.8, 1)
+emission_energy_multiplier = 4.0
+
+[node name="MistField" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("1_env")
+
+[node name="Moon" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.8192, 0.2693, -0.5064, 0, 0.8829, 0.4695, 0.5736, -0.3846, 0.7233, 0, 12, 0)
+light_energy = 0.45
+shadow_enabled = true
+
+[node name="Ground" type="Node3D" parent="."]
+
+[node name="Floor" type="CSGBox3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -10)
+use_collision = true
+size = Vector3(120, 1, 120)
+material = SubResource("Mat_ground")
+
+[node name="Path" type="CSGBox3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -12)
+use_collision = true
+size = Vector3(1.8, 0.04, 44)
+material = SubResource("Mat_path")
+
+[node name="DeadTrees" type="Node3D" parent="."]
+
+[node name="Tree01" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(0.5839, 0, 0.8119, 0, 1, 0, -0.8119, 0, 0.5839, -4.5, 0, -2)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree01"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.925, 0)
+use_collision = true
+radius = 0.18
+height = 3.85
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree01"]
+transform = Transform3D(0.8358, -0.5491, 0, 0.5491, 0.8358, 0, 0, 0, 1, -0.4063, 3.158, 0)
+radius = 0.06
+height = 1.48
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree01"]
+transform = Transform3D(0.8383, 0.5453, 0, -0.5453, 0.8383, 0, 0, 0, 1, 0.3981, 2.773, 0)
+radius = 0.06
+height = 1.46
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Tree02" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(0.9053, 0, 0.4248, 0, 1, 0, -0.4248, 0, 0.9053, 4.2, 0, -7)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree02"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.035, 0)
+use_collision = true
+radius = 0.14
+height = 4.07
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree02"]
+transform = Transform3D(0.7701, -0.638, 0, 0.638, 0.7701, 0, 0, 0, 1, -0.5359, 3.037, 0)
+radius = 0.06
+height = 1.68
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree02"]
+transform = Transform3D(0.8088, 0.588, 0, -0.588, 0.8088, 0, 0, 0, 1, 0.4528, 4.018, 0)
+radius = 0.06
+height = 1.54
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Tree03" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(-0.7958, 0, 0.6055, 0, 1, 0, -0.6055, 0, -0.7958, -6.2, 0, -12)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree03"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.175, 0)
+use_collision = true
+radius = 0.2
+height = 4.35
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree03"]
+transform = Transform3D(0.8402, -0.5423, 0, 0.5423, 0.8402, 0, 0, 0, 1, -0.4609, 3.485, 0)
+radius = 0.06
+height = 1.7
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree03"]
+transform = Transform3D(0.8232, 0.5678, 0, -0.5678, 0.8232, 0, 0, 0, 1, 0.335, 3.281, 0)
+radius = 0.06
+height = 1.18
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Tree04" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(0.4222, 0, 0.9065, 0, 1, 0, -0.9065, 0, 0.4222, 5.6, 0, -15)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree04"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.415, 0)
+use_collision = true
+radius = 0.17
+height = 4.83
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree04"]
+transform = Transform3D(0.7254, -0.6884, 0, 0.6884, 0.7254, 0, 0, 0, 1, -0.4681, 3.943, 0)
+radius = 0.06
+height = 1.36
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree04"]
+transform = Transform3D(0.8374, 0.5465, 0, -0.5465, 0.8374, 0, 0, 0, 1, 0.3115, 3.432, 0)
+radius = 0.06
+height = 1.14
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Tree05" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(-0.8977, 0, 0.4406, 0, 1, 0, -0.4406, 0, -0.8977, -4, 0, -21)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree05"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.28, 0)
+use_collision = true
+radius = 0.15
+height = 4.56
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree05"]
+transform = Transform3D(0.7368, -0.6761, 0, 0.6761, 0.7368, 0, 0, 0, 1, -0.48, 3.441, 0)
+radius = 0.06
+height = 1.42
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree05"]
+transform = Transform3D(0.6909, 0.723, 0, -0.723, 0.6909, 0, 0, 0, 1, 0.5747, 3.391, 0)
+radius = 0.06
+height = 1.59
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Tree06" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(-0.9878, 0, -0.156, 0, 1, 0, 0.156, 0, -0.9878, 4.8, 0, -27)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree06"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.175, 0)
+use_collision = true
+radius = 0.19
+height = 4.35
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree06"]
+transform = Transform3D(0.7055, -0.7087, 0, 0.7087, 0.7055, 0, 0, 0, 1, -0.4607, 4.13, 0)
+radius = 0.06
+height = 1.3
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree06"]
+transform = Transform3D(0.8278, 0.561, 0, -0.561, 0.8278, 0, 0, 0, 1, 0.3899, 3.956, 0)
+radius = 0.06
+height = 1.39
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Tree07" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(-0.9975, 0, 0.07084, 0, 1, 0, -0.07084, 0, -0.9975, -8.5, 0, 3)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree07"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+use_collision = true
+radius = 0.13
+height = 3.5
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree07"]
+transform = Transform3D(0.719, -0.695, 0, 0.695, 0.719, 0, 0, 0, 1, -0.5699, 3.116, 0)
+radius = 0.06
+height = 1.64
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree07"]
+transform = Transform3D(0.6723, 0.7403, 0, -0.7403, 0.6723, 0, 0, 0, 1, 0.4886, 3.099, 0)
+radius = 0.06
+height = 1.32
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Tree08" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(-0.8775, 0, -0.4796, 0, 1, 0, 0.4796, 0, -0.8775, 7.5, 0, 4)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree08"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.195, 0)
+use_collision = true
+radius = 0.16
+height = 4.39
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree08"]
+transform = Transform3D(0.6805, -0.7328, 0, 0.7328, 0.6805, 0, 0, 0, 1, -0.6448, 3.638, 0)
+radius = 0.06
+height = 1.76
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree08"]
+transform = Transform3D(0.7199, 0.6941, 0, -0.6941, 0.7199, 0, 0, 0, 1, 0.3956, 3.749, 0)
+radius = 0.06
+height = 1.14
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Tree09" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(0.9989, 0, -0.04653, 0, 1, 0, 0.04653, 0, 0.9989, -10.5, 0, -18)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree09"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.245, 0)
+use_collision = true
+radius = 0.19
+height = 4.49
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree09"]
+transform = Transform3D(0.7973, -0.6035, 0, 0.6035, 0.7973, 0, 0, 0, 1, -0.4134, 3.916, 0)
+radius = 0.06
+height = 1.37
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree09"]
+transform = Transform3D(0.8443, 0.5359, 0, -0.5359, 0.8443, 0, 0, 0, 1, 0.3805, 3.295, 0)
+radius = 0.06
+height = 1.42
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Tree10" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(0.9322, 0, 0.3618, 0, 1, 0, -0.3618, 0, 0.9322, 10, 0, -22)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree10"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.715, 0)
+use_collision = true
+radius = 0.18
+height = 3.43
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree10"]
+transform = Transform3D(0.8258, -0.5639, 0, 0.5639, 0.8258, 0, 0, 0, 1, -0.3581, 2.813, 0)
+radius = 0.06
+height = 1.27
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree10"]
+transform = Transform3D(0.6732, 0.7395, 0, -0.7395, 0.6732, 0, 0, 0, 1, 0.4289, 2.739, 0)
+radius = 0.06
+height = 1.16
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Tree11" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(0.7415, 0, -0.671, 0, 1, 0, 0.671, 0, 0.7415, -7, 0, -30)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree11"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.15, 0)
+use_collision = true
+radius = 0.19
+height = 4.3
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree11"]
+transform = Transform3D(0.6749, -0.7379, 0, 0.7379, 0.6749, 0, 0, 0, 1, -0.4759, 3.336, 0)
+radius = 0.06
+height = 1.29
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree11"]
+transform = Transform3D(0.7831, 0.6219, 0, -0.6219, 0.7831, 0, 0, 0, 1, 0.5349, 4.274, 0)
+radius = 0.06
+height = 1.72
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Tree12" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(0.4477, 0, 0.8942, 0, 1, 0, -0.8942, 0, 0.4477, 8, 0, -33)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree12"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+use_collision = true
+radius = 0.15
+height = 3.5
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree12"]
+transform = Transform3D(0.807, -0.5906, 0, 0.5906, 0.807, 0, 0, 0, 1, -0.4252, 3.125, 0)
+radius = 0.06
+height = 1.44
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree12"]
+transform = Transform3D(0.8015, 0.598, 0, -0.598, 0.8015, 0, 0, 0, 1, 0.3289, 2.806, 0)
+radius = 0.06
+height = 1.1
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Tree13" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(-0.9151, 0, -0.4032, 0, 1, 0, 0.4032, 0, -0.9151, -13, 0, -6)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree13"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.97, 0)
+use_collision = true
+radius = 0.2
+height = 3.94
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree13"]
+transform = Transform3D(0.7141, -0.7, 0, 0.7, 0.7141, 0, 0, 0, 1, -0.511, 3.418, 0)
+radius = 0.06
+height = 1.46
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree13"]
+transform = Transform3D(0.7173, 0.6968, 0, -0.6968, 0.7173, 0, 0, 0, 1, 0.3972, 3.639, 0)
+radius = 0.06
+height = 1.14
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Tree14" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(0.703, 0, -0.7112, 0, 1, 0, 0.7112, 0, 0.703, 13, 0, -10)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree14"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.38, 0)
+use_collision = true
+radius = 0.19
+height = 4.76
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree14"]
+transform = Transform3D(0.7765, -0.6302, 0, 0.6302, 0.7765, 0, 0, 0, 1, -0.4348, 3.302, 0)
+radius = 0.06
+height = 1.38
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree14"]
+transform = Transform3D(0.7264, 0.6873, 0, -0.6873, 0.7264, 0, 0, 0, 1, 0.3918, 3.128, 0)
+radius = 0.06
+height = 1.14
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Tree15" type="Node3D" parent="DeadTrees"]
+transform = Transform3D(0.524, 0, 0.8517, 0, 1, 0, -0.8517, 0, 0.524, -3.6, 0, 6)
+
+[node name="Trunk" type="CSGCylinder3D" parent="DeadTrees/Tree15"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.81, 0)
+use_collision = true
+radius = 0.15
+height = 3.62
+sides = 10
+material = SubResource("Mat_bark")
+
+[node name="Branch1" type="CSGCylinder3D" parent="DeadTrees/Tree15"]
+transform = Transform3D(0.8392, -0.5439, 0, 0.5439, 0.8392, 0, 0, 0, 1, -0.2991, 2.617, 0)
+radius = 0.06
+height = 1.1
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Branch2" type="CSGCylinder3D" parent="DeadTrees/Tree15"]
+transform = Transform3D(0.8307, 0.5567, 0, -0.5567, 0.8307, 0, 0, 0, 1, 0.3758, 2.579, 0)
+radius = 0.06
+height = 1.35
+sides = 6
+material = SubResource("Mat_bark")
+
+[node name="Lamppost" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0, 0)
+
+[node name="Pole" type="CSGCylinder3D" parent="Lamppost"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+use_collision = true
+radius = 0.06
+height = 3.6
+sides = 10
+material = SubResource("Mat_metal")
+
+[node name="Arm" type="CSGBox3D" parent="Lamppost"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 3.55, 0)
+size = Vector3(0.7, 0.06, 0.06)
+material = SubResource("Mat_metal")
+
+[node name="Lamp" type="CSGBox3D" parent="Lamppost"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 3.38, 0)
+size = Vector3(0.22, 0.28, 0.22)
+material = SubResource("Mat_lamp")
+
+[node name="Light" type="OmniLight3D" parent="Lamppost"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 3.1, 0)
+light_energy = 1.8
+shadow_enabled = true
+omni_range = 8.0
+
+[node name="LookLamp" parent="Lamppost" instance=ExtResource("2_interact")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+prompt = "Olhar"
+lines = PackedStringArray("A lâmpada zumbe baixinho.", "Não há fio nenhum ligado a ela.")
+
+[node name="Bench" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9, 0, -4)
+
+[node name="Seat" type="CSGBox3D" parent="Bench"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+use_collision = true
+size = Vector3(0.5, 0.08, 1.8)
+material = SubResource("Mat_wood")
+
+[node name="Back" type="CSGBox3D" parent="Bench"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.24, 0.75, 0)
+size = Vector3(0.08, 0.5, 1.8)
+material = SubResource("Mat_wood")
+
+[node name="LegA" type="CSGBox3D" parent="Bench"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.21, -0.8)
+size = Vector3(0.45, 0.42, 0.08)
+material = SubResource("Mat_wood")
+
+[node name="LegB" type="CSGBox3D" parent="Bench"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.21, 0.8)
+size = Vector3(0.45, 0.42, 0.08)
+material = SubResource("Mat_wood")
+
+[node name="Note" type="CSGBox3D" parent="Bench"]
+transform = Transform3D(0.9553, 0, 0.2955, 0, 1, 0, -0.2955, 0, 0.9553, 0.05, 0.495, -0.35)
+size = Vector3(0.18, 0.01, 0.24)
+material = SubResource("Mat_paper")
+
+[node name="ReadNote" parent="Bench" instance=ExtResource("2_interact")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.8, -0.35)
+prompt = "Ler"
+lines = PackedStringArray("Um bilhete dobrado, úmido de névoa.", "\"Não confie na luz do poste. Siga a trilha até a pedra.\"", "A letra é a sua.")
+
+[node name="Figure" type="Node3D" parent="."]
+transform = Transform3D(-0.9397, 0, -0.342, 0, 1, 0, 0.342, 0, -0.9397, 0.9, 0, -22)
+
+[node name="Body" type="CSGCylinder3D" parent="Figure"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.81, 0)
+use_collision = true
+radius = 0.26
+height = 1.62
+sides = 12
+material = SubResource("Mat_figure")
+
+[node name="Head" type="CSGSphere3D" parent="Figure"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.82, 0)
+radius = 0.19
+material = SubResource("Mat_figure")
+
+[node name="Talk" parent="Figure" instance=ExtResource("2_interact")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+prompt = "Falar"
+speaker = "???"
+lines = PackedStringArray("Você demorou.", "Todo mundo que chega aqui esqueceu alguma coisa.", "A pedra lembra por você. É só tocar.")
+
+[node name="Monolith" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -33)
+
+[node name="Stone" type="CSGBox3D" parent="Monolith"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+use_collision = true
+size = Vector3(2.2, 7, 0.9)
+material = SubResource("Mat_stone")
+
+[node name="Touch" parent="Monolith" instance=ExtResource("2_interact")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1)
+prompt = "Tocar"
+lines = PackedStringArray("A pedra está morna, como se alguém tivesse acabado de sair dali.", "Por um instante, você ouve o seu nome.", "...mas não reconhece a voz.")
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
