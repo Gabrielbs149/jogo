@@ -6,6 +6,10 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D016: Heróis com arte de referência: forma gerada por IA + pintura projetada do desenho** · 2026-10-05 · Gabriel · ajusta D015
+O Tico-Lirou de primitivas ficou "muito feio" perto do desenho. Agora: a forma 3D sai do desenho pelo Hunyuan3D 2.1 (Space oficial da Tencent no Hugging Face, grátis, Gabriel autorizou mandar a imagem) e a cor é projetada do próprio desenho no Blender, espelhada para o lado que o desenho não mostra e assada numa textura 2048 (`tools/blender/gerado/`). Limite conhecido: o lado oposto ao desenho fica com manchas; textura completa por IA precisa de Hugging Face PRO ou de outro gerador (Tripo/Meshy, conta do Gabriel). `kobolds.py` continua só para a Tika Muro.
+Porquê: modelar por primitivas não chega perto do traço do desenho; a forma gerada já traz focinho, dentes, capuz, túnica e mochila.
+
 **D015: Modelos dos heróis no Blender, por script** · 2026-10-05 · Gabriel
 `tools/blender/kobolds.py` monta Tico-Lirou e Tika Muro a partir da ilustração do Gabriel e exporta `.glb` (+ `.blend` em `art_src/`). O MCP do Blender (`mcp-for-blender`, telemetria desligada) está no `.mcp.json` para modelar interativamente com o Blender aberto. Os outros heróis seguem o mesmo caminho quando tiverem referência.
 

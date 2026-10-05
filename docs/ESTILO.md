@@ -15,7 +15,7 @@ O jogo é **3D com câmera de cima, no esquema do Baldur's Gate 3**: o grupo **e
   - **Tico-Lirou:** feito (`actors/tico_lirou/`), a partir da ilustração do Gabriel. Kobold verde de pintas, olho azul, chifres, crista rosa, capuz verde com ponta de folha, manto aberto, barriga cor de pêssego, perneiras, mochila com saco de dormir e cogumelo rosa.
   - **Tika Muro:** feita (`actors/tika_muro/`). Mesma base, roxo, olhos rosa, cogumelo grande e espadas nas costas.
   - Naumfode, Chumasso, José Maria e Bahamut ainda usam os bonecos provisórios (manto com acessórios, dragão de tecido) até ganharem modelo próprio.
-- Fluxo do Blender: `tools/blender/kobolds.py` monta os modelos por script e exporta `.glb`. Para ajustar à mão, abra `art_src/<nome>.blend`, edite e exporte para o mesmo `.glb`. Convenção: **pés na origem, frente para +Y no Blender** (vira −Z no Godot).
+- Fluxo do Blender: herói com desenho de referência → forma gerada pelo Hunyuan3D a partir do desenho e cor projetada do desenho (`tools/blender/gerado/`, ver D016). Sem desenho → `tools/blender/kobolds.py` por primitivas. Para ajustar à mão, abra `art_src/<nome>.blend`, edite e exporte para o mesmo `.glb` (só o objeto do herói selecionado). Convenção: **pés na origem, frente para +Y no Blender** (vira −Z no Godot).
 
 ## Cenário
 - Ruínas de pedra clara com runas acesas e braseiros; rochas de obsidiana brilhante; brasas subindo no ar; acampamento com fogueira.
