@@ -2,19 +2,19 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://uoy711n3drrl"
-path="res://.godot/imported/tico_lirou_tico_lirou_cor.png-0e7bd6e3684ce9174b2db6acf37e661c.ctex"
+uid="uid://olqb8icjw45l"
+path="res://.godot/imported/tico_lirou_Image_0.webp-b9211f1197bdecec5470730a17114111.ctex"
 metadata={
 "vram_texture": false
 }
 generator_parameters={
-"md5": "d96d28022fed3546ca28e8ec60b5b528"
+"md5": "fcec5022e5aa9b9f1694d0a835fe0fce"
 }
 
 [deps]
 
-source_file="res://actors/tico_lirou/tico_lirou_tico_lirou_cor.png"
-dest_files=["res://.godot/imported/tico_lirou_tico_lirou_cor.png-0e7bd6e3684ce9174b2db6acf37e661c.ctex"]
+source_file="res://actors/tico_lirou/tico_lirou_Image_0.webp"
+dest_files=["res://.godot/imported/tico_lirou_Image_0.webp-b9211f1197bdecec5470730a17114111.ctex"]
 
 [params]
 

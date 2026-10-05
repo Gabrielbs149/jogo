@@ -6,6 +6,10 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D017: Heróis gerados pelo TRELLIS.2 (forma + textura) a partir do desenho** · 2026-10-05 · Gabriel · substitui o método de D016
+O TRELLIS.2 (Microsoft, MIT, Space `microsoft/TRELLIS.2` no Hugging Face) gera o modelo já pintado de todos os lados; a pintura projetada de D016 deixava o lado escondido manchado. Passos: `tools/blender/gerado/gerar_trellis2.py` (precisa de login no Hugging Face no PC: conta grátis tem mais cota de GPU que anônimo) → `limpar_trellis.py` (tira o chão e as tiras que a IA inventa, junta vértices, casa as cores com o desenho, frente +Y, altura, 30 mil faces). O bruto fica em `art_src/<nome>_trellis_bruto.glb`.
+Porquê: fiel ao desenho por todos os ângulos, grátis e com licença aberta.
+
 **D016: Heróis com arte de referência: forma gerada por IA + pintura projetada do desenho** · 2026-10-05 · Gabriel · ajusta D015
 O Tico-Lirou de primitivas ficou "muito feio" perto do desenho. Agora: a forma 3D sai do desenho pelo Hunyuan3D 2.1 (Space oficial da Tencent no Hugging Face, grátis, Gabriel autorizou mandar a imagem) e a cor é projetada do próprio desenho no Blender, espelhada para o lado que o desenho não mostra e assada numa textura 2048 (`tools/blender/gerado/`). Limite conhecido: o lado oposto ao desenho fica com manchas; textura completa por IA precisa de Hugging Face PRO ou de outro gerador (Tripo/Meshy, conta do Gabriel). `kobolds.py` continua só para a Tika Muro.
 Porquê: modelar por primitivas não chega perto do traço do desenho; a forma gerada já traz focinho, dentes, capuz, túnica e mochila.
