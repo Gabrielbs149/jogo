@@ -1,18 +1,20 @@
 # GDD: Game Design Document
 
-> Versão 0, ainda vazia. Preenchida na Fase 1 a partir das issues `ideia` aprovadas. Uma página basta no começo: o GDD cresce junto com o jogo.
+> Versão 1. História completa em `docs/HISTORIA.md`; visual em `docs/ESTILO.md`.
 
 ## Pitch (1 frase)
-_Ainda não definido._
+Cinco heróis que perderam as sombras caçam as estrelas no Plano do Fogo, em batalhas táticas por turnos num deserto dourado.
 
 ## Pilares (3, no máximo)
 O que o jogo SEMPRE tem que ser. Toda feature nova é checada contra isto.
-1. **Preto e branco nos extremos**: névoa branca lá fora, breu dentro de casa. Sinistro, silencioso (D010).
-2. **Ritmo lento**: o jogador anda, observa, examina. Nada de pressa (D009).
-3. **A câmera mostra o que o olho não vê**: cada foto revela algo, e a história se monta no álbum (D011).
+1. **Cada batalha é um quebra-cabeça tático**: terreno, linha de visão e a regra de cada Astro importam mais que número (D012).
+2. **O grupo é a alma do jogo**: cinco personagens da mesa, com o jeito de cada um nas habilidades; Caiaque, Umu e Juca em volta (D013).
+3. **Beleza contemplativa do Journey** entre uma luta e outra: luz dourada, silêncio, ruínas que contam a história (`docs/ESTILO.md`).
 
 ## Loop central
-O que o jogador faz a cada 30 segundos, a cada 5 minutos e a cada sessão.
+- **30 s:** escolher onde parar e o que usar no turno (andar + 1 ação), olhando a chance de acerto.
+- **5–10 min:** uma batalha contra os servos e o guardião de um Astro.
+- **Sessão:** um capítulo, com chegada, ruínas com inscrições, batalha, volta ao acampamento com Caiaque, Umu e Juca *(proposta)* e escolha do próximo Astro.
 
 ## Referências
 Jogos, filmes, artes. O que pegar de cada um.
@@ -20,7 +22,7 @@ Jogos, filmes, artes. O que pegar de cada um.
 ## Escopo
 - Duração alvo:
 - Plataforma:
-- 2D, visto de lado, pixel art 320×180 (D010, docs/ESTILO.md)
+- 3D, câmera de cima, combate por turnos (D012)
 - O que o jogo **NÃO** é (corta discussão futura):
 
 ## Direção de arte e som

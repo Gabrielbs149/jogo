@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="Ability" format=3]
+
+[ext_resource type="Script" path="res://combat/ability.gd" id="1_ability"]
+
+[resource]
+script = ExtResource("1_ability")
+title = "Tiro duplo"
+description = "Duas flechas seguidas no mesmo alvo."
+kind = 0
+target = 0
+reach = 7
+radius = 0
+dice_count = 1
+dice_sides = 6
+bonus = 2
+hits = 2
+needs_roll = true
+buff_ac = 0
+buff_hit = 0
+buff_turns = 0
+projectile = true
+vfx_color = Color(1.0, 0.9, 0.7, 1)

@@ -5,14 +5,12 @@ Regras do projeto para os **dois** Claudes: o do Gabriel e o do John. Cada um ro
 ## O projeto
 - **Godot 4.7.2**, fixado em `.godot-version`. Os dois sempre na mesma versão; atualizar é decisão conjunta, em commit próprio.
 - **GDScript com tipagem estática.** Sem C#.
-- **2D lateral, pixel art preto e branco, suspense** (D010). **Leia `docs/ESTILO.md` antes de mexer em arte, fase ou interface.** Tela 320×180; paleta de 6 tons (Breu `#0A0A0A` → Osso `#E8E8E8`), nunca cor, nunca degradê liso.
-- **A câmera fotográfica é a mecânica central** (D011): foto gasta filme, flash, cena em negativo revela os `Revealable`, foto vai para o álbum com legenda.
-- **Ritmo lento, focado em história** (D009): andar devagar, sem corrida nem pulo sem o humano pedir. As falas ficam no Inspector (`Interactable.lines`), não no código.
-- **Sistemas (autoloads):** `Screen` (pós-processo: paleta, escuro, negativo, flash, fade), `Game` (troca de fase com fade), `Dialogue` (caixa de diálogo + aviso "E ..."), `Photo` (filme, foto, álbum).
-- **Fases:** raiz com `systems/level/level.gd` (`dark`, limites da câmera, `Spawns/` com Marker2D). Exemplos: `levels/road/` (exterior, névoa) e `levels/hallway/` (interior, escuro).
-- **Componentes:** `Interactable` (examinar/conversar), `Door` (trocar de fase ou trancada), `Revealable` (só existe na foto).
-- **Arte provisória** vem de `tools/art/generate.js`. Os humanos vão redesenhar por cima, no mesmo PNG. **Não rode o gerador** depois que um arquivo foi redesenhado à mão (ele sobrescreve); nesse caso, edite o gerador só para os arquivos que ainda são provisórios.
-- Design: `docs/GDD.md` (ideia ainda em aberto). Fases: `docs/ROADMAP.md`. Git: `docs/FLUXO.md`.
+- **3D, câmera de cima, combate por turnos estilo Baldur's Gate 3, visual do Journey** (D012). **Leia `docs/ESTILO.md` antes de mexer em arte, fase ou interface.**
+- **História: a campanha "A Noite Sem Nome" do grupo** (D013), em `docs/HISTORIA.md`. Personagens jogáveis: Tico-Lirou, Naumfode, Chumasso, José Maria e Bahamut. NPCs com destaque: **Caiaque, Umu e Juca**. **Não invente fatos da campanha:** o que for invenção para o jogo vai marcado como *(proposta)* no doc, e o humano confirma.
+- **Combate** (`combat/`): `CombatManager` (turnos, entrada do mouse, sinais), `CombatRules` (regras puras: acerto, alvos, rolagens), `CombatAI`, `CombatGrid` (casas, alcance, linha de visão), `Unit` (atributos no Inspector), `Ability` (`.tres` em `data/abilities/`), `GridObstacle` (ruína que bloqueia, com `inscription` opcional), `CellHighlighter`, `CombatFX`. Interface: `ui/combat_hud/`. Câmera: `systems/camera/tactics_camera.gd`.
+- **Regras e números de batalha moram em `.tres` e no Inspector** (`Unit`, `Ability`), nunca enterrados no código. Mexeu em número de inimigo/herói? Rode `tools/simulate_battles.gd` e registre o resultado em `DECISOES.md` (meta: IA dos heróis vence ~55–70%).
+- **Fase:** `levels/dunes_arena/` (abertura do capítulo, textos da história no Inspector da raiz). Gerador provisório do terreno: `tools/art/generate_dunes.js`.
+- Design: `docs/GDD.md`. Fases do projeto: `docs/ROADMAP.md`. Git: `docs/FLUXO.md`.
 - Equipe: Gabriel (`@Gabrielbs149`) e John (`@JohnG-404`). Os dois mexem em tudo, ao mesmo tempo.
 - Idioma: conversa, docs, commits e comentários em **PT-BR**. Identificadores (variáveis, funções, nós, arquivos, pastas) em **inglês**, combinando com a API do Godot.
 
@@ -37,12 +35,12 @@ O hook de início mostra `git status` e os últimos commits do remoto. Se aparec
 ## Estrutura de pastas
 ```
 res://
-├─ actors/        player/, figure/, npcs/<nome>/ — cada um com .tscn + .gd + arte/som próprios
+├─ actors/        shared/ (manto, cachecol), bahamut/, naumfode/ (burro), enemies/ — modelos de cada um
+├─ combat/        regras, grade, IA, unidades e efeitos do combate por turnos
 ├─ levels/        fases montadas no editor: levels/<nome>/<nome>.tscn + levels/<nome>/art/
-├─ components/    interactable/, door/, revealable/ — pedaços reutilizáveis por composição
-├─ ui/            dialogue/, theme/ (tema pixel com a fonte Tiny5)
-├─ systems/       screen/, game/, photo/, level/ — os autoloads e a base das fases
-├─ data/          Resources .tres (stats, itens) e tabelas de balanceamento
+├─ ui/            combat_hud/, theme/ (tema Journey com Cinzel + Lato)
+├─ systems/       camera/ (câmera tática)
+├─ data/          abilities/*.tres — habilidades de heróis e inimigos
 ├─ assets/        SÓ o que várias cenas compartilham: fonts/, music/, sfx/, shaders/, themes/
 ├─ prototypes/    protótipos de 1 dia (Fase 1); apagar os que não vingarem
 ├─ addons/        plugins de terceiros (GUT). Não editar.
@@ -81,10 +79,10 @@ Arquivo sempre minúsculo: o Windows não diferencia `Player.png` de `player.png
 - Erro real: `push_error`/`push_warning`. `print` de debug não entra em commit.
 - Comentário explica o **porquê**. `##` em classes e funções públicas.
 
-### Pixel perfeito
-- Posições e tamanhos em pixel inteiro; nada de `scale` fracionário nem rotação em sprite (exceção: algo deliberadamente distante numa camada de parallax).
-- Texturas sem filtro (já é o padrão do projeto). Cor em UI/arte só da paleta (`docs/ESTILO.md`).
-- Chão: estrada y = 148, corredor y = 152. Pés dos personagens na origem do nó.
+### 3D
+- Modelos: origem nos pés, frente para **−Z** (o `CombatManager` gira a unidade com `atan2(-x, -z)`).
+- Unidades ficam no centro das casas; a grade corrige a posição e a altura no começo da batalha.
+- Efeito visual que só existe por um instante (projétil, número, anel) vai no `CombatFX` e devolve com `await`. Tudo que anima precisa respeitar `CombatManager.animate = false` (testes e simulação rodam sem animação).
 
 ### Armadilhas Godot 3 → 4 (use SEMPRE a coluna da direita)
 | Godot 3 (errado aqui) | Godot 4 (certo) |
@@ -93,7 +91,7 @@ Arquivo sempre minúsculo: o Windows não diferencia `Player.png` de `player.png
 | `yield(obj, "sig")` | `await obj.sig` |
 | `connect("sig", self, "_f")` / `emit_signal("sig", a)` | `sig.connect(_f)` / `sig.emit(a)` |
 | `KinematicBody2D` + `move_and_slide(vel)` | `CharacterBody2D`: `velocity = ...` e `move_and_slide()` sem argumento |
-| `ParallaxBackground` / `ParallaxLayer` | `Parallax2D` |
+| export de nó no `.tscn` sem `node_paths` | `[node ... node_paths=PackedStringArray("grid")]` + `grid = NodePath("../Grid")` |
 | `.instance()` | `.instantiate()` |
 | `setget` | `var hp: int: set = _set_hp` |
 | `rand_range`, `deg2rad`, `stepify` | `randf_range`, `deg_to_rad`, `snapped` |

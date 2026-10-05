@@ -6,10 +6,18 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
-**D011: Câmera fotográfica é a mecânica central** · 2026-10-04 · Gabriel
+**D013: História = a campanha "A Noite Sem Nome" do grupo** · 2026-10-05 · Gabriel
+O jogo adapta a temporada do Plano do Fogo: cinco heróis que perderam as sombras, a caçada aos Astros (um por capítulo), os três caminhos do fim e o selo de Ethera como capítulo de abertura. Caiaque, Umu e Juca têm destaque (acampamento entre batalhas, proposto). Tudo em `docs/HISTORIA.md`. Dados pessoais da conversa original não entram no repo.
+
+**D012: 3D tático por turnos com visual do Journey** · 2026-10-05 · Gabriel · substitui D010 e D011
+Câmera de cima, combate por turnos estilo Baldur's Gate 3: iniciativa (d20 + bônus), em cada turno andar + 1 ação, ataque rola d20 + bônus contra a CA (20 = crítico, 1 = erro), área não rola. Grade invisível de 1,6 m em 8 direções, obstáculos bloqueiam caminho e linha de visão, quem voa passa por cima. Heróis: Tico-Lirou, Naumfode, Chumasso, José Maria e Bahamut (classes em `docs/HISTORIA.md`). Visual Journey (`docs/ESTILO.md`). Renderer Forward+.
+Equilíbrio medido com `tools/simulate_battles.gd`: com a IA jogando pelos heróis, eles vencem ~65% em ~8 rodadas. Uma pessoa jogando bem vence mais vezes, mas tem que pensar.
+O 2D anterior fica no histórico (commit 947f201).
+
+**D011: Câmera fotográfica é a mecânica central** · substituída pela D012 · 2026-10-04 · Gabriel
 Cada foto gasta filme (12 por rolo), dá um flash e mostra a cena em negativo por ~1 s, revelando os `Revealable`. A foto vai para o álbum (Tab) com a legenda do que apareceu nela, e o álbum é onde a história se monta. Controles: A/D ou setas andam, E interage, F fotografa, Tab abre o álbum (controle: analógico/direcional, A, RB ou X, Back).
 
-**D010: 2D lateral, pixel art preto e branco "Negativo + Névoa"** · 2026-10-04 · Gabriel · substitui D007 e D008
+**D010: 2D lateral, pixel art preto e branco "Negativo + Névoa"** · 2026-10-04 · Gabriel · substitui D007 e D008 · substituída pela D012
 2D visto de lado, 320×180 ampliado em inteiro, paleta de 6 tons (Breu → Osso), pontilhado no lugar de degradê, suspense sinistro. Exteriores brancos de névoa ("escuro = perto"); interiores no breu, só contornos. Tudo garantido pelo pós-processo `systems/screen/screen.gdshader`. Referências: proposta "Três caminhos no escuro" (Caminho 3 + névoa do 2) e a prancha de estilo do Gabriel (traço e caixa de diálogo com retrato). Tema da história ainda em aberto (o folclore da prancha era só exemplo de estilo). Guia completo: `docs/ESTILO.md`. Renderer: Compatibility. Fonte: Tiny5 (OFL).
 Porquê: visual, mecânica e história são a mesma coisa (é fotografia), e isso faz o jogo ser reconhecível por um print. O 3D anterior fica no histórico do Git (commit 6457f42).
 

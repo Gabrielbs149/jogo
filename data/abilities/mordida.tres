@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="Ability" format=3]
+
+[ext_resource type="Script" path="res://combat/ability.gd" id="1_ability"]
+
+[resource]
+script = ExtResource("1_ability")
+title = "Mordida"
+description = "Mandíbulas de pedra."
+kind = 0
+target = 0
+reach = 1
+radius = 0
+dice_count = 1
+dice_sides = 8
+bonus = 2
+hits = 1
+needs_roll = true
+buff_ac = 0
+buff_hit = 0
+buff_turns = 0
+projectile = false
+vfx_color = Color(1.0, 0.5, 0.3, 1)

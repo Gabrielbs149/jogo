@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="Ability" format=3]
+
+[ext_resource type="Script" path="res://combat/ability.gd" id="1_ability"]
+
+[resource]
+script = ExtResource("1_ability")
+title = "Burro de reparo"
+description = "Um burrinho com ferramentas remenda um aliado."
+kind = 1
+target = 1
+reach = 3
+radius = 0
+dice_count = 1
+dice_sides = 8
+bonus = 3
+hits = 1
+needs_roll = true
+buff_ac = 0
+buff_hit = 0
+buff_turns = 0
+projectile = false
+vfx_color = Color(1.0, 0.75, 0.45, 1)

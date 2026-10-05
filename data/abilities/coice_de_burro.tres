@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="Ability" format=3]
+
+[ext_resource type="Script" path="res://combat/ability.gd" id="1_ability"]
+[ext_resource type="PackedScene" path="res://actors/naumfode/donkey.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_ability")
+title = "Coice de burro"
+description = "Um burro mecânico corre e dá um coice no alvo."
+kind = 0
+target = 0
+reach = 5
+radius = 0
+dice_count = 1
+dice_sides = 10
+bonus = 3
+hits = 1
+needs_roll = true
+buff_ac = 0
+buff_hit = 0
+buff_turns = 0
+projectile = true
+vfx_color = Color(1.0, 0.65, 0.35, 1)
+projectile_scene = ExtResource("2_scene")

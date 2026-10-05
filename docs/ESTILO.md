@@ -1,61 +1,32 @@
-# Guia de estilo: Negativo + Névoa
+# Guia de estilo: Journey nas dunas
 
-O jogo é **2D, visto de lado, pixel art em preto e branco, suspense sinistro e ritmo lento**. A mecânica que define o jogo é a **câmera fotográfica**: o flash mostra a cena em **negativo**, e o negativo revela o que o olho não vê. Fora de casa o mundo é **branco de névoa**; dentro é **breu**.
+O jogo é **3D com câmera de cima e combate por turnos** (estilo Baldur's Gate 3) com o **visual do Journey**: deserto dourado ao entardecer, figuras de manto com cachecol que voa, olhos que brilham, ruínas com runas acesas, poeira de areia no vento, uma montanha com um feixe de luz no horizonte. História em `docs/HISTORIA.md`.
 
-Referência de traço: a prancha que o Gabriel mandou (contorno claro sobre fundo escuro, texturas pontilhadas, alto contraste, caixa de diálogo com retrato). Referência de visão e mecânica: o "Caminho 3" da proposta de direção de arte.
+## Luz e cor
+- **Hora dourada sempre.** Sol baixo (≈17°), vindo de trás à direita da câmera: sombras longas para a frente-esquerda. Céu de azul profundo no alto a laranja-rosado no horizonte.
+- **Areia:** laranja profundo nas encostas em sombra, dourado claro no topo das dunas, marcas de vento e brilho de grãos que muda com a câmera (`assets/shaders/sand.gdshader`).
+- **Tudo num lugar só:** `assets/environment/journey_sky.tres` (céu, névoa leve, brilho, contraste). Mexa lá para mudar o clima do jogo inteiro.
+- **Cor de destaque é luz,** não tinta: runas, olhos, anéis de seleção e magia usam emissão (brilho), em dourado/creme. Vermelho e laranja quente para ataque inimigo.
 
-## Paleta: 6 tons, nenhum a mais
-| # | Nome | Hex | Uso |
-|---|---|---|---|
-| 0 | Breu | `#0A0A0A` | fundo do escuro, silhueta de perto, ameaça |
-| 1 | Carvão | `#232323` | sombra dentro do preto, cabelo, chão perto |
-| 2 | Sombra | `#474747` | roupa, objeto no escuro, contorno apagado |
-| 3 | Cinza | `#767676` | parede, meio-tom, texto secundário |
-| 4 | Névoa | `#ABABAB` | distância, pele, luz fraca |
-| 5 | Osso | `#E8E8E8` | céu de névoa, papel, flash, texto |
+## Personagens
+- **Silhueta primeiro.** Todo herói é um manto (cone) com capuz, rosto escuro, dois olhos brilhando e cachecol. A personalidade vem da **cor do manto + um acessório que se lê de cima**:
+  - Tico-Lirou: pequeno (0,72), verde-folha, brotos no capuz, focinho e rabo de kobold.
+  - Naumfode: ocre, óculos de latão, mochila com engrenagem, burrinho mecânico do lado.
+  - Chumasso: enorme (1,45), azul, rosto cinza de golias, martelo de ouro e ombreiras.
+  - José Maria: verde-floresta, arco, aljava e perna de pau.
+  - Bahamut: dragão de tecido creme e dourado que flutua e ondula.
+- Modelos base: `actors/shared/robed_figure.tscn` (cores e proporções no Inspector) e `actors/bahamut/`. Inimigos de **pedra** com olho de brasa: `actors/enemies/`.
+- Movimento: deslizar suave na areia (0,24 s por casa); nada de pulo ou corrida.
 
-- **A imagem vive nos extremos.** Breu e Osso fazem a cena; os 4 cinzas dão profundidade.
-- **Sem degradê liso.** Transição de tom é sempre pontilhado (dither Bayer 4×4).
-- **Desenhe com a paleta exata.** O pós-processo (`systems/screen/screen.gdshader`) força a paleta de qualquer jeito: cor fora vira o tom mais próximo pontilhado. Mas arte desenhada certa fica mais limpa.
+## Interface
+- Painéis marrom-escuros translúcidos, cantos arredondados, linha fina dourada. Texto creme.
+- Títulos e nomes: **Cinzel** (`TitleLabel` no tema). Texto corrido: **Lato**. Licença OFL, em `assets/fonts/`.
+- Tema único: `ui/theme/journey_theme.tres`.
 
-## Os três estados da tela
-| Estado | Quando | Como fica |
-|---|---|---|
-| **Névoa** | fase com `dark = false` (exteriores) | a cena como foi desenhada. Céu Osso, distância clara, perto escuro: **quanto mais escuro, mais perto** |
-| **Escuro** | fase com `dark = true` (interiores) | só os contornos fortes aparecem (diferença de 2+ tons vira linha Sombra); em volta do personagem, a cena aparece apagada |
-| **Negativo** | 0,85 s depois de cada foto | a cena **acesa** com os tons invertidos, incluindo tudo que é `Revealable`. Depois se desfaz em pontos |
+## Câmera e combate
+- Câmera tática a −50°, distância 15,5 (roda do mouse 7–34), Q/E giram, WASD movem. Segue quem está jogando.
+- Grade invisível de casas de 1,6 m; aparece só quando se escolhe andar ou mirar (casas claras = andar; laranja = alcance; vermelho = área).
 
-Consequência para quem desenha **interior**: a arte é desenhada **acesa**, como a foto vai mostrar. No escuro, o jogador só vê o que tem contraste forte. Então:
-- **Quer que algo se veja no escuro** (porta, quadro, móvel)? Contorno com 2+ tons de diferença do fundo.
-- **Quer que algo só apareça na foto** (papel de parede, mancha, detalhe)? Tons vizinhos (1 de diferença).
-- **Quer que algo só exista na foto**? Ponha como filho de um nó `Revealable` (`components/revealable/`).
-
-## Tamanhos
-| Coisa | Tamanho |
-|---|---|
-| Tela | 320×180, ampliada só em número inteiro (×4 = 1280×720, ×6 = 1920×1080) |
-| Personagem | 20×32, pés na origem do nó |
-| Figuras/criaturas | livres, mas pés na origem e silhueta legível em Breu e invertida em Osso |
-| Tiles e props | grade de 16 |
-| Retrato do diálogo | 32×32 |
-| Chão | linha do chão de cada fase: estrada y = 148, corredor y = 152 |
-
-## Movimento e animação
-- Andar a 34 px/s (lento, pesado). Sem corrida e sem pulo, a menos que a história peça.
-- Animação travada: andar a 6 quadros/s, parado com piscada rara.
-- Nada de rotação ou escala fracionária em sprite. Câmera presa no pixel.
-
-## Texto e interface
-- Fonte **Tiny5** (`assets/fonts/tiny5.ttf`, licença OFL), tamanho 10, sem suavização. Tem acento.
-- Caixa de diálogo: fundo Breu, borda Osso de 1 px, retrato à esquerda, texto letra por letra, `E` piscando para continuar.
-- Avisos ("E ler"): caixinha Breu com borda Névoa, centralizada embaixo.
-- Interface fica **acima** do pós-processo (não inverte na foto), mas usa só as cores da paleta.
-
-## Som (quando entrar)
-Silêncio como base. Ruído de fita, vento, respiração, passos no assoalho. O clique e o "zumbido" do flash carregando são o som mais importante do jogo. Música rara; quando entra, importa.
-
-## Arte provisória
-Toda a arte atual foi gerada por `tools/art/generate.js` ("arte de programador", só para o jogo rodar no estilo). Para trocar: desenhe no Pixelorama (grátis) ou Aseprite **no mesmo arquivo PNG, mesmo tamanho**, e salve por cima. A fonte editável (`.aseprite`, `.pxo`) vai em `art_src/`. Depois de redesenhar um arquivo, não rode o gerador de novo (ele sobrescreve).
-
-## Acessibilidade
-O flash tem opção de clarão mais fraco (`Photo.soft_flash`). Vai virar uma configuração no menu.
+## Arte provisória e como trocar
+- Dunas: `tools/art/generate_dunes.js` gera `levels/dunes_arena/art/dunes.obj`. Pode trocar por um terreno do Blender com o mesmo nome (manter o centro plano para a grade).
+- Personagens e ruínas são primitivas do Godot (cones, esferas, caixas). Dá para trocar cada `Model` por um `.glb` do Blender mantendo a origem nos pés e a frente para −Z.

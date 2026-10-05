@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="Ability" format=3]
+
+[ext_resource type="Script" path="res://combat/ability.gd" id="1_ability"]
+
+[resource]
+script = ExtResource("1_ability")
+title = "Sopro dourado"
+description = "Fogo de luz numa área 3x3. Não erra."
+kind = 0
+target = 3
+reach = 4
+radius = 1
+dice_count = 2
+dice_sides = 8
+bonus = 0
+hits = 1
+needs_roll = false
+buff_ac = 0
+buff_hit = 0
+buff_turns = 0
+projectile = false
+vfx_color = Color(1.0, 0.7, 0.3, 1)

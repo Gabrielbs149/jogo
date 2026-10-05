@@ -1,0 +1,315 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/combat_hud/combat_hud.gd" id="1_hud"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_soft"]
+content_margin_left = 14.0
+content_margin_top = 10.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
+bg_color = Color(0.16, 0.08, 0.05, 0.42)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="Gradient" id="Gradient_dusk"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0.16, 0.2, 0.34, 1, 0.45, 0.22, 0.14, 1, 0.92, 0.6, 0.4, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_dusk"]
+gradient = SubResource("Gradient_dusk")
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
+[node name="CombatHUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Top" type="PanelContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -420.0
+offset_top = 14.0
+offset_right = 420.0
+offset_bottom = 118.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_soft")
+
+[node name="Initiative" type="HBoxContainer" parent="Root/Top"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Round" type="Label" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 28.0
+offset_top = 22.0
+offset_right = 300.0
+offset_bottom = 60.0
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 24
+text = "Rodada 1"
+
+[node name="Banner" type="Label" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.24
+anchor_right = 0.5
+anchor_bottom = 0.24
+offset_left = -500.0
+offset_top = -40.0
+offset_right = 500.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 44
+text = "Sua vez: Tico-Lirou"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Bottom" type="PanelContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -640.0
+offset_top = -138.0
+offset_right = 640.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="HBox" type="HBoxContainer" parent="Root/Bottom"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Info" type="VBoxContainer" parent="Root/Bottom/HBox"]
+custom_minimum_size = Vector2(330, 0)
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="UnitName" type="Label" parent="Root/Bottom/HBox/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+text = "Tico-Lirou"
+
+[node name="HpRow" type="HBoxContainer" parent="Root/Bottom/HBox/Info"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HpBar" type="ProgressBar" parent="Root/Bottom/HBox/Info/HpRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 12)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 20.0
+value = 20.0
+show_percentage = false
+
+[node name="HpText" type="Label" parent="Root/Bottom/HBox/Info/HpRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "20 / 20"
+
+[node name="Stats" type="Label" parent="Root/Bottom/HBox/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.86, 0.68, 1)
+theme_override_font_sizes/font_size = 14
+text = "CA 15  ·  Movimento 7/7  ·  Ação: pronta"
+
+[node name="Abilities" type="HBoxContainer" parent="Root/Bottom/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="EndTurn" type="Button" parent="Root/Bottom/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 72)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+text = "Encerrar turno
+(Espaço)"
+
+[node name="LogPanel" type="PanelContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -380.0
+offset_top = -150.0
+offset_right = -16.0
+offset_bottom = 90.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_soft")
+
+[node name="Log" type="RichTextLabel" parent="Root/LogPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+bbcode_enabled = true
+scroll_following = true
+
+[node name="Hint" type="Label" parent="Root"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -176.0
+offset_right = 640.0
+offset_bottom = -150.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 0.94, 0.86, 0.75)
+theme_override_font_sizes/font_size = 13
+text = "Clique: andar / mirar   ·   1-4: habilidades   ·   botão direito: cancelar   ·   Espaço: encerrar   ·   WASD, Q/E, roda: câmera   ·   R: recomeçar"
+
+[node name="Tooltip" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 200.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="TooltipText" type="Label" parent="Root/Tooltip"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "Dica"
+
+[node name="Result" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -110.0
+offset_right = 260.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Root/Result"]
+layout_mode = 2
+alignment = 1
+
+[node name="ResultTitle" type="Label" parent="Root/Result/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 56
+text = "Vitória"
+horizontal_alignment = 1
+
+[node name="ResultText" type="Label" parent="Root/Result/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "As areias se acalmam."
+horizontal_alignment = 1
+
+[node name="Again" type="Label" parent="Root/Result/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.86, 0.68, 1)
+theme_override_font_sizes/font_size = 14
+text = "R para jogar de novo"
+horizontal_alignment = 1
+
+[node name="Intro" type="Control" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Sky" type="TextureRect" parent="Root/Intro"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_dusk")
+expand_mode = 1
+
+[node name="Center" type="VBoxContainer" parent="Root/Intro"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -480.0
+offset_top = -300.0
+offset_right = 480.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="Campaign" type="Label" parent="Root/Intro/Center"]
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_colors/font_color = Color(1, 0.86, 0.62, 0.85)
+theme_override_font_sizes/font_size = 18
+text = "A  NOITE  SEM  NOME   ·   PLANO  DO  FOGO"
+horizontal_alignment = 1
+
+[node name="IntroTitle" type="Label" parent="Root/Intro/Center"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 60
+text = "Ruínas de Ethera"
+horizontal_alignment = 1
+
+[node name="Gap" type="Control" parent="Root/Intro/Center"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+
+[node name="IntroLines" type="VBoxContainer" parent="Root/Intro/Center"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="IntroHint" type="Label" parent="Root/Intro/Center"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.7, 0.8)
+theme_override_font_sizes/font_size = 15
+text = "clique para começar"
+horizontal_alignment = 1
