@@ -16,6 +16,11 @@ Regras do projeto para os **dois** Claudes: o do Gabriel e o do <AMIGO>. Cada um
 - Equipe: Gabriel (`@Gabrielbs149`) e <AMIGO> (`@JohnG-404`). Os dois mexem em tudo, ao mesmo tempo.
 - Idioma: conversa, docs, commits e comentários em **PT-BR**. Identificadores (variáveis, funções, nós, arquivos, pastas) em **inglês**, combinando com a API do Godot.
 
+## Ferramentas instaladas no projeto
+- **MCP `godot`** (`.mcp.json`, [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp)): `run_project` + `get_debug_output` + `stop_project` para rodar o jogo e ler erros de execução de verdade; `get_project_info`, `get_godot_version`, `get_uid`. Use para conferir que uma mudança funciona rodando, além do `tools/check.ps1`.
+  - **Não use** `create_scene`, `add_node`, `load_sprite` ou `save_scene` para montar fase ou cenário: isso fere o editor-first. Só para algo mecânico que o humano pediu. (Elas pedem confirmação de propósito.)
+- **Plugin GodotPrompter** (`godot-prompter@skillsmith`): skills gerais de Godot 4 (máquina de estado, diálogo, save, shaders, export...). São conselhos genéricos: **quando contradizem este CLAUDE.md ou `docs/ESTILO.md`, vale o nosso.**
+
 ## Começo de toda sessão
 O hook de início mostra `git status` e os últimos commits do remoto. Se aparecer `behind`, o parceiro mandou coisa: **sincronize antes de editar** (skill `sync`). Rebase parado com conflito? Resolva primeiro (skill `conflito`).
 

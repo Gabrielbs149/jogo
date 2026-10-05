@@ -17,7 +17,9 @@ No PowerShell:
 winget install --id Git.Git -e
 winget install --id GitHub.cli -e
 winget install --id Microsoft.VisualStudioCode -e
+winget install --id OpenJS.NodeJS.LTS -e
 ```
+O Node.js é para o MCP do Godot, que o Claude usa para rodar o jogo e ler os erros.
 O Gabriel já tem o Git, então pode pular essa linha.
 
 **Godot:** se você já tem o da **Steam** na versão do `.godot-version`, o `preparar.ps1` usa ele. Na Steam: botão direito no Godot → *Propriedades → Atualizações* → **"Só atualizar ao abrir"**, e versão nova só quando os dois combinarem (o `check.ps1` barra versão diferente). Se não tiver Godot nenhum, o `preparar.ps1` baixa a versão exata para `C:\dev\godot\` e cria o atalho na área de trabalho.
@@ -87,7 +89,13 @@ gh repo clone Gabrielbs149/jogo
 cd jogo
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\preparar.ps1
 ```
-Abra no Godot pelo atalho (*Import* → `C:\dev\jogo\project.godot`). No Claude Desktop → **Code** → escolha a pasta `C:\dev\jogo`. Teste com: *"lê o CLAUDE.md e me explica nosso fluxo em 5 linhas"*.
+Abra no Godot pelo atalho (*Import* → `C:\dev\jogo\project.godot`). No Claude Desktop → **Code** → escolha a pasta `C:\dev\jogo`.
+
+**Na primeira sessão o Claude pergunta duas coisas. Aceite as duas:**
+- usar o servidor MCP **godot** do projeto (`.mcp.json`);
+- instalar o marketplace **skillsmith** e o plugin **godot-prompter** (vêm do `.claude/settings.json`).
+
+Teste com: *"lê o CLAUDE.md e me explica nosso fluxo em 5 linhas"* e depois *"qual a versão do Godot pelo MCP?"*.
 
 O VS Code vai sugerir as extensões do projeto (godot-tools e Live Share) quando você abrir a pasta: aceite.
 

@@ -15,7 +15,15 @@
       "Bash(gh pr checks:*)",
       "Bash(gh run list:*)",
       "Bash(gh run view:*)",
-      "Bash(powershell -NoProfile -ExecutionPolicy Bypass -File tools/check.ps1:*)"
+      "Bash(powershell -NoProfile -ExecutionPolicy Bypass -File tools/check.ps1:*)",
+      "mcp__godot__get_godot_version",
+      "mcp__godot__get_project_info",
+      "mcp__godot__list_projects",
+      "mcp__godot__get_debug_output",
+      "mcp__godot__run_project",
+      "mcp__godot__stop_project",
+      "mcp__godot__launch_editor",
+      "mcp__godot__get_uid"
     ],
     "deny": [
       "Bash(git push --force:*)",
@@ -28,6 +36,17 @@
       "Bash(git rebase -i:*)",
       "Read(./.godot/**)"
     ]
+  },
+  "extraKnownMarketplaces": {
+    "skillsmith": {
+      "source": {
+        "source": "github",
+        "repo": "jame581/skillsmith"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "godot-prompter@skillsmith": true
   },
   "hooks": {
     "SessionStart": [

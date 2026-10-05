@@ -79,6 +79,13 @@ if ($existente -and ((Get-GodotVersion $existente) -like "$versao.stable*")) {
 # Daqui pra baixo os comandos podem escrever em stderr sem ser erro (gh, godot)
 $ErrorActionPreference = 'Continue'
 
+Write-Host "`n== Node.js (MCP do Godot, .mcp.json)" -ForegroundColor Cyan
+if (Get-Command npx -ErrorAction SilentlyContinue) {
+    Write-Host "OK: $(node --version)"
+} else {
+    Write-Host "Falta o Node.js: winget install --id OpenJS.NodeJS.LTS -e" -ForegroundColor Yellow
+}
+
 Write-Host "`n== GitHub CLI" -ForegroundColor Cyan
 if (Get-Command gh -ErrorAction SilentlyContinue) {
     gh auth status *> $null
