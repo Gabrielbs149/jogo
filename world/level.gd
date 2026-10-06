@@ -180,6 +180,8 @@ func _physics_process(delta: float) -> void:
 			if c.is_active():
 				return
 		_finished = true
+		# deixa a queda aparecer antes da tela de derrota (ela pausa o jogo)
+		await get_tree().create_timer(1.6).timeout
 		_hud.show_result(false, defeat_text)
 
 

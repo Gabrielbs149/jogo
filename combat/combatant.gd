@@ -7,6 +7,7 @@ signal changed
 signal downed_changed(is_down: bool)
 signal hurt(by: Combatant)
 signal ability_used(index: int)
+signal dodged
 ## Uma linha para o registro de rolagens (d20, CA, dano).
 signal rolled(line: String)
 
@@ -188,6 +189,7 @@ func dodge(direction: Vector3) -> bool:
 	_dash_velocity = direction.normalized() * dodge_distance / 0.22
 	_dash_time = 0.22
 	add_status({"title": dodge_name, "time": 0.7, "dodging": true})
+	dodged.emit()
 	return true
 
 
@@ -331,7 +333,7 @@ func _go_down() -> void:
 		if fx:
 			await fx.fall(self)
 		queue_free()
-	elif model:
+	elif model and get_node_or_null("Animator") == null:  # sem animação de queda: tomba o modelo
 		var tween := create_tween()
 		tween.tween_property(model, "rotation:x", -PI / 2.0, 0.4)
 		tween.parallel().tween_property(model, "position:y", 0.25, 0.4)

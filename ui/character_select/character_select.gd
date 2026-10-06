@@ -47,6 +47,13 @@ func select(id: String) -> void:
 	_preview = Game.hero_scene(id).instantiate() as Combatant
 	_preview.process_mode = Node.PROCESS_MODE_DISABLED
 	_pivot.add_child(_preview)
+	# o personagem fica parado no pedestal, mas respirando (animação "idle", se o modelo tiver)
+	for node: Node in _preview.find_children("*", "AnimationPlayer", true, false):
+		var anim := node as AnimationPlayer
+		anim.process_mode = Node.PROCESS_MODE_ALWAYS
+		if anim.has_animation("idle"):
+			anim.get_animation("idle").loop_mode = Animation.LOOP_LINEAR
+			anim.play("idle")
 	_name.text = _preview.display_name
 	_class.text = _preview.class_title
 	_stats.text = "CA %d   ·   PV %d   ·   Ataque +%d   ·   CD %d   ·   Deslocamento %.1f m/s\nSalvamentos: DES %+d   CON %+d   SAB %+d" % [

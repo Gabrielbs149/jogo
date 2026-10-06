@@ -6,6 +6,11 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D020: Animação dos heróis: esqueleto e animações por script no Blender + Animator no Godot** · 2026-10-05 · Gabriel pediu as animações do Tico
+- A malha do TRELLIS vem sem esqueleto. `tools/blender/gerado/animar_tico.py` monta um esqueleto de kobold (20 ossos: tronco, cabeça, braços, pernas, 3 do rabo), pesa cada vértice pela distância aos ossos com regras por região (mochila não balança com a cabeça, manto da perna vai com a perna) e cria 10 animações: `idle`, `walk`, `run`, `attack` (Adaga), `dash_strike` (Bote das sombras), `cast` (Espinhos), `hide` (Camuflagem), `dodge` (Ação ardilosa), `hit`, `down`.
+- No Godot, `CombatantAnimator` (nó `Animator` do herói) toca a certa sozinho. Nomes no Inspector, então outro herói usa o mesmo nó com as animações dele.
+- Limite: animação feita por script, sem animador de verdade; braço muito erguido estica a manga do manto. Para algo profissional: Mixamo (precisa de conta) ou animar à mão no Blender a partir de `art_src/tico_lirou_rig.blend`.
+
 **D019: Cada herói começa a história num lugar diferente; Tico-Lirou começa em Arandu** · 2026-10-05 · Gabriel
 - O começo do jogo é calmo e pequeno: nada de fase cheia logo na primeira tela. O lugar de início de cada herói fica em `Game.START_LEVELS` (`systems/game/game.gd`).
 - **Tico-Lirou → Arandu** (`levels/arandu/`), a cidade natal dele, onde ele era mendigo: ele acorda no beco onde dorme, com uma praça, poço, mercado, algumas casas, quatro moradores para conversar (F) e o portão que leva para a estrada (vai para Ethera).

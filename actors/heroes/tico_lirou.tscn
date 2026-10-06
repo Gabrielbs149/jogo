@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://combat/combatant.gd" id="c_script"]
+[ext_resource type="Script" path="res://actors/shared/combatant_animator.gd" id="animator"]
 [ext_resource type="PackedScene" path="res://actors/tico_lirou/tico_lirou.tscn" id="19_r"]
 [ext_resource type="Script" path="res://combat/ability.gd" id="a_script"]
 [ext_resource type="Resource" path="res://data/abilities/adaga.tres" id="ab_adaga"]
@@ -40,3 +41,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.575, 0)
 shape = SubResource("Capsule_body")
 
 [node name="Model" parent="." instance=ExtResource("19_r")]
+
+[node name="Animator" type="Node" parent="."]
+script = ExtResource("animator")
