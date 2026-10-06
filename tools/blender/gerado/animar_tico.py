@@ -1,4 +1,5 @@
-"""Esqueleto + animações do Tico-Lirou (malha do TRELLIS, sem rig).
+"""RESERVA (D021: hoje o Tico usa as animações do Mixamo, ver juntar_mixamo.py; este script SOBRESCREVE o mesmo .glb).
+Esqueleto + animações do Tico-Lirou (malha do TRELLIS, sem rig).
 Monta um esqueleto de kobold, pesa cada vértice pela distância aos ossos (com regras por região:
 cabeça, braços, pernas, rabo, mochila) e cria as animações. Exporta o .glb com esqueleto e animações.
 
