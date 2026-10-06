@@ -6,6 +6,9 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D021: Mixamo para o Tico — testado e descartado** · 2026-10-06 · Gabriel
+O Tico foi para o Mixamo com os braços caídos e uma perna à frente: nas animações o braço entrava no corpo e o pé girava como pedal de bicicleta. Uma segunda tentativa em pose T falhou na montagem automática. O Gabriel preferiu voltar às animações por script da D020. Lição para a próxima vez: Mixamo só com o modelo em pose T, pernas retas e sem rabo/manto grande.
+
 **D020: Animação dos heróis: esqueleto e animações por script no Blender + Animator no Godot** · 2026-10-05 · Gabriel pediu as animações do Tico
 - A malha do TRELLIS vem sem esqueleto. `tools/blender/gerado/animar_tico.py` monta um esqueleto de kobold (20 ossos: tronco, cabeça, braços, pernas, 3 do rabo), pesa cada vértice pela distância aos ossos com regras por região (mochila não balança com a cabeça, manto da perna vai com a perna) e cria 10 animações: `idle`, `walk`, `run`, `attack` (Adaga), `dash_strike` (Bote das sombras), `cast` (Espinhos), `hide` (Camuflagem), `dodge` (Ação ardilosa), `hit`, `down`.
 - No Godot, `CombatantAnimator` (nó `Animator` do herói) toca a certa sozinho. Nomes no Inspector, então outro herói usa o mesmo nó com as animações dele.
