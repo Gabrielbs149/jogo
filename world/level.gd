@@ -1,12 +1,16 @@
+class_name Level
 extends Node3D
-## Ethera: você começa sozinho, no acampamento, com o herói que escolheu (Game.chosen). Os outros heróis
-## da história esperam pela fase (nós HeroSpot); chegando perto, F conversa e dá para chamar para o grupo.
-## A luta é em tempo real e começa quando um inimigo percebe você. Derrotar o Último Guardião fecha o capítulo.
+## Raiz de toda fase. Cria você (Game.chosen) no PlayerSpawn e quem já está no grupo ao seu lado;
+## os heróis da história que ainda não entraram esperam nos HeroSpot (F conversa e convida).
+## A luta é em tempo real e começa quando um inimigo percebe você. Derrotar o chefe (is_boss) fecha o capítulo.
+## Também cuida de F nas coisas da fase (ler, descansar, conversar, viajar), cair/levantar e da abertura.
 ## Os textos da história ficam no Inspector deste nó.
 
 @export var chapter_title: String = "Ruínas de Ethera"
 ## Frases da abertura, uma por item.
 @export var intro_lines: PackedStringArray = []
+## Aparece no painel de história logo depois da abertura (dica de começo, por exemplo).
+@export_multiline var start_story: String = ""
 @export_multiline var victory_text: String = ""
 @export_multiline var defeat_text: String = ""
 ## Pula a abertura (testes rodam sem janela e também pulam).
@@ -23,7 +27,6 @@ var ready_to_play: bool = false
 var _calm_time: float = 0.0
 var _finished: bool = false
 
-@onready var _terrain: MeshInstance3D = $Terrain
 @onready var _navigation: NavigationRegion3D = $Navigation
 @onready var _camera: ThirdPersonCamera = $CameraRig
 @onready var _hud: GameHUD = $HUD
@@ -31,7 +34,10 @@ var _finished: bool = false
 
 
 func _ready() -> void:
-	_terrain.create_trimesh_collision()
+	# Terreno feito de malha (dunas) ganha colisão aqui; fase com chão de StaticBody não precisa de "Terrain"
+	var terrain := get_node_or_null("Terrain") as MeshInstance3D
+	if terrain:
+		terrain.create_trimesh_collision()
 	player = _spawn_hero(Game.chosen, _spawn.transform)
 	controller = PlayerController.new()
 	controller.name = "PlayerController"
@@ -44,15 +50,14 @@ func _ready() -> void:
 	_hud.setup(player, controller)
 	_hud.watch(player)
 	_hud.continue_pressed.connect(func() -> void: _camera.capture(true))
+	for id: String in Game.party.duplicate():
+		var side := Vector3(1.5 * (companions.size() + 1), 0.0, 1.5)
+		_join(_spawn_hero(id, _spawn.transform.translated(side)))
 	for node: Node in get_tree().get_nodes_in_group("hero_spot"):
 		var spot := node as HeroSpot
-		if spot.hero_id == Game.chosen or not Game.HEROES.has(spot.hero_id):
+		if spot.hero_id == Game.chosen or Game.party.has(spot.hero_id) or not Game.HEROES.has(spot.hero_id):
 			continue
-		if Game.party.has(spot.hero_id):
-			var side := Vector3(1.5 * (companions.size() + 1), 0.0, 1.5)
-			_join(_spawn_hero(spot.hero_id, _spawn.transform.translated(side)))
-		else:
-			_wait_here(_spawn_hero(spot.hero_id, spot.transform))
+		_wait_here(_spawn_hero(spot.hero_id, spot.transform))
 	for node: Node in get_tree().get_nodes_in_group("enemies"):
 		var enemy := node as Combatant
 		_hud.watch(enemy)
@@ -69,6 +74,7 @@ func _ready() -> void:
 	controller.enabled = true
 	_camera.capture(true)
 	_hud.show_area(chapter_title)
+	_hud.show_story(start_story)
 	ready_to_play = true
 
 
@@ -142,6 +148,11 @@ func _on_used(_by: Combatant, what: Interactable) -> void:
 			for c: Combatant in companions:
 				c.rest()
 			_hud.show_story(what.text)
+		Interactable.Action.TRAVEL:
+			if in_combat():
+				_hud.toast("Não dá para sair no meio de uma luta")
+				return
+			Game.travel(what.target_scene)
 		Interactable.Action.TALK:
 			var hero := what.get_parent() as Combatant
 			controller.enabled = false

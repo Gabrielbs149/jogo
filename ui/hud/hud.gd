@@ -39,6 +39,7 @@ var _modal: bool = false
 @onready var _party_panel: Control = %PartyPanel
 @onready var _party: VBoxContainer = %Party
 @onready var _log_label: RichTextLabel = %Log
+@onready var _log_panel: Control = %LogPanel
 @onready var _story: PanelContainer = %Story
 @onready var _story_text: Label = %StoryText
 @onready var _recruit: Control = %Recruit
@@ -64,6 +65,7 @@ func _ready() -> void:
 	_toast.modulate.a = 0.0
 	_prompt.text = ""
 	_log_label.text = ""
+	_log_panel.hide()  # aparece na primeira rolagem
 	%RecruitYes.pressed.connect(func() -> void: _answer_recruit(true))
 	%RecruitNo.pressed.connect(func() -> void: _answer_recruit(false))
 	_result_continue.pressed.connect(_on_result_continue)
@@ -116,6 +118,7 @@ func log_line(line: String) -> void:
 	while _log.size() > log_lines:
 		_log.remove_at(0)
 	_log_label.text = "\n".join(_log)
+	_log_panel.show()
 
 
 func toast(text: String) -> void:

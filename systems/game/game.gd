@@ -4,7 +4,12 @@ extends Node
 
 const TITLE_SCENE := "res://ui/title/title_screen.tscn"
 const SELECT_SCENE := "res://ui/character_select/character_select.tscn"
-const FIRST_LEVEL := "res://levels/ethera/ethera.tscn"
+const ARANDU := "res://levels/arandu/arandu.tscn"
+const ETHERA := "res://levels/ethera/ethera.tscn"
+## Onde cada herói começa a história. Quem ainda não tem começo próprio começa em Ethera.
+const START_LEVELS: Dictionary[String, String] = {
+	"tico": ARANDU,
+}
 
 ## Os cinco heróis da história, na ordem da tela de escolha. id -> cena do herói.
 const HEROES: Dictionary[String, String] = {
@@ -25,10 +30,22 @@ func hero_scene(id: String) -> PackedScene:
 	return load(HEROES[id]) as PackedScene
 
 
+func start_level(hero_id: String) -> String:
+	return START_LEVELS.get(hero_id, ETHERA)
+
+
 func new_game(hero_id: String) -> void:
 	chosen = hero_id
 	party.clear()
-	get_tree().change_scene_to_file(FIRST_LEVEL)
+	get_tree().change_scene_to_file(start_level(hero_id))
+
+
+## Vai para outra fase levando você e o grupo.
+func travel(scene_path: String) -> void:
+	if scene_path == "":
+		return
+	get_tree().paused = false
+	get_tree().change_scene_to_file(scene_path)
 
 
 func recruit(hero_id: String) -> void:

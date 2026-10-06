@@ -270,6 +270,7 @@ layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="LogPanel" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
 mouse_filter = 2
 theme_override_styles/panel = SubResource("Soft")
 layout_mode = 1
@@ -309,17 +310,14 @@ unique_name_in_owner = true
 mouse_filter = 2
 theme_override_styles/panel = SubResource("Soft")
 layout_mode = 1
-anchors_preset = 7
+anchors_preset = 5
 anchor_left = 0.5
-anchor_top = 1.0
 anchor_right = 0.5
-anchor_bottom = 1.0
 offset_left = -400.0
-offset_top = -420.0
+offset_top = 205.0
 offset_right = 400.0
-offset_bottom = -270.0
+offset_bottom = 330.0
 grow_horizontal = 2
-grow_vertical = 0
 
 [node name="StoryText" type="Label" parent="Root/Story"]
 unique_name_in_owner = true

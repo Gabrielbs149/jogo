@@ -1,17 +1,20 @@
 class_name Interactable
 extends Node3D
-## Algo que se usa de perto com F: inscrição na pedra (lê um pedaço da história), fogueira (descansa),
-## herói encontrado no caminho (conversa e chama para o grupo). A fase escuta o sinal "used".
+## Algo que se usa de perto com F: inscrição ou morador (READ: mostra o texto), fogueira (REST: descansa),
+## herói encontrado no caminho (TALK: conversa e chama para o grupo), saída (TRAVEL: vai para outra fase).
+## A fase escuta o sinal "used".
 
 signal used(by: Combatant, what: Interactable)
 
-enum Action { READ, REST, TALK }
+enum Action { READ, REST, TALK, TRAVEL }
 
 @export var action: Action = Action.READ
 ## O que aparece na tela: "F · Ler a inscrição".
 @export var prompt_text: String = "Ler a inscrição"
 ## Texto da inscrição (READ) ou do descanso (REST).
 @export_multiline var text: String = ""
+## TRAVEL: a fase para onde esta saída leva.
+@export_file("*.tscn") var target_scene: String = ""
 
 var enabled: bool = true
 

@@ -38,6 +38,11 @@ E fragmentos do dia a dia da cidade, que fazem Ethera parecer viva (estilo Journ
 
 **No jogo:** a arena é o altar partido de Ethera. O chefe é o **Último Guardião** (o espírito que protege um selo que não existe mais), com **escaravelhos de cinza** e **sentinelas estelares** (servos dos Astros). Vencer faz o guardião descansar, e Ethera junto.
 
+## Onde cada um começa
+- **Tico-Lirou:** era **mendigo em Arandu, a cidade natal dele** (Gabriel, 05/10). No jogo ele acorda no beco onde dorme e conhece a cidade antes de sair pela estrada.
+  - *(proposta)* Moradores de Arandu e falas: a padeira que guarda o pão de ontem para ele, o vendedor de frutas, o guarda do portão ("lá fora as estrelas andam estranhas") e uma criança que chama ele de "moço-planta". Ajustem no Inspector (nó `Talk` de cada um).
+- **Naumfode, Chumasso, José Maria, Bahamut:** começo ainda a definir (por enquanto começam em Ethera).
+
 ## O grupo
 | Personagem | Na campanha | No jogo |
 |---|---|---|

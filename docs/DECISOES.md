@@ -6,6 +6,13 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D019: Cada herói começa a história num lugar diferente; Tico-Lirou começa em Arandu** · 2026-10-05 · Gabriel
+- O começo do jogo é calmo e pequeno: nada de fase cheia logo na primeira tela. O lugar de início de cada herói fica em `Game.START_LEVELS` (`systems/game/game.gd`).
+- **Tico-Lirou → Arandu** (`levels/arandu/`), a cidade natal dele, onde ele era mendigo: ele acorda no beco onde dorme, com uma praça, poço, mercado, algumas casas, quatro moradores para conversar (F) e o portão que leva para a estrada (vai para Ethera).
+- Os outros quatro ainda começam em Ethera até o Gabriel contar o começo de cada um.
+- O script da fase virou um só para todas: `world/level.gd` (classe `Level`). Saída para outra fase = `Interactable` com ação TRAVEL e `target_scene`.
+- Porquê: o Gabriel quer conhecer o lugar de cada personagem antes da aventura, começando simples.
+
 **D018: Ação em 3ª pessoa com regras de D&D 5.5; você escolhe um herói e recruta os outros no caminho** · 2026-10-05 · Gabriel · substitui D012 e D014 (o combate por turnos sai)
 - **Começo:** tela inicial → escolha de quem seguir (os 5 da história) → a fase começa **só com o escolhido**. Os outros quatro esperam pela fase (nós `HeroSpot`); chegando perto, **F conversa** e você decide se chama para o grupo. Quem entra vira aliado controlado pela IA e segue você. A lista de quem entrou fica no autoload `Game`.
 - **Controle:** câmera atrás do ombro (mouse gira, mira no centro da tela), **WASD** anda, **Shift** corre, **botão esquerdo** ataca (segure), **Q / E / R** habilidades, **Espaço** esquiva, **F** interage, **Esc** pausa. Q/E/R no lugar do Q/W/E/R do LoL porque o W já anda.
