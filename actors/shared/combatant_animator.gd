@@ -21,6 +21,8 @@ extends Node
 var _me: Combatant
 var _player: AnimationPlayer
 var _one_shot: bool = false
+## Animação presa por uma cena (sentado, comendo...): fica nela até release().
+var _held: StringName = &""
 
 
 func _ready() -> void:
@@ -46,7 +48,7 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if _one_shot or _me.downed:
+	if _one_shot or _me.downed or _held != &"":
 		return
 	var speed := Vector2(_me.velocity.x, _me.velocity.z).length()
 	if speed < 0.3:
@@ -63,6 +65,22 @@ func _loop(anim: StringName, speed: float) -> void:
 	if _player.current_animation != anim:
 		_player.play(anim, 0.15)
 	_player.speed_scale = speed
+
+
+## Prende o personagem numa animação (em laço) até release(). Usado pelas cenas. Devolve false se não existe.
+func hold(anim: StringName) -> bool:
+	if _player == null or not _player.has_animation(anim):
+		return false
+	_held = anim
+	_one_shot = false
+	_player.get_animation(anim).loop_mode = Animation.LOOP_LINEAR
+	_player.speed_scale = 1.0
+	_player.play(anim, 0.3)
+	return true
+
+
+func release() -> void:
+	_held = &""
 
 
 func _play_once(anim: StringName) -> void:

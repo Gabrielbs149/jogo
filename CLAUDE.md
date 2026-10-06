@@ -44,6 +44,7 @@ res://
 ├─ battle/        arena por turnos (BattleArena: iniciativa, PA, QTE, esquivar/aparar)
 ├─ world/         Level, Encounter, Interactable (F), HeroSpot e props/ (peças do catálogo do editor de mapas)
 ├─ editor/        editor de mapas dentro do jogo (D023): F2 numa fase ou botão na tela inicial
+├─ story/         cenas por roteiro (D025): Roteiro (.tres com o texto da cena) + CutscenePlayer; prólogo e cenas dos heróis
 ├─ levels/        fases montadas no editor: levels/<nome>/<nome>.tscn + levels/<nome>/art/
 ├─ ui/            hud/ (mapa), battle_hud/ (arena + anel do QTE), title/, character_select/, theme/ (Cinzel + Lato)
 ├─ systems/       game/ (autoload Game), camera/ (3ª pessoa)

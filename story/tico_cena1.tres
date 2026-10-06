@@ -1,0 +1,65 @@
+[gd_resource type="Resource" script_class="Roteiro" format=3]
+
+[ext_resource type="Script" path="res://story/roteiro.gd" id="1_roteiro"]
+
+[resource]
+script = ExtResource("1_roteiro")
+texto = "# 1ª Cena do Tico (texto do Gabriel). As linhas entre [ ] são os comandos; o resto é o roteiro dele, que fica só de anotação.
+# Os planos de câmera (Plano1..Plano4), a marca TicoSentado, a Tika e o pão ficam no nó CenaTico da fase Arandu.
+[tela preta 0]
+[mostra: Tika]
+[mostra: Pao]
+[coloca: Tico TicoSentado]
+[anima: Tico sit]
+[na mão: Pao]
+Tela preta.
+Sons de cidade ao fundo.
+Gente conversando, carroça passando, cachorro latindo.
+[som: cidade | (gente conversando, uma carroça passando, um cachorro latindo)]
+[pausa 2.5]
+Uma voz:
+???: \"Você vai mesmo dividir isso comigo?\"
+[legenda:]
+[corta: Plano1]
+[abre 1.5]
+Corta para Tico sentado no chão, embaixo de uma marquise.
+Na mão dele, um pedaço de pão.
+Na frente dele está Tika.
+Ela olha para o pão.
+[pausa 1.2]
+[corta: Plano2]
+Tico: \"Você sabe que eu achei isso, né?\"
+[corta: Plano3]
+Tika: \"E?\"
+[corta: Plano2]
+Tico: \"Então tecnicamente é meu.\"
+[corta: Plano3]
+Tika: \"Tecnicamente eu poderia pegar.\"
+Tico olha para ela.
+[corta: Plano2]
+Pausa.
+[pausa 1.6]
+Ele quebra o pão ao meio.
+[corta: Plano1]
+[esconde: Pao/Inteiro]
+[mostra: Pao/Metade]
+[mostra: PaoDaTika]
+Tico: \"...metade.\"
+Tika: \"Idiota.\"
+Eles comem.
+[anima: Tico sit_eat]
+[câmera: Plano4 5]
+[pausa 1.5]
+É uma cena simples, mas já mostra a relação dos dois.
+# (proposta) passagem para o jogo, com as frases da história do Tico:
+[tela preta 2]
+[para som]
+[esconde: Tika]
+[esconde: PaoDaTika]
+[esconde: Pao]
+[solta: Tico]
+> Certo dia, Tico acorda e não vê Tika do seu lado, em cima de seu papelão.
+> Desesperado, procura por todos os lados, mas nada dela aparecer.
+
+[abre 1.5]
+"

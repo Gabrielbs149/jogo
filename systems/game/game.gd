@@ -8,6 +8,8 @@ const ARANDU := "res://levels/arandu/arandu.tscn"
 const ETHERA := "res://levels/ethera/ethera.tscn"
 const ARENA_ETHERA := "res://levels/arenas/ethera_arena.tscn"
 const EDITOR_SCENE := "res://editor/map_editor.tscn"
+## Texto de abertura da campanha, mostrado uma vez em todo jogo novo, antes da cena do herói.
+const PROLOGUE := "res://story/prologo.tres"
 ## Onde o editor guarda a fase para o botão Testar (sem mexer no arquivo de verdade).
 const EDITOR_DRAFT := "user://editor_rascunho.tscn"
 ## Onde cada herói começa a história. Quem ainda não tem começo próprio começa em Ethera.
@@ -42,6 +44,8 @@ var hero_hp: int = -1
 var pending_story: String = ""
 ## Fases cuja abertura você já viu (voltar da luta não repete).
 var seen: Array[String] = []
+## Jogo novo: a primeira fase mostra o prólogo da campanha.
+var prologue_pending: bool = false
 ## Editor de mapas: a fase aberta (arquivo de verdade) e, voltando do Testar, o rascunho com o que não foi salvo.
 var edit_level: String = ARANDU
 var edit_draft: String = ""
@@ -64,6 +68,7 @@ func new_game(hero_id: String) -> void:
 	returning = false
 	pending_story = ""
 	seen.clear()
+	prologue_pending = true
 	get_tree().change_scene_to_file(start_level(hero_id))
 
 

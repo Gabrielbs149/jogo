@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Texture2D" path="res://assets/skies/kloofendal_48d_partly_cloudy_puresky.hdr" id="2_eov6y"]
+[ext_resource type="Resource" path="res://story/tico_cena1.tres" id="2_xyn7r"]
 [ext_resource type="Material" path="res://assets/materials/chao_cascalho.tres" id="3_1h15i"]
 [ext_resource type="Material" path="res://assets/materials/calcada.tres" id="4_aonnr"]
 [ext_resource type="Material" path="res://assets/materials/caminho.tres" id="5_6oa4i"]
@@ -31,6 +32,10 @@
 [ext_resource type="PackedScene" path="res://world/props/rocha_grande.tscn" id="36_r1ew3"]
 [ext_resource type="PackedScene" path="res://world/props/pedras.tscn" id="37_g2go1"]
 [ext_resource type="PackedScene" path="res://world/props/pedregulhos.tscn" id="38_dosd3"]
+[ext_resource type="PackedScene" path="res://world/props/marquise.tscn" id="40_4nmll"]
+[ext_resource type="PackedScene" path="res://actors/tika_muro/tika_muro.tscn" id="41_s8oiq"]
+[ext_resource type="PackedScene" path="res://world/props/pao.tscn" id="42_bsk5u"]
+[ext_resource type="PackedScene" path="res://world/props/meio_pao.tscn" id="43_1wlkg"]
 [ext_resource type="Script" path="res://systems/camera/third_person_camera.gd" id="cam"]
 [ext_resource type="FontFile" path="res://assets/fonts/cinzel.ttf" id="font"]
 [ext_resource type="Script" path="res://combat/combat_fx.gd" id="fx"]
@@ -126,9 +131,8 @@ roughness = 0.9
 [sub_resource type="BoxMesh" id="BoxMesh_39"]
 size = Vector3(2.2, 1.8, 0.1)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_18"]
-albedo_color = Color(0.45, 0.38, 0.5, 1)
-roughness = 0.9
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xyn7r"]
+albedo_color = Color(0.56, 0.43, 0.28, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_90"]
 size = Vector3(1.7, 0.08, 1)
@@ -178,8 +182,9 @@ height = 1.116
 [node name="Arandu" type="Node3D" unique_id=1435295502]
 script = ExtResource("level")
 chapter_title = "Arandu"
-intro_lines = PackedStringArray("Arandu.", "A cidade onde Tico-Lirou nasceu.", "Para quem passa na rua, ele é só mais um mendigo encostado no muro.")
+intro_lines = PackedStringArray()
 start_story = "WASD anda e o mouse olha em volta. Chegue perto das pessoas e das coisas e aperte F."
+cena_de_abertura = ExtResource("2_xyn7r")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=644594426]
 environment = SubResource("Environment_23")
@@ -662,7 +667,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 0, 5.75)
 
 [node name="Blanket" type="MeshInstance3D" parent="TicoCorner" unique_id=1956489406]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0.04, 0.6)
-material_override = SubResource("StandardMaterial3D_18")
+material_override = SubResource("StandardMaterial3D_xyn7r")
 mesh = SubResource("BoxMesh_90")
 
 [node name="Cup" type="MeshInstance3D" parent="TicoCorner" unique_id=211764501]
@@ -804,10 +809,10 @@ transform = Transform3D(1, 0, 0, 0, 0.96105546, 0.27635565, 0, -0.27635565, 0.96
 script = ExtResource("cam")
 
 [node name="Arm" type="SpringArm3D" parent="CameraRig" unique_id=1048504096]
-spring_length = 2.3146625
+spring_length = 3.221073
 
 [node name="Camera3D" type="Camera3D" parent="CameraRig/Arm" unique_id=1474104767]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.3146625)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5.9604645e-08, 3.2210732)
 current = true
 fov = 68.0
 far = 300.0
@@ -1047,3 +1052,40 @@ transform = Transform3D(-0.4117585, 0, 0.60222024, 0, 0.7295302, 0, -0.60222024,
 
 [node name="Rocha_grande9" parent="Rocks" unique_id=241629294 instance=ExtResource("36_r1ew3")]
 transform = Transform3D(-0.84269744, 0, -0.09411214, 0, 0.8479364, 0, 0.09411214, 0, -0.84269744, 20.459095, 0, 48.346375)
+
+[node name="CenaTico" type="Node3D" parent="." unique_id=726410139]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.4, 0, 6.35)
+
+[node name="Marquise" parent="CenaTico" unique_id=1999049045 instance=ExtResource("40_4nmll")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.1500001)
+
+[node name="TicoSentado" type="Marker3D" parent="CenaTico" unique_id=392444302]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.6500001)
+
+[node name="Tika" parent="CenaTico" unique_id=1505829430 instance=ExtResource("41_s8oiq")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, -0.5)
+visible = false
+
+[node name="Pao" parent="CenaTico" unique_id=239774156 instance=ExtResource("42_bsk5u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 0.25, 0.5500002)
+visible = false
+
+[node name="PaoDaTika" parent="CenaTico" unique_id=419127795 instance=ExtResource("43_1wlkg")]
+transform = Transform3D(0.87758255, 0, 0.47942555, 0, 1, 0, -0.47942555, 0, 0.87758255, -0.12000084, 0.5, -0.27999973)
+visible = false
+
+[node name="Plano1" type="Camera3D" parent="CenaTico" unique_id=1876138460]
+transform = Transform3D(-0.14654863, -0.27822828, 0.9492694, 0, 0.95963013, 0.28126496, -0.98920345, 0.041218996, -0.14063248, 2.7000008, 1.25, -0.3249998)
+fov = 48.0
+
+[node name="Plano2" type="Camera3D" parent="CenaTico" unique_id=372320980]
+transform = Transform3D(-0.92694676, -0.11076125, 0.35847127, 0, 0.95543194, 0.2952115, -0.37519288, 0.27364534, -0.88563454, 0.8500004, 1.15, -1.4499998)
+fov = 40.0
+
+[node name="Plano3" type="Camera3D" parent="CenaTico" unique_id=980638397]
+transform = Transform3D(0.65617883, 0.16890736, -0.7354588, 0, 0.97462696, 0.22383535, 0.7546054, -0.14687602, 0.6395296, -1.1499996, 1.05, 0.5)
+fov = 40.0
+
+[node name="Plano4" type="Camera3D" parent="CenaTico" unique_id=1290853442]
+transform = Transform3D(-0.4061385, -0.34385666, 0.8466487, 0, 0.9265026, 0.37628838, -0.9138115, 0.1528252, -0.37628838, 4.5, 2.6, -1.9249997)
+fov = 50.0

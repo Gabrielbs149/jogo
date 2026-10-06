@@ -3,9 +3,10 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://pexoy1pva54x"
-path="res://.godot/imported/wicker_basket_01_wicker_basket_01_arm_1k.jpg-a3d0f8e2c60d6ec1726e279daf7d9fcb.ctex"
+path.s3tc="res://.godot/imported/wicker_basket_01_wicker_basket_01_arm_1k.jpg-a3d0f8e2c60d6ec1726e279daf7d9fcb.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "1c080b5f14dc2f50b9c6912507a6320d"
@@ -14,11 +15,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/wicker_basket_01_wicker_basket_01_arm_1k.jpg"
-dest_files=["res://.godot/imported/wicker_basket_01_wicker_basket_01_arm_1k.jpg-a3d0f8e2c60d6ec1726e279daf7d9fcb.ctex"]
+dest_files=["res://.godot/imported/wicker_basket_01_wicker_basket_01_arm_1k.jpg-a3d0f8e2c60d6ec1726e279daf7d9fcb.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -40,4 +41,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0

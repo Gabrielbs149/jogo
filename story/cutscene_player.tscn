@@ -1,0 +1,149 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://story/cutscene_player.gd" id="script"]
+[ext_resource type="Theme" path="res://ui/theme/journey_theme.tres" id="theme"]
+
+[sub_resource type="StyleBoxFlat" id="Box"]
+bg_color = Color(0.05, 0.04, 0.035, 0.82)
+border_color = Color(0.75, 0.55, 0.3, 0.6)
+border_width_top = 1
+border_width_bottom = 1
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 28.0
+content_margin_top = 14.0
+content_margin_right = 28.0
+content_margin_bottom = 14.0
+
+[node name="CutscenePlayer" type="CanvasLayer"]
+process_mode = 3
+layer = 40
+script = ExtResource("script")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("theme")
+
+[node name="Black" type="ColorRect" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Bars" type="VBoxContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BarTop" type="ColorRect" parent="Root/Bars"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Space" type="Control" parent="Root/Bars"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="BarBottom" type="ColorRect" parent="Root/Bars"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Narration" type="VBoxContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -460.0
+offset_top = -180.0
+offset_right = 460.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="Caption" type="Label" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -460.0
+offset_top = -250.0
+offset_right = 460.0
+offset_bottom = -214.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.78, 0.74, 0.68, 0.9)
+theme_override_font_sizes/font_size = 17
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Dialogue" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -440.0
+offset_top = -206.0
+offset_right = 440.0
+offset_bottom = -78.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Box")
+
+[node name="VBox" type="VBoxContainer" parent="Root/Dialogue"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SpeakerName" type="Label" parent="Root/Dialogue/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.78, 0.45, 1)
+theme_override_font_sizes/font_size = 19
+
+[node name="Line" type="Label" parent="Root/Dialogue/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
+
+[node name="Hint" type="Label" parent="Root/Dialogue/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.66, 0.6, 0.8)
+theme_override_font_sizes/font_size = 13
+text = "Espaço ▸    Esc: pular cena"
+horizontal_alignment = 2

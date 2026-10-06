@@ -6,6 +6,13 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D025: Cenas por roteiro (cutscenes)** · 2026-10-06 · Gabriel mandou o prólogo da campanha, a história do Tico e a 1ª cena dele
+- **Formato:** um `Roteiro` (`story/roteiro.gd`, arquivo `.tres` com o texto editável no Inspector) é escrito do jeito que se escreve a cena — `Nome: "fala"` (ou `Nome:` e a fala entre aspas na linha de baixo), `> narração` no meio da tela — mais comandos entre colchetes: `[tela preta]`, `[abre]`, `[corta: Plano1]`, `[câmera: Plano2 3]`, `[som: cidade | legenda]`, `[pausa 1.5]`, `[mostra:]`/`[esconde:]`, `[anima: Tico sit]`/`[solta:]`, `[coloca: Tico Marca]`, `[olha:]`, `[na mão: Pao]`, `[legenda:]`, `[fim]`. Qualquer outra linha é direção de cena e não aparece — dá para colar o roteiro como ele foi escrito e só acrescentar os comandos. A lista completa está no topo de `story/roteiro.gd`.
+- **Quem toca:** `CutscenePlayer` (`story/cutscene_player.tscn`): faixas de cinema, letra a letra, Espaço/F/clique passam, Esc pula. `Level.cena_de_abertura` toca na primeira vez na fase (no lugar das frases de abertura); `Game.PROLOGUE` (`story/prologo.tres`) toca uma vez em todo jogo novo. Câmeras e marcas da cena ficam na própria fase (Camera3D/Marker3D), editáveis no Godot ou no editor de mapas.
+- **Tico:** animações novas `sit` e `sit_eat` (sentado no papelão, comendo) em `animar_tico.py`; o `CombatantAnimator` ganhou `hold()`/`release()`. Peças novas: marquise, pão (com a metade) e meio pão.
+- **Som:** o projeto ainda não tem arquivos de som. `[som: cidade]` procura `assets/sfx/cidade.ogg`; sem ele, mostra a legenda (gente conversando, carroça, cachorro).
+- **História:** a Tika saiu do acampamento de Ethera (pela história, ela foi levada).
+
 **D024: Visual realista com assets do Poly Haven (CC0)** · 2026-10-06 · Gabriel ("esses gráficos são horríveis"; escolheu pacotes grátis + estilo mais realista)
 - **Fonte:** Poly Haven (CC0, sem royalty, sem crédito obrigatório; lista em `assets/CREDITOS.md`). Pacotes low-poly (Kenney, Quaternius, KayKit) ficaram de fora por não serem realistas. As árvores "normais" do Poly Haven têm milhões de polígonos: ficaram de fora. Por isso a região virou **árida**: Arandu é uma cidade de reboco e telha de barro, e a vegetação é de deserto (árvore-aljava, suculentas, arbustos secos).
 - **Modelos** (`assets/models/*.glb`): baixados em 1k, passados por `tools/blender/gerado/preparar_polyhaven.py` (junta as partes, simplifica até ~14–40 mil triângulos, base no chão, medidas em `medidas.json`).

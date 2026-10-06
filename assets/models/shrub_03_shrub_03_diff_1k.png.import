@@ -3,9 +3,10 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://deif7mfik6oh1"
-path="res://.godot/imported/shrub_03_shrub_03_diff_1k.png-d45091e8c799f0de0a7917c385958c7e.ctex"
+path.s3tc="res://.godot/imported/shrub_03_shrub_03_diff_1k.png-d45091e8c799f0de0a7917c385958c7e.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "f7795e90693f0471b5b12e2449d41e98"
@@ -14,11 +15,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/shrub_03_shrub_03_diff_1k.png"
-dest_files=["res://.godot/imported/shrub_03_shrub_03_diff_1k.png-d45091e8c799f0de0a7917c385958c7e.ctex"]
+dest_files=["res://.godot/imported/shrub_03_shrub_03_diff_1k.png-d45091e8c799f0de0a7917c385958c7e.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -40,4 +41,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0

@@ -3,9 +3,10 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cjl85dy0vrkdg"
-path="res://.godot/imported/barrel_03_barrel_03_diff_1k.jpg-f0540511e57c016065f254a09b4d7785.ctex"
+path.s3tc="res://.godot/imported/barrel_03_barrel_03_diff_1k.jpg-f0540511e57c016065f254a09b4d7785.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "6999a1a446df517e138ce14d1c8820bd"
@@ -14,11 +15,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/models/barrel_03_barrel_03_diff_1k.jpg"
-dest_files=["res://.godot/imported/barrel_03_barrel_03_diff_1k.jpg-f0540511e57c016065f254a09b4d7785.ctex"]
+dest_files=["res://.godot/imported/barrel_03_barrel_03_diff_1k.jpg-f0540511e57c016065f254a09b4d7785.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -40,4 +41,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0

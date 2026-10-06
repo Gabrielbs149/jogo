@@ -1,0 +1,39 @@
+[gd_scene format=3]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_1"]
+radius = 0.045
+height = 0.2
+radial_segments = 12
+rings = 4
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_2"]
+radius = 0.045
+height = 0.11
+radial_segments = 12
+rings = 4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_3"]
+top_radius = 0.04
+bottom_radius = 0.04
+height = 0.004
+radial_segments = 12
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
+albedo_color = Color(0.62, 0.36, 0.14, 1)
+roughness = 0.75
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
+albedo_color = Color(0.93, 0.82, 0.6, 1)
+roughness = 0.95
+
+[node name="Meio_pao" type="Node3D"]
+
+[node name="Casca" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 0.85, 0, 0, 0)
+mesh = SubResource("CapsuleMesh_2")
+material_override = SubResource("StandardMaterial3D_4")
+
+[node name="Miolo" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0.055, 0, 0)
+mesh = SubResource("CylinderMesh_3")
+material_override = SubResource("StandardMaterial3D_5")

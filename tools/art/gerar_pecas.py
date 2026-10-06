@@ -203,6 +203,38 @@ s.mesh("Top", s.box((1.4, 0.35, 1.4)), s.mat("arenito"), (0, 4.07, 0))
 s.body(("cyl", (0.65, 4.2)), (0, 2.1, 0), 4)
 s.save("pilar")
 
+s = Scene("Marquise")
+# presa na parede (o lado +Z da peça encosta na parede), sai 2 m para a frente a 2,5 m de altura
+s.mesh("Roof", s.box((3.2, 0.1, 2.1)), s.mat("telha"), (0, 2.45, -1.0), (-0.2, 0, 0))
+s.mesh("Beam", s.box((3.3, 0.16, 0.16)), s.mat("tabuas"), (0, 2.2, -1.95))
+s.mesh("WallBeam", s.box((3.3, 0.18, 0.14)), s.mat("tabuas"), (0, 2.62, -0.07))
+for i, x in enumerate((-1.45, 1.45)):
+    s.mesh("Brace%d" % i, s.box((0.12, 0.12, 1.45)), s.mat("tabuas"), (x, 2.05, -0.95), (0.62, 0, 0))
+    s.mesh("Post%d" % i, s.box((0.12, 2.2, 0.12)), s.mat("tabuas"), (x, 1.1, -1.95))
+s.save("marquise")
+
+CRUST, CRUMB = (0.62, 0.36, 0.14), (0.93, 0.82, 0.6)
+
+
+def bread_parts(s, parent, whole):
+    loaf = s.sub("CapsuleMesh", ("loaf",), "radius = 0.045\nheight = 0.2\nradial_segments = 12\nrings = 4")
+    half = s.sub("CapsuleMesh", ("half",), "radius = 0.045\nheight = 0.11\nradial_segments = 12\nrings = 4")
+    cut = s.sub("CylinderMesh", ("cut",), "top_radius = 0.04\nbottom_radius = 0.04\nheight = 0.004\nradial_segments = 12")
+    if whole:
+        s.mesh("Inteiro", loaf, s.color(CRUST, 0.75), (0, 0, 0), (0, 0, math.pi / 2), (1, 1, 0.85))
+        s.node("Metade", "Node3D", ".", "visible = false")
+        parent = "Metade"
+    s.mesh("Casca", half, s.color(CRUST, 0.75), (0, 0, 0), (0, 0, math.pi / 2), (1, 1, 0.85), parent=parent)
+    s.mesh("Miolo", cut, s.color(CRUMB, 0.95), (0.055, 0, 0), (0, 0, math.pi / 2), parent=parent)
+
+
+s = Scene("Pao")
+bread_parts(s, ".", True)
+s.save("pao")
+s = Scene("Meio_pao")
+bread_parts(s, ".", False)
+s.save("meio_pao")
+
 # natureza
 model_prop("arvore", "Arvore", "quiver_tree_01", 2.2, "trunk", 1)
 model_prop("arvore_pequena", "Arvore_pequena", "quiver_tree_02", 2.0, "trunk", 1)

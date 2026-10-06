@@ -13,6 +13,8 @@ extends Node3D
 @export_multiline var start_story: String = ""
 @export_multiline var victory_text: String = ""
 @export_multiline var defeat_text: String = ""
+## Cena que abre a fase na primeira vez (story/*.tres, ver story/roteiro.gd). Se tiver, substitui a abertura acima.
+@export var cena_de_abertura: Roteiro
 ## Pula a abertura (testes rodam sem janela e também pulam).
 @export var skip_intro: bool = false
 ## Sem inimigo brigando por tantos segundos, quem caiu se levanta com 1 PV (estabilizado).
@@ -20,6 +22,8 @@ extends Node3D
 
 ## Ligado pelo editor de mapas: a fase abre parada, só o cenário (sem você, sem luta, sem abertura).
 static var editing: bool = false
+
+const CUTSCENE := "res://story/cutscene_player.tscn"
 
 var player: Combatant
 var controller: PlayerController
@@ -99,8 +103,16 @@ func _ready() -> void:
 			it.used.connect(_on_used)
 	await _bake_navigation()
 	var headless := DisplayServer.get_name() == "headless"
-	if not (skip_intro or headless or intro_lines.is_empty() or Game.seen.has(scene_file_path)):
-		await _hud.play_intro(chapter_title, intro_lines)
+	var first_time := not Game.seen.has(scene_file_path)
+	if not (skip_intro or headless):
+		if Game.prologue_pending:
+			Game.prologue_pending = false
+			await play_cutscene(load(Game.PROLOGUE) as Roteiro)
+		if first_time and cena_de_abertura:
+			await play_cutscene(cena_de_abertura)
+		elif first_time and not intro_lines.is_empty():
+			await _hud.play_intro(chapter_title, intro_lines)
+	Game.prologue_pending = false
 	controller.enabled = true
 	_camera.capture(true)
 	_hud.show_area(chapter_title)
@@ -117,6 +129,23 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("map_editor") and not editing:
 		Game.open_editor(scene_file_path)
+
+
+## Toca uma cena (Roteiro) com você parado; o painel do jogo some enquanto isso.
+func play_cutscene(roteiro: Roteiro) -> void:
+	if roteiro == null:
+		return
+	if controller:
+		controller.enabled = false
+	_hud.visible = false
+	_camera.capture(false)
+	var cutscene := (load(CUTSCENE) as PackedScene).instantiate() as CutscenePlayer
+	cutscene.stage = self
+	cutscene.hero = player
+	add_child(cutscene)
+	await cutscene.play(roteiro)
+	cutscene.queue_free()
+	_hud.visible = true
 
 
 func in_combat() -> bool:

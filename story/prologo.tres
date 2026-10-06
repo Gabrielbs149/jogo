@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="Roteiro" format=3]
+
+[ext_resource type="Script" path="res://story/roteiro.gd" id="1_roteiro"]
+
+[resource]
+script = ExtResource("1_roteiro")
+texto = "# Prólogo da campanha (texto do Gabriel). Aparece uma vez em todo jogo novo, antes da cena do herói.
+[tela preta 0]
+[pausa 1]
+> Enquanto o céu se move e os astros se alinham, nem todos caminham desde o início da história.
+> Alguns chegam quando o mundo já está quebrado.
+
+> Vocês não presenciaram a noite que perdeu seu nome.
+> Não viram os primeiros sinais, nem entenderam o medo quando ele começou.
+> Mas sentem os efeitos.
+
+> Cidades murmuram sobre presságios.
+> Estradas se tornam perigosas sem explicação.
+> O céu azul, antes familiar, agora observa como se aguardasse algo.
+
+> Vocês foram arrastados para este momento por razões diferentes:
+> uma dívida não paga, uma promessa antiga, uma curiosidade perigosa ou uma fuga necessária.
+> Seja qual for o motivo, o mundo não permite mais espectadores.
+
+> A Lua não escolhe apenas os preparados.
+> Ela chama os que podem suportar o peso do que está por vir.
+
+> Vocês não sabem exatamente o que Novazul é.
+> Não entendem por que os astros importam tanto.
+> Mas sentem que, se nada for feito, algo essencial será perdido.
+
+> Este não é o começo da história.
+> É o momento em que vocês entram nela.
+> E, a partir de agora, o destino de Novazul também passa por suas mãos.
+
+"

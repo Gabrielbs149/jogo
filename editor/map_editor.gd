@@ -23,6 +23,7 @@ const CATALOG: Dictionary[String, Array] = {
 	"casa_grande_barro": ["Sobrado de barro", "Construções", "Buildings", false, "Sobrado de reboco de barro"],
 	"muro": ["Muro", "Construções", "Walls", false, "Pedaço de muralha de 6 m"],
 	"portao": ["Portão", "Construções", "Walls", false, "Portão de madeira e ferro (2 x 3 m)"],
+	"marquise": ["Marquise", "Construções", "Buildings", false, "Cobertura presa na parede (encoste o lado de trás na parede)"],
 	"barraca": ["Barraca", "Construções", "Market", false, "Barraca de feira com toldo e mercadorias"],
 	"poco": ["Poço", "Construções", "Buildings", false, "Poço de pedra com telhadinho de palha"],
 	"pilar": ["Pilar", "Construções", "Ruins", false, "Pilar de arenito (ruínas)"],
@@ -50,6 +51,8 @@ const CATALOG: Dictionary[String, Array] = {
 	"vaso": ["Vaso", "Objetos", "Props", false, "Vaso de cerâmica"],
 	"banquinho": ["Banquinho", "Objetos", "Props", false, "Banquinho dobrável"],
 	"banco": ["Banco", "Objetos", "Props", false, "Banco de madeira"],
+	"pao": ["Pão", "Objetos", "Props", false, "Pão (com a metade escondida, para cenas)"],
+	"meio_pao": ["Meio pão", "Objetos", "Props", false, "Metade de um pão"],
 	"bau": ["Baú", "Objetos", "Props", false, "Baú de tesouro"],
 	"lanterna": ["Lanterna", "Objetos", "Lights", false, "Lanterna acesa"],
 	"luz": ["Luz", "Objetos", "Lights", false, "Luz sozinha, que ilumina em volta"],
@@ -1021,6 +1024,10 @@ func _refresh_labels() -> void:
 			text = "⚔ Luta: %s" % (node as Encounter).id()
 			height = 3.2
 			color = Color(1.0, 0.45, 0.4)
+		elif node is Camera3D and node.owner == level:
+			text = "🎥 %s" % node.name
+			height = 0.3
+			color = Color(0.75, 0.9, 1.0)
 		elif node is OmniLight3D and node.owner == level:
 			text = "✦ Luz"
 			height = 0.4

@@ -101,8 +101,34 @@ def gait(n, leg, shin, arm, elbow, lean, bob, tail):
 walk = gait(24, 25.0, 30.0, 18.0, 10.0, 3.0, 0.02, 8.0)
 run = gait(16, 40.0, 60.0, 35.0, 45.0, 12.0, 0.035, 12.0)
 
+def sit(f):
+    """Sentado no chão (no papelão), pernas para a frente, mãos no colo, respirando."""
+    n = 80
+    return {
+        "thigh_r": [("X", 82)], "thigh_l": [("X", 82)], "shin_r": [("X", -12)], "shin_l": [("X", -12)],
+        "spine": [("X", -6 + wave(n, f, 1.5))], "chest": [("X", wave(n, f, 1.5, 0.5))], "head": [("X", 4 + wave(n, f, 2.5, 1.0))],
+        "upperarm_r": [("X", 30)], "upperarm_l": [("X", 30)], "forearm_r": [("X", 50)], "forearm_l": [("X", 50)],
+        "tail1": [("X", -20), ("Z", wave(n, f, 6.0))], "tail2": [("Z", wave(n, f, 8.0, 0.6))], "tail3": [("Z", wave(n, f, 10.0, 1.2))],
+        "loc": (0, 0, -0.25),
+    }
+
+
+def sit_eat(f):
+    """Sentado, levando a mão direita (com o pão) até a boca de tempos em tempos."""
+    n = 60
+    pose = sit(f)
+    t = max(0.0, math.sin(2 * math.pi * f / n))  # metade do ciclo com a mão na boca
+    pose["upperarm_r"] = [("X", 30 + 50 * t), ("Z", -12 * t)]
+    pose["forearm_r"] = [("X", 50 + 70 * t)]
+    pose["head"] = [("X", 4 - 8 * t)]
+    return pose
+
+
 REST: dict = {}
 ANIMS = {
+    # cena de abertura: sentado no papelão, comendo
+    "sit": (80, True, sit),
+    "sit_eat": (60, True, sit_eat),
     # nome: (quadros, laço, função ou lista de chaves)
     "idle": (60, True, idle),
     "walk": (24, True, walk),
