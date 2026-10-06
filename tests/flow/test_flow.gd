@@ -69,3 +69,17 @@ func test_arandu_is_a_calm_start_with_a_way_out() -> void:
 		if (node as Interactable).prompt_text.begins_with("Falar com"):
 			people += 1
 	assert_gte(people, 3, "tem gente para conversar")
+
+
+func test_bumping_into_enemies_sets_up_the_arena() -> void:
+	var level := await _load_level("tico")
+	var encounters := get_tree().get_nodes_in_group("encounter")
+	assert_eq(encounters.size(), 5, "cinco grupos em Ethera")
+	var first := encounters[0] as Encounter
+	var data := first.data(true)
+	assert_true(bool(data["first_strike"]))
+	assert_gt((data["enemies"] as PackedStringArray).size(), 0)
+	Game.start_battle(data, level.scene_file_path, Transform3D.IDENTITY, 50, false)
+	assert_eq(Game.battle["id"], first.encounter_id)
+	assert_eq(Game.hero_hp, 50)
+	Game.battle = {}

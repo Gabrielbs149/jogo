@@ -137,3 +137,10 @@ func test_cooldown_blocks_using_again() -> void:
 	await wait_physics_frames(2)
 	assert_false(_hero.use_ability(0, _enemy, _enemy.global_position), "em recarga")
 	assert_lt(_enemy.hp, _enemy.max_hp, "o primeiro uso acertou")
+
+
+func test_perfect_timing_turns_into_advantage() -> void:
+	var r := CombatRules.resolve(_hero, _ability(Ability.Roll.ATTACK, 1, 6), _enemy, _enemy.global_position, _all(), 1)
+	assert_string_contains(String(r[0]["text"]), "vant.")
+	var bad := CombatRules.resolve(_hero, _ability(Ability.Roll.ATTACK, 1, 6), _enemy, _enemy.global_position, _all(), -1)
+	assert_string_contains(String(bad[0]["text"]), "desv.")

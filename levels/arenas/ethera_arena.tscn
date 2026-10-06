@@ -1,0 +1,135 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://battle/battle_arena.gd" id="arena"]
+[ext_resource type="Environment" path="res://assets/environment/fire_sky.tres" id="env"]
+[ext_resource type="Script" path="res://combat/combat_fx.gd" id="fx"]
+[ext_resource type="FontFile" path="res://assets/fonts/cinzel.ttf" id="font"]
+[ext_resource type="PackedScene" path="res://ui/battle_hud/battle_hud.tscn" id="battle_hud"]
+
+[sub_resource type="PlaneMesh" id="GroundMesh"]
+size = Vector2(80, 80)
+
+[sub_resource type="StandardMaterial3D" id="Sand"]
+albedo_color = Color(0.78, 0.5, 0.3, 1)
+roughness = 0.95
+
+[sub_resource type="BoxShape3D" id="GroundShape"]
+size = Vector3(80, 1, 80)
+
+[sub_resource type="CylinderMesh" id="PillarMesh"]
+top_radius = 0.6
+bottom_radius = 0.75
+height = 4.0
+
+[sub_resource type="BoxMesh" id="AltarMesh"]
+size = Vector3(4, 0.8, 2)
+
+[sub_resource type="StandardMaterial3D" id="Stone"]
+albedo_color = Color(0.45, 0.3, 0.24, 1)
+roughness = 0.9
+
+[node name="EtheraArena" type="Node3D"]
+script = ExtResource("arena")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.8064, -0.168, 0.567, 0, 0.9588, 0.2842, -0.5914, 0.2291, -0.7732, 0, 20, 0)
+light_color = Color(1, 0.62, 0.42, 1)
+light_energy = 1.5
+shadow_enabled = true
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
+mesh = SubResource("GroundMesh")
+material_override = SubResource("Sand")
+
+[node name="GroundBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="Shape" type="CollisionShape3D" parent="GroundBody"]
+shape = SubResource("GroundShape")
+
+[node name="Ruins" type="Node3D" parent="."]
+
+[node name="Pillar0" type="MeshInstance3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 0.875, 0, 0, 0, 1, -2.0336, 1.75, -13.556)
+mesh = SubResource("PillarMesh")
+material_override = SubResource("Stone")
+
+[node name="Pillar1" type="MeshInstance3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 1.2, 0, 0, 0, 1, -6.2628, 2.4, -12.2528)
+mesh = SubResource("PillarMesh")
+material_override = SubResource("Stone")
+
+[node name="Pillar2" type="MeshInstance3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 1.525, 0, 0, 0, 1, -9.7514, 3.05, -9.7373)
+mesh = SubResource("PillarMesh")
+material_override = SubResource("Stone")
+
+[node name="Pillar3" type="MeshInstance3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 0.875, 0, 0, 0, 1, -12.0871, 1.75, -6.3071)
+mesh = SubResource("PillarMesh")
+material_override = SubResource("Stone")
+
+[node name="Pillar4" type="MeshInstance3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 1.2, 0, 0, 0, 1, -12.9936, 2.4, -2.3675)
+mesh = SubResource("PillarMesh")
+material_override = SubResource("Stone")
+
+[node name="Pillar5" type="MeshInstance3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 1.525, 0, 0, 0, 1, -12.3637, 3.05, 1.6155)
+mesh = SubResource("PillarMesh")
+material_override = SubResource("Stone")
+
+[node name="Pillar6" type="MeshInstance3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 0.875, 0, 0, 0, 1, -10.272, 1.75, 5.171)
+mesh = SubResource("PillarMesh")
+material_override = SubResource("Stone")
+
+[node name="Pillar7" type="MeshInstance3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 1.2, 0, 0, 0, 1, -6.9657, 2.4, 7.8786)
+mesh = SubResource("PillarMesh")
+material_override = SubResource("Stone")
+
+[node name="Pillar8" type="MeshInstance3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 1.525, 0, 0, 0, 1, -2.8359, 3.05, 9.4182)
+mesh = SubResource("PillarMesh")
+material_override = SubResource("Stone")
+
+[node name="Altar" type="MeshInstance3D" parent="Ruins"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -9)
+mesh = SubResource("AltarMesh")
+material_override = SubResource("Stone")
+
+[node name="PlayerSlot" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 4.5)
+
+[node name="EnemySlots" type="Node3D" parent="."]
+
+[node name="Slot0" type="Marker3D" parent="EnemySlots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -1.5)
+
+[node name="Slot1" type="Marker3D" parent="EnemySlots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0.6, -1.5)
+
+[node name="Slot2" type="Marker3D" parent="EnemySlots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0.6, -1.5)
+
+[node name="Slot3" type="Marker3D" parent="EnemySlots"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0.6, -3.1)
+
+[node name="BossSlot" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -3.2)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.9573, -0.0563, 0.2835, 0, 0.9808, 0.1949, -0.289, -0.1866, 0.939, 3.2, 3.2, 9.6)
+current = true
+fov = 55.0
+
+[node name="FX" type="Node3D" parent="."]
+script = ExtResource("fx")
+font = ExtResource("font")
+
+[node name="BattleHUD" parent="." instance=ExtResource("battle_hud")]

@@ -16,6 +16,8 @@ const KEY_NAMES: Array[String] = ["Botão esq.", "Q", "E", "R"]
 @export var interact_range: float = 2.8
 ## Ajuda na mira: aceita alvos até este ângulo (radianos) do centro da tela.
 @export var aim_assist: float = 0.3
+## No mapa (D022): o botão esquerdo é só um golpe para começar a luta com vantagem; Q/E/R ficam para a arena.
+@export var field_mode: bool = true
 
 var camera: ThirdPersonCamera
 var enabled: bool = true
@@ -61,6 +63,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## Usa a habilidade da tecla i mirando pelo centro da tela. quiet = não avisa quando não dá.
 func try_ability(index: int, quiet: bool) -> bool:
+	if field_mode:
+		if index == 0:
+			_field_strike()
+		elif not quiet:
+			message.emit("Habilidades são usadas na luta")
+		return false
 	if index >= _me.abilities.size() or _me.casting:
 		return false
 	var ability := _me.abilities[index]
@@ -82,6 +90,30 @@ func try_ability(index: int, quiet: bool) -> bool:
 		Ability.Shape.LINE, Ability.Shape.CONE:
 			point = _me.global_position + camera.forward_flat() * ability.range_m
 	return _me.use_ability(index, target, point)
+
+
+var _strike_ready_at: float = 0.0
+
+
+## Golpe no mapa: acertou um inimigo de um grupo, a luta começa com você jogando primeiro.
+func _field_strike() -> void:
+	var now := Time.get_ticks_msec() / 1000.0
+	if now < _strike_ready_at:
+		return
+	_strike_ready_at = now + 0.7
+	_me.ability_used.emit(0)
+	var forward := -_me.global_basis.z
+	if camera:
+		forward = camera.forward_flat()
+	for node: Node in get_tree().get_nodes_in_group("encounter"):
+		var encounter := node as Encounter
+		for c: Combatant in encounter.members():
+			var to := c.global_position - _me.global_position
+			to.y = 0.0
+			if to.length() <= 3.0 and forward.dot(to.normalized()) > 0.3:
+				await get_tree().create_timer(0.15).timeout
+				encounter.fire(true)
+				return
 
 
 ## O alvo mais perto do centro da tela, dentro do alcance. Cura sem ninguém na mira = quem está pior (ou você).

@@ -31,3 +31,5 @@ frighten = false
 expose = false
 projectile = false
 vfx_color = Color(0.75, 1, 0.55, 1)
+ap_cost = 0
+status_turns = 2

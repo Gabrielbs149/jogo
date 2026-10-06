@@ -6,6 +6,15 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D022: Luta no estilo Clair Obscur: por turnos, só você, numa arena, com QTE** · 2026-10-06 · Gabriel · substitui o combate em tempo real da D018 (a exploração em 3ª pessoa continua)
+- **Mapa:** inimigos ficam parados em grupos (`Encounter`). Encostar = luta. Acertar um antes com o botão esquerdo = **primeiro golpe** (você joga primeiro e ganha +1 PA). Q/E/R não funcionam no mapa. Vencido, o grupo some (`Game.defeated`); você volta ao mesmo lugar com a vida que sobrou. Perdeu: volta ao começo da fase com a vida cheia. Fogueira enche a vida.
+- **Arena** (`levels/arenas/`, script `battle/battle_arena.gd`): **só o seu personagem** luta (decisão do Gabriel: o jogo é focado em você; quem você recruta fica na história, fora da luta). Ordem por iniciativa (d20 + DES).
+- **Seu turno:** **1** = ataque (ganha 1 Ponto de Ação), **Q/E/R** = habilidades (custam PA, `ap_cost` no `.tres`). **A/D** trocam o alvo. Durante o golpe um anel fecha: **Espaço** no tempo certo = **vantagem** no d20 (perfeito, ±0,08 s); quase = normal (±0,2 s); errou = **desvantagem**. Em habilidade de salvamento, o perfeito dá desvantagem no salvamento do inimigo.
+- **Turno do inimigo:** pausa variável, o golpe vem e o anel fecha em você: **Espaço esquiva** (±0,15 s: o golpe erra, área não pega) ou **F apara** (±0,08 s: sem dano, você contra-ataca com vantagem e ganha 1 PA). Perdeu o tempo: o inimigo rola o d20 contra a sua CA normalmente.
+- **D&D continua:** d20 contra CA, vantagem/desvantagem, salvamentos, ataque furtivo (na arena: com vantagem, ou seja, com o QTE perfeito), Bênção, Marca etc. Efeitos duram **turnos** (`status_turns`). Inimigos voltaram à vida da ficha (16/20/85); o herói fica com 3× (66 no Tico).
+- **Simulador:** `tools/simulate_arena.gd` joga cada herói contra cada grupo com três perfis de jogador (bom/médio/fraco no QTE).
+- Porquê: o Gabriel quer a luta do Clair Obscur: turnos com reação em tempo real, focada no personagem dele, com quicktime.
+
 **D021: Mixamo para o Tico — testado e descartado** · 2026-10-06 · Gabriel
 O Tico foi para o Mixamo com os braços caídos e uma perna à frente: nas animações o braço entrava no corpo e o pé girava como pedal de bicicleta. Uma segunda tentativa em pose T falhou na montagem automática. O Gabriel preferiu voltar às animações por script da D020. Lição para a próxima vez: Mixamo só com o modelo em pose T, pernas retas e sem rabo/manto grande.
 

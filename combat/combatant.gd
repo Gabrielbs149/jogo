@@ -68,6 +68,8 @@ var casting: bool = false
 var downed: bool = false
 ## Herói encontrado no caminho que ainda não entrou no grupo.
 var recruitable: bool = false
+## Falso na arena por turnos: recargas e efeitos param de correr pelo relógio (efeito passa com end_turn()).
+var real_time: bool = true
 var sneak_ready_at: float = 0.0
 var _dash_velocity: Vector3 = Vector3.ZERO
 var _dash_time: float = 0.0
@@ -236,11 +238,17 @@ func rest() -> void:
 	changed.emit()
 
 
+## Arena por turnos: cada efeito em mim perde um turno.
+func end_turn() -> void:
+	_tick_statuses(1.0)
+
+
 func _physics_process(delta: float) -> void:
-	for i: int in cooldowns.size():
-		cooldowns[i] = maxf(cooldowns[i] - delta, 0.0)
-	dodge_left = maxf(dodge_left - delta, 0.0)
-	_tick_statuses(delta)
+	if real_time:
+		for i: int in cooldowns.size():
+			cooldowns[i] = maxf(cooldowns[i] - delta, 0.0)
+		dodge_left = maxf(dodge_left - delta, 0.0)
+		_tick_statuses(delta)
 	var move := Vector3.ZERO
 	if _dash_time > 0.0:
 		_dash_time -= delta
@@ -332,7 +340,8 @@ func _go_down() -> void:
 		var fx := _fx()
 		if fx:
 			await fx.fall(self)
-		queue_free()
+		if real_time:
+			queue_free()  # na arena por turnos o corpo só some da vista, para a luta não perder a referência
 	elif model and get_node_or_null("Animator") == null:  # sem animação de queda: tomba o modelo
 		var tween := create_tween()
 		tween.tween_property(model, "rotation:x", -PI / 2.0, 0.4)

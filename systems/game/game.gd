@@ -6,6 +6,7 @@ const TITLE_SCENE := "res://ui/title/title_screen.tscn"
 const SELECT_SCENE := "res://ui/character_select/character_select.tscn"
 const ARANDU := "res://levels/arandu/arandu.tscn"
 const ETHERA := "res://levels/ethera/ethera.tscn"
+const ARENA_ETHERA := "res://levels/arenas/ethera_arena.tscn"
 ## Onde cada herói começa a história. Quem ainda não tem começo próprio começa em Ethera.
 const START_LEVELS: Dictionary[String, String] = {
 	"tico": ARANDU,
@@ -24,6 +25,20 @@ const HEROES: Dictionary[String, String] = {
 var chosen: String = "tico"
 ## Quem já entrou no grupo (sem contar você), na ordem em que entrou.
 var party: Array[String] = []
+## Luta marcada para a arena: {"id", "enemies": PackedStringArray (cenas), "first_strike", "after_text", "arena"}.
+var battle: Dictionary = {}
+## De onde a luta saiu, para voltar ao mesmo lugar do mapa depois.
+var return_scene: String = ""
+var return_transform: Transform3D = Transform3D.IDENTITY
+var returning: bool = false
+## Encontros já vencidos: somem do mapa.
+var defeated: Array[String] = []
+## Sua vida entre uma luta e outra (-1 = cheia). A fogueira enche.
+var hero_hp: int = -1
+## Texto da história para mostrar quando voltar ao mapa (depois do chefe, por exemplo).
+var pending_story: String = ""
+## Fases cuja abertura você já viu (voltar da luta não repete).
+var seen: Array[String] = []
 
 
 func hero_scene(id: String) -> PackedScene:
@@ -37,6 +52,12 @@ func start_level(hero_id: String) -> String:
 func new_game(hero_id: String) -> void:
 	chosen = hero_id
 	party.clear()
+	defeated.clear()
+	battle = {}
+	hero_hp = -1
+	returning = false
+	pending_story = ""
+	seen.clear()
 	get_tree().change_scene_to_file(start_level(hero_id))
 
 
@@ -45,7 +66,33 @@ func travel(scene_path: String) -> void:
 	if scene_path == "":
 		return
 	get_tree().paused = false
+	returning = false
 	get_tree().change_scene_to_file(scene_path)
+
+
+## Leva você para a arena. change = false só guarda os dados (testes).
+func start_battle(data: Dictionary, from_scene: String, from: Transform3D, hp: int, change: bool = true) -> void:
+	battle = data
+	return_scene = from_scene
+	return_transform = from
+	hero_hp = hp
+	if change:
+		get_tree().change_scene_to_file(String(data.get("arena", ARENA_ETHERA)))
+
+
+## Volta da arena para o mapa. Venceu: no mesmo lugar, com a vida que sobrou. Perdeu: do começo da fase, vida cheia.
+func end_battle(victory: bool, hp: int) -> void:
+	if victory:
+		defeated.append(String(battle.get("id", "")))
+		hero_hp = hp
+		pending_story = String(battle.get("after_text", ""))
+		returning = true
+	else:
+		hero_hp = -1
+		returning = false
+	battle = {}
+	get_tree().paused = false
+	get_tree().change_scene_to_file(return_scene)
 
 
 func recruit(hero_id: String) -> void:

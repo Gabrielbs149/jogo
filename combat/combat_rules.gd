@@ -7,6 +7,9 @@ extends RefCounted
 ## - Ataque furtivo: +Nd6 com vantagem ou com um aliado a 2 m do alvo, uma vez a cada 2,5 s.
 ## - Marca do caçador: quem marcou causa +Nd6 no alvo marcado.
 
+## Luta por turnos (arena): efeitos duram turnos em vez de segundos.
+static var turn_mode: bool = false
+
 const SNEAK_ALLY_RANGE := 2.0
 const LINE_WIDTH := 1.2
 ## Metade da abertura do cone, em radianos (≈ 35°).
@@ -34,7 +37,7 @@ static func d20(advantage: int) -> Dictionary:
 
 static func attack_advantage(attacker: Combatant, ability: Ability, target: Combatant) -> int:
 	var adv := ability.advantage or attacker.is_hidden() or target.has_flag("expose")
-	var dis := target.has_flag("dodging") or attacker.has_flag("frighten")
+	var dis := target.has_flag("dodging") or attacker.has_flag("frighten") or target.is_hidden()  # atacar quem não se vê: desvantagem
 	return (1 if adv else 0) - (1 if dis else 0)
 
 
@@ -96,7 +99,9 @@ static func affected(user: Combatant, ability: Ability, target: Combatant, point
 
 
 ## Rola tudo. Cada resultado: {"target", "kind": "hit"|"crit"|"miss"|"save"|"fail"|"auto"|"heal"|"status", "amount", "text"}.
-static func resolve(user: Combatant, ability: Ability, target: Combatant, point: Vector3, all: Array[Combatant]) -> Array[Dictionary]:
+## adv_bonus: vantagem (+1) ou desvantagem (-1) extra no ataque (o QTE). save_adv: o mesmo no salvamento do alvo.
+static func resolve(user: Combatant, ability: Ability, target: Combatant, point: Vector3, all: Array[Combatant],
+		adv_bonus: int = 0, save_adv: int = 0) -> Array[Dictionary]:
 	var results: Array[Dictionary] = []
 	var now := Time.get_ticks_msec() / 1000.0
 	for t: Combatant in affected(user, ability, target, point, all):
@@ -108,7 +113,7 @@ static func resolve(user: Combatant, ability: Ability, target: Combatant, point:
 				results.append({"target": t, "kind": "status", "amount": 0, "text": ability.status_title})
 			_:
 				for h: int in ability.hits:
-					results.append(_strike(user, ability, t, all, now))
+					results.append(_strike(user, ability, t, all, now, adv_bonus, save_adv))
 	return results
 
 
@@ -152,7 +157,7 @@ static func apply(user: Combatant, ability: Ability, results: Array[Dictionary],
 static func make_status(user: Combatant, ability: Ability) -> Dictionary:
 	return {
 		"title": ability.status_title,
-		"time": ability.status_time,
+		"time": float(ability.status_turns) if turn_mode else ability.status_time,
 		"ac": ability.buff_ac,
 		"bless": ability.bless_die,
 		"invisible": ability.invisible,
@@ -163,10 +168,11 @@ static func make_status(user: Combatant, ability: Ability) -> Dictionary:
 	}
 
 
-static func _strike(user: Combatant, ability: Ability, t: Combatant, all: Array[Combatant], now: float) -> Dictionary:
+static func _strike(user: Combatant, ability: Ability, t: Combatant, all: Array[Combatant], now: float,
+		adv_bonus: int = 0, save_adv: int = 0) -> Dictionary:
 	match ability.roll:
 		Ability.Roll.ATTACK:
-			var adv := attack_advantage(user, ability, t)
+			var adv := clampi(attack_advantage(user, ability, t) + adv_bonus, -1, 1)
 			var die := d20(adv)
 			var natural := int(die["value"])
 			var bless := Dice.roll(1, user.bless_die()) if user.bless_die() > 0 else 0
@@ -179,12 +185,13 @@ static func _strike(user: Combatant, ability: Ability, t: Combatant, all: Array[
 			return {"target": t, "kind": "crit" if crit else "hit", "amount": dmg["amount"],
 					"text": "%s, %s %s" % [head, "CRÍTICO" if crit else "acerto", dmg["text"]]}
 		Ability.Roll.SAVE:
-			var die := Dice.d20()
+			var save_die := d20(save_adv)
+			var die := int(save_die["value"])
 			var bless := Dice.roll(1, t.bless_die()) if t.bless_die() > 0 else 0
 			var bonus := t.save_bonus(ability.save)
 			var total := die + bonus + bless
 			var save_name: String = ["DES", "CON", "SAB"][ability.save]
-			var head := "salv. %s %d+%d%s = %d vs CD %d" % [save_name, die, bonus, (" +%d bênção" % bless) if bless > 0 else "", total, user.spell_dc]
+			var head := "salv. %s %s+%d%s = %d vs CD %d" % [save_name, save_die["text"], bonus, (" +%d bênção" % bless) if bless > 0 else "", total, user.spell_dc]
 			var dmg := _damage(user, ability, t, all, now, 0, false)
 			if total >= user.spell_dc:
 				var half := int(dmg["amount"]) / 2 if ability.half_on_save else 0

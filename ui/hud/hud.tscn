@@ -297,7 +297,7 @@ fit_content = false
 [node name="Hint" type="Label" parent="Root"]
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(1, 0.9, 0.75, 0.6)
-text = "WASD andar · Shift correr · Mouse mirar · Botão esq. atacar · Q E R habilidades · Espaço esquiva · F interagir · Esc pausa"
+text = "WASD andar · Shift correr · Mouse olhar · Botão esq. golpe (começa a luta com vantagem) · Espaço esquiva · F interagir · Esc pausa"
 layout_mode = 1
 anchors_preset = 0
 offset_left = 14.0

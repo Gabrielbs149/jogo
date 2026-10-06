@@ -24,6 +24,8 @@ var companions: Array[Combatant] = []
 ## Heróis encontrados no caminho que ainda não entraram no grupo.
 var waiting: Array[Combatant] = []
 var ready_to_play: bool = false
+## Grupos de inimigos do mapa que ainda não foram vencidos.
+var encounters: Array[Encounter] = []
 var _calm_time: float = 0.0
 var _finished: bool = false
 
@@ -38,7 +40,14 @@ func _ready() -> void:
 	var terrain := get_node_or_null("Terrain") as MeshInstance3D
 	if terrain:
 		terrain.create_trimesh_collision()
-	player = _spawn_hero(Game.chosen, _spawn.transform)
+	# voltando de uma luta: no mesmo lugar do mapa, com a vida que sobrou
+	var start := _spawn.transform
+	if Game.returning and Game.return_scene == scene_file_path:
+		start = Game.return_transform
+	Game.returning = false
+	player = _spawn_hero(Game.chosen, start)
+	if Game.hero_hp >= 0:
+		player.hp = clampi(Game.hero_hp, 1, player.max_hp)
 	controller = PlayerController.new()
 	controller.name = "PlayerController"
 	controller.camera = _camera
@@ -58,8 +67,18 @@ func _ready() -> void:
 		if spot.hero_id == Game.chosen or Game.party.has(spot.hero_id) or not Game.HEROES.has(spot.hero_id):
 			continue
 		_wait_here(_spawn_hero(spot.hero_id, spot.transform))
+	for node: Node in get_tree().get_nodes_in_group("encounter"):
+		var encounter := node as Encounter
+		if Game.defeated.has(encounter.encounter_id):
+			encounter.get_parent().remove_child(encounter)
+			encounter.queue_free()
+		else:
+			encounters.append(encounter)
+			encounter.triggered.connect(_on_encounter)
 	for node: Node in get_tree().get_nodes_in_group("enemies"):
 		var enemy := node as Combatant
+		if not enemy.is_inside_tree():
+			continue
 		_hud.watch(enemy)
 		if enemy.is_boss:
 			enemy.downed_changed.connect(_on_boss_down)
@@ -69,12 +88,18 @@ func _ready() -> void:
 			it.used.connect(_on_used)
 	await _bake_navigation()
 	var headless := DisplayServer.get_name() == "headless"
-	if not (skip_intro or headless or intro_lines.is_empty()):
+	if not (skip_intro or headless or intro_lines.is_empty() or Game.seen.has(scene_file_path)):
 		await _hud.play_intro(chapter_title, intro_lines)
 	controller.enabled = true
 	_camera.capture(true)
 	_hud.show_area(chapter_title)
-	_hud.show_story(start_story)
+	if Game.pending_story != "":
+		_hud.show_story(Game.pending_story)
+		Game.pending_story = ""
+	elif not Game.seen.has(scene_file_path):
+		_hud.show_story(start_story)
+	if not Game.seen.has(scene_file_path):
+		Game.seen.append(scene_file_path)
 	ready_to_play = true
 
 
@@ -92,6 +117,15 @@ func in_combat() -> bool:
 ## Chama o herói para o grupo: vira aliado controlado pela IA e segue você.
 func join(hero: Combatant) -> void:
 	_join(hero)
+
+
+## Encostou num grupo de inimigos (ou acertou um antes): vai para a arena.
+func _on_encounter(encounter: Encounter, first_strike: bool) -> void:
+	if not ready_to_play or _finished:
+		return
+	_finished = true
+	controller.enabled = false
+	Game.start_battle(encounter.data(first_strike), scene_file_path, player.global_transform, player.hp)
 
 
 func _spawn_hero(id: String, where: Transform3D) -> Combatant:
@@ -145,6 +179,7 @@ func _on_used(_by: Combatant, what: Interactable) -> void:
 				_hud.toast("Não dá para descansar com inimigos por perto")
 				return
 			player.rest()
+			Game.hero_hp = -1
 			for c: Combatant in companions:
 				c.rest()
 			_hud.show_story(what.text)
@@ -166,6 +201,11 @@ func _on_used(_by: Combatant, what: Interactable) -> void:
 func _physics_process(delta: float) -> void:
 	if player == null or _finished or not ready_to_play:
 		return
+	for encounter: Encounter in encounters:
+		if is_instance_valid(encounter):
+			encounter.check(player)
+		if _finished:
+			return  # foi para a arena: a troca de cena já tirou a fase da árvore
 	if in_combat():
 		_calm_time = 0.0
 	else:

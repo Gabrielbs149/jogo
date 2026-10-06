@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://actors/tika_muro/tika_muro.tscn" id="20_r"]
 [ext_resource type="FontFile" path="res://assets/fonts/cinzel.ttf" id="26_r"]
 [ext_resource type="Script" path="res://world/hero_spot.gd" id="spot"]
+[ext_resource type="Script" path="res://world/encounter.gd" id="encounter"]
 [ext_resource type="Script" path="res://systems/camera/third_person_camera.gd" id="cam"]
 [ext_resource type="PackedScene" path="res://ui/hud/hud.tscn" id="hud"]
 [ext_resource type="PackedScene" path="res://actors/enemies/escaravelho_de_cinza.tscn" id="en_escaravelho_de_cinza"]
@@ -941,27 +942,48 @@ transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 0.5, 0.6
 script = ExtResource("spot")
 hero_id = "bahamut"
 
-[node name="Enemies" type="Node3D" parent="."]
+[node name="Encounters" type="Node3D" parent="."]
 
-[node name="Beetle1" parent="Enemies" instance=ExtResource("en_escaravelho_de_cinza")]
+[node name="EscaravelhosOeste" type="Node3D" parent="Encounters"]
+script = ExtResource("encounter")
+after_text = ""
+
+[node name="EscaravelhosLeste" type="Node3D" parent="Encounters"]
+script = ExtResource("encounter")
+after_text = ""
+
+[node name="SentinelaOeste" type="Node3D" parent="Encounters"]
+script = ExtResource("encounter")
+after_text = ""
+
+[node name="SentinelaLeste" type="Node3D" parent="Encounters"]
+script = ExtResource("encounter")
+after_text = ""
+
+[node name="UltimoGuardiao" type="Node3D" parent="Encounters"]
+script = ExtResource("encounter")
+after_text = "O Último Guardião descansa. Ethera pode descansar também.
+Caiaque, Umu e Juca vão querer ouvir essa história."
+
+[node name="Beetle1" parent="Encounters/EscaravelhosOeste" instance=ExtResource("en_escaravelho_de_cinza")]
 transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, -5.6, 1.5, -7.2)
 
-[node name="Beetle2" parent="Enemies" instance=ExtResource("en_escaravelho_de_cinza")]
+[node name="Beetle2" parent="Encounters/EscaravelhosLeste" instance=ExtResource("en_escaravelho_de_cinza")]
 transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 7.2, 1.5, -5.6)
 
-[node name="Beetle3" parent="Enemies" instance=ExtResource("en_escaravelho_de_cinza")]
+[node name="Beetle3" parent="Encounters/EscaravelhosOeste" instance=ExtResource("en_escaravelho_de_cinza")]
 transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, -4, 1.5, -0.8)
 
-[node name="Beetle4" parent="Enemies" instance=ExtResource("en_escaravelho_de_cinza")]
+[node name="Beetle4" parent="Encounters/EscaravelhosLeste" instance=ExtResource("en_escaravelho_de_cinza")]
 transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 7.2, 1.5, 0.8)
 
-[node name="Sentinel1" parent="Enemies" instance=ExtResource("en_sentinela_estelar")]
+[node name="Sentinel1" parent="Encounters/SentinelaOeste" instance=ExtResource("en_sentinela_estelar")]
 transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, -8.8, 1.5, -8.8)
 
-[node name="Sentinel2" parent="Enemies" instance=ExtResource("en_sentinela_estelar")]
+[node name="Sentinel2" parent="Encounters/SentinelaLeste" instance=ExtResource("en_sentinela_estelar")]
 transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 10.4, 1.5, -8.8)
 
-[node name="Colossus" parent="Enemies" instance=ExtResource("en_ultimo_guardiao")]
+[node name="Colossus" parent="Encounters/UltimoGuardiao" instance=ExtResource("en_ultimo_guardiao")]
 transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 0.8, 1.5, -5.6)
 
 [node name="Rest" type="Node3D" parent="Camp"]

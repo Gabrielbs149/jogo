@@ -82,9 +82,13 @@ func setup(player: Combatant, controller: PlayerController) -> void:
 	for child: Node in _skill_bar.get_children():
 		child.queue_free()
 	_slots.clear()
-	for i: int in player.abilities.size():
-		_slots.append(_make_slot(KEYS[i] if i < KEYS.size() else "", player.abilities[i].title))
-	_slots.append(_make_slot("Espaço", player.dodge_name))
+	if controller.field_mode:
+		# no mapa: só o golpe que começa a luta e a esquiva; as habilidades ficam para a arena
+		_slots.append(_make_slot(KEYS[0], "Golpe", 0))
+	else:
+		for i: int in player.abilities.size():
+			_slots.append(_make_slot(KEYS[i] if i < KEYS.size() else "", player.abilities[i].title, i))
+	_slots.append(_make_slot("Espaço", player.dodge_name, -1))
 	controller.message.connect(toast)
 	controller.interactable_changed.connect(_on_interactable)
 
@@ -234,10 +238,11 @@ func _process(_delta: float) -> void:
 		if status["title"] != "":
 			names.append("%s %.0fs" % [status["title"], ceilf(float(status["time"]))])
 	_statuses.text = "Caído — o grupo precisa vencer a luta ou te curar" if _player.downed else "   ".join(names)
-	for i: int in _slots.size():
-		var ratio := _player.cooldown_ratio(i) if i < _player.abilities.size() else _player.dodge_left / maxf(_player.dodge_cooldown, 0.01)
-		var left := _player.cooldowns[i] if i < _player.abilities.size() else _player.dodge_left
-		_update_slot(_slots[i], ratio, left)
+	for slot: Dictionary in _slots:
+		var i: int = slot["index"]
+		var ratio := _player.cooldown_ratio(i) if i >= 0 else _player.dodge_left / maxf(_player.dodge_cooldown, 0.01)
+		var left := _player.cooldowns[i] if i >= 0 else _player.dodge_left
+		_update_slot(slot, ratio, left)
 	for c: Combatant in _party_rows.keys():
 		if not is_instance_valid(c):
 			continue
@@ -255,7 +260,7 @@ func _process(_delta: float) -> void:
 	_reticle.visible = not _modal and not _pause.visible
 
 
-func _make_slot(key: String, title: String) -> Dictionary:
+func _make_slot(key: String, title: String, index: int) -> Dictionary:
 	var slot := PanelContainer.new()
 	slot.custom_minimum_size = Vector2(118, 88)
 	var box := Control.new()
@@ -288,7 +293,7 @@ func _make_slot(key: String, title: String) -> Dictionary:
 	cd.set_anchors_preset(Control.PRESET_FULL_RECT)
 	box.add_child(cd)
 	_skill_bar.add_child(slot)
-	return {"shade": shade, "cd": cd, "title": title_label}
+	return {"shade": shade, "cd": cd, "title": title_label, "index": index}
 
 
 func _update_slot(slot: Dictionary, ratio: float, left: float) -> void:

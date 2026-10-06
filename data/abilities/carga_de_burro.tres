@@ -33,3 +33,5 @@ expose = false
 projectile = true
 vfx_color = Color(1, 0.6, 0.3, 1)
 projectile_scene = ExtResource("2_scene")
+ap_cost = 2
+status_turns = 2

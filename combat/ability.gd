@@ -26,6 +26,8 @@ enum Save { DEX, CON, WIS }
 @export var radius_m: float = 0.0
 ## Segundos até poder usar de novo. Ataque básico ≈ 1 s; "por descanso curto" ≈ 30 s.
 @export var cooldown: float = 1.0
+## Luta por turnos: Pontos de Ação que custa (0 = ataque básico, que ganha 1 PA).
+@export var ap_cost: int = 0
 ## Preparo antes do efeito, em segundos (o golpe "carrega" e dá para desviar).
 @export var windup: float = 0.2
 @export var dice_count: int = 1
@@ -46,6 +48,8 @@ enum Save { DEX, CON, WIS }
 ## Nome do efeito que fica no alvo (Bênção, Marca do caçador...). Vazio = sem efeito.
 @export var status_title: String = ""
 @export var status_time: float = 0.0
+## Luta por turnos: quantos turnos de quem recebeu o efeito ele dura.
+@export var status_turns: int = 2
 @export var buff_ac: int = 0
 ## Bênção: +1dN nos ataques e salvamentos.
 @export var bless_die: int = 0
