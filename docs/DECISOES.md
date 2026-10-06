@@ -6,12 +6,6 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
-**D021: Animações do Tico vêm do Mixamo** · 2026-10-06 · Gabriel · substitui as animações por script da D020
-- O Tico foi enviado ao Mixamo (conta do Gabriel), que montou o esqueleto (33 ossos). Animações escolhidas: Breathing Idle (parado), Male Standard Walk e Running Forward Quickly (no lugar), Stabbing (Adaga), Jump Attack (Bote das sombras), Standing 2H Magic Attack 01 (Espinhos), Stand To Crouch (Camuflagem), Standing Dodge Forward (esquiva), Hit Reaction (dano), Falling Back Death (queda).
-- `tools/blender/gerado/juntar_mixamo.py` junta os 10 FBX (`art_src/mixamo/`) num `.glb` com os nomes que o `Animator` usa, vira a frente para +Y, ajusta a altura e **prende o rabo no quadril** (o Mixamo não conhece rabo e fazia o rabo chutar junto com a perna).
-- As animações do Mixamo são longas para golpe de jogo: o `Animator` acelera cada uma para caber no tempo do Inspector (`ability_times`, `dodge_time`, `hit_time`, `down_time`).
-- Para outro herói: enviar o FBX dele ao Mixamo, baixar as mesmas animações (a de parado com a malha) com o nome `<heroi>_<animação>.fbx` e rodar o `juntar_mixamo.py`.
-
 **D020: Animação dos heróis: esqueleto e animações por script no Blender + Animator no Godot** · 2026-10-05 · Gabriel pediu as animações do Tico
 - A malha do TRELLIS vem sem esqueleto. `tools/blender/gerado/animar_tico.py` monta um esqueleto de kobold (20 ossos: tronco, cabeça, braços, pernas, 3 do rabo), pesa cada vértice pela distância aos ossos com regras por região (mochila não balança com a cabeça, manto da perna vai com a perna) e cria 10 animações: `idle`, `walk`, `run`, `attack` (Adaga), `dash_strike` (Bote das sombras), `cast` (Espinhos), `hide` (Camuflagem), `dodge` (Ação ardilosa), `hit`, `down`.
 - No Godot, `CombatantAnimator` (nó `Animator` do herói) toca a certa sozinho. Nomes no Inspector, então outro herói usa o mesmo nó com as animações dele.
