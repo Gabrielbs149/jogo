@@ -48,7 +48,7 @@ res://
 ├─ ui/            hud/ (mapa), battle_hud/ (arena + anel do QTE), title/, character_select/, theme/ (Cinzel + Lato)
 ├─ systems/       game/ (autoload Game), camera/ (3ª pessoa)
 ├─ data/          abilities/*.tres — habilidades de heróis e inimigos
-├─ assets/        SÓ o que várias cenas compartilham: fonts/, music/, sfx/, shaders/, themes/
+├─ assets/        SÓ o que várias cenas compartilham: fonts/, shaders/, environment/, models/ + textures/ + materials/ + skies/ (Poly Haven, D024), vfx/
 ├─ prototypes/    protótipos de 1 dia (Fase 1); apagar os que não vingarem
 ├─ addons/        plugins de terceiros (GUT). Não editar.
 ├─ tests/         testes GUT, espelhando as pastas do código

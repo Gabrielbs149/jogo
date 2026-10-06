@@ -1,0 +1,205 @@
+{
+ "barrel_03": {
+  "x": 0.634,
+  "y": 0.93,
+  "z": 0.639,
+  "tris": 1473,
+  "tris_original": 1473
+ },
+ "ceramic_vase_01": {
+  "x": 0.204,
+  "y": 0.4,
+  "z": 0.204,
+  "tris": 10296,
+  "tris_original": 10296
+ },
+ "dead_quiver_trunk": {
+  "x": 0.306,
+  "y": 1.994,
+  "z": 0.268,
+  "tris": 15999,
+  "tris_original": 17978
+ },
+ "folding_wooden_stool": {
+  "x": 0.528,
+  "y": 0.442,
+  "z": 0.547,
+  "tris": 6324,
+  "tris_original": 6324
+ },
+ "jug_01": {
+  "x": 0.275,
+  "y": 0.211,
+  "z": 0.168,
+  "tris": 5770,
+  "tris_original": 5770
+ },
+ "large_castle_door": {
+  "x": 2.012,
+  "y": 2.965,
+  "z": 0.296,
+  "tris": 12640,
+  "tris_original": 12640
+ },
+ "namaqualand_boulder_02": {
+  "x": 2.533,
+  "y": 0.881,
+  "z": 1.234,
+  "tris": 14000,
+  "tris_original": 97964
+ },
+ "namaqualand_boulder_04": {
+  "x": 2.526,
+  "y": 1.903,
+  "z": 2.496,
+  "tris": 14000,
+  "tris_original": 59066
+ },
+ "namaqualand_boulders_01": {
+  "x": 1.058,
+  "y": 0.252,
+  "z": 0.586,
+  "tris": 20000,
+  "tris_original": 40850
+ },
+ "namaqualand_cliff_01": {
+  "x": 8.279,
+  "y": 4.96,
+  "z": 4.387,
+  "tris": 29999,
+  "tris_original": 94369
+ },
+ "namaqualand_rocks_01": {
+  "x": 1.448,
+  "y": 0.152,
+  "z": 0.215,
+  "tris": 15998,
+  "tris_original": 85716
+ },
+ "namaqualand_stones_01": {
+  "x": 1.023,
+  "y": 0.084,
+  "z": 0.112,
+  "tris": 12000,
+  "tris_original": 70124
+ },
+ "othonna_cerarioides": {
+  "x": 3.969,
+  "y": 1.967,
+  "z": 1.799,
+  "tris": 20000,
+  "tris_original": 118149
+ },
+ "painted_wooden_bench": {
+  "x": 1.165,
+  "y": 0.889,
+  "z": 0.497,
+  "tris": 630,
+  "tris_original": 630
+ },
+ "quiver_tree_01": {
+  "x": 1.181,
+  "y": 2.716,
+  "z": 0.969,
+  "tris": 40000,
+  "tris_original": 150124
+ },
+ "quiver_tree_02": {
+  "x": 0.872,
+  "y": 1.469,
+  "z": 0.88,
+  "tris": 30000,
+  "tris_original": 82074
+ },
+ "shrub_03": {
+  "x": 1.367,
+  "y": 0.403,
+  "z": 0.151,
+  "tris": 8287,
+  "tris_original": 8287
+ },
+ "shrub_04": {
+  "x": 0.584,
+  "y": 0.219,
+  "z": 0.146,
+  "tris": 11999,
+  "tris_original": 27327
+ },
+ "stone_fire_pit": {
+  "x": 1.448,
+  "y": 0.388,
+  "z": 1.433,
+  "tris": 3887,
+  "tris_original": 3887
+ },
+ "treasure_chest": {
+  "x": 0.961,
+  "y": 0.618,
+  "z": 0.523,
+  "tris": 14000,
+  "tris_original": 103330
+ },
+ "tree_stump_01": {
+  "x": 1.425,
+  "y": 0.573,
+  "z": 1.59,
+  "tris": 9999,
+  "tris_original": 41046
+ },
+ "wicker_basket_01": {
+  "x": 0.383,
+  "y": 0.118,
+  "z": 0.295,
+  "tris": 14000,
+  "tris_original": 22276
+ },
+ "wild_rooibos_bush": {
+  "x": 2.278,
+  "y": 0.541,
+  "z": 0.843,
+  "tris": 12000,
+  "tris_original": 27519
+ },
+ "wine_barrel_01": {
+  "x": 0.742,
+  "y": 0.871,
+  "z": 0.756,
+  "tris": 10820,
+  "tris_original": 10820
+ },
+ "wooden_barrels_01": {
+  "x": 4.444,
+  "y": 0.956,
+  "z": 3.345,
+  "tris": 14000,
+  "tris_original": 33142
+ },
+ "wooden_bucket_01": {
+  "x": 0.367,
+  "y": 0.55,
+  "z": 0.342,
+  "tris": 5116,
+  "tris_original": 5116
+ },
+ "wooden_crate_01": {
+  "x": 0.825,
+  "y": 0.35,
+  "z": 0.409,
+  "tris": 6576,
+  "tris_original": 6576
+ },
+ "wooden_crate_02": {
+  "x": 0.529,
+  "y": 0.464,
+  "z": 1.166,
+  "tris": 5176,
+  "tris_original": 5176
+ },
+ "wooden_lantern_01": {
+  "x": 0.221,
+  "y": 0.53,
+  "z": 0.235,
+  "tris": 8321,
+  "tris_original": 8321
+ }
+}

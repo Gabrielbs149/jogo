@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/ceramic_vase_01.glb" id="1_ceramic_vase"]
+
+
+[node name="Vaso" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_ceramic_vase")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)

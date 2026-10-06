@@ -1,69 +1,93 @@
 [gd_scene format=3]
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_1"]
-top_radius = 1.25
-bottom_radius = 1.35
-height = 0.9
-radial_segments = 20
+[ext_resource type="Material" path="res://assets/materials/pedra_poco.tres" id="1_pedra_poco"]
+[ext_resource type="Material" path="res://assets/materials/arenito.tres" id="2_arenito"]
+[ext_resource type="Material" path="res://assets/materials/tabuas.tres" id="3_tabuas"]
+[ext_resource type="Material" path="res://assets/materials/palha.tres" id="4_palha"]
+[ext_resource type="PackedScene" path="res://assets/models/wooden_bucket_01.glb" id="5_wooden_bucke"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
-albedo_color = Color(0.55, 0.52, 0.47, 1)
-roughness = 0.9
+[sub_resource type="CylinderMesh" id="CylinderMesh_1"]
+top_radius = 1.2
+bottom_radius = 1.3
+height = 0.95
+radial_segments = 24
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_2"]
+top_radius = 1.28
+bottom_radius = 1.28
+height = 0.12
+radial_segments = 24
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_3"]
 top_radius = 1
 bottom_radius = 1
 height = 0.05
-radial_segments = 20
+radial_segments = 24
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
-albedo_color = Color(0.18, 0.36, 0.46, 1)
-roughness = 0.15
+albedo_color = Color(0.05, 0.1, 0.12, 1)
+roughness = 0.05
 
 [sub_resource type="BoxMesh" id="BoxMesh_5"]
-size = Vector3(0.18, 2.2, 0.18)
+size = Vector3(0.2, 2.4, 0.2)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
-albedo_color = Color(0.45, 0.29, 0.16, 1)
-roughness = 0.9
+[sub_resource type="CylinderMesh" id="CylinderMesh_6"]
+top_radius = 0.07
+bottom_radius = 0.07
+height = 2.4
+radial_segments = 10
 
-[sub_resource type="PrismMesh" id="PrismMesh_7"]
-size = Vector3(2.8, 0.9, 1.6)
+[sub_resource type="BoxMesh" id="BoxMesh_7"]
+size = Vector3(1.25, 0.12, 2.9)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8"]
-albedo_color = Color(0.62, 0.27, 0.16, 1)
-roughness = 0.9
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_9"]
-radius = 1.35
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_8"]
+radius = 1.3
 height = 1
 
 [node name="Poco" type="Node3D"]
 
 [node name="Ring" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.47, 0)
 mesh = SubResource("CylinderMesh_1")
-material_override = SubResource("StandardMaterial3D_2")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Rim" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.98, 0)
+mesh = SubResource("CylinderMesh_2")
+material_override = ExtResource("2_arenito")
 
 [node name="Water" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.86, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
 mesh = SubResource("CylinderMesh_3")
 material_override = SubResource("StandardMaterial3D_4")
 
 [node name="Post0" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.05, 1.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1.6, 0)
 mesh = SubResource("BoxMesh_5")
-material_override = SubResource("StandardMaterial3D_6")
+material_override = ExtResource("3_tabuas")
 
 [node name="Post2" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.05, 1.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1.6, 0)
 mesh = SubResource("BoxMesh_5")
-material_override = SubResource("StandardMaterial3D_6")
+material_override = ExtResource("3_tabuas")
 
-[node name="Roof" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
-mesh = SubResource("PrismMesh_7")
-material_override = SubResource("StandardMaterial3D_8")
+[node name="Axle" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 2.3, 0)
+mesh = SubResource("CylinderMesh_6")
+material_override = ExtResource("3_tabuas")
+
+[node name="RoofL" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 0, 1, 0.5646, 0.8253, 0, -0.8253, 0.5646, 0, -0.52, 3.1, 0)
+mesh = SubResource("BoxMesh_7")
+material_override = ExtResource("4_palha")
+
+[node name="RoofR" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 0, 1, -0.5646, 0.8253, 0, -0.8253, -0.5646, 0, 0.52, 3.1, 0)
+mesh = SubResource("BoxMesh_7")
+material_override = ExtResource("4_palha")
+
+[node name="Bucket" parent="." instance=ExtResource("5_wooden_bucke")]
+transform = Transform3D(0.829, 0, 0.3505, 0, 0.9, 0, -0.3505, 0, 0.829, 0.75, 1.04, 0.35)
 
 [node name="Body" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
@@ -71,4 +95,4 @@ collision_layer = 1
 collision_mask = 0
 
 [node name="Shape" type="CollisionShape3D" parent="Body"]
-shape = SubResource("CylinderShape3D_9")
+shape = SubResource("CylinderShape3D_8")

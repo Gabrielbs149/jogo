@@ -1,45 +1,20 @@
 [gd_scene format=3]
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_1"]
-top_radius = 0.18
-bottom_radius = 0.26
-height = 2.6
-radial_segments = 8
+[ext_resource type="PackedScene" path="res://assets/models/quiver_tree_01.glb" id="1_quiver_tree_"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
-albedo_color = Color(0.45, 0.29, 0.16, 1)
-roughness = 0.9
-
-[sub_resource type="SphereMesh" id="SphereMesh_3"]
-radius = 1.5
-height = 2.4
-radial_segments = 12
-rings = 6
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
-albedo_color = Color(0.36, 0.52, 0.22, 1)
-roughness = 0.9
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_5"]
-radius = 0.3
-height = 2.6
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
+radius = 0.383724
+height = 3.58512
 
 [node name="Arvore" type="Node3D"]
 
-[node name="Trunk" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
-mesh = SubResource("CylinderMesh_1")
-material_override = SubResource("StandardMaterial3D_2")
-
-[node name="Leaves" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 0)
-mesh = SubResource("SphereMesh_3")
-material_override = SubResource("StandardMaterial3D_4")
+[node name="Model" parent="." instance=ExtResource("1_quiver_tree_")]
+transform = Transform3D(2.2, 0, 0, 0, 2.2, 0, 0, 0, 2.2, 0, 0, 0)
 
 [node name="Body" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7926, 0)
 collision_layer = 1
 collision_mask = 0
 
 [node name="Shape" type="CollisionShape3D" parent="Body"]
-shape = SubResource("CylinderShape3D_5")
+shape = SubResource("CylinderShape3D_1")

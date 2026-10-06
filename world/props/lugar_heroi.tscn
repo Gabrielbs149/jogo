@@ -1,8 +1,9 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://world/hero_spot.gd" id="spot"]
+[ext_resource type="Script" path="res://world/hero_spot.gd" id="1_hero_spot"]
 
 
 [node name="Lugar_heroi" type="Marker3D"]
-script = ExtResource("spot")
+script = ExtResource("1_hero_spot")
 hero_id = "naumfode"
+

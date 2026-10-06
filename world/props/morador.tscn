@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://actors/shared/robed_figure.tscn" id="robed"]
-[ext_resource type="Script" path="res://world/interactable.gd" id="inter"]
+[ext_resource type="PackedScene" path="res://actors/shared/robed_figure.tscn" id="1_robed_figure"]
+[ext_resource type="Script" path="res://world/interactable.gd" id="2_interactable"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
 radius = 0.45
@@ -9,7 +9,8 @@ height = 1.8
 
 [node name="Morador" type="Node3D"]
 
-[node name="Figure" parent="." instance=ExtResource("robed")]
+[node name="Figure" parent="." instance=ExtResource("1_robed_figure")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 cloth_color = Color(0.55, 0.45, 0.3, 1)
 
 [node name="Collision" type="StaticBody3D" parent="."]
@@ -22,6 +23,6 @@ shape = SubResource("CapsuleShape3D_1")
 
 [node name="Talk" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-script = ExtResource("inter")
+script = ExtResource("2_interactable")
 prompt_text = "Falar com o morador"
 text = "— ..."

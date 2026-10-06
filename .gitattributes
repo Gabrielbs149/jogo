@@ -43,6 +43,9 @@
 *.ogv  filter=lfs diff=lfs merge=lfs -text
 *.zip  filter=lfs diff=lfs merge=lfs -text
 
+## Texturas fotográficas (Poly Haven, D024): grandes demais para o Git normal
+assets/textures/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+
 ## Textura assada dos modelos (art_src)
 art_src/*.png filter=lfs diff=lfs merge=lfs -text
 actors/**/*_cor.png filter=lfs diff=lfs merge=lfs -text

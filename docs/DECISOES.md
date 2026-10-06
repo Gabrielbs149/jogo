@@ -6,6 +6,17 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D024: Visual realista com assets do Poly Haven (CC0)** · 2026-10-06 · Gabriel ("esses gráficos são horríveis"; escolheu pacotes grátis + estilo mais realista)
+- **Fonte:** Poly Haven (CC0, sem royalty, sem crédito obrigatório; lista em `assets/CREDITOS.md`). Pacotes low-poly (Kenney, Quaternius, KayKit) ficaram de fora por não serem realistas. As árvores "normais" do Poly Haven têm milhões de polígonos: ficaram de fora. Por isso a região virou **árida**: Arandu é uma cidade de reboco e telha de barro, e a vegetação é de deserto (árvore-aljava, suculentas, arbustos secos).
+- **Modelos** (`assets/models/*.glb`): baixados em 1k, passados por `tools/blender/gerado/preparar_polyhaven.py` (junta as partes, simplifica até ~14–40 mil triângulos, base no chão, medidas em `medidas.json`).
+- **Texturas** (`assets/textures/`, 2k, importadas com compressão VRAM + mipmaps; normal maps marcadas) e **materiais** (`assets/materials/*.tres`, ORMMaterial3D com projeção triplanar no mundo: a textura não estica, seja qual for o tamanho da parede). Reboco branco e de barro, telha, calçada, caminho, cascalho, tábuas, muralha, areia (e areia_ethera, mais avermelhada), arenito, pedra, palha.
+- **Céus HDRI** (`assets/skies/`): Arandu de dia com nuvens; `fire_sky.tres` (Ethera, arena e tela de escolha) com entardecer. Iluminação ambiente vem do céu; SSAO, neblina com perspectiva aérea.
+- **Fogo** de partículas (`assets/vfx/fogo.tscn`: chamas, faíscas, fumaça e luz tremendo) na fogueira, no acampamento e nos braseiros.
+- **Peças do catálogo** refeitas e ampliadas (`world/props/`, geradas por `tools/art/gerar_pecas.py`): casas e sobrados (branco e barro) com vigas, soco de pedra, janelas com venezianas; muro, portão, barraca com mercadorias, poço, pilar; árvores, tronco, toco, suculenta, arbustos, rochas, penhasco, pedras; caixotes, barris, balde, cesto, jarro, vaso, bancos, baú, lanterna.
+- **Fases:** Arandu e Ethera mantêm o layout, mas casas, barracas, poço, árvores e rochas viraram essas peças. Ganharam decoração (props nas portas, lanternas) e vegetação/pedras em volta. Tudo editável no editor de mapas.
+- **Git:** `.jpg` de `assets/textures/` vão para o LFS (`.gitattributes`). Atenção ao limite do LFS grátis do GitHub (1 GB de espaço e de banda por mês).
+- **Falta:** os personagens que ainda são formas simples (moradores de manto, inimigos, altar) e as camas do acampamento.
+
 **D023: Editor de mapas dentro do jogo** · 2026-10-06 · Gabriel pediu "câmera lá em cima e liberar todo tipo de edição"
 - **Abrir:** botão "Editor de mapas" na tela inicial ou **F2** dentro de qualquer fase (ação `map_editor`). Cena `editor/map_editor.tscn`.
 - **Como funciona:** a fase abre parada (`Level.editing = true`: ninguém nasce, nada roda, inimigos e câmera não mexem em nada no `_ready`) e a câmera fica no alto (`EditorCamera`: WASD anda, roda aproxima, botão direito gira, meio arrasta, T = bem de cima).

@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/wicker_basket_01.glb" id="1_wicker_baske"]
+
+
+[node name="Cesto" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_wicker_baske")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0, 0)

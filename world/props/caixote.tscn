@@ -1,26 +1,19 @@
 [gd_scene format=3]
 
-[sub_resource type="BoxMesh" id="BoxMesh_1"]
-size = Vector3(0.9, 0.9, 0.9)
+[ext_resource type="PackedScene" path="res://assets/models/wooden_crate_01.glb" id="1_wooden_crate"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
-albedo_color = Color(0.45, 0.29, 0.16, 1)
-roughness = 0.9
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_3"]
-size = Vector3(0.9, 0.9, 0.9)
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(0.66, 0.35, 0.3272)
 
 [node name="Caixote" type="Node3D"]
 
-[node name="Mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
-mesh = SubResource("BoxMesh_1")
-material_override = SubResource("StandardMaterial3D_2")
+[node name="Model" parent="." instance=ExtResource("1_wooden_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="Body" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
-collision_layer = 1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0)
+collision_layer = 4
 collision_mask = 0
 
 [node name="Shape" type="CollisionShape3D" parent="Body"]
-shape = SubResource("BoxShape3D_3")
+shape = SubResource("BoxShape3D_1")

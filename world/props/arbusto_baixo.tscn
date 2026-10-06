@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/shrub_03.glb" id="1_shrub_03"]
+
+
+[node name="Arbusto_baixo" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_shrub_03")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 0, 0, 0)

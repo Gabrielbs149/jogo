@@ -1,0 +1,17 @@
+[gd_resource type="ORMMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/textures/clay_roof_tiles/clay_roof_tiles_diffuse.jpg" id="1_alb"]
+[ext_resource type="Texture2D" path="res://assets/textures/clay_roof_tiles/clay_roof_tiles_arm.jpg" id="2_orm"]
+[ext_resource type="Texture2D" path="res://assets/textures/clay_roof_tiles/clay_roof_tiles_nor_gl.jpg" id="3_nor"]
+
+[resource]
+resource_name = "telha"
+albedo_color = Color(1, 1, 1, 1)
+albedo_texture = ExtResource("1_alb")
+orm_texture = ExtResource("2_orm")
+normal_enabled = true
+normal_texture = ExtResource("3_nor")
+uv1_scale = Vector3(0.625, 0.625, 0.625)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5

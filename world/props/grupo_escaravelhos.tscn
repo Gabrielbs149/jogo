@@ -1,14 +1,14 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://world/encounter.gd" id="enc"]
-[ext_resource type="PackedScene" path="res://actors/enemies/escaravelho_de_cinza.tscn" id="en_escaravelho_de_cinza"]
+[ext_resource type="Script" path="res://world/encounter.gd" id="1_encounter"]
+[ext_resource type="PackedScene" path="res://actors/enemies/escaravelho_de_cinza.tscn" id="2_escaravelho_"]
 
 
 [node name="Grupo_escaravelhos" type="Node3D"]
-script = ExtResource("enc")
+script = ExtResource("1_encounter")
 
-[node name="Inimigo1" parent="." instance=ExtResource("en_escaravelho_de_cinza")]
+[node name="Inimigo1" parent="." instance=ExtResource("2_escaravelho_")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -1.1, 0.6, 0)
 
-[node name="Inimigo2" parent="." instance=ExtResource("en_escaravelho_de_cinza")]
+[node name="Inimigo2" parent="." instance=ExtResource("2_escaravelho_")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1.1, 0.6, 0)

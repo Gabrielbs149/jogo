@@ -1,29 +1,19 @@
 [gd_scene format=3]
 
-[sub_resource type="SphereMesh" id="SphereMesh_1"]
-radius = 1
-height = 1.6
-radial_segments = 12
-rings = 6
+[ext_resource type="PackedScene" path="res://assets/models/namaqualand_boulder_04.glb" id="1_namaqualand_"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
-albedo_color = Color(0.22, 0.17, 0.15, 1)
-roughness = 0.5
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_3"]
-size = Vector3(4.8, 3.08, 4.16)
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(2.6523, 2.6642, 2.6208)
 
 [node name="Rocha_grande" type="Node3D"]
 
-[node name="Mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(2.9663, -0.3288, 0, 0.4483, 2.1753, 0, 0, 0, 2.6, 0, 1.32, 0)
-mesh = SubResource("SphereMesh_1")
-material_override = SubResource("StandardMaterial3D_2")
+[node name="Model" parent="." instance=ExtResource("1_namaqualand_")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0, 0)
 
 [node name="Body" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.32, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3321, 0)
 collision_layer = 4
 collision_mask = 0
 
 [node name="Shape" type="CollisionShape3D" parent="Body"]
-shape = SubResource("BoxShape3D_3")
+shape = SubResource("BoxShape3D_1")

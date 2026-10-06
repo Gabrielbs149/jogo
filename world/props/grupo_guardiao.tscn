@@ -1,11 +1,11 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://world/encounter.gd" id="enc"]
-[ext_resource type="PackedScene" path="res://actors/enemies/ultimo_guardiao.tscn" id="en_ultimo_guardiao"]
+[ext_resource type="Script" path="res://world/encounter.gd" id="1_encounter"]
+[ext_resource type="PackedScene" path="res://actors/enemies/ultimo_guardiao.tscn" id="2_ultimo_guard"]
 
 
 [node name="Grupo_guardiao" type="Node3D"]
-script = ExtResource("enc")
+script = ExtResource("1_encounter")
 
-[node name="Inimigo1" parent="." instance=ExtResource("en_ultimo_guardiao")]
+[node name="Inimigo1" parent="." instance=ExtResource("2_ultimo_guard")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.6, 0)

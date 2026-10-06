@@ -43,6 +43,12 @@ func _ready() -> void:
 	var terrain := get_node_or_null("Terrain") as MeshInstance3D
 	if terrain:
 		terrain.create_trimesh_collision()
+		# feita aqui a cada vez: não vai para o arquivo quando o editor de mapas salva a fase
+		for body: Node in terrain.get_children():
+			if body is StaticBody3D:
+				body.owner = null
+				for part: Node in body.get_children():
+					part.owner = null
 	if editing:
 		return
 	# voltando de uma luta: no mesmo lugar do mapa, com a vida que sobrou
