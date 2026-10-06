@@ -494,9 +494,10 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
-text = "WASD andar   ·   Shift correr   ·   Mouse mirar
-Botão esquerdo atacar (segure)   ·   Q  E  R habilidades
-Espaço esquiva   ·   F interagir   ·   Roda do mouse zoom"
+text = "Mapa: WASD andar · Shift correr · Mouse olhar · F interagir
+Botão esquerdo: golpe que começa a luta com vantagem
+Luta: 1 ataca · Q E R habilidades · A/D trocam o alvo
+Espaço no anel = golpe perfeito · Espaço esquiva · F apara"
 
 [node name="PauseResume" type="Button" parent="Root/Pause/Panel/VBox"]
 unique_name_in_owner = true

@@ -12,7 +12,7 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 - **Seu turno:** **1** = ataque (ganha 1 Ponto de Ação), **Q/E/R** = habilidades (custam PA, `ap_cost` no `.tres`). **A/D** trocam o alvo. Durante o golpe um anel fecha: **Espaço** no tempo certo = **vantagem** no d20 (perfeito, ±0,08 s); quase = normal (±0,2 s); errou = **desvantagem**. Em habilidade de salvamento, o perfeito dá desvantagem no salvamento do inimigo.
 - **Turno do inimigo:** pausa variável, o golpe vem e o anel fecha em você: **Espaço esquiva** (±0,15 s: o golpe erra, área não pega) ou **F apara** (±0,08 s: sem dano, você contra-ataca com vantagem e ganha 1 PA). Perdeu o tempo: o inimigo rola o d20 contra a sua CA normalmente.
 - **D&D continua:** d20 contra CA, vantagem/desvantagem, salvamentos, ataque furtivo (na arena: com vantagem, ou seja, com o QTE perfeito), Bênção, Marca etc. Efeitos duram **turnos** (`status_turns`). Inimigos voltaram à vida da ficha (16/20/85); o herói fica com 3× (66 no Tico).
-- **Simulador:** `tools/simulate_arena.gd` joga cada herói contra cada grupo com três perfis de jogador (bom/médio/fraco no QTE).
+- **Simulador:** `tools/simulate_arena.gd` joga cada herói contra cada grupo com três perfis de jogador (bom/médio/fraco no QTE). Herói com 2× a vida da ficha (Tico 44). Tico, 4 lutas por caso, vida cheia no começo: 2 escaravelhos e sentinela = vence sempre (o fraco termina com ~76% da vida); Último Guardião = bom 4/4 (65%), médio 3/4 (33%), fraco 1/4. A vida não enche entre lutas (só na fogueira), então o desgaste soma até o chefe.
 - Porquê: o Gabriel quer a luta do Clair Obscur: turnos com reação em tempo real, focada no personagem dele, com quicktime.
 
 **D021: Mixamo para o Tico — testado e descartado** · 2026-10-06 · Gabriel
