@@ -6,6 +6,16 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D023: Editor de mapas dentro do jogo** · 2026-10-06 · Gabriel pediu "câmera lá em cima e liberar todo tipo de edição"
+- **Abrir:** botão "Editor de mapas" na tela inicial ou **F2** dentro de qualquer fase (ação `map_editor`). Cena `editor/map_editor.tscn`.
+- **Como funciona:** a fase abre parada (`Level.editing = true`: ninguém nasce, nada roda, inimigos e câmera não mexem em nada no `_ready`) e a câmera fica no alto (`EditorCamera`: WASD anda, roda aproxima, botão direito gira, meio arrasta, T = bem de cima).
+- **Edição:** clique escolhe, arrastar move (segue o chão), Shift+clique junta, arrastar no vazio seleciona área, Alt+clique pega a parte de dentro. Q/E gira, PgUp/PgDn altura, +/- tamanho, R zera, Del apaga, Ctrl+D duplica, Ctrl+Z/Y desfaz/refaz, G grade de 0,5 m. Aba **Cena** = a árvore inteira da fase (o mesmo que o Godot mostra).
+- **Painel da direita:** nome, posição/giro/tamanho, todos os campos `@export` da peça e do que tem dentro (falas, para onde a saída leva, herói que espera, textos da luta, cores do manto, vida dos inimigos...), cores das partes (copia a tinta na 1ª mudança para não pintar as outras), luz. "Fase e céu" = textos da fase, sol, céu e neblina.
+- **Catálogo** (`world/props/*.tscn`, cenas comuns — dá para abrir e mudar no Godot; peça nova na pasta aparece sozinha em "Outras"): casa, casa grande, muro, barraca, poço, pilar, árvore, arbusto, rochas, caixote, barril, luz, morador (fala), inscrição, fogueira (descanso), saída (outra fase), herói esperando e grupos de inimigos. Cada peça entra no grupo certo da fase (Buildings, Trees, Encounters...) e os grupos de chão entram no mapa de navegação.
+- **Salvar** grava a própria `.tscn` da fase (`PackedScene.pack`) — o arquivo que o Godot abre, então editor do jogo e editor do Godot convivem. Mudança dentro de uma peça vira "Filhos editáveis". Só funciona rodando pelo Godot (o jogo exportado não grava em `res://`). **Testar** joga a fase como está sem salvar (`user://editor_rascunho.tscn`); F2 volta com o que não foi salvo. **Nova fase** copia Arandu deixando só o chão, o sol e o começo.
+- Junto: os muros de Arandu viraram uma peça com a colisão dentro (antes malha e colisão eram irmãos); o id de um grupo de inimigos agora é `Encounter.id()` (nome do nó se vazio) para cópias não sumirem juntas; Arandu e Ethera foram regravadas pelo próprio Godot (só formato).
+- Porquê: montar fase pelo jogo, sem saber Godot, e ver na hora. Continua valendo o "monta no editor" — o resultado é a mesma cena.
+
 **D022: Luta no estilo Clair Obscur: por turnos, só você, numa arena, com QTE** · 2026-10-06 · Gabriel · substitui o combate em tempo real da D018 (a exploração em 3ª pessoa continua)
 - **Mapa:** inimigos ficam parados em grupos (`Encounter`). Encostar = luta. Acertar um antes com o botão esquerdo = **primeiro golpe** (você joga primeiro e ganha +1 PA). Q/E/R não funcionam no mapa. Vencido, o grupo some (`Game.defeated`); você volta ao mesmo lugar com a vida que sobrou. Perdeu: volta ao começo da fase com a vida cheia. Fogueira enche a vida.
 - **Arena** (`levels/arenas/`, script `battle/battle_arena.gd`): **só o seu personagem** luta (decisão do Gabriel: o jogo é focado em você; quem você recruta fica na história, fora da luta). Ordem por iniciativa (d20 + DES).

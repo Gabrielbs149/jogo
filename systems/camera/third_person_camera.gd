@@ -22,6 +22,8 @@ var pitch: float = -0.28
 
 
 func _ready() -> void:
+	if Level.editing:
+		return  # no editor de mapas fica como está no arquivo
 	top_level = true
 	# a câmera anda no _process (segue o mouse); interpolar de novo só atrasaria
 	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF

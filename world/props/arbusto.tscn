@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[sub_resource type="SphereMesh" id="SphereMesh_1"]
+radius = 0.7
+height = 1
+radial_segments = 12
+rings = 6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
+albedo_color = Color(0.42, 0.55, 0.24, 1)
+roughness = 0.9
+
+[node name="Arbusto" type="Node3D"]
+
+[node name="Leaves" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+mesh = SubResource("SphereMesh_1")
+material_override = SubResource("StandardMaterial3D_2")

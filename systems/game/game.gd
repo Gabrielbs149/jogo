@@ -7,6 +7,9 @@ const SELECT_SCENE := "res://ui/character_select/character_select.tscn"
 const ARANDU := "res://levels/arandu/arandu.tscn"
 const ETHERA := "res://levels/ethera/ethera.tscn"
 const ARENA_ETHERA := "res://levels/arenas/ethera_arena.tscn"
+const EDITOR_SCENE := "res://editor/map_editor.tscn"
+## Onde o editor guarda a fase para o botão Testar (sem mexer no arquivo de verdade).
+const EDITOR_DRAFT := "user://editor_rascunho.tscn"
 ## Onde cada herói começa a história. Quem ainda não tem começo próprio começa em Ethera.
 const START_LEVELS: Dictionary[String, String] = {
 	"tico": ARANDU,
@@ -39,6 +42,9 @@ var hero_hp: int = -1
 var pending_story: String = ""
 ## Fases cuja abertura você já viu (voltar da luta não repete).
 var seen: Array[String] = []
+## Editor de mapas: a fase aberta (arquivo de verdade) e, voltando do Testar, o rascunho com o que não foi salvo.
+var edit_level: String = ARANDU
+var edit_draft: String = ""
 
 
 func hero_scene(id: String) -> PackedScene:
@@ -108,3 +114,29 @@ func go_to_title() -> void:
 
 func go_to_select() -> void:
 	get_tree().change_scene_to_file(SELECT_SCENE)
+
+
+## Abre o editor de mapas nesta fase (F2 numa fase, ou o botão da tela inicial).
+func open_editor(level_path: String = "") -> void:
+	if level_path == EDITOR_DRAFT:
+		edit_draft = EDITOR_DRAFT  # voltando do Testar: continua de onde parou
+	elif level_path != "":
+		edit_level = level_path
+		edit_draft = ""
+	get_tree().paused = false
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	get_tree().change_scene_to_file(EDITOR_SCENE)
+
+
+## Joga uma fase do editor do começo, com o herói escolhido (Tico se ninguém foi escolhido), sem abertura.
+func test_level(scene_path: String) -> void:
+	if not HEROES.has(chosen):
+		chosen = "tico"
+	party.clear()
+	defeated.clear()
+	battle = {}
+	hero_hp = -1
+	returning = false
+	pending_story = ""
+	seen.assign([scene_path])
+	get_tree().change_scene_to_file(scene_path)

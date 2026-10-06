@@ -19,12 +19,17 @@ var _fired: bool = false
 
 func _ready() -> void:
 	add_to_group("encounter")
-	if encounter_id == "":
-		encounter_id = name
+	if Level.editing:
+		return  # no editor de mapas nada muda sozinho
 	for c: Combatant in members():
 		var brain := c.get_node_or_null("AIBrain")
 		if brain:
 			brain.process_mode = Node.PROCESS_MODE_DISABLED  # no mapa eles só esperam
+
+
+## O nome pelo qual o jogo lembra que já venceu este grupo.
+func id() -> String:
+	return encounter_id if encounter_id != "" else String(name)
 
 
 func members() -> Array[Combatant]:
@@ -39,7 +44,7 @@ func data(first_strike: bool) -> Dictionary:
 	var scenes: PackedStringArray = []
 	for c: Combatant in members():
 		scenes.append(c.scene_file_path)
-	return {"id": encounter_id, "enemies": scenes, "first_strike": first_strike, "after_text": after_text, "arena": arena_scene}
+	return {"id": id(), "enemies": scenes, "first_strike": first_strike, "after_text": after_text, "arena": arena_scene}
 
 
 ## Chamado pela fase a cada quadro com a sua posição.

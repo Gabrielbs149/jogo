@@ -92,6 +92,14 @@ size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 22
 text = "Começar"
 
+[node name="Editor" type="Button" parent="Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 46)
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Monta e muda as fases (F2 dentro de uma fase também abre)"
+text = "Editor de mapas"
+
 [node name="Quit" type="Button" parent="Center"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 46)

@@ -42,7 +42,8 @@ res://
 ├─ combat/        Combatant, Ability, regras D&D, IA em tempo real e efeitos
 ├─ player/        controle de quem joga no mapa (WASD, golpe de primeiro ataque)
 ├─ battle/        arena por turnos (BattleArena: iniciativa, PA, QTE, esquivar/aparar)
-├─ world/         Interactable (F) e HeroSpot
+├─ world/         Level, Encounter, Interactable (F), HeroSpot e props/ (peças do catálogo do editor de mapas)
+├─ editor/        editor de mapas dentro do jogo (D023): F2 numa fase ou botão na tela inicial
 ├─ levels/        fases montadas no editor: levels/<nome>/<nome>.tscn + levels/<nome>/art/
 ├─ ui/            hud/ (mapa), battle_hud/ (arena + anel do QTE), title/, character_select/, theme/ (Cinzel + Lato)
 ├─ systems/       game/ (autoload Game), camera/ (3ª pessoa)

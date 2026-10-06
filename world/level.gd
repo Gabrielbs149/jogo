@@ -18,6 +18,9 @@ extends Node3D
 ## Sem inimigo brigando por tantos segundos, quem caiu se levanta com 1 PV (estabilizado).
 @export var stabilize_after: float = 4.0
 
+## Ligado pelo editor de mapas: a fase abre parada, só o cenário (sem você, sem luta, sem abertura).
+static var editing: bool = false
+
 var player: Combatant
 var controller: PlayerController
 var companions: Array[Combatant] = []
@@ -40,6 +43,8 @@ func _ready() -> void:
 	var terrain := get_node_or_null("Terrain") as MeshInstance3D
 	if terrain:
 		terrain.create_trimesh_collision()
+	if editing:
+		return
 	# voltando de uma luta: no mesmo lugar do mapa, com a vida que sobrou
 	var start := _spawn.transform
 	if Game.returning and Game.return_scene == scene_file_path:
@@ -66,10 +71,10 @@ func _ready() -> void:
 		var spot := node as HeroSpot
 		if spot.hero_id == Game.chosen or Game.party.has(spot.hero_id) or not Game.HEROES.has(spot.hero_id):
 			continue
-		_wait_here(_spawn_hero(spot.hero_id, spot.transform))
+		_wait_here(_spawn_hero(spot.hero_id, spot.global_transform))
 	for node: Node in get_tree().get_nodes_in_group("encounter"):
 		var encounter := node as Encounter
-		if Game.defeated.has(encounter.encounter_id):
+		if Game.defeated.has(encounter.id()):
 			encounter.get_parent().remove_child(encounter)
 			encounter.queue_free()
 		else:
@@ -101,6 +106,11 @@ func _ready() -> void:
 	if not Game.seen.has(scene_file_path):
 		Game.seen.append(scene_file_path)
 	ready_to_play = true
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("map_editor") and not editing:
+		Game.open_editor(scene_file_path)
 
 
 func in_combat() -> bool:

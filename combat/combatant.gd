@@ -78,6 +78,8 @@ var _dash_time: float = 0.0
 
 
 func _ready() -> void:
+	if Level.editing:
+		return  # no editor de mapas fica como está no arquivo
 	add_to_group("combatant")
 	add_to_group("heroes" if team == Team.HEROES else "enemies")
 	hp = max_hp

@@ -80,6 +80,6 @@ func test_bumping_into_enemies_sets_up_the_arena() -> void:
 	assert_true(bool(data["first_strike"]))
 	assert_gt((data["enemies"] as PackedStringArray).size(), 0)
 	Game.start_battle(data, level.scene_file_path, Transform3D.IDENTITY, 50, false)
-	assert_eq(Game.battle["id"], first.encounter_id)
+	assert_eq(Game.battle["id"], first.id())
 	assert_eq(Game.hero_hp, 50)
 	Game.battle = {}

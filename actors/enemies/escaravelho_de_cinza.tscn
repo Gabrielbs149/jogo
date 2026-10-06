@@ -24,7 +24,7 @@ wis_save = 0
 move_speed = 4.6
 abilities = Array[ExtResource("a_script")]([ExtResource("ab_mordida")])
 color = Color(0.55, 0.45, 0.38, 1)
-aggro_radius = 9
+aggro_radius = 9.0
 is_boss = false
 
 [node name="Shape" type="CollisionShape3D" parent="."]

@@ -25,7 +25,7 @@ wis_save = 2
 move_speed = 3.8
 abilities = Array[ExtResource("a_script")]([ExtResource("ab_pancada"), ExtResource("ab_onda_de_cinza")])
 color = Color(0.7, 0.5, 0.38, 1)
-aggro_radius = 10
+aggro_radius = 10.0
 is_boss = true
 
 [node name="Shape" type="CollisionShape3D" parent="."]
