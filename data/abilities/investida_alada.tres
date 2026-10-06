@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="Ability" format=3]
+
+[ext_resource type="Script" path="res://combat/ability.gd" id="1_ability"]
+
+[resource]
+script = ExtResource("1_ability")
+title = "Investida alada"
+description = "Um bater de asas até o alvo e uma mordida."
+dnd_note = "Movimento de voo + ataque"
+kind = 0
+shape = 1
+roll = 0
+save = 0
+range_m = 9
+radius_m = 0
+cooldown = 11.2
+windup = 0
+dice_count = 2
+dice_sides = 10
+bonus = 4
+hits = 1
+advantage = false
+sneak_dice = 0
+status_title = ""
+status_time = 0
+buff_ac = 0
+bless_die = 0
+invisible = false
+mark_dice = 0
+frighten = false
+expose = false
+projectile = false
+vfx_color = Color(1, 0.8, 0.4, 1)

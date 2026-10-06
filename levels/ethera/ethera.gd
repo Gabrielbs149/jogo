@@ -1,100 +1,197 @@
 extends Node3D
-## Ethera: abertura do capítulo → exploração (o grupo anda livre) → combate por turnos ao chegar num
-## Encounter → volta à exploração. Os textos da história ficam no Inspector deste nó.
+## Ethera: você começa sozinho, no acampamento, com o herói que escolheu (Game.chosen). Os outros heróis
+## da história esperam pela fase (nós HeroSpot); chegando perto, F conversa e dá para chamar para o grupo.
+## A luta é em tempo real e começa quando um inimigo percebe você. Derrotar o Último Guardião fecha o capítulo.
+## Os textos da história ficam no Inspector deste nó.
 
 @export var chapter_title: String = "Ruínas de Ethera"
 ## Frases da abertura, uma por item.
 @export var intro_lines: PackedStringArray = []
 @export_multiline var victory_text: String = ""
 @export_multiline var defeat_text: String = ""
-## Pula a abertura (testes e simulação também pulam, por rodarem sem janela).
+## Pula a abertura (testes rodam sem janela e também pulam).
 @export var skip_intro: bool = false
+## Sem inimigo brigando por tantos segundos, quem caiu se levanta com 1 PV (estabilizado).
+@export var stabilize_after: float = 4.0
 
-var in_combat: bool = false
-var _encounter: Encounter
+var player: Combatant
+var controller: PlayerController
+var companions: Array[Combatant] = []
+## Heróis encontrados no caminho que ainda não entraram no grupo.
+var waiting: Array[Combatant] = []
+var ready_to_play: bool = false
+var _calm_time: float = 0.0
+var _finished: bool = false
 
 @onready var _terrain: MeshInstance3D = $Terrain
 @onready var _navigation: NavigationRegion3D = $Navigation
-@onready var _grid: CombatGrid = $Grid
-@onready var _combat: CombatManager = $Combat
-@onready var _party: PartyController = $Party
-@onready var _combat_hud: CombatHUD = $CombatHUD
-@onready var _explore_hud: ExplorationHUD = $ExplorationHUD
+@onready var _camera: ThirdPersonCamera = $CameraRig
+@onready var _hud: GameHUD = $HUD
+@onready var _spawn: Marker3D = $PlayerSpawn
 
 
 func _ready() -> void:
 	_terrain.create_trimesh_collision()
-	_combat_hud.set_result_texts(victory_text, defeat_text)
-	_combat_hud.set_combat_visible(false)
-	_combat.combat_ended.connect(_on_combat_ended)
-	_party.setup()
-	_explore_hud.setup(_party)
-	_party.inspected.connect(_explore_hud.show_story)
+	player = _spawn_hero(Game.chosen, _spawn.transform)
+	controller = PlayerController.new()
+	controller.name = "PlayerController"
+	controller.camera = _camera
+	controller.enabled = false
+	player.add_child(controller)
+	_camera.target = player
+	_camera.yaw = _spawn.rotation.y
+	_camera.snap()
+	_hud.setup(player, controller)
+	_hud.watch(player)
+	_hud.continue_pressed.connect(func() -> void: _camera.capture(true))
+	for node: Node in get_tree().get_nodes_in_group("hero_spot"):
+		var spot := node as HeroSpot
+		if spot.hero_id == Game.chosen or not Game.HEROES.has(spot.hero_id):
+			continue
+		if Game.party.has(spot.hero_id):
+			var side := Vector3(1.5 * (companions.size() + 1), 0.0, 1.5)
+			_join(_spawn_hero(spot.hero_id, _spawn.transform.translated(side)))
+		else:
+			_wait_here(_spawn_hero(spot.hero_id, spot.transform))
+	for node: Node in get_tree().get_nodes_in_group("enemies"):
+		var enemy := node as Combatant
+		_hud.watch(enemy)
+		if enemy.is_boss:
+			enemy.downed_changed.connect(_on_boss_down)
+	for node: Node in get_tree().get_nodes_in_group("interactable"):
+		var it := node as Interactable
+		if not it.used.is_connected(_on_used):
+			it.used.connect(_on_used)
+	await _bake_navigation()
+	var headless := DisplayServer.get_name() == "headless"
+	if not (skip_intro or headless or intro_lines.is_empty()):
+		await _hud.play_intro(chapter_title, intro_lines)
+	controller.enabled = true
+	_camera.capture(true)
+	_hud.show_area(chapter_title)
+	ready_to_play = true
+
+
+func in_combat() -> bool:
+	for node: Node in get_tree().get_nodes_in_group("enemies"):
+		var enemy := node as Combatant
+		if enemy == null or not enemy.is_active():
+			continue
+		var brain := enemy.get_node_or_null("AIBrain") as AIBrain
+		if brain and brain.aggro:
+			return true
+	return false
+
+
+## Chama o herói para o grupo: vira aliado controlado pela IA e segue você.
+func join(hero: Combatant) -> void:
+	_join(hero)
+
+
+func _spawn_hero(id: String, where: Transform3D) -> Combatant:
+	var hero := Game.hero_scene(id).instantiate() as Combatant
+	hero.transform = where
+	add_child(hero)
+	return hero
+
+
+func _wait_here(hero: Combatant) -> void:
+	hero.recruitable = true
+	waiting.append(hero)
+	var brain := AIBrain.new()
+	brain.name = "AIBrain"
+	brain.mode = AIBrain.Mode.WAITING
+	hero.add_child(brain)
+	var talk := Interactable.new()
+	talk.name = "Talk"
+	talk.action = Interactable.Action.TALK
+	talk.prompt_text = "Falar com %s" % hero.display_name
+	talk.position = Vector3.UP
+	hero.add_child(talk)
+	talk.used.connect(_on_used)
+
+
+func _join(hero: Combatant) -> void:
+	hero.recruitable = false
+	waiting.erase(hero)
+	var brain := hero.get_node_or_null("AIBrain") as AIBrain
+	if brain == null:
+		brain = AIBrain.new()
+		brain.name = "AIBrain"
+		hero.add_child(brain)
+	brain.mode = AIBrain.Mode.COMPANION
+	brain.leader = player
+	brain.slot = companions.size()
+	companions.append(hero)
+	Game.recruit(hero.hero_id)
+	var talk := hero.get_node_or_null("Talk")
+	if talk:
+		talk.queue_free()
+	_hud.add_party_member(hero)
+
+
+func _on_used(_by: Combatant, what: Interactable) -> void:
+	match what.action:
+		Interactable.Action.READ:
+			_hud.show_story(what.text)
+		Interactable.Action.REST:
+			if in_combat():
+				_hud.toast("Não dá para descansar com inimigos por perto")
+				return
+			player.rest()
+			for c: Combatant in companions:
+				c.rest()
+			_hud.show_story(what.text)
+		Interactable.Action.TALK:
+			var hero := what.get_parent() as Combatant
+			controller.enabled = false
+			var yes := await _hud.ask_recruit(hero)
+			controller.enabled = true
+			if yes and is_instance_valid(hero):
+				_join(hero)
+				_hud.toast("%s entrou no grupo" % hero.display_name)
+
+
+func _physics_process(delta: float) -> void:
+	if player == null or _finished or not ready_to_play:
+		return
+	if in_combat():
+		_calm_time = 0.0
+	else:
+		_calm_time += delta
+		if _calm_time > stabilize_after:
+			for c: Combatant in [player] + companions:
+				if c.downed:
+					c.revive(1)
+					_hud.toast("%s se levanta (1 PV)" % c.display_name)
+	if player.downed:
+		for c: Combatant in companions:
+			if c.is_active():
+				return
+		_finished = true
+		_hud.show_result(false, defeat_text)
+
+
+func _on_boss_down(is_down: bool) -> void:
+	if not is_down or _finished:
+		return
+	await get_tree().create_timer(2.0).timeout
+	_hud.show_result(true, victory_text)
+
+
+func _bake_navigation() -> void:
 	# A colisão precisa existir antes de montar o mapa de navegação
 	await get_tree().physics_frame
 	_navigation.bake_navigation_mesh(false)
-	# O mapa montado precisa ser enviado ao servidor de navegação (sozinho ele não sincroniza),
-	# e o grupo só anda depois que o servidor terminar (antes disso as consultas voltam vazias)
+	# O mapa montado precisa ser enviado ao servidor de navegação (sozinho ele não sincroniza);
+	# antes da primeira sincronização as consultas voltam vazias
 	var map := get_world_3d().navigation_map
-	var probe := _party.heroes[0].global_position
+	var probe := player.global_position
 	for i: int in 240:
 		if i % 20 == 0:
 			NavigationServer3D.region_set_navigation_mesh(_navigation.get_rid(), _navigation.navigation_mesh)
 		await get_tree().physics_frame
 		if NavigationServer3D.map_get_iteration_id(map) == 0:
-			continue  # consultar antes da primeira sincronização dá erro
+			continue
 		if NavigationServer3D.map_get_closest_point(map, probe).distance_to(probe) < 3.0:
 			break
-	var headless := DisplayServer.get_name() == "headless"
-	if not (skip_intro or headless or intro_lines.is_empty()):
-		_explore_hud.visible = false
-		await _combat_hud.play_intro(chapter_title, intro_lines)
-		_explore_hud.visible = true
-	_party.set_enabled(true)
-	_explore_hud.show_area(chapter_title)
-
-
-func _physics_process(_delta: float) -> void:
-	if in_combat or not _party.enabled or _party.leader == null:
-		return
-	for node: Node in get_tree().get_nodes_in_group("encounter"):
-		var encounter := node as Encounter
-		if not encounter.done and _party.leader.global_position.distance_to(encounter.global_position) < encounter.radius:
-			start_encounter(encounter)
-			return
-
-
-func start_encounter(encounter: Encounter) -> void:
-	in_combat = true
-	_encounter = encounter
-	_party.set_enabled(false)
-	_explore_hud.visible = false
-	_grid.size = encounter.grid_size
-	var half := Vector3(encounter.grid_size.x * _grid.cell_size / 2.0, 0.0, encounter.grid_size.y * _grid.cell_size / 2.0)
-	_grid.global_position = Vector3(encounter.global_position.x, 0.0, encounter.global_position.z) - half
-	_combat_hud.set_combat_visible(true)
-	var participants: Array[Unit] = []
-	for hero: Unit in _party.heroes:
-		if hero.is_alive():
-			participants.append(hero)
-	participants.append_array(encounter.enemies())
-	_combat.start(participants)
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("restart"):
-		get_tree().reload_current_scene()
-
-
-func _on_combat_ended(victory: bool) -> void:
-	if not victory:
-		return  # tela de derrota fica; R recomeça
-	if _combat.animate:
-		await get_tree().create_timer(3.0).timeout
-	_combat.finish_and_reset()
-	_encounter.done = true
-	_combat_hud.set_combat_visible(false)
-	_explore_hud.visible = true
-	in_combat = false
-	_party.set_enabled(true)
-	_explore_hud.show_story(victory_text)

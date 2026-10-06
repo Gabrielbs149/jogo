@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://combat/combatant.gd" id="c_script"]
+[ext_resource type="Script" path="res://combat/ai_brain.gd" id="brain"]
+[ext_resource type="PackedScene" path="res://actors/enemies/sentinel.tscn" id="model"]
+[ext_resource type="Script" path="res://combat/ability.gd" id="a_script"]
+[ext_resource type="Resource" path="res://data/abilities/raio_vigia.tres" id="ab_raio_vigia"]
+
+[sub_resource type="CapsuleShape3D" id="Capsule_body"]
+radius = 0.5
+height = 1.8
+
+[node name="SentinelaEstelar" type="CharacterBody3D"]
+script = ExtResource("c_script")
+display_name = "Sentinela estelar"
+team = 1
+max_hp = 60
+armor_class = 14
+attack_bonus = 5
+spell_dc = 12
+dex_save = 2
+con_save = 1
+wis_save = 2
+move_speed = 3.4
+abilities = Array[ExtResource("a_script")]([ExtResource("ab_raio_vigia")])
+color = Color(0.62, 0.5, 0.42, 1)
+aggro_radius = 12
+is_boss = false
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("Capsule_body")
+
+[node name="Model" parent="." instance=ExtResource("model")]
+
+[node name="AIBrain" type="Node" parent="."]
+script = ExtResource("brain")

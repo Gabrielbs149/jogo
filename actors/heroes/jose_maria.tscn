@@ -1,0 +1,81 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://combat/combatant.gd" id="c_script"]
+[ext_resource type="PackedScene" path="res://actors/shared/robed_figure.tscn" id="16_r"]
+[ext_resource type="Script" path="res://combat/ability.gd" id="a_script"]
+[ext_resource type="Resource" path="res://data/abilities/flecha.tres" id="ab_flecha"]
+[ext_resource type="Resource" path="res://data/abilities/tiro_duplo.tres" id="ab_tiro_duplo"]
+[ext_resource type="Resource" path="res://data/abilities/marca_do_cacador.tres" id="ab_marca_do_cacador"]
+[ext_resource type="Resource" path="res://data/abilities/chuva_de_flechas.tres" id="ab_chuva_de_flechas"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
+albedo_color = Color(0.32, 0.2, 0.12, 1)
+roughness = 0.9
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.6
+
+[sub_resource type="TorusMesh" id="TorusMesh_64"]
+inner_radius = 0.55
+outer_radius = 0.6
+rings = 24
+ring_segments = 4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_65"]
+top_radius = 0.08
+bottom_radius = 0.07
+height = 0.55
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_66"]
+albedo_color = Color(0.4, 0.25, 0.12, 1)
+roughness = 0.85
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.6
+
+[sub_resource type="CapsuleShape3D" id="Capsule_body"]
+radius = 0.4
+height = 1.6
+
+[node name="JoseMaria" type="CharacterBody3D"]
+script = ExtResource("c_script")
+display_name = "José Maria"
+hero_id = "jose_maria"
+class_title = "Patrulheiro 3"
+bio = "Patrulheiro de arco longo e perna de pau. Anda devagar e erra pouco."
+team = 0
+max_hp = 78
+armor_class = 14
+attack_bonus = 6
+spell_dc = 13
+dex_save = 5
+con_save = 2
+wis_save = 2
+move_speed = 4.2
+abilities = Array[ExtResource("a_script")]([ExtResource("ab_flecha"), ExtResource("ab_tiro_duplo"), ExtResource("ab_marca_do_cacador"), ExtResource("ab_chuva_de_flechas")])
+dodge_name = "Desengajar"
+dodge_distance = 4.5
+dodge_cooldown = 3
+flying = false
+color = Color(0.3, 0.56, 0.36, 1)
+greeting = "José Maria bate a perna de pau na pedra. — Daqui eu vejo tudo. De perto eu acerto melhor."
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("Capsule_body")
+
+[node name="Model" parent="." instance=ExtResource("16_r")]
+cloth_color = Color(0.18, 0.36, 0.24, 1)
+trim_color = Color(0.95, 0.82, 0.5, 1)
+leg_height = 0.22
+peg_leg = true
+
+[node name="Bow" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(4.722e-12, 3.673e-06, 1, 0.35, -3.673e-06, 0, 1.286e-06, 1, -3.673e-06, -0.3, 1, -0.15)
+mesh = SubResource("TorusMesh_64")
+material_override = SubResource("StandardMaterial3D_6")
+
+[node name="Quiver" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(0.9394, -0.3429, 0, 0.3429, 0.9394, 0, 0, 0, 1, 0.12, 1.1, 0.26)
+mesh = SubResource("CylinderMesh_65")
+material_override = SubResource("StandardMaterial3D_66")

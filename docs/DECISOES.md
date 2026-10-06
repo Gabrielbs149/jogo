@@ -6,6 +6,16 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D018: Ação em 3ª pessoa com regras de D&D 5.5; você escolhe um herói e recruta os outros no caminho** · 2026-10-05 · Gabriel · substitui D012 e D014 (o combate por turnos sai)
+- **Começo:** tela inicial → escolha de quem seguir (os 5 da história) → a fase começa **só com o escolhido**. Os outros quatro esperam pela fase (nós `HeroSpot`); chegando perto, **F conversa** e você decide se chama para o grupo. Quem entra vira aliado controlado pela IA e segue você. A lista de quem entrou fica no autoload `Game`.
+- **Controle:** câmera atrás do ombro (mouse gira, mira no centro da tela), **WASD** anda, **Shift** corre, **botão esquerdo** ataca (segure), **Q / E / R** habilidades, **Espaço** esquiva, **F** interage, **Esc** pausa. Q/E/R no lugar do Q/W/E/R do LoL porque o W já anda.
+- **Regras (D&D 5.5 adaptado ao tempo real):** ataque = d20 + bônus contra a CA (20 crítico com dados em dobro, 1 erra); **vantagem/desvantagem** com 2d20; **salvamentos** (DES/CON/SAB) contra a CD de quem lançou, metade do dano se passar; **ataque furtivo**, **Bênção** (+1d4), **Marca do caçador**, **Amedrontado**, **Invisível** (Camuflagem), **Esquivar** (desvantagem contra você). O que no D&D é "por turno" ou "por descanso" vira **recarga em segundos**. Cada rolagem aparece no registro da tela.
+- **Cair:** herói a 0 PV fica caído; cura levanta. Sem inimigo brigando por 4 s, quem caiu se levanta com 1 PV. Todo mundo caído = derrota. **Fogueira (F) = descanso curto**: vida e recargas cheias.
+- **Escala do tempo real:** PV de heróis e inimigos = **3× a ficha** (Tico 22 → 66) e recargas mais longas (ataque básico 1,2–1,9 s), senão a luta acaba em 5 s. A cura do Naumfode subiu junto (4d8+6). Os dados de dano e as CAs são os da ficha. Inimigos percebem você a 9–12 m e chamam só quem está a 5 m, para dar para puxar um de cada vez.
+- **Simulação** (`tools/simulate_ethera.gd`, IA no lugar de quem joga, partindo direto para cima dos inimigos): com o grupo inteiro vence em ~20–30 s de jogo; sozinho contra os 7 de uma vez cai em ~30–60 s. Ou seja: Ethera pede grupo (ou puxar um inimigo por vez).
+- **Habilidades** em `data/abilities/*.tres` (1ª = botão esquerdo, 2ª = Q, 3ª = E, 4ª = R). Nomes e efeitos das habilidades são *(proposta)*: ajustem à ficha real de cada um na mesa.
+- Porquê: o Gabriel quer jogar com o próprio personagem, em 3ª pessoa, com habilidades "tipo LoL" mas com cara de D&D, e montar o grupo na história em vez de ganhar todo mundo de cara.
+
 **D017: Heróis gerados pelo TRELLIS.2 (forma + textura) a partir do desenho** · 2026-10-05 · Gabriel · substitui o método de D016
 O TRELLIS.2 (Microsoft, MIT, Space `microsoft/TRELLIS.2` no Hugging Face) gera o modelo já pintado de todos os lados; a pintura projetada de D016 deixava o lado escondido manchado. Passos: `tools/blender/gerado/gerar_trellis2.py` (precisa de login no Hugging Face no PC: conta grátis tem mais cota de GPU que anônimo) → `limpar_trellis.py` (tira o chão e as tiras que a IA inventa, junta vértices, casa as cores com o desenho, frente +Y, altura, 30 mil faces). O bruto fica em `art_src/<nome>_trellis_bruto.glb`.
 Porquê: fiel ao desenho por todos os ângulos, grátis e com licença aberta.
@@ -17,13 +27,13 @@ Porquê: modelar por primitivas não chega perto do traço do desenho; a forma g
 **D015: Modelos dos heróis no Blender, por script** · 2026-10-05 · Gabriel
 `tools/blender/kobolds.py` monta Tico-Lirou e Tika Muro a partir da ilustração do Gabriel e exporta `.glb` (+ `.blend` em `art_src/`). O MCP do Blender (`mcp-for-blender`, telemetria desligada) está no `.mcp.json` para modelar interativamente com o Blender aberto. Os outros heróis seguem o mesmo caminho quando tiverem referência.
 
-**D014: Exploração em tempo real + combate por turnos só na luta (Baldur's Gate 3), e menos Journey** · 2026-10-05 · Gabriel · ajusta D012
+**D014: Exploração em tempo real + combate por turnos só na luta (Baldur's Gate 3), e menos Journey** · substituída pela D018 · 2026-10-05 · Gabriel · ajusta D012
 O grupo anda livre (clique no chão; o líder vai na frente e os outros em formação, com o mapa de navegação do Godot). Ao chegar perto de um `Encounter`, a grade aparece e começa o combate por turnos; vencendo, volta a exploração e quem caiu levanta com 1 de vida. Tiramos as marcas do Journey (figura sem rosto de olhos brilhando, cachecol voando, montanha com feixe). Ambientação: Plano do Fogo (`docs/ESTILO.md`). Equilíbrio com o novo começo: IA dos heróis vence ~53% em ~10 rodadas.
 
 **D013: História = a campanha "A Noite Sem Nome" do grupo** · 2026-10-05 · Gabriel
 O jogo adapta a temporada do Plano do Fogo: cinco heróis que perderam as sombras, a caçada aos Astros (um por capítulo), os três caminhos do fim e o selo de Ethera como capítulo de abertura. Caiaque, Umu e Juca têm destaque (acampamento entre batalhas, proposto). Tudo em `docs/HISTORIA.md`. Dados pessoais da conversa original não entram no repo.
 
-**D012: 3D tático por turnos com visual do Journey** · 2026-10-05 · Gabriel · substitui D010 e D011
+**D012: 3D tático por turnos com visual do Journey** · substituída pela D018 · 2026-10-05 · Gabriel · substitui D010 e D011
 Câmera de cima, combate por turnos estilo Baldur's Gate 3: iniciativa (d20 + bônus), em cada turno andar + 1 ação, ataque rola d20 + bônus contra a CA (20 = crítico, 1 = erro), área não rola. Grade invisível de 1,6 m em 8 direções, obstáculos bloqueiam caminho e linha de visão, quem voa passa por cima. Heróis: Tico-Lirou, Naumfode, Chumasso, José Maria e Bahamut (classes em `docs/HISTORIA.md`). Visual Journey (`docs/ESTILO.md`). Renderer Forward+.
 Equilíbrio medido com `tools/simulate_battles.gd`: com a IA jogando pelos heróis, eles vencem ~65% em ~8 rodadas. Uma pessoa jogando bem vence mais vezes, mas tem que pensar.
 O 2D anterior fica no histórico (commit 947f201).

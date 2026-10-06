@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="Ability" format=3]
+
+[ext_resource type="Script" path="res://combat/ability.gd" id="1_ability"]
+
+[resource]
+script = ExtResource("1_ability")
+title = "Bote das sombras"
+description = "Some entre as folhas e reaparece no alvo: golpe com vantagem, que garante o Ataque furtivo."
+dnd_note = "Ação ardilosa (Disparada) + ataque com vantagem"
+kind = 0
+shape = 1
+roll = 0
+save = 0
+range_m = 8
+radius_m = 0
+cooldown = 11.2
+windup = 0
+dice_count = 1
+dice_sides = 4
+bonus = 3
+hits = 1
+advantage = true
+sneak_dice = 2
+status_title = ""
+status_time = 0
+buff_ac = 0
+bless_die = 0
+invisible = false
+mark_dice = 0
+frighten = false
+expose = false
+projectile = false
+vfx_color = Color(0.55, 0.9, 0.5, 1)

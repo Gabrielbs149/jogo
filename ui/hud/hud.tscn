@@ -1,0 +1,581 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/hud/hud.gd" id="1_hud"]
+
+[sub_resource type="StyleBoxFlat" id="Soft"]
+content_margin_left = 14.0
+content_margin_top = 10.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
+bg_color = Color(0.16, 0.08, 0.05, 0.55)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="Dot"]
+bg_color = Color(1, 0.95, 0.85, 0.9)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="Ring"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.9, 0.75, 0.55)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="HpFill"]
+bg_color = Color(0.85, 0.3, 0.2, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="HpBack"]
+bg_color = Color(0.1, 0.05, 0.04, 0.8)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="Gradient" id="Gradient_dusk"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0.16, 0.2, 0.34, 1, 0.45, 0.22, 0.14, 1, 0.92, 0.6, 0.4, 1)
+
+[sub_resource type="GradientTexture2D" id="Sky"]
+gradient = SubResource("Gradient_dusk")
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Reticle" type="Control" parent="Root"]
+unique_name_in_owner = true
+mouse_filter = 2
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Ring" type="Panel" parent="Root/Reticle"]
+mouse_filter = 2
+layout_mode = 0
+offset_left = -14.0
+offset_top = -14.0
+offset_right = 14.0
+offset_bottom = 14.0
+theme_override_styles/panel = SubResource("Ring")
+
+[node name="Dot" type="Panel" parent="Root/Reticle"]
+mouse_filter = 2
+layout_mode = 0
+offset_left = -3.0
+offset_top = -3.0
+offset_right = 3.0
+offset_bottom = 3.0
+theme_override_styles/panel = SubResource("Dot")
+
+[node name="TargetFrame" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Soft")
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -230.0
+offset_top = 14.0
+offset_right = 230.0
+offset_bottom = 96.0
+grow_horizontal = 2
+
+[node name="VBox" type="VBoxContainer" parent="Root/TargetFrame"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TargetName" type="Label" parent="Root/TargetFrame/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+
+[node name="TargetHp" type="ProgressBar" parent="Root/TargetFrame/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+show_percentage = false
+theme_override_styles/background = SubResource("HpBack")
+theme_override_styles/fill = SubResource("HpFill")
+
+[node name="TargetInfo" type="Label" parent="Root/TargetFrame/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+
+[node name="AreaName" type="Label" parent="Root"]
+unique_name_in_owner = true
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 48
+text = "Ruínas de Ethera"
+horizontal_alignment = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_top = 120.0
+offset_right = 400.0
+offset_bottom = 190.0
+grow_horizontal = 2
+
+[node name="Toast" type="Label" parent="Root"]
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 0.85, 0.6, 1)
+horizontal_alignment = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = 60.0
+offset_right = 300.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Prompt" type="Label" parent="Root"]
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -250.0
+offset_right = 300.0
+offset_bottom = -215.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="PlayerPanel" type="PanelContainer" parent="Root"]
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Soft")
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -345.0
+offset_top = -200.0
+offset_right = 345.0
+offset_bottom = -14.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="VBox" type="VBoxContainer" parent="Root/PlayerPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Row" type="HBoxContainer" parent="Root/PlayerPanel/VBox"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="PlayerName" type="Label" parent="Root/PlayerPanel/VBox/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 18
+
+[node name="PlayerHpText" type="Label" parent="Root/PlayerPanel/VBox/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+
+[node name="PlayerHp" type="ProgressBar" parent="Root/PlayerPanel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+show_percentage = false
+theme_override_styles/background = SubResource("HpBack")
+theme_override_styles/fill = SubResource("HpFill")
+
+[node name="Statuses" type="Label" parent="Root/PlayerPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1, 0.9, 0.7, 0.9)
+
+[node name="SkillBar" type="HBoxContainer" parent="Root/PlayerPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="PartyPanel" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Soft")
+layout_mode = 1
+anchors_preset = 4
+anchor_left = 0.0
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 16.0
+offset_top = -30.0
+offset_right = 270.0
+offset_bottom = 30.0
+grow_vertical = 2
+
+[node name="Party" type="VBoxContainer" parent="Root/PartyPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LogPanel" type="PanelContainer" parent="Root"]
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Soft")
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -440.0
+offset_top = -200.0
+offset_right = -14.0
+offset_bottom = -14.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Log" type="RichTextLabel" parent="Root/LogPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 13
+scroll_following = true
+fit_content = false
+
+[node name="Hint" type="Label" parent="Root"]
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1, 0.9, 0.75, 0.6)
+text = "WASD andar · Shift correr · Mouse mirar · Botão esq. atacar · Q E R habilidades · Espaço esquiva · F interagir · Esc pausa"
+layout_mode = 1
+anchors_preset = 0
+offset_left = 14.0
+offset_top = 10.0
+offset_right = 900.0
+offset_bottom = 32.0
+
+[node name="Story" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Soft")
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -420.0
+offset_right = 400.0
+offset_bottom = -270.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="StoryText" type="Label" parent="Root/Story"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Recruit" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+theme_override_styles/panel = SubResource("Soft")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -60.0
+offset_right = 300.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Root/Recruit"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RecruitName" type="Label" parent="Root/Recruit/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+
+[node name="RecruitClass" type="Label" parent="Root/Recruit/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 0.86, 0.6, 1)
+horizontal_alignment = 1
+
+[node name="RecruitText" type="Label" parent="Root/Recruit/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(540, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Buttons" type="HBoxContainer" parent="Root/Recruit/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="RecruitYes" type="Button" parent="Root/Recruit/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 44)
+layout_mode = 2
+text = "Chamar para o grupo"
+
+[node name="RecruitNo" type="Button" parent="Root/Recruit/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 44)
+layout_mode = 2
+text = "Agora não"
+
+[node name="Result" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+theme_override_styles/panel = SubResource("Soft")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -60.0
+offset_right = 340.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Root/Result"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="ResultTitle" type="Label" parent="Root/Result/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 44
+horizontal_alignment = 1
+
+[node name="ResultText" type="Label" parent="Root/Result/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(620, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Buttons" type="HBoxContainer" parent="Root/Result/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="ResultContinue" type="Button" parent="Root/Result/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 44)
+layout_mode = 2
+text = "Continuar explorando"
+
+[node name="ResultRetry" type="Button" parent="Root/Result/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(170, 44)
+layout_mode = 2
+text = "Tentar de novo"
+
+[node name="ResultMenu" type="Button" parent="Root/Result/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+text = "Menu"
+
+[node name="Pause" type="Control" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="Root/Pause"]
+color = Color(0.05, 0.02, 0.02, 0.6)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Root/Pause"]
+theme_override_styles/panel = SubResource("Soft")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -200.0
+offset_right = 320.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Root/Pause/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Title" type="Label" parent="Root/Pause/Panel/VBox"]
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 40
+text = "Pausado"
+horizontal_alignment = 1
+
+[node name="Controls" type="Label" parent="Root/Pause/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+text = "WASD andar   ·   Shift correr   ·   Mouse mirar
+Botão esquerdo atacar (segure)   ·   Q  E  R habilidades
+Espaço esquiva   ·   F interagir   ·   Roda do mouse zoom"
+
+[node name="PauseResume" type="Button" parent="Root/Pause/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Continuar"
+
+[node name="PauseMenu" type="Button" parent="Root/Pause/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Menu principal"
+
+[node name="Intro" type="Control" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Sky" type="TextureRect" parent="Root/Intro"]
+texture = SubResource("Sky")
+expand_mode = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Center" type="VBoxContainer" parent="Root/Intro"]
+theme_override_constants/separation = 14
+alignment = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -480.0
+offset_top = -300.0
+offset_right = 480.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Campaign" type="Label" parent="Root/Intro/Center"]
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_colors/font_color = Color(1, 0.86, 0.62, 0.85)
+theme_override_font_sizes/font_size = 18
+text = "A  NOITE  SEM  NOME   ·   PLANO  DO  FOGO"
+horizontal_alignment = 1
+
+[node name="IntroTitle" type="Label" parent="Root/Intro/Center"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 60
+text = "Ruínas de Ethera"
+horizontal_alignment = 1
+
+[node name="Gap" type="Control" parent="Root/Intro/Center"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+
+[node name="IntroLines" type="VBoxContainer" parent="Root/Intro/Center"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="IntroHint" type="Label" parent="Root/Intro/Center"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.7, 0.8)
+theme_override_font_sizes/font_size = 15
+text = "clique ou aperte qualquer tecla"
+horizontal_alignment = 1

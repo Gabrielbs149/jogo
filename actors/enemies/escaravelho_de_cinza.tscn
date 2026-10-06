@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://combat/combatant.gd" id="c_script"]
+[ext_resource type="Script" path="res://combat/ai_brain.gd" id="brain"]
+[ext_resource type="PackedScene" path="res://actors/enemies/beetle.tscn" id="model"]
+[ext_resource type="Script" path="res://combat/ability.gd" id="a_script"]
+[ext_resource type="Resource" path="res://data/abilities/mordida.tres" id="ab_mordida"]
+
+[sub_resource type="CapsuleShape3D" id="Capsule_body"]
+radius = 0.6
+height = 1.2
+
+[node name="EscaravelhoDeCinza" type="CharacterBody3D"]
+script = ExtResource("c_script")
+display_name = "Escaravelho de cinza"
+team = 1
+max_hp = 48
+armor_class = 13
+attack_bonus = 4
+spell_dc = 11
+dex_save = 1
+con_save = 1
+wis_save = 0
+move_speed = 4.6
+abilities = Array[ExtResource("a_script")]([ExtResource("ab_mordida")])
+color = Color(0.55, 0.45, 0.38, 1)
+aggro_radius = 9
+is_boss = false
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("Capsule_body")
+
+[node name="Model" parent="." instance=ExtResource("model")]
+
+[node name="AIBrain" type="Node" parent="."]
+script = ExtResource("brain")

@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="Ability" format=3]
+
+[ext_resource type="Script" path="res://combat/ability.gd" id="1_ability"]
+
+[resource]
+script = ExtResource("1_ability")
+title = "Rugido"
+description = "Inimigos em volta fazem salvamento de Sabedoria; quem falha fica Amedrontado (ataca com desvantagem) por 6 s."
+dnd_note = "Presença aterradora · condição Amedrontado"
+kind = 3
+shape = 7
+roll = 1
+save = 2
+range_m = 0
+radius_m = 7
+cooldown = 28.8
+windup = 0.35
+dice_count = 0
+dice_sides = 6
+bonus = 0
+hits = 1
+advantage = false
+sneak_dice = 0
+status_title = "Amedrontado"
+status_time = 6
+buff_ac = 0
+bless_die = 0
+invisible = false
+mark_dice = 0
+frighten = true
+expose = false
+projectile = false
+vfx_color = Color(1, 0.75, 0.35, 1)

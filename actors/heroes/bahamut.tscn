@@ -1,0 +1,42 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://combat/combatant.gd" id="c_script"]
+[ext_resource type="PackedScene" path="res://actors/bahamut/bahamut.tscn" id="18_r"]
+[ext_resource type="Script" path="res://combat/ability.gd" id="a_script"]
+[ext_resource type="Resource" path="res://data/abilities/garras.tres" id="ab_garras"]
+[ext_resource type="Resource" path="res://data/abilities/investida_alada.tres" id="ab_investida_alada"]
+[ext_resource type="Resource" path="res://data/abilities/rugido.tres" id="ab_rugido"]
+[ext_resource type="Resource" path="res://data/abilities/sopro_dourado.tres" id="ab_sopro_dourado"]
+
+[sub_resource type="CapsuleShape3D" id="Capsule_body"]
+radius = 0.8
+height = 1.8
+
+[node name="Bahamut" type="CharacterBody3D"]
+script = ExtResource("c_script")
+display_name = "Bahamut"
+hero_id = "bahamut"
+class_title = "Dragão dourado"
+bio = "Um dragão. Voa, morde e, quando precisa, cospe fogo dourado."
+team = 0
+max_hp = 102
+armor_class = 16
+attack_bonus = 6
+spell_dc = 14
+dex_save = 2
+con_save = 5
+wis_save = 3
+move_speed = 6.5
+abilities = Array[ExtResource("a_script")]([ExtResource("ab_garras"), ExtResource("ab_investida_alada"), ExtResource("ab_rugido"), ExtResource("ab_sopro_dourado")])
+dodge_name = "Bater de asas"
+dodge_distance = 6
+dodge_cooldown = 3
+flying = true
+color = Color(0.97, 0.8, 0.4, 1)
+greeting = "Bahamut abre um olho dourado. — Estrelas que caçam heróis... Vou junto."
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("Capsule_body")
+
+[node name="Model" parent="." instance=ExtResource("18_r")]

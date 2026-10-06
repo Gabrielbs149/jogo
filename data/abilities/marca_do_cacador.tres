@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="Ability" format=3]
+
+[ext_resource type="Script" path="res://combat/ability.gd" id="1_ability"]
+
+[resource]
+script = ExtResource("1_ability")
+title = "Marca do caçador"
+description = "Marca o alvo por 15 s: todo golpe do José Maria nele causa +1d6."
+dnd_note = "Magia de 1º círculo (Marca do caçador)"
+kind = 3
+shape = 0
+roll = 2
+save = 0
+range_m = 22
+radius_m = 0
+cooldown = 16
+windup = 0.1
+dice_count = 0
+dice_sides = 6
+bonus = 0
+hits = 1
+advantage = false
+sneak_dice = 0
+status_title = "Marca do caçador"
+status_time = 15
+buff_ac = 0
+bless_die = 0
+invisible = false
+mark_dice = 1
+frighten = false
+expose = false
+projectile = false
+vfx_color = Color(0.4, 1, 0.6, 1)

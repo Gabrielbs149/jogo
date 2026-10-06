@@ -5,12 +5,12 @@ Regras do projeto para os **dois** Claudes: o do Gabriel e o do John. Cada um ro
 ## O projeto
 - **Godot 4.7.2**, fixado em `.godot-version`. Os dois sempre na mesma versão; atualizar é decisão conjunta, em commit próprio.
 - **GDScript com tipagem estática.** Sem C#.
-- **3D, câmera de cima, no esquema do Baldur's Gate 3** (D012, D014): **exploração em tempo real** (clique no chão; o grupo segue o líder em formação pelo mapa de navegação) e **combate por turnos só quando começa uma luta** (`Encounter`). Ambientação: Plano do Fogo. **Leia `docs/ESTILO.md` antes de mexer em arte, fase ou interface.** Nada de copiar as marcas do Journey.
+- **3D em 3ª pessoa, ação em tempo real com regras de D&D 5.5** (D018): tela inicial → escolha de personagem → a fase começa só com o escolhido; os outros heróis esperam pela fase (`HeroSpot`) e entram no grupo quando você chama (F). Ambientação: Plano do Fogo. **Leia `docs/ESTILO.md` antes de mexer em arte, fase ou interface.**
 - **História: a campanha "A Noite Sem Nome" do grupo** (D013), em `docs/HISTORIA.md`. Personagens jogáveis: Tico-Lirou, Naumfode, Chumasso, José Maria e Bahamut. NPCs com destaque: **Caiaque, Umu e Juca**. **Não invente fatos da campanha:** o que for invenção para o jogo vai marcado como *(proposta)* no doc, e o humano confirma.
-- **Combate** (`combat/`): `CombatManager` (turnos, entrada do mouse, sinais), `CombatRules` (regras puras: acerto, alvos, rolagens), `CombatAI`, `CombatGrid` (casas, alcance, linha de visão), `Unit` (atributos no Inspector), `Ability` (`.tres` em `data/abilities/`), `GridObstacle` (ruína que bloqueia, com `inscription` opcional), `CellHighlighter`, `CombatFX`. Interface: `ui/combat_hud/`. Câmera: `systems/camera/tactics_camera.gd`.
-- **Regras e números de batalha moram em `.tres` e no Inspector** (`Unit`, `Ability`), nunca enterrados no código. Mexeu em número de inimigo/herói? Rode `tools/simulate_battles.gd` e registre o resultado em `DECISOES.md` (meta: IA dos heróis vence ~55–70%).
-- **Exploração** (`exploration/`): `PartyController` (clique para andar, F1–F5 escolhem o líder, clique em pedra com `inscription` para ler) e `Encounter` (luta começa quando o líder chega a `radius` metros; inimigos são filhos dele). Interface: `ui/exploration_hud/`.
-- **Fase:** `levels/ethera/` (acampamento ao sul, ruínas de Ethera no centro). O script da raiz faz a abertura → exploração → combate → exploração e monta o mapa de navegação (grupo `nav_source`). Terreno provisório: `tools/art/generate_dunes.js`.
+- **Combate** (`combat/`): `Combatant` (herói ou inimigo, CharacterBody3D; ficha D&D no Inspector), `Ability` (`.tres` em `data/abilities/`; ordem = botão esquerdo, Q, E, R), `CombatRules` (regras puras: d20, vantagem, salvamento, furtivo, área), `AIBrain` (aliados e inimigos em tempo real), `CombatFX`. Você: `player/player_controller.gd` + `systems/camera/third_person_camera.gd`. Interface: `ui/hud/`. Menus: `ui/title/`, `ui/character_select/`. Estado entre cenas: autoload `Game` (`systems/game/game.gd`).
+- **Regras e números de batalha moram em `.tres` e no Inspector** (`Combatant`, `Ability`), nunca enterrados no código. Mexeu em número de inimigo/herói? Rode `tools/simulate_ethera.gd` (a IA joga a fase com cada herói, sozinho e com o grupo) e registre o resultado em `DECISOES.md`.
+- **Mundo** (`world/`): `Interactable` (F: ler inscrição, descansar na fogueira, conversar com herói) e `HeroSpot` (onde cada herói espera ser encontrado). Heróis: `actors/heroes/<nome>.tscn`; inimigos: `actors/enemies/<nome>.tscn` (com `AIBrain`).
+- **Fase:** `levels/ethera/` (acampamento ao sul com a fogueira, heróis espalhados pelo caminho, ruínas de Ethera no centro com o Último Guardião). O script da raiz cria você no `PlayerSpawn`, os outros nos `HeroSpot`, monta o mapa de navegação (grupo `nav_source`), toca a abertura e cuida de cair/levantar, vitória e derrota. Terreno provisório: `tools/art/generate_dunes.js`.
 - **Modelos dos heróis:** `actors/<nome>/<nome>.glb` + fonte em `art_src/<nome>.blend`. Frente para +Y no Blender (−Z no Godot), pés na origem. Herói com desenho de referência (D017): `tools/blender/gerado/gerar_trellis2.py desenho.png bruto.glb` (TRELLIS.2 no Hugging Face, precisa estar logado no HF) e depois `limpar_trellis.py` no Blender sem janela (veja o cabeçalho de cada script). Desenhos recortados em `art_src/ref/`. Tico-Lirou já é assim. Tika Muro ainda sai de `tools/blender/kobolds.py`; não rode o script para o Tico.
 - Design: `docs/GDD.md`. Fases do projeto: `docs/ROADMAP.md`. Git: `docs/FLUXO.md`.
 - Equipe: Gabriel (`@Gabrielbs149`) e John (`@JohnG-404`). Os dois mexem em tudo, ao mesmo tempo.
@@ -38,12 +38,13 @@ O hook de início mostra `git status` e os últimos commits do remoto. Se aparec
 ## Estrutura de pastas
 ```
 res://
-├─ actors/        tico_lirou/, tika_muro/ (Blender), shared/ (manto provisório), bahamut/, naumfode/, enemies/, props/
-├─ combat/        regras, grade, IA, unidades e efeitos do combate por turnos
-├─ exploration/   grupo em tempo real e encontros
+├─ actors/        heroes/ (os 5 jogáveis), enemies/, tico_lirou/, tika_muro/ (modelos), shared/, bahamut/, naumfode/, props/
+├─ combat/        Combatant, Ability, regras D&D, IA em tempo real e efeitos
+├─ player/        controle de quem joga (WASD, mira, skills)
+├─ world/         Interactable (F) e HeroSpot
 ├─ levels/        fases montadas no editor: levels/<nome>/<nome>.tscn + levels/<nome>/art/
-├─ ui/            combat_hud/, exploration_hud/, theme/ (Cinzel + Lato)
-├─ systems/       camera/ (câmera tática)
+├─ ui/            hud/, title/, character_select/, theme/ (Cinzel + Lato)
+├─ systems/       game/ (autoload Game), camera/ (3ª pessoa)
 ├─ data/          abilities/*.tres — habilidades de heróis e inimigos
 ├─ assets/        SÓ o que várias cenas compartilham: fonts/, music/, sfx/, shaders/, themes/
 ├─ prototypes/    protótipos de 1 dia (Fase 1); apagar os que não vingarem

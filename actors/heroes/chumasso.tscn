@@ -1,0 +1,83 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://combat/combatant.gd" id="c_script"]
+[ext_resource type="PackedScene" path="res://actors/shared/robed_figure.tscn" id="16_r"]
+[ext_resource type="Script" path="res://combat/ability.gd" id="a_script"]
+[ext_resource type="Resource" path="res://data/abilities/martelo_de_guerra.tres" id="ab_martelo_de_guerra"]
+[ext_resource type="Resource" path="res://data/abilities/martelo_sagrado.tres" id="ab_martelo_sagrado"]
+[ext_resource type="Resource" path="res://data/abilities/bencao.tres" id="ab_bencao"]
+[ext_resource type="Resource" path="res://data/abilities/escudo_da_fe.tres" id="ab_escudo_da_fe"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_60"]
+albedo_color = Color(0.95, 0.78, 0.45, 1)
+roughness = 0.35
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.6
+metallic = 0.7
+emission_enabled = true
+emission = Color(0.95, 0.78, 0.45, 1)
+emission_energy_multiplier = 0.2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_61"]
+top_radius = 0.03
+bottom_radius = 0.03
+height = 1.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_62"]
+albedo_color = Color(0.35, 0.22, 0.12, 1)
+roughness = 0.85
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_63"]
+size = Vector3(0.26, 0.2, 0.42)
+
+[sub_resource type="CapsuleShape3D" id="Capsule_body"]
+radius = 0.55
+height = 2.3
+
+[node name="Chumasso" type="CharacterBody3D"]
+script = ExtResource("c_script")
+display_name = "Chumasso"
+hero_id = "chumasso"
+class_title = "Clérigo 3 (Guerra) · Golias"
+bio = "Clérigo guerreiro, um golias enorme. Bate com o martelo e com a fé."
+team = 0
+max_hp = 90
+armor_class = 18
+attack_bonus = 5
+spell_dc = 13
+dex_save = 0
+con_save = 3
+wis_save = 5
+move_speed = 4.6
+abilities = Array[ExtResource("a_script")]([ExtResource("ab_martelo_de_guerra"), ExtResource("ab_martelo_sagrado"), ExtResource("ab_bencao"), ExtResource("ab_escudo_da_fe")])
+dodge_name = "Esquiva"
+dodge_distance = 3.5
+dodge_cooldown = 3.5
+flying = false
+color = Color(0.3, 0.42, 0.72, 1)
+greeting = "Chumasso apoia o martelo no ombro. — Tem coisa errada naquelas ruínas. Eu vou com você."
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
+shape = SubResource("Capsule_body")
+
+[node name="Model" parent="." instance=ExtResource("16_r")]
+cloth_color = Color(0.2, 0.28, 0.48, 1)
+trim_color = Color(1.0, 0.85, 0.5, 1)
+face_color = Color(0.42, 0.45, 0.5, 1)
+body_scale = 1.45
+robe_width = 1.25
+
+[node name="Handle" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(0.9689, -0.2474, 0, 0.2474, 0.9689, 0, 0, 0, 1, 0.42, 0.8, -0.05)
+mesh = SubResource("CylinderMesh_61")
+material_override = SubResource("StandardMaterial3D_62")
+
+[node name="HammerHead" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(0.9689, -0.2474, 0, 0.2474, 0.9689, 0, 0, 0, 1, 0.55, 1.3, -0.05)
+mesh = SubResource("BoxMesh_63")
+material_override = SubResource("StandardMaterial3D_60")

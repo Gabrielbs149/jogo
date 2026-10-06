@@ -1,9 +1,13 @@
 class_name CombatFX
 extends Node3D
 ## Efeitos visuais do combate: número flutuante, projétil de luz, anel de área, cura, queda.
-## Todos devolvem quando terminam (use com await).
+## Todos devolvem quando terminam (use com await). Os personagens acham este nó pelo grupo "combat_fx".
 
 @export var font: Font
+
+
+func _ready() -> void:
+	add_to_group("combat_fx")
 
 
 func floating_text(at: Vector3, text: String, color: Color, big: bool = false) -> void:
@@ -11,7 +15,7 @@ func floating_text(at: Vector3, text: String, color: Color, big: bool = false) -
 	label.text = text
 	label.font = font
 	label.font_size = 96 if big else 72
-	label.pixel_size = 0.004
+	label.pixel_size = 0.0026
 	label.modulate = color
 	label.outline_modulate = Color(0.25, 0.1, 0.05, 0.9)
 	label.outline_size = 18
@@ -76,17 +80,17 @@ func rising_glow(at: Vector3, color: Color) -> void:
 	orb.queue_free()
 
 
-func lunge(unit: Unit, toward: Vector3) -> void:
-	var start := unit.global_position
-	var dir := (toward - start)
-	dir.y = 0.0
+## O modelo dá um bote para a frente e volta (o corpo fica no lugar).
+func lunge(unit: Combatant) -> void:
+	if unit.model == null:
+		return
 	var tween := create_tween()
-	tween.tween_property(unit, "global_position", start + dir.normalized() * 0.6, 0.12).set_ease(Tween.EASE_OUT)
-	tween.tween_property(unit, "global_position", start, 0.22).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(unit.model, "position:z", -0.5, 0.1).set_ease(Tween.EASE_OUT)
+	tween.tween_property(unit.model, "position:z", 0.0, 0.2).set_ease(Tween.EASE_IN_OUT)
 	await tween.finished
 
 
-func shake(unit: Unit) -> void:
+func shake(unit: Combatant) -> void:
 	if unit.model == null:
 		return
 	var tween := create_tween()
@@ -96,7 +100,7 @@ func shake(unit: Unit) -> void:
 	await tween.finished
 
 
-func fall(unit: Unit) -> void:
+func fall(unit: Combatant) -> void:
 	var tween := create_tween().set_parallel()
 	tween.tween_property(unit, "global_position:y", unit.global_position.y - 1.6, 1.4).set_ease(Tween.EASE_IN)
 	tween.tween_property(unit, "scale", Vector3.ONE * 0.5, 1.4)

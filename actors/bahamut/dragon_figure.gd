@@ -69,8 +69,10 @@ func _process(delta: float) -> void:
 	if _head == null:
 		return
 	_time += delta
-	var forward := -global_basis.z
-	var right := global_basis.x
+	# frente no plano do chão: deitado (caído) a frente apontaria para cima
+	var forward := Vector3(-global_basis.z.x, 0.0, -global_basis.z.z)
+	forward = forward.normalized() if forward.length_squared() > 0.0001 else Vector3.FORWARD
+	var right := Vector3(-forward.z, 0.0, forward.x)
 	var base := global_position + Vector3.UP * hover_height
 	var head_pos := base + forward * 0.35 + Vector3.UP * sin(_time * 1.6) * 0.12 + right * sin(_time * 0.9) * 0.15
 	_head.global_position = head_pos

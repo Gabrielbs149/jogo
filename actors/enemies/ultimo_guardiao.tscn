@@ -1,0 +1,38 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://combat/combatant.gd" id="c_script"]
+[ext_resource type="Script" path="res://combat/ai_brain.gd" id="brain"]
+[ext_resource type="PackedScene" path="res://actors/enemies/colossus.tscn" id="model"]
+[ext_resource type="Script" path="res://combat/ability.gd" id="a_script"]
+[ext_resource type="Resource" path="res://data/abilities/pancada.tres" id="ab_pancada"]
+[ext_resource type="Resource" path="res://data/abilities/onda_de_cinza.tres" id="ab_onda_de_cinza"]
+
+[sub_resource type="CapsuleShape3D" id="Capsule_body"]
+radius = 1
+height = 3
+
+[node name="UltimoGuardiao" type="CharacterBody3D"]
+script = ExtResource("c_script")
+display_name = "Último Guardião"
+team = 1
+max_hp = 255
+armor_class = 15
+attack_bonus = 6
+spell_dc = 13
+dex_save = 0
+con_save = 4
+wis_save = 2
+move_speed = 3.8
+abilities = Array[ExtResource("a_script")]([ExtResource("ab_pancada"), ExtResource("ab_onda_de_cinza")])
+color = Color(0.7, 0.5, 0.38, 1)
+aggro_radius = 10
+is_boss = true
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("Capsule_body")
+
+[node name="Model" parent="." instance=ExtResource("model")]
+
+[node name="AIBrain" type="Node" parent="."]
+script = ExtResource("brain")

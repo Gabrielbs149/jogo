@@ -1,0 +1,42 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://combat/combatant.gd" id="c_script"]
+[ext_resource type="PackedScene" path="res://actors/tico_lirou/tico_lirou.tscn" id="19_r"]
+[ext_resource type="Script" path="res://combat/ability.gd" id="a_script"]
+[ext_resource type="Resource" path="res://data/abilities/adaga.tres" id="ab_adaga"]
+[ext_resource type="Resource" path="res://data/abilities/bote_das_sombras.tres" id="ab_bote_das_sombras"]
+[ext_resource type="Resource" path="res://data/abilities/espinhos.tres" id="ab_espinhos"]
+[ext_resource type="Resource" path="res://data/abilities/camuflagem.tres" id="ab_camuflagem"]
+
+[sub_resource type="CapsuleShape3D" id="Capsule_body"]
+radius = 0.38
+height = 1.15
+
+[node name="TicoLirou" type="CharacterBody3D"]
+script = ExtResource("c_script")
+display_name = "Tico-Lirou"
+hero_id = "tico"
+class_title = "Ladino 3 · Kobold"
+bio = "Kobold ladino, 97% planta. Anda com a Tika Muro e com uma mochila maior do que ele (o cogumelo vai junto)."
+team = 0
+max_hp = 66
+armor_class = 15
+attack_bonus = 5
+spell_dc = 13
+dex_save = 5
+con_save = 1
+wis_save = 1
+move_speed = 6
+abilities = Array[ExtResource("a_script")]([ExtResource("ab_adaga"), ExtResource("ab_bote_das_sombras"), ExtResource("ab_espinhos"), ExtResource("ab_camuflagem")])
+dodge_name = "Ação ardilosa"
+dodge_distance = 5
+dodge_cooldown = 2.5
+flying = false
+color = Color(0.2, 0.5, 0.42, 1)
+greeting = "Tico-Lirou ajeita as folhas do capuz. — Ethera fica pra lá. Sozinho é que eu não vou."
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.575, 0)
+shape = SubResource("Capsule_body")
+
+[node name="Model" parent="." instance=ExtResource("19_r")]
