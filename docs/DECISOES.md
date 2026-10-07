@@ -6,6 +6,11 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D029: Cena de abertura do Tico com o rato** · 2026-10-07 · Gabriel ("muda a cena inicial pro Tico oferecendo na real um rato pra Tika Muro, elabora a cena")
+- Roteiro novo em `story/tico_cena1.tres` (falas em HISTORIA.md, marcadas como proposta), com a piada do "bumbum" da história do Tico e o "Idiota." da versão do pão.
+- Rato assado no espeto modelado por script (`tools/blender/gerado/modelar_rato.py`): `actors/props/rato/rato_espeto.glb` (com o nó `Traseiro` separado) e `rato_traseiro.glb` (o pedaço que vai para a Tika).
+- Cenário (`tools/art/montar_cena_tico.gd`): fogueirinha entre pedras com fogo pequeno, marca `EspetoNoFogo`, câmera nova `Plano5` (close no fogo). O pão saiu da cena (as peças continuam no catálogo).
+
 **D028: Esqueleto humanoide + animações prontas por retarget (Tico primeiro)** · 2026-10-07 · Gabriel ("as animações tão horríveis... ele segurando aquele suposto pão ta uma nojeira") · substitui a D020
 - **Por que:** a D020 fazia esqueleto e cada animação à mão em código (poses chutadas). Agora o personagem ganha um esqueleto humanoide com os nomes padrão do Godot e as **76 animações do KayKit** (feitas por animador) tocam nele pelo *retarget* do Godot (BoneMap + "Rename Bones" + "Fix Silhouette" só nos braços).
 - **Pesos:** o cálculo automático do Blender falha na malha do TRELLIS (buracos). `tools/blender/gerado/rig_tico_humanoide.py` calcula: tronco e rabo por "o ponto da pele enxerga o osso" (raio num corpo fechado por voxel), membros por região + distância, suavização pelas arestas, até 4 ossos por vértice.

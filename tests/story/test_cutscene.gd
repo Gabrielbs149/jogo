@@ -31,8 +31,9 @@ func test_tico_first_scene_plays_and_tika_is_gone_after() -> void:
 	var mark := level.get_node("CenaTico/TicoSentado") as Node3D
 	assert_lt(player.global_position.distance_to(mark.global_position), 0.05, "o Tico fica onde estava sentado")
 	assert_false((level.find_child("Tika", true, false) as Node3D).visible, "a Tika sumiu")
-	assert_false((level.find_child("PaoDaTika", true, false) as Node3D).visible)
-	assert_false((level.find_child("Pao", true, false) as Node3D).visible)
+	assert_false((level.find_child("PedacoDaTika", true, false) as Node3D).visible, "o pedaço da Tika some com ela")
+	assert_false((level.find_child("Rato", true, false) as Node3D).visible)
+	assert_false((level.find_child("Fogueirinha", true, false) as Node3D).visible)
 	assert_eq(String(player.get_node("Animator").get("_held")), "", "o Tico volta a andar normal")
 	assert_eq(get_viewport().get_camera_3d(), (level.get_node("CameraRig") as ThirdPersonCamera).camera, "a câmera volta para o jogo")
 

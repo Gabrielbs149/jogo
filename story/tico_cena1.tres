@@ -4,59 +4,71 @@
 
 [resource]
 script = ExtResource("1_roteiro")
-texto = "# 1ª Cena do Tico (texto do Gabriel). As linhas entre [ ] são os comandos; o resto é o roteiro dele, que fica só de anotação.
-# Os planos de câmera (Plano1..Plano4), a marca TicoSentado, a Tika e o pão ficam no nó CenaTico da fase Arandu.
+texto = "# 1ª Cena do Tico: o rato (pedido do Gabriel em 07/10: \"o Tico oferecendo um rato pra Tika Muro\").
+# Base: a história do Tico (\"adorava dividir ratos com tico — ele sempre deixava o bumbum pra ela\").
+# As falas são proposta; mude à vontade (as linhas sem colchete são só anotação e não aparecem).
+# Câmeras (Plano1..Plano5), marcas, a Tika, o rato, a fogueirinha ficam no nó CenaTico da fase Arandu.
 [tela preta 0]
-[mostra: Tika]
-[mostra: Pao]
+[esconde: Tika]
+[esconde: PedacoDaTika]
+[mostra: Rato]
+[mostra: Fogueirinha]
+[coloca: Rato EspetoNoFogo]
 [coloca: Tico TicoSentado]
 [anima: Tico Sit_Floor_Idle]
-[na mão: Pao]
-Tela preta.
-Sons de cidade ao fundo.
-Gente conversando, carroça passando, cachorro latindo.
-[som: cidade | (gente conversando, uma carroça passando, um cachorro latindo)]
-[pausa 2.5]
-Uma voz:
-???: \"Você vai mesmo dividir isso comigo?\"
+Tela preta. Sons da cidade: gente longe, uma carroça, um cachorro.
+E bem perto, um chiado de alguma coisa assando.
+[som: cidade | (a cidade lá longe... e um chiado de coisa assando)]
+[pausa 2.0]
 [legenda:]
-[corta: Plano1]
-[abre 1.5]
-Corta para Tico sentado no chão, embaixo de uma marquise.
-Na mão dele, um pedaço de pão.
-Na frente dele está Tika.
-Ela olha para o pão.
-[pausa 1.2]
-[corta: Plano2]
-Tico: \"Você sabe que eu achei isso, né?\"
-[corta: Plano3]
-Tika: \"E?\"
-[corta: Plano2]
-Tico: \"Então tecnicamente é meu.\"
-[corta: Plano3]
-Tika: \"Tecnicamente eu poderia pegar.\"
-Tico olha para ela.
-[corta: Plano2]
-Pausa.
+[corta: Plano5]
+[abre 1.8]
+Beco. Uma fogueirinha de nada entre pedras. Um rato espetado num graveto, girando no fogo.
 [pausa 1.6]
-Ele quebra o pão ao meio.
 [corta: Plano1]
-[esconde: Pao/Inteiro]
-[mostra: Pao/Metade]
-[mostra: PaoDaTika]
-Tico: \"...metade.\"
+Tico sentado no papelão, cuidando do rato como se fosse um banquete.
+[pausa 1.2]
+Uma voz chega antes dela:
+???: \"Isso aí é o que eu tô pensando?\"
+[mostra: Tika]
+Tika entra no beco.
+[corta: Plano2]
+Tico: \"Depende. Você tá pensando em jantar?\"
+[corta: Plano3]
+Tika: \"Tô pensando que isso tava vivo de manhã.\"
+[corta: Plano2]
+[na mão: Rato]
+Tico tira o espeto do fogo e sopra.
+Tico: \"E agora tá crocante. Evolução.\"
+[pausa 0.8]
+[corta: Plano1]
+Ele estende o espeto pra ela.
+Tico: \"Pega. Fica com o bumbum.\"
+[corta: Plano3]
+Tika: \"Você SEMPRE me dá o bumbum.\"
+[corta: Plano2]
+Tico: \"Porque é a melhor parte.\"
+[corta: Plano3]
+Tika: \"Porque é a única parte que você não quer.\"
+[corta: Plano2]
+[pausa 1.4]
+Tico: \"...Também.\"
+[corta: Plano1]
+Ela pega a parte de trás.
+[esconde: Rato/Traseiro]
+[mostra: PedacoDaTika]
+[pausa 1.0]
 Tika: \"Idiota.\"
-Eles comem.
-[anima: Tico Sit_Floor_Idle]
-[câmera: Plano4 5]
-[pausa 1.5]
-É uma cena simples, mas já mostra a relação dos dois.
-# (proposta) passagem para o jogo, com as frases da história do Tico:
+Tika senta do lado dele (ou fica ali), e os dois comem olhando o fogo.
+[câmera: Plano4 6]
+[pausa 2.0]
+# passagem para o jogo, com as frases da história do Tico:
 [tela preta 2]
 [para som]
 [esconde: Tika]
-[esconde: PaoDaTika]
-[esconde: Pao]
+[esconde: PedacoDaTika]
+[esconde: Rato]
+[esconde: Fogueirinha]
 [solta: Tico]
 > Certo dia, Tico acorda e não vê Tika do seu lado, em cima de seu papelão.
 > Desesperado, procura por todos os lados, mas nada dela aparecer.

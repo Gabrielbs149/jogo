@@ -74,7 +74,14 @@ E fragmentos do dia a dia da cidade, que fazem Ethera parecer viva (estilo Journ
 
 **A confirmar:** "duas asas simples" — seriam **adagas** ou **garras** (as garras do Tico são "igual a de Tika")? E **Cindralight** aqui × **Cindralich** nas mensagens do grupo: qual é a grafia?
 
-### 1ª cena do Tico (texto do Gabriel)
+### 1ª cena do Tico — versão do rato (Gabriel, 07/10: "o Tico oferecendo na real um rato pra Tika Muro")
+No jogo agora: `story/tico_cena1.tres`. *(proposta, falas do Claude a partir da história do Tico)* Beco, fogueirinha
+entre pedras, um rato espetado num graveto assando. Tika chega: "Isso aí é o que eu tô pensando?" — "Depende. Você tá
+pensando em jantar?" — "Tô pensando que isso tava vivo de manhã." — "E agora tá crocante. Evolução." Ele oferece:
+"Pega. Fica com o bumbum." — "Você SEMPRE me dá o bumbum." — "Porque é a melhor parte." — "Porque é a única parte
+que você não quer." — (pausa) "...Também." Ela pega a parte de trás. "Idiota." Os dois comem olhando o fogo.
+
+### 1ª cena do Tico — versão do pão (texto original do Gabriel, substituída pela do rato)
 No jogo: `story/tico_cena1.tres`, abre Arandu na primeira vez. O cenário (marquise, papelão, Tika, pão e os 4 planos de câmera) fica no nó `CenaTico` da fase. Tela preta com a voz, corta para os dois embaixo da marquise, falas em plano e contraplano, o pão partido ao meio e os dois comendo. *(proposta)* Depois, tela preta com duas frases da história dele ("Certo dia, Tico acorda e não vê Tika...") e o jogo começa com ele sozinho no papelão.
 
 > Tela preta. Sons de cidade ao fundo. Gente conversando, carroça passando, cachorro latindo.

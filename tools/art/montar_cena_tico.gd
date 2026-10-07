@@ -82,10 +82,26 @@ func _run() -> void:
 	_add(Marker3D.new(), cena, Transform3D(basis, to_world.call(Vector3(0, 0, tico_z)))).name = "TicoSentado"
 	var tika := _scene("res://actors/tika_muro/tika_muro.tscn", "Tika", cena, Transform3D(basis.rotated(Vector3.UP, PI), to_world.call(Vector3(0, 0, tika_z))))
 	tika.visible = false
-	var pao := _scene("res://world/props/pao.tscn", "Pao", cena, Transform3D(basis, to_world.call(Vector3(0.25, 0.25, tico_z - 0.1))))
-	pao.visible = false
-	var meio := _scene("res://world/props/meio_pao.tscn", "PaoDaTika", cena, Transform3D(basis.rotated(Vector3.UP, 0.5), to_world.call(Vector3(-0.12, 0.5, tika_z + 0.22))))
-	meio.visible = false
+	# fogueirinha entre os dois (um pouco para o lado) com o rato no espeto em cima (D029)
+	var fire_at: Vector3 = to_world.call(Vector3(0.42, 0, (tico_z + tika_z) / 2.0 + 0.1))
+	var fire := Node3D.new()
+	fire.name = "Fogueirinha"
+	_add(fire, cena, Transform3D(Basis(), fire_at))
+	for i: int in 8:
+		var a := i * TAU / 8.0
+		_scene("res://assets/kits/quaternius/natureza/Pebble_Round_%d.gltf" % (1 + i % 5), "Pedra", fire,
+			Transform3D(Basis(Vector3.UP, a).scaled(Vector3.ONE * 0.55), fire_at + Vector3(cos(a), 0, sin(a)) * 0.2))
+	_scene("res://assets/vfx/fogo.tscn", "Fogo", fire, Transform3D(Basis().scaled(Vector3.ONE * 0.32), fire_at + Vector3.UP * 0.03))
+	fire.visible = false
+	var toward: Vector3 = fire_at - to_world.call(Vector3(0, 0, tico_z))
+	toward.y = 0.0
+	var spit := Basis(Vector3.UP, atan2(-toward.z, toward.x)).rotated(toward.normalized().cross(Vector3.UP), -0.15)
+	_add(Marker3D.new(), cena, Transform3D(spit, fire_at + Vector3.UP * 0.2)).name = "EspetoNoFogo"
+	var rat := _scene("res://actors/props/rato/rato_espeto.glb", "Rato", cena, Transform3D(spit, fire_at + Vector3.UP * 0.2))
+	rat.visible = false
+	var piece := _scene("res://actors/props/rato/rato_traseiro.glb", "PedacoDaTika", cena,
+		Transform3D(basis.rotated(Vector3.UP, 0.6), to_world.call(Vector3(-0.12, 0.48, tika_z + 0.22))))
+	piece.visible = false
 	var mid: Vector3 = to_world.call(Vector3(0, 0, (tico_z + tika_z) / 2.0))
 	var tico_at: Vector3 = to_world.call(Vector3(0, 0, tico_z))
 	var tika_at: Vector3 = to_world.call(Vector3(0, 0, tika_z))
@@ -109,6 +125,7 @@ func _run() -> void:
 	_camera("Plano2", cena, tika_at + side * 0.85 + Vector3.UP * 1.15 + basis.z * -0.95, tico_at + Vector3.UP * 0.45, 40)
 	_camera("Plano3", cena, tico_at + side * 1.15 + Vector3.UP * 1.05 + basis.z * -0.15, tika_at + Vector3.UP * 0.7, 40)
 	_camera("Plano4", cena, mid + side * 3.2 + Vector3.UP * 2.2 + basis.z * -0.6, mid + Vector3.UP * 0.6, 55)
+	_camera("Plano5", cena, fire_at + side * 0.75 + Vector3.UP * 0.42 + basis.z * -0.35, fire_at + Vector3.UP * 0.17, 38)
 	level.set("cena_de_abertura", load("res://story/tico_cena1.tres"))
 	level.set("intro_lines", PackedStringArray())
 	await _save("res://levels/arandu/arandu.tscn")
