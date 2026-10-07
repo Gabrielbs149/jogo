@@ -6,6 +6,7 @@
 ## Decisões fechadas
 - **Estilo estilizado** com kits prontos e grátis (CC0): **Quaternius** (Medieval Village, Fantasy Props, Stylized Nature) no cenário e **KayKit Adventurers** nos moradores. Escolhido comparando a mesma cena montada com Quaternius, KayKit e Kenney (D026). Realista (Poly Haven) foi testado e descartado (D024 → D026).
 - **Heróis principais com modelo próprio** feito a partir do desenho de referência pelo TRELLIS.2 + limpeza no Blender (D017).
+- **Tico e Tika refeitos à mão no estilo KayKit (D039):** chibi liso, cores chapadas, sem textura. Corpo e cabeça numa malha fechada só (metaballs), então os pesos dos ossos saem certos; roupa colada na pele (pega o peso da pele mais próxima); olhos, chifres, dentes, mochila e armas rígidos. Esqueleto humanoide com as animações do KayKit. Script `tools/blender/gerado/modelar_kobolds.py` (troca o TRELLIS.2 desses dois).
 - **Esqueleto humanoide padrão + animações prontas do KayKit por retarget** (D028). Mixamo testado e descartado (D021); animação feita à mão em código descartada (D020 → D028). Guia: `docs/GUIA_ESQUELETO.md`.
 - **Arandu** planejada como cidade de verdade: muralha com torres, ruas de pedra em cruz, praça com poço e feira, casas coladas viradas para a rua, chão pintado (grama/terra/calçada), muita grama e figurantes (D027).
 - **Céus HDRI** (Poly Haven): Arandu de dia com nuvens; Ethera, arena e tela de escolha ao entardecer (D024, mantido na D026).

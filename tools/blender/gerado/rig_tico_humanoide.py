@@ -1,4 +1,6 @@
-"""Esqueleto HUMANOIDE do Tico-Lirou (D028), no padrão que o Godot usa para trocar animações entre personagens
+"""SUBSTITUÍDO por modelar_kobolds.py (D039): fica só como histórico do modelo antigo (TRELLIS).
+
+Esqueleto HUMANOIDE do Tico-Lirou (D028), no padrão que o Godot usa para trocar animações entre personagens
 (SkeletonProfileHumanoid): Hips, Spine, Chest, Neck, Head, Left/Right UpperArm, LowerArm, Hand, UpperLeg,
 LowerLeg, Foot + Tail1..3. As animações vêm prontas de outro personagem (KayKit) pelo retarget do Godot.
 

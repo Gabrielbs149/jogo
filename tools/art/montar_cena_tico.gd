@@ -80,7 +80,7 @@ func _run() -> void:
 	var to_world := func(local: Vector3) -> Vector3: return cena.global_transform * local
 	_scene("res://world/props/marquise.tscn", "Marquise", cena, Transform3D(basis, to_world.call(Vector3(0, 0, wall))))
 	_add(Marker3D.new(), cena, Transform3D(basis, to_world.call(Vector3(0, 0, tico_z)))).name = "TicoSentado"
-	var tika := _scene("res://actors/tika_muro/tika_muro.tscn", "Tika", cena, Transform3D(basis.rotated(Vector3.UP, PI), to_world.call(Vector3(0, 0, tika_z))))
+	var tika := _scene("res://actors/tika_muro/tika_muro.tscn", "Tika", cena, Transform3D(basis, to_world.call(Vector3(0, 0, tika_z))))
 	tika.visible = false
 	# fogueirinha entre os dois (um pouco para o lado) com o rato no espeto em cima (D029)
 	var fire_at: Vector3 = to_world.call(Vector3(0.42, 0, (tico_z + tika_z) / 2.0 + 0.1))

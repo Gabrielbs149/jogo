@@ -58,7 +58,7 @@ Cena de abertura (D029, falas *(proposta)*): beco, fogueirinha, rato espetado as
 - **Bahamut:** dragão; voa, morde e cospe fogo dourado.
 
 ## Personagens da história
-- **Tika-Muro:** a amada do Tico (kobold de roxo, olhos rosa, cogumelo grande, espadas nas costas no modelo). Levada por gente de Cindralight. Tem modelo, ainda sem esqueleto (`actors/tika_muro/`).
+- **Tika-Muro:** a amada do Tico (kobold de roxo, olhos rosa, cogumelo grande, espadas nas costas no modelo). Levada por gente de Cindralight. Modelo novo com esqueleto e as animações do KayKit (D039, `actors/tika_muro/`).
 - **Caiaque, Umu e Juca:** os NPCs favoritos da mesa ("#teamcaiaque", "as crônicas do Caiaque"). *(proposta)* Esperam o grupo no acampamento entre batalhas, dão conselho/item/reforço e, em algum capítulo, lutam junto.
 - **Fenrir:** joga junto com Bahamut e Tico em algumas sessões.
 - Citados na enquete do grupo: Blenk, Blonk, Baba/Bebe/Bibi/Bobo/Bubu, Tonhonhonho, **Robinho** (morreu pelo povo, ao se jogar de uma casa de dois andares), Lancelot, Golias. **Bren** (o que trapaceia nas apostas, citado em Ethera).

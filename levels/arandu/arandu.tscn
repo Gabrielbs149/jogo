@@ -4023,7 +4023,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.0409012)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.5409012)
 
 [node name="Tika" parent="CenaTico" unique_id=1901358299 instance=ExtResource("282_1a7g6")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, -0.60909843)
+transform = Transform3D(1, 0, 8.74228e-08, -0, 1, -0, -8.74228e-08, 0, 1, 0, 0, -0.609098)
 visible = false
 
 [node name="Fogueirinha" type="Node3D" parent="CenaTico" unique_id=1404417152]
