@@ -1,14 +1,25 @@
 class_name GameHUD
 extends CanvasLayer
 ## Interface do modo ação: vida e habilidades (com recarga) do seu herói, o grupo, o alvo na mira,
-## o registro de rolagens, avisos, "F · interagir", textos da história, abertura do capítulo,
-## convite para o grupo, resultado e pausa (Esc).
+## o registro de rolagens, avisos, a tecla de interagir, textos da história, abertura do capítulo,
+## convite para o grupo, resultado, dicas de controle e pausa (Esc) com Opções (D038).
 
 signal intro_closed
 signal recruit_answered(yes: bool)
 signal continue_pressed
 
 const KEYS: Array[String] = ["Botão esq.", "Q", "E", "R"]
+## Dicas de controle mostradas ao entrar numa fase pela primeira vez: [teclas, o quê].
+const TIPS: Array = [
+	[["W", "A", "S", "D"], "andar"],
+	[["Shift"], "correr"],
+	[["Botão esq."], "golpe: acertar antes começa a luta com vantagem"],
+	[["Espaço"], "esquivar"],
+	[["F"], "conversar, ler, descansar"],
+	[["Esc"], "pausa, opções e teclas"],
+]
+## Quanto tempo as dicas ficam na tela (segundos).
+@export var tips_time: float = 12.0
 ## Quanto tempo o painel de história fica na tela (segundos).
 @export var story_time: float = 9.0
 @export var log_lines: int = 7
@@ -31,6 +42,9 @@ var _modal: bool = false
 @onready var _area: Label = %AreaName
 @onready var _toast: Label = %Toast
 @onready var _prompt: Label = %Prompt
+@onready var _prompt_box: Control = %PromptBox
+@onready var _tips: Control = %Tips
+@onready var _options: OptionsMenu = %OptionsMenu
 @onready var _player_name: Label = %PlayerName
 @onready var _player_hp_text: Label = %PlayerHpText
 @onready var _player_hp: ProgressBar = %PlayerHp
@@ -59,7 +73,7 @@ var _modal: bool = false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	for node: Control in [_story, _recruit, _result, _pause, _intro, _target_frame, _party_panel]:
+	for node: Control in [_story, _recruit, _result, _pause, _intro, _target_frame, _party_panel, _tips, _prompt_box]:
 		node.hide()
 	_area.modulate.a = 0.0
 	_toast.modulate.a = 0.0
@@ -73,12 +87,19 @@ func _ready() -> void:
 	%ResultMenu.pressed.connect(func() -> void: Game.go_to_title())
 	%PauseResume.pressed.connect(func() -> void: set_paused(false))
 	%PauseMenu.pressed.connect(func() -> void: Game.go_to_title())
+	%PauseOptions.pressed.connect(func() -> void:
+		%Pause.hide()
+		_options.open())
+	_options.closed.connect(func() -> void:
+		if get_tree().paused:
+			_pause.show()
+			(%PauseOptions as Button).grab_focus())
 
 
 func setup(player: Combatant, controller: PlayerController) -> void:
 	_player = player
 	_controller = controller
-	_player_name.text = "%s  ·  %s" % [player.display_name, player.class_title]
+	_player_name.text = player.display_name
 	for child: Node in _skill_bar.get_children():
 		child.queue_free()
 	_slots.clear()
@@ -127,12 +148,42 @@ func log_line(line: String) -> void:
 
 func toast(text: String) -> void:
 	_toast.text = text
+	var width := _toast.get_combined_minimum_size().x
+	_toast.offset_left = -width / 2.0
+	_toast.offset_right = width / 2.0
 	if _toast_tween:
 		_toast_tween.kill()
 	_toast.modulate.a = 1.0
 	_toast_tween = create_tween()
 	_toast_tween.tween_interval(1.4)
 	_toast_tween.tween_property(_toast, "modulate:a", 0.0, 0.5)
+
+
+## Cartão de dicas com as teclas do mapa (some sozinho). Desliga em Opções > "Mostrar dicas de controle".
+func show_tips() -> void:
+	if not Settings.value("dicas"):
+		return
+	var list := %TipsList as VBoxContainer
+	for child: Node in list.get_children():
+		child.queue_free()
+	for entry: Array in TIPS:
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 4)
+		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		for key: String in entry[0]:
+			row.add_child(OptionsMenu.keycap(key))
+		var what := Label.new()
+		what.text = "  " + String(entry[1])
+		what.add_theme_font_size_override("font_size", 15)
+		row.add_child(what)
+		list.add_child(row)
+	_tips.show()
+	_tips.modulate.a = 0.0
+	var tween := create_tween()
+	tween.tween_property(_tips, "modulate:a", 1.0, 0.5)
+	tween.tween_interval(tips_time)
+	tween.tween_property(_tips, "modulate:a", 0.0, 1.0)
+	tween.tween_callback(_tips.hide)
 
 
 func show_area(area_name: String) -> void:
@@ -214,6 +265,10 @@ func show_result(victory: bool, text: String) -> void:
 func set_paused(on: bool) -> void:
 	get_tree().paused = on
 	_pause.visible = on
+	if not on:
+		_options.hide()
+	else:
+		(%PauseResume as Button).grab_focus()
 	_set_mouse(on)
 
 
@@ -222,7 +277,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		intro_closed.emit()
 		return
-	if event.is_action_pressed(&"pause") and not _modal:
+	if event.is_action_pressed(&"pause") and not _modal and not _options.visible:
 		set_paused(not _pause.visible)
 		get_viewport().set_input_as_handled()
 
@@ -237,7 +292,7 @@ func _process(_delta: float) -> void:
 	for status: Dictionary in _player.statuses:
 		if status["title"] != "":
 			names.append("%s %.0fs" % [status["title"], ceilf(float(status["time"]))])
-	_statuses.text = "Caído — o grupo precisa vencer a luta ou te curar" if _player.downed else "   ".join(names)
+	_statuses.text = "Caído: o grupo precisa vencer a luta ou te curar" if _player.downed else "   ".join(names)
 	for slot: Dictionary in _slots:
 		var i: int = slot["index"]
 		var ratio := _player.cooldown_ratio(i) if i >= 0 else _player.dodge_left / maxf(_player.dodge_cooldown, 0.01)
@@ -257,12 +312,13 @@ func _process(_delta: float) -> void:
 		_target_hp.max_value = target.max_hp
 		_target_hp.value = target.hp
 		_target_info.text = "CA %d   ·   %d / %d PV%s" % [target.current_ac(), target.hp, target.max_hp, "   ·   " + _status_names(target) if not target.statuses.is_empty() else ""]
-	_reticle.visible = not _modal and not _pause.visible
+	_reticle.visible = not _modal and not _pause.visible and not _options.visible
 
 
 func _make_slot(key: String, title: String, index: int) -> Dictionary:
 	var slot := PanelContainer.new()
-	slot.custom_minimum_size = Vector2(118, 88)
+	slot.custom_minimum_size = Vector2(104, 80)
+	slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var box := Control.new()
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	slot.add_child(box)
@@ -271,15 +327,13 @@ func _make_slot(key: String, title: String, index: int) -> Dictionary:
 	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	shade.set_anchors_preset(Control.PRESET_FULL_RECT)
 	box.add_child(shade)
-	var key_label := Label.new()
-	key_label.text = key
-	key_label.add_theme_font_size_override("font_size", 13)
-	key_label.modulate = Color(1, 0.86, 0.6)
-	key_label.position = Vector2(4, 0)
+	var key_label := OptionsMenu.keycap(key)
+	key_label.add_theme_font_size_override("font_size", 12)
+	key_label.position = Vector2(-4, -6)
 	box.add_child(key_label)
 	var title_label := Label.new()
 	title_label.text = title
-	title_label.add_theme_font_size_override("font_size", 13)
+	title_label.add_theme_font_size_override("font_size", 14)
 	title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -313,7 +367,8 @@ func _status_names(c: Combatant) -> String:
 
 
 func _on_interactable(node: Interactable) -> void:
-	_prompt.text = ("F  ·  %s" % node.prompt_text) if node else ""
+	_prompt.text = node.prompt_text if node else ""
+	_prompt_box.visible = node != null
 
 
 func _answer_recruit(yes: bool) -> void:
@@ -321,8 +376,7 @@ func _answer_recruit(yes: bool) -> void:
 
 
 func _on_retry() -> void:
-	get_tree().paused = false
-	get_tree().reload_current_scene()
+	Transition.go("", true)
 
 
 func _on_result_continue() -> void:

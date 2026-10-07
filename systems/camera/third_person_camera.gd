@@ -48,8 +48,10 @@ func snap() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		var motion := event as InputEventMouseMotion
-		yaw -= motion.relative.x * sensitivity
-		pitch = clampf(pitch - motion.relative.y * sensitivity, min_pitch, max_pitch)
+		var turn := sensitivity * Settings.mouse_factor()
+		var up := -1.0 if Settings.value("inverter_y") else 1.0
+		yaw -= motion.relative.x * turn
+		pitch = clampf(pitch - motion.relative.y * turn * up, min_pitch, max_pitch)
 	elif event is InputEventMouseButton and event.is_pressed():
 		var button := event as InputEventMouseButton
 		if button.button_index == MOUSE_BUTTON_WHEEL_UP:

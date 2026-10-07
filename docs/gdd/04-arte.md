@@ -9,7 +9,8 @@
 - **Esqueleto humanoide padrão + animações prontas do KayKit por retarget** (D028). Mixamo testado e descartado (D021); animação feita à mão em código descartada (D020 → D028). Guia: `docs/GUIA_ESQUELETO.md`.
 - **Arandu** planejada como cidade de verdade: muralha com torres, ruas de pedra em cruz, praça com poço e feira, casas coladas viradas para a rua, chão pintado (grama/terra/calçada), muita grama e figurantes (D027).
 - **Céus HDRI** (Poly Haven): Arandu de dia com nuvens; Ethera, arena e tela de escolha ao entardecer (D024, mantido na D026).
-- **Interface:** painéis marrom-escuros translúcidos, cantos arredondados, linha fina dourada, texto creme; títulos em **Cinzel**, texto em **Lato** (`ui/theme/`, do guia de estilo antigo, ainda em uso).
+- **Interface:** painéis marrom-escuros quase opacos (contraste), cantos pouco arredondados, borda fina dourada, texto creme; títulos em **Cinzel**, texto em **Lato** (`ui/theme/`).
+- **Padrões de interface de jogo (D038):** nada de fundo em degradê: os menus têm **cena 3D** atrás (acampamento nas ruínas, `ui/menu_fundo/`, montado por `tools/art/montar_fundo_menu.gd`). Teclas aparecem **desenhadas como tecla** (estilo `Keycap`); avisos têm fundo (`ToastLabel`); menu principal em lista à esquerda (`MenuItem`) com foco visível para teclado. HUD do mapa: vida no canto de baixo à esquerda, habilidades em quadrados no centro, dicas de controle num cartão que some sozinho, história como legenda em baixo. Troca de tela com escurecimento.
 - **Câmera da exploração:** atrás do ombro, um pouco alta e afastada (5,8 m) para mostrar o cenário (D018, D027).
 
 ## Em aberto

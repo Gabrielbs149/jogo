@@ -14,6 +14,11 @@ const PROLOGUE := "res://story/prologo.tres"
 const EDITOR_DRAFT := "user://editor_rascunho.tscn"
 ## Versão do arquivo de jogo salvo (sobe quando o formato mudar).
 const SAVE_VERSION := 1
+## Nome de cada fase para mostrar (jogo salvo).
+const LEVEL_NAMES: Dictionary[String, String] = {
+	ARANDU: "Arandu",
+	ETHERA: "Ruínas de Ethera",
+}
 ## Onde cada herói começa a história. Quem ainda não tem começo próprio começa em Ethera.
 const START_LEVELS: Dictionary[String, String] = {
 	"tico": ARANDU,
@@ -83,13 +88,26 @@ func new_game(hero_id: String) -> void:
 	seen.clear()
 	prologue_pending = true
 	testing = false
-	get_tree().change_scene_to_file(start_level(hero_id))
+	Transition.go(start_level(hero_id))
 
 
 # --- jogo salvo (D037) ---------------------------------------------------------------------------
 
 func has_save() -> bool:
 	return not read_save().is_empty()
+
+
+## Uma linha para mostrar o jogo salvo: "Tico-Lirou · Arandu · 07/10 às 08:12".
+func save_summary(data: Dictionary) -> String:
+	var parts: PackedStringArray = []
+	var hero := hero_scene(String(data["heroi"])).instantiate() as Combatant
+	parts.append(hero.display_name)
+	hero.free()
+	parts.append(String(LEVEL_NAMES.get(String(data["fase"]), String(data["fase"]).get_file().get_basename().capitalize())))
+	var when := String(data.get("quando", ""))
+	if when.length() >= 16:
+		parts.append("%s/%s às %s" % [when.substr(8, 2), when.substr(5, 2), when.substr(11, 5)])
+	return "  ·  ".join(parts)
 
 
 ## Grava a partida: herói, grupo, lutas vencidas, vida, fases já vistas e onde você está no mapa.
@@ -157,7 +175,7 @@ func continue_game(change: bool = true) -> bool:
 	returning = true
 	if change:
 		get_tree().paused = false
-		get_tree().change_scene_to_file(return_scene)
+		Transition.go(return_scene)
 	return true
 
 
@@ -167,7 +185,7 @@ func travel(scene_path: String) -> void:
 		return
 	get_tree().paused = false
 	returning = false
-	get_tree().change_scene_to_file(scene_path)
+	Transition.go(scene_path)
 
 
 ## Leva você para a arena. change = false só guarda os dados (testes).
@@ -177,7 +195,7 @@ func start_battle(data: Dictionary, from_scene: String, from: Transform3D, hp: i
 	return_transform = from
 	hero_hp = hp
 	if change:
-		get_tree().change_scene_to_file(String(data.get("arena", ARENA_ETHERA)))
+		Transition.go(String(data.get("arena", ARENA_ETHERA)))
 
 
 ## Volta da arena para o mapa. Venceu: no mesmo lugar, com a vida que sobrou. Perdeu: do começo da fase, vida cheia.
@@ -192,7 +210,7 @@ func end_battle(victory: bool, hp: int) -> void:
 		returning = false
 	battle = {}
 	get_tree().paused = false
-	get_tree().change_scene_to_file(return_scene)
+	Transition.go(return_scene)
 
 
 func recruit(hero_id: String) -> void:
@@ -206,11 +224,11 @@ func go_to_title() -> void:
 		scene.call("save_here", false)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	get_tree().paused = false
-	get_tree().change_scene_to_file(TITLE_SCENE)
+	Transition.go(TITLE_SCENE)
 
 
 func go_to_select() -> void:
-	get_tree().change_scene_to_file(SELECT_SCENE)
+	Transition.go(SELECT_SCENE)
 
 
 ## Abre o editor de mapas nesta fase (F2 numa fase, ou o botão da tela inicial).
@@ -222,7 +240,7 @@ func open_editor(level_path: String = "") -> void:
 		edit_draft = ""
 	get_tree().paused = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	get_tree().change_scene_to_file(EDITOR_SCENE)
+	Transition.go(EDITOR_SCENE)
 
 
 ## Joga uma fase do editor do começo, com o herói escolhido (Tico se ninguém foi escolhido), sem abertura.
@@ -237,4 +255,4 @@ func test_level(scene_path: String) -> void:
 	pending_story = ""
 	testing = true
 	seen.assign([scene_path])
-	get_tree().change_scene_to_file(scene_path)
+	Transition.go(scene_path)
