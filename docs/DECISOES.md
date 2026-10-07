@@ -1,4 +1,7 @@
-# Decisões
+# Decisões (histórico D001–D029)
+
+> **Arquivo fechado.** O log de decisões agora é [`docs/gdd/decisoes.md`](gdd/decisoes.md) (D031), que resume estas
+> entradas e recebe as novas. Este arquivo fica como detalhe histórico.
 
 Registro curto do que foi decidido e por quê, para os dois humanos e os dois Claudes. Decisão nova vai no topo. Mudou de ideia? Não apague: crie uma nova entrada que "substitui a Dxxx".
 

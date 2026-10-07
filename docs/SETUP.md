@@ -102,7 +102,7 @@ O VS Code vai sugerir as extensões do projeto (godot-tools e Live Share) quando
 ## 5. Treino juntos, em call (15 min) 🅖🅐
 1. 🅐 coloca o próprio nome na tabela "Equipe" do `README.md` e faz o sync (`sync.cmd` ou pede pro Claude: "sincroniza").
 2. 🅖 faz o sync e vê o commit chegar.
-3. **Conflito de propósito:** os dois mudam a mesma linha do `docs/GDD.md` (o pitch). 🅖 faz sync primeiro. 🅐 faz sync, dá conflito, 🅐 pede pro Claude *"resolve o conflito"* e os dois assistem.
+3. **Conflito de propósito:** os dois mudam a mesma linha do `docs/gdd/00-visao-geral.md` (o pitch). 🅖 faz sync primeiro. 🅐 faz sync, dá conflito, 🅐 pede pro Claude *"resolve o conflito"* e os dois assistem.
 4. **Live Share:** 🅖 abre o VS Code em `C:\dev\jogo` → *Live Share* → manda o link. 🅐 entra e os dois editam o `main/main.gd` ao mesmo tempo.
 5. Cada um pede pro Claude registrar uma ideia: *"anota essa ideia: ..."*. Confiram as issues no GitHub.
 

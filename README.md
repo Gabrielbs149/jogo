@@ -1,24 +1,27 @@
 # Jogo (codinome)
 
-Jogo do Gabriel e do John, feito em **Godot 4.7.2** + GDScript: RPG tático no esquema do Baldur's Gate 3 (explora em tempo real, luta por turnos) no Plano do Fogo, baseado na campanha **A Noite Sem Nome** do grupo. História em [docs/HISTORIA.md](docs/HISTORIA.md), estilo em [docs/ESTILO.md](docs/ESTILO.md), design em [docs/GDD.md](docs/GDD.md).
+Jogo do Gabriel e do John, feito em **Godot 4.7.2** + GDScript: RPG 3D baseado na campanha **A Noite Sem Nome** do grupo. Você escolhe um dos cinco heróis, explora em 3ª pessoa e luta por turnos com QTE (estilo Clair Obscur, regras de D&D 5.5). Design completo em [docs/gdd/](docs/gdd/00-visao-geral.md).
 
 ## Controles
-**Explorando** (tempo real)
+**Explorando**
 | | |
 |---|---|
-| Andar com o grupo | clique no chão |
-| Ler inscrição / examinar | clique na pedra ou na pessoa |
-| Quem lidera | F1–F5 ou clique no nome |
-| Câmera | WASD/setas movem, Q/E giram, roda aproxima |
+| Andar / correr | WASD ou setas / Shift |
+| Câmera | mouse (Esc solta) |
+| Interagir (ler, conversar, descansar, viajar, chamar herói) | F |
+| Primeiro golpe num grupo de inimigos | botão esquerdo |
+| Editor de mapas | F2 |
 
-**Lutando** (por turnos, começa ao chegar perto dos inimigos)
+**Lutando** (arena por turnos; começa ao encostar num grupo)
 | | |
 |---|---|
-| Andar | clique numa casa clara |
-| Habilidade | botão ou 1–4, depois clique no alvo |
-| Cancelar mira | botão direito ou Esc |
-| Encerrar turno | Espaço |
-| Recomeçar | R |
+| Atacar (+1 PA) | 1 ou Enter |
+| Habilidades (custam PA) | Q / E / R |
+| Trocar alvo | A / D |
+| Acertar o tempo do golpe | Espaço quando o anel fecha |
+| Esquivar / aparar | Espaço / F (ou botão direito) |
+
+**Cenas:** Espaço, F ou clique passam; Esc pula.
 
 ## Primeira vez
 Siga o [docs/SETUP.md](docs/SETUP.md) (≈ 30 min).
@@ -33,11 +36,12 @@ Siga o [docs/SETUP.md](docs/SETUP.md) (≈ 30 min).
 | | |
 |---|---|
 | Regras para os Claudes (e para a gente) | [CLAUDE.md](CLAUDE.md) |
-| História da campanha no jogo | [docs/HISTORIA.md](docs/HISTORIA.md) |
-| Guia de estilo (luz, cores, personagens) | [docs/ESTILO.md](docs/ESTILO.md) |
+| Design do jogo (fonte da verdade) | [docs/gdd/](docs/gdd/00-visao-geral.md) |
+| História da campanha no jogo | [docs/gdd/01-historia.md](docs/gdd/01-historia.md) |
+| Arte (estilo, assets) | [docs/gdd/04-arte.md](docs/gdd/04-arte.md) |
 | Como usamos o Git | [docs/FLUXO.md](docs/FLUXO.md) |
-| Fases e tarefas | [docs/ROADMAP.md](docs/ROADMAP.md) + board no GitHub Projects |
-| Decisões tomadas | [docs/DECISOES.md](docs/DECISOES.md) |
+| Fases e tarefas | [docs/gdd/07-roadmap.md](docs/gdd/07-roadmap.md) + board no GitHub Projects |
+| Decisões tomadas | [docs/gdd/decisoes.md](docs/gdd/decisoes.md) |
 | Ideias | Issues com label `ideia` |
 
 ## Equipe

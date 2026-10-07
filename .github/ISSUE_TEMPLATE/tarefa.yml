@@ -20,4 +20,4 @@ body:
     id: ideia
     attributes:
       label: Veio de qual ideia/GDD?
-      placeholder: "#12 ou docs/GDD.md#loop-central"
+      placeholder: "#12 ou docs/gdd/03-mecanicas.md"

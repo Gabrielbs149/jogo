@@ -1,65 +1,114 @@
 # CLAUDE.md
 
-Regras do projeto para os **dois** Claudes: o do Gabriel e o do John. Cada um roda na própria conta, no próprio clone. Vocês **não compartilham memória nem conversa**: o que precisa valer para os dois mora no repo (aqui, em `docs/`, nas issues e no histórico do Git). Decidiu algo que o outro precisa saber? Registre em `docs/DECISOES.md` no mesmo commit.
+Regras do projeto para os **dois** Claudes: o do Gabriel e o do John. Cada um roda na própria conta, no próprio clone. Vocês **não compartilham memória nem conversa**: o que precisa valer para os dois mora no repo (aqui, em `docs/`, nas issues e no histórico do Git).
 
-## O projeto
+## O jogo em resumo
+- **"A Noite Sem Nome" / Plano do Fogo:** RPG 3D baseado na campanha de RPG de mesa do grupo, em Novazul. Você escolhe 1 de 5 heróis (Tico-Lirou, Naumfode, Chumasso, José Maria, Bahamut), começa sozinho no lugar de origem dele e encontra os outros pelo caminho.
+- **Exploração em 3ª pessoa** (WASD + mouse) e **luta por turnos com QTE numa arena separada**, estilo Clair Obscur, com regras de D&D 5.5 (d20, vantagem, salvamentos). Na luta, só o seu personagem.
+- **Visual estilizado:** kits Quaternius (cenário) + KayKit (moradores e animações); heróis com modelo próprio.
+- Detalhes de cada tema: `docs/gdd/` (abaixo).
+
+## Engine
 - **Godot 4.7.2**, fixado em `.godot-version`. Os dois sempre na mesma versão; atualizar é decisão conjunta, em commit próprio.
 - **GDScript com tipagem estática.** Sem C#.
-- **3D em 3ª pessoa + luta por turnos no estilo Clair Obscur com regras de D&D 5.5** (D018 + D022): tela inicial → escolha de personagem → a fase começa só com o escolhido; os outros heróis esperam pela fase (`HeroSpot`) e entram no grupo quando você chama (F), mas **a luta é só sua**: encostar num grupo de inimigos (`Encounter`) leva para uma arena por turnos com QTE (Espaço no golpe; Espaço esquiva / F apara na defesa). Ambientação: Plano do Fogo. **Leia `docs/ESTILO.md` antes de mexer em arte, fase ou interface.**
-- **História: a campanha "A Noite Sem Nome" do grupo** (D013), em `docs/HISTORIA.md`. Personagens jogáveis: Tico-Lirou, Naumfode, Chumasso, José Maria e Bahamut. NPCs com destaque: **Caiaque, Umu e Juca**. **Não invente fatos da campanha:** o que for invenção para o jogo vai marcado como *(proposta)* no doc, e o humano confirma.
-- **Combate** (`combat/`): `Combatant` (herói ou inimigo, CharacterBody3D; ficha D&D no Inspector), `Ability` (`.tres` em `data/abilities/`; ordem = botão esquerdo, Q, E, R), `CombatRules` (regras puras: d20, vantagem, salvamento, furtivo, área), `AIBrain` (aliados e inimigos em tempo real), `CombatFX`. Você: `player/player_controller.gd` + `systems/camera/third_person_camera.gd`. Interface: `ui/hud/`. Menus: `ui/title/`, `ui/character_select/`. Estado entre cenas: autoload `Game` (`systems/game/game.gd`).
-- **Regras e números de batalha moram em `.tres` e no Inspector** (`Combatant`, `Ability` com `ap_cost`/`status_turns`, `BattleArena`), nunca enterrados no código. Mexeu em número de inimigo/herói? Rode `tools/simulate_arena.gd` (a IA joga a arena com cada herói e três perfis de jogador) e registre o resultado em `DECISOES.md`.
-- **Mundo** (`world/`): `Level` (raiz de toda fase), `Encounter` (grupo de inimigos no mapa → arena), `Interactable` (F: ler inscrição/falar com morador, descansar na fogueira, conversar com herói, viajar para outra fase) e `HeroSpot` (onde cada herói espera ser encontrado). Heróis: `actors/heroes/<nome>.tscn`; inimigos: `actors/enemies/<nome>.tscn` (com `AIBrain`).
-- **Fases:** cada herói começa numa (D019, `Game.START_LEVELS`). `levels/arandu/` = começo do Tico (cidade natal, calma, sem inimigos; o portão leva a Ethera). `levels/ethera/` (acampamento ao sul com a fogueira, heróis espalhados pelo caminho, ruínas de Ethera no centro com o Último Guardião). A raiz de toda fase usa `world/level.gd` (`Level`): cria você no `PlayerSpawn`, os outros nos `HeroSpot`, monta o mapa de navegação (grupo `nav_source`), toca a abertura e cuida de cair/levantar, vitória e derrota. Terreno provisório: `tools/art/generate_dunes.js`.
-- **Modelos dos heróis:** `actors/<nome>/<nome>.glb` + fonte em `art_src/<nome>.blend`. Frente para +Y no Blender (−Z no Godot), pés na origem. Herói com desenho de referência (D017): `tools/blender/gerado/gerar_trellis2.py desenho.png bruto.glb` (TRELLIS.2 no Hugging Face, precisa estar logado no HF) e depois `limpar_trellis.py` no Blender sem janela (veja o cabeçalho de cada script). Desenhos recortados em `art_src/ref/`. Tico-Lirou já é assim, e tem esqueleto + animações: `tools/blender/gerado/animar_tico.py` (ossos, pesos por região e as 10 animações num lugar só; rode de novo depois de mexer) gera `art_src/tico_lirou_rig.blend` e o `.glb`. No jogo, o nó `Animator` (`actors/shared/combatant_animator.gd`) escolhe a animação: parado/andando/correndo pela velocidade, uma por habilidade (botão esq./Q/E/R), esquiva, dano, queda. Tika Muro ainda sai de `tools/blender/kobolds.py`; não rode o script para o Tico.
-- Design: `docs/GDD.md`. Fases do projeto: `docs/ROADMAP.md`. Git: `docs/FLUXO.md`.
-- Equipe: Gabriel (`@Gabrielbs149`) e John (`@JohnG-404`). Os dois mexem em tudo, ao mesmo tempo.
-- Idioma: conversa, docs, commits e comentários em **PT-BR**. Identificadores (variáveis, funções, nós, arquivos, pastas) em **inglês**, combinando com a API do Godot.
 
-## Ferramentas instaladas no projeto
-- **MCP `godot`** (`.mcp.json`, [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp)): `run_project` + `get_debug_output` + `stop_project` para rodar o jogo e ler erros de execução de verdade; `get_project_info`, `get_godot_version`, `get_uid`. Use para conferir que uma mudança funciona rodando, além do `tools/check.ps1`.
-  - **Não use** `create_scene`, `add_node`, `load_sprite` ou `save_scene` para montar fase ou cenário: isso fere o editor-first. Só para algo mecânico que o humano pediu. (Elas pedem confirmação de propósito.)
-- **MCP `blender`** (`mcp-for-blender`, telemetria desligada): com o Blender aberto (painel N → *Start MCP Server*) dá para modelar e ver ao vivo. Ele roda Python dentro do Blender: salve antes. Para algo repetível, prefira script em `tools/blender/` rodando com `blender --background`.
-- **Plugin GodotPrompter** (`godot-prompter@skillsmith`): skills gerais de Godot 4 (máquina de estado, diálogo, save, shaders, export...). São conselhos genéricos: **quando contradizem este CLAUDE.md ou `docs/ESTILO.md`, vale o nosso.**
+## `docs/gdd/` é a fonte da verdade do design
+| Arquivo | Tema |
+|---|---|
+| `docs/gdd/00-visao-geral.md` | conceito, gênero, público, plataforma, engine, pitch |
+| `docs/gdd/01-historia.md` | premissa, mundo, lore, enredo, tom |
+| `docs/gdd/02-personagens.md` | heróis, NPCs, inimigos |
+| `docs/gdd/03-mecanicas.md` | core loop, controles, sistemas, progressão |
+| `docs/gdd/04-arte.md` | direção visual, paleta, estilo, assets |
+| `docs/gdd/05-som.md` | música, efeitos, clima sonoro |
+| `docs/gdd/06-niveis.md` | fases, estrutura, dificuldade |
+| `docs/gdd/07-roadmap.md` | fases do projeto, tarefas, quem faz o quê |
+| `docs/gdd/decisoes.md` | log de decisões (data, tema, decisão, motivo) |
 
-## Começo de toda sessão
-O hook de início mostra `git status` e os últimos commits do remoto. Se aparecer `behind`, o parceiro mandou coisa: **sincronize antes de editar** (skill `sync`). Rebase parado com conflito? Resolva primeiro (skill `conflito`).
+- Cada arquivo começa com **Decisões fechadas** e **Em aberto**. Antes de implementar algo de design, leia o tema. Se o código e o `docs/gdd/` divergirem, **pergunte**: não "corrija" um pelo outro sozinho.
+- **Não invente decisões.** O que não foi decidido fica `[A DEFINIR]` ou *(proposta)*. Decisão nova: atualiza o arquivo do tema **e** acrescenta uma linha no topo de `docs/gdd/decisoes.md`, no mesmo commit, **depois que o humano confirmar**.
+- **História:** o mundo é do mestre da mesa. Fato da campanha não se inventa; texto do Gabriel é citado como está.
+- `docs/DECISOES.md` é só histórico (D001–D029 com detalhes). `docs/GDD.md`, `HISTORIA.md`, `ESTILO.md` e `ROADMAP.md` viraram ponteiros para `docs/gdd/`.
 
-## Regras de ouro
-1. **Editor-first.** Fases, cenários, layout de UI e posicionamento são montados pelos humanos **no editor do Godot**. Código cuida de comportamento; nunca gere mundo por script (instanciar paredes/tiles/props para "montar" a fase). Precisa de nó novo numa cena? Prefira dizer o que arrastar e onde. Edite `.tscn` à mão só para mudanças pequenas e mecânicas (ver abaixo).
-2. **A `main` sempre roda.** Antes de commitar: `powershell -NoProfile -ExecutionPolicy Bypass -File tools/check.ps1`. O pre-push roda de novo e o CI de novo. Nunca use `--no-verify`.
-3. **Commits pequenos, um assunto cada, sync frequente.** Quanto mais tempo sem sync, maior o conflito.
-4. **Nunca:** force push, `reset --hard`, `git clean`, reescrever histórico já enviado, apagar arquivo do parceiro sem perguntar, reformatar ou reordenar arquivo que você não precisava mudar.
-5. **Mudança local que não é sua** pode ser trabalho em andamento do humano no editor. Não descarte e não commite junto sem perguntar.
-6. **Mover/renomear arquivo do jogo só pelo FileSystem do editor** (ele atualiza as referências). Rename vai em commit próprio.
-7. **Arquivos quentes** (`project.godot`, `autoload/`, a fase que os dois usam, `default_bus_layout.tres`, temas de UI): mexeu, commit só disso e sync na hora.
-8. **Ideia não é tarefa.** Não implemente ideia que não virou issue `tarefa` sem o humano pedir.
+## Comandos por tema (`.claude/commands/`)
+Cada um lê o arquivo do tema + a visão geral, assume o papel de especialista, fica só naquele tema e, a cada decisão, propõe a mudança no arquivo e a linha em `decisoes.md`, aplicando só depois da confirmação.
+
+| Comando | Papel | Arquivo |
+|---|---|---|
+| `/visao <assunto>` | diretor do jogo | `00-visao-geral.md` |
+| `/historia <assunto>` | roteirista | `01-historia.md` |
+| `/personagens <assunto>` | designer de personagens | `02-personagens.md` |
+| `/mecanicas <assunto>` | game designer de sistemas | `03-mecanicas.md` |
+| `/arte <assunto>` | diretor de arte | `04-arte.md` |
+| `/som <assunto>` | diretor de áudio | `05-som.md` |
+| `/niveis <assunto>` | level designer | `06-niveis.md` |
+| `/roadmap <assunto>` | produtor | `07-roadmap.md` |
+
+Skills do repo: `sync` (sincronizar), `conflito` (resolver conflito), `ideia` (registrar ideia como issue).
 
 ## Estrutura de pastas
 ```
 res://
-├─ actors/        heroes/ (os 5 jogáveis), enemies/, tico_lirou/, tika_muro/ (modelos), shared/, bahamut/, naumfode/, props/
-├─ combat/        Combatant, Ability, regras D&D, IA em tempo real e efeitos
-├─ player/        controle de quem joga no mapa (WASD, golpe de primeiro ataque)
+├─ actors/        heroes/ (os 5 jogáveis), enemies/, props/ (rato...), tico_lirou/, tika_muro/ (modelos), shared/ (Animator)
+├─ combat/        Combatant, Ability, CombatRules (D&D), AIBrain, CombatFX
 ├─ battle/        arena por turnos (BattleArena: iniciativa, PA, QTE, esquivar/aparar)
-├─ world/         Level, Encounter, Interactable (F), HeroSpot e props/ (peças do catálogo do editor de mapas)
-├─ editor/        editor de mapas dentro do jogo (D023): F2 numa fase ou botão na tela inicial
-├─ story/         cenas por roteiro (D025): Roteiro (.tres com o texto da cena) + CutscenePlayer; prólogo e cenas dos heróis
-├─ levels/        fases montadas no editor: levels/<nome>/<nome>.tscn + levels/<nome>/art/
-├─ ui/            hud/ (mapa), battle_hud/ (arena + anel do QTE), title/, character_select/, theme/ (Cinzel + Lato)
+├─ player/        controle no mapa (WASD, primeiro golpe)
+├─ world/         Level, Encounter, Interactable (F), HeroSpot, Figurante, props/ (peças do catálogo)
+├─ editor/        editor de mapas dentro do jogo (F2 numa fase ou botão na tela inicial)
+├─ story/         cenas por roteiro: Roteiro (.tres) + CutscenePlayer; prólogo e cenas dos heróis
+├─ levels/        fases: levels/<nome>/<nome>.tscn + levels/<nome>/art/ (arandu, ethera, arenas)
+├─ ui/            hud/, battle_hud/, title/, character_select/, theme/ (Cinzel + Lato)
 ├─ systems/       game/ (autoload Game), camera/ (3ª pessoa)
-├─ data/          abilities/*.tres — habilidades de heróis e inimigos
-├─ assets/        SÓ o que várias cenas compartilham: fonts/, shaders/, environment/, kits/ (Quaternius + KayKit, D026), materials/, skies/, vfx/
-├─ prototypes/    protótipos de 1 dia (Fase 1); apagar os que não vingarem
-├─ addons/        plugins de terceiros (GUT). Não editar.
+├─ data/          abilities/*.tres
+├─ assets/        o que várias cenas usam: kits/ (Quaternius + KayKit), materials/, shaders/, skies/, vfx/, fonts/, environment/
 ├─ tests/         testes GUT, espelhando as pastas do código
-├─ tools/         check, sync, preparar (scripts de apoio)
-├─ art_src/       fontes de arte (.aseprite/.psd/.blend), ignorado pelo Godot, vai por LFS
-└─ docs/          documentação, ignorado pelo Godot
+├─ tools/         check.ps1, sync, simulate_arena.gd, art/ (montadores e geradores), blender/ (scripts do Blender)
+├─ art_src/       fontes de arte (.blend), ignorado pelo Godot, LFS
+├─ docs/          gdd/ (design), FLUXO.md, SETUP.md, GUIA_ESQUELETO.md
+└─ addons/        plugins de terceiros (GUT). Não editar.
 ```
-Asset de uma coisa só mora junto dela (`actors/player/player_run.png`). Só sobe para `assets/` quando duas ou mais cenas usam. Cada um geralmente fica na sua pasta, e isso reduz conflito.
+Asset de uma coisa só mora junto dela. Só sobe para `assets/` quando duas ou mais cenas usam.
 
-## Nomes
+## Como as partes funcionam (para não quebrar)
+- **Regras e números de batalha moram em `.tres` e no Inspector** (`Combatant`, `Ability` com `ap_cost`/`status_turns`, `BattleArena`), nunca enterrados no código. Mexeu em número? Rode `tools/simulate_arena.gd` e registre em `docs/gdd/decisoes.md`.
+- **Fases** usam `world/level.gd` (`Level`): cria você no `PlayerSpawn`, os outros nos `HeroSpot`, liga os `Encounter`, toca a cena de abertura (`cena_de_abertura`) e monta a navegação (grupo `nav_source`). Começo de cada herói: `Game.START_LEVELS`.
+- **Cenas** (`story/`): roteiro em texto com comandos entre colchetes; formato no topo de `story/roteiro.gd`. O prólogo (`story/prologo.tres`) é escrito pelo Gabriel: não regenere por script.
+- **Personagens animados:** esqueleto humanoide + biblioteca `assets/kits/kaykit/animacoes/humanoide.res`; o nó `Animator` escolhe a animação. Passo a passo em `docs/GUIA_ESQUELETO.md`.
+- **Arandu** foi montada por `tools/art/montar_arandu.gd` + `montar_cena_tico.gd` a pedido do Gabriel (D027). Rodar de novo **apaga** ajustes feitos à mão na fase: pergunte antes.
+- Estado entre cenas: autoload `Game` (`systems/game/game.gd`).
+
+## Ferramentas instaladas no projeto
+- **MCP `godot`** (`.mcp.json`): `run_project` + `get_debug_output` + `stop_project` para rodar o jogo e ler erros. **Não use** `create_scene`/`add_node`/`save_scene` para montar fase.
+- **MCP `blender`** (`mcp-for-blender`): modelar ao vivo com o Blender aberto. Para algo repetível, prefira script em `tools/blender/` com `blender --background`.
+- **Plugin GodotPrompter**: conselhos genéricos de Godot 4; quando contradizem este arquivo ou `docs/gdd/`, vale o nosso.
+- Antes de abrir uma janela do Godot (fotos, testes com tela), confira se o humano não está jogando (LoL, Rocket League): janela nova rouba o foco.
+
+## Colaboração (Gabriel `@Gabrielbs149` + John `@JohnG-404`)
+- **Cada um com sua conta** do Claude e seu clone. Os Claudes não conversam entre si: falam pelo repo (este arquivo, `docs/gdd/`, commits, issues, PRs). "Combinei com o meu Claude" não vale para o do outro.
+- **Sincronização pelo GitHub.** Nada de Drive/OneDrive para o projeto (D004).
+- **Branch por feature** (D030): a `main` sempre roda e só recebe PR.
+  1. `git switch main && git pull` → `git switch -c <tipo>/<assunto>` (ex.: `feat/garras-do-tico`, `fix/capa-do-tico`, `docs/gdd-som`, `level/ethera`).
+  2. Commits pequenos no padrão. Envie a branch cedo e sempre (`git push -u origin <branch>`).
+  3. Abra o PR para a `main` (`gh pr create`, template do repo). CI verde é obrigatório.
+  4. Revisão do parceiro **não é obrigatória**: com CI verde, quem abriu faz o merge em **squash**. (Quer opinião do outro? Marque ele no PR.)
+  5. Branch de vida curta (dias, não semanas). Depois do merge: `git switch main && git pull` e apague a branch.
+- **Arquivos quentes** (`project.godot`, autoloads, a fase que os dois usam, temas de UI): avise antes, PR só disso.
+- **Mover/renomear** arquivo do jogo só pelo FileSystem do editor, em PR próprio.
+- Quando o Godot perguntar se recarrega arquivos que mudaram no disco: **sempre recarregar**.
+- Detalhes (conflito, LFS, Live Share): `docs/FLUXO.md`.
+
+## Regras de ouro
+1. **Editor-first.** Fases, cenários, layout de UI e posicionamento são montados pelos humanos no editor (do Godot ou o editor de mapas F2). Código cuida de comportamento; não gere mundo por script sem o humano pedir.
+2. **A `main` sempre roda.** Antes de commitar: `powershell -NoProfile -ExecutionPolicy Bypass -File tools/check.ps1`. O pre-push roda de novo e o CI de novo. Nunca use `--no-verify`.
+3. **Commits pequenos, um assunto cada.**
+4. **Nunca:** force push, `reset --hard`, `git clean`, reescrever histórico já enviado, apagar arquivo do parceiro sem perguntar, reformatar arquivo que você não precisava mudar.
+5. **Mudança local que não é sua** pode ser trabalho do humano no editor. Não descarte e não commite junto sem perguntar.
+6. **Ideia não é tarefa.** Ideia vira issue `ideia` (skill `ideia`); só vira código depois de aprovada e virar issue `tarefa` com dono.
+7. Idioma: conversa, docs, commits e comentários em **PT-BR**; identificadores (variáveis, funções, nós, arquivos) em **inglês** (D005).
+
+## Padrões de código
+
+### Nomes
 | O quê | Padrão | Exemplo |
 |---|---|---|
 | Pastas e arquivos | snake_case, sempre minúsculo | `actors/player/player.tscn`, `main_menu.gd` |
@@ -76,7 +125,7 @@ Asset de uma coisa só mora junto dela (`actors/player/player_run.png`). Só sob
 
 Arquivo sempre minúsculo: o Windows não diferencia `Player.png` de `player.png`, mas o jogo exportado diferencia. Quebra só na build.
 
-## GDScript
+### GDScript
 - Tipagem estática em tudo: variáveis, parâmetros e retorno (`-> void`). `:=` só quando o tipo é óbvio na mesma linha.
 - Ordem no arquivo (guia oficial): `@tool` → `class_name` → `extends` → doc `##` → signals → enums → constants → `@export` → vars públicas → vars privadas → `@onready` → `_init`/`_ready`/`_process`/`_physics_process` → métodos públicos → métodos privados.
 - Indentação com **tab**. Linhas até ~100 colunas.
@@ -87,12 +136,12 @@ Arquivo sempre minúsculo: o Windows não diferencia `Player.png` de `player.png
 - Erro real: `push_error`/`push_warning`. `print` de debug não entra em commit.
 - Comentário explica o **porquê**. `##` em classes e funções públicas.
 
-### 3D
-- Modelos: origem nos pés, frente para **−Z** (o `CombatManager` gira a unidade com `atan2(-x, -z)`).
-- Unidades ficam no centro das casas; a grade corrige a posição e a altura no começo da batalha.
-- Efeito visual que só existe por um instante (projétil, número, anel) vai no `CombatFX` e devolve com `await`. Tudo que anima precisa respeitar `CombatManager.animate = false` (testes e simulação rodam sem animação).
+#### 3D
+- Modelos: origem nos pés, frente para **−Z** no Godot (+Y no Blender). Os modelos do KayKit olham para +Z: a cena que usa gira 180° (`world/figurante.gd`, `actors/tico_lirou/tico_lirou.tscn`).
+- Efeito visual de um instante (projétil, número, anel) vai no `CombatFX` e devolve com `await`.
+- Peças de cenário com colisão automática entram no grupo `colisao_auto` (a fase cria a colisão ao abrir; não vai para o arquivo).
 
-### Armadilhas Godot 3 → 4 (use SEMPRE a coluna da direita)
+#### Armadilhas Godot 3 → 4 (use SEMPRE a coluna da direita)
 | Godot 3 (errado aqui) | Godot 4 (certo) |
 |---|---|
 | `export var` / `onready var` / `tool` | `@export var` / `@onready var` / `@tool` |
@@ -111,44 +160,31 @@ Arquivo sempre minúsculo: o Windows não diferencia `Player.png` de `player.png
 
 Na dúvida sobre uma API, confira a doc da 4.7 (https://docs.godotengine.org/en/4.7/). Não chute.
 
-## Editando .tscn / .tres à mão
+### Editando .tscn / .tres à mão
 - Só para coisa pequena: valor de propriedade, ligar script, conexão de sinal simples.
 - Cada `[ext_resource]`/`[sub_resource]` tem `id` único no arquivo. O `uid="uid://..."` precisa bater com o `.uid`/`.import` do recurso. **Não invente uid**: na dúvida, omita o atributo e o Godot preenche ao salvar.
 - Depois: rode `tools/check.ps1` e peça para o humano abrir a cena no editor e salvar (Ctrl+S), o que normaliza o arquivo.
 
-## Arquivos que o Godot gera
+### Arquivos que o Godot gera
 - `.godot/` nunca vai para o Git (já está no `.gitignore`). Não leia nem varra.
 - `*.uid` (de scripts/shaders) e `*.import` **sempre vão**, no mesmo commit do arquivo dono. Criou `.gd` fora do editor? O `.uid` só nasce no import: rode `tools/check.ps1` e commite o `.uid` gerado. O CI barra `.uid`/`.import` esquecido.
 
 ## Testes
-- GUT em `addons/gut`. Testes em `tests/`, espelhando as pastas (`tests/components/test_health_component.gd`).
-- Lógica pura (dano, inventário, save, regras) leva teste. Visual e "feel" ficam com o playtest humano.
+- GUT em `addons/gut`. Testes em `tests/`, espelhando as pastas.
+- Lógica pura (dano, regras, save, editor, cenas) leva teste. Visual e "feel" ficam com o playtest humano.
 - Bug corrigido: escreva o teste que reproduz, quando der.
 
 ## Commits
 `tipo(escopo): descrição curta no imperativo, em PT-BR`
 
-Tipos: `feat` `fix` `refactor` `perf` `test` `docs` `chore` `ci` `asset` (arte/som/fonte) `level` (fase/cena montada no editor). Escopo = área (`player`, `enemy`, `ui`, `save`, `audio`, `forest`...).
-
-Exemplos: `feat(player): adiciona pulo duplo` · `fix(ui): corrige texto cortado no menu` · `asset(sfx): sons de passo na grama` · `level(forest): fecha atalho da área 2`
-
-Corpo opcional com o porquê. Fecha tarefa? `Closes #12` no corpo. O hook `commit-msg` recusa mensagem fora do padrão.
-
-## Git (resumo; o completo está em `docs/FLUXO.md`)
-- Trunk-based: os dois trabalham na `main` com `pull --rebase` frequente (skill `sync`).
-- Branch `exp/<assunto>` só para algo que deixaria o jogo quebrado por mais de um dia. Entra por PR (`gh pr create`) com CI verde, squash merge.
-- No `pull --rebase` o lado **`--ours`/HEAD é o remoto (o parceiro)** e o **`--theirs` é o seu commit**. É o contrário do que parece.
-
-## Ideias e tarefas
-- Ideia nova → issue com label `ideia` (skill `ideia`).
-- Aprovada na call → entra no `docs/GDD.md` e vira issue `tarefa` com dono.
+Tipos: `feat` `fix` `refactor` `perf` `test` `docs` `chore` `ci` `asset` (arte/som/fonte) `level` (fase/cena montada no editor). Escopo = área (`tico`, `arandu`, `ui`, `battle`, `gdd`...). O hook `commit-msg` recusa mensagem fora do padrão. Fecha tarefa? `Closes #12` no corpo.
 
 ## Ao terminar uma tarefa
 1. `tools/check.ps1` verde.
-2. Commits no padrão, `.uid`/`.import` junto.
-3. Sync.
+2. Commits no padrão, `.uid`/`.import` junto, na branch da feature.
+3. Push da branch e PR (ou atualização do PR).
 4. Diga ao humano **o que abrir no editor e o que testar** (cena, tecla, o que deve acontecer).
 
-## Economia (os dois estão no plano Pro, que tem limite de uso)
-- Leia só o necessário. Não varra `addons/` nem `.godot/`. Não releia arquivo inteiro à toa.
-- Tarefa grande: proponha um plano curto antes e execute em lotes.
+## Economia (plano com limite de uso)
+- Leia só o necessário. Não varra `addons/` nem `.godot/`.
+- Tarefa grande: plano curto antes e execução em lotes.

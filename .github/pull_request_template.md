@@ -8,4 +8,4 @@
 - [ ] `tools/check.ps1` verde
 - [ ] `.uid`/`.import` novos commitados
 - [ ] Mexeu em `project.godot`/autoload? Avisou o parceiro
-- [ ] Decisão nova registrada em `docs/DECISOES.md`
+- [ ] Decisão nova registrada em `docs/gdd/decisoes.md` (e no arquivo do tema em `docs/gdd/`)
