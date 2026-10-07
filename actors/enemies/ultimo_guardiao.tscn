@@ -2,7 +2,8 @@
 
 [ext_resource type="Script" path="res://combat/combatant.gd" id="c_script"]
 [ext_resource type="Script" path="res://combat/ai_brain.gd" id="brain"]
-[ext_resource type="PackedScene" path="res://actors/enemies/colossus.tscn" id="model"]
+[ext_resource type="Script" path="res://actors/shared/combatant_animator.gd" id="animator"]
+[ext_resource type="PackedScene" path="res://actors/enemies/guardiao/guardiao.tscn" id="model"]
 [ext_resource type="Script" path="res://combat/ability.gd" id="a_script"]
 [ext_resource type="Resource" path="res://data/abilities/pancada.tres" id="ab_pancada"]
 [ext_resource type="Resource" path="res://data/abilities/onda_de_cinza.tres" id="ab_onda_de_cinza"]
@@ -36,3 +37,15 @@ shape = SubResource("Capsule_body")
 
 [node name="AIBrain" type="Node" parent="."]
 script = ExtResource("brain")
+
+[node name="Animator" type="Node" parent="."]
+script = ExtResource("animator")
+idle = &"2H_Melee_Idle"
+walk = &"Walking_A"
+run = &"Running_A"
+ability_animations = Array[StringName]([&"2H_Melee_Attack_Chop", &"Spellcast_Long"])
+dodge = &"Dodge_Backward"
+hit = &"Hit_B"
+down = &"Death_B"
+walk_reference_speed = 2.4
+run_reference_speed = 4.5

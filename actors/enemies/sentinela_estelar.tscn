@@ -2,7 +2,8 @@
 
 [ext_resource type="Script" path="res://combat/combatant.gd" id="c_script"]
 [ext_resource type="Script" path="res://combat/ai_brain.gd" id="brain"]
-[ext_resource type="PackedScene" path="res://actors/enemies/sentinel.tscn" id="model"]
+[ext_resource type="Script" path="res://actors/shared/combatant_animator.gd" id="animator"]
+[ext_resource type="PackedScene" path="res://actors/enemies/sentinela/sentinela.tscn" id="model"]
 [ext_resource type="Script" path="res://combat/ability.gd" id="a_script"]
 [ext_resource type="Resource" path="res://data/abilities/raio_vigia.tres" id="ab_raio_vigia"]
 
@@ -35,3 +36,15 @@ shape = SubResource("Capsule_body")
 
 [node name="AIBrain" type="Node" parent="."]
 script = ExtResource("brain")
+
+[node name="Animator" type="Node" parent="."]
+script = ExtResource("animator")
+idle = &"Idle"
+walk = &"Walk"
+run = &"Walk"
+ability_animations = Array[StringName]([&"Attack"])
+dodge = &"Dodge"
+hit = &"Hit"
+down = &"Death"
+walk_reference_speed = 3.0
+run_reference_speed = 4.5

@@ -51,6 +51,7 @@ assets/kits/**/*.png filter=lfs diff=lfs merge=lfs -text
 assets/kits/**/*.bin filter=lfs diff=lfs merge=lfs -text
 
 ## Textura assada dos modelos (art_src)
-art_src/*.png filter=lfs diff=lfs merge=lfs -text
+art_src/**/*.png filter=lfs diff=lfs merge=lfs -text
 actors/**/*_cor.png filter=lfs diff=lfs merge=lfs -text
 actors/naumfode/*.png filter=lfs diff=lfs merge=lfs -text
+actors/enemies/**/*.png filter=lfs diff=lfs merge=lfs -text
