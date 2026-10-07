@@ -26,7 +26,7 @@
 |---|---|---|---|
 | Arandu | `levels/arandu/arandu.tscn` | muralha 70 × 70 m com torres e portão; ruas em cruz; praça com poço e feira; taverna, conselho, mercador, capela, ferraria; beco do Tico com a cena de abertura; 4 moradores com fala + figurantes; floresta em volta | jogável; montada por `tools/art/montar_arandu.gd` (rodar de novo apaga ajustes à mão) |
 | Ruínas de Ethera | `levels/ethera/ethera.tscn` | acampamento + fogueira, 4 heróis esperando, 5 grupos de inimigos (2 de escaravelhos, 2 sentinelas, Último Guardião), pilares com inscrições; praça de pedra com anel de muros partidos, portal de colunas, trilha batida, capim seco | jogável; montada por `tools/art/montar_ethera.gd` (D035; rodar de novo apaga ajustes à mão na decoração) |
-| Arena de Ethera | `levels/arenas/ethera_arena.tscn` | altar partido, posições do jogador e de até 4 inimigos | jogável |
+| Arena de Ethera | `levels/arenas/ethera_arena.tscn` | coração das ruínas: lajes e terra batida, muros partidos e colunas atrás dos inimigos, altar do selo partido com dois braseiros, penhascos no horizonte, capim seco; posições do jogador e de até 4 inimigos | jogável; decoração montada por `tools/art/montar_arena_ethera.gd` (D036) |
 
 ## Fluxo atual
 Tela inicial → escolha do herói → prólogo → fase de início do herói (Tico: Arandu, com a cena do rato) → portão → Ethera → encontros → arena → volta ao mesmo ponto → Último Guardião → fim do capítulo.

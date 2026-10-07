@@ -1,135 +1,790 @@
 [gd_scene format=3]
 
+[ext_resource type="Shader" path="res://assets/shaders/chao_pintado.gdshader" id="3_rxdsp"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/vila/T_UnevenBrick_BaseColor.png" id="4_n3ijt"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/vila/T_UnevenBrick_Normal.png" id="5_r7bfm"]
+[ext_resource type="Texture2D" path="res://levels/arenas/art/ethera_chao_mascara.res" id="6_u1qf8"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/vila/T_Noise_Terrain.png" id="7_rdqjd"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Wall_UnevenBrick_Straight.gltf" id="8_y0125"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Prop_Brick2.gltf" id="9_7aray"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Prop_Brick3.gltf" id="10_prkw3"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Prop_Brick4.gltf" id="11_1fpf8"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Prop_Brick1.gltf" id="12_bgcjf"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Wall_UnevenBrick_Door_Round.gltf" id="13_cqljx"]
+[ext_resource type="PackedScene" path="res://world/props/pilar.tscn" id="14_6ypoc"]
+[ext_resource type="Material" path="res://assets/materials/arenito.tres" id="15_tn4f2"]
+[ext_resource type="PackedScene" path="res://world/props/inscricao.tscn" id="16_1jj45"]
+[ext_resource type="PackedScene" path="res://assets/vfx/fogo.tscn" id="17_xdeex"]
+[ext_resource type="PackedScene" path="res://world/props/estandarte.tscn" id="18_xscuu"]
+[ext_resource type="PackedScene" path="res://world/props/pedregulhos.tscn" id="19_wcnc0"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/natureza/PathRocks_Diffuse.png" id="20_ll6hc"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Vase_Rubble_Medium.gltf" id="21_c0lxt"]
+[ext_resource type="PackedScene" path="res://world/props/pedras.tscn" id="22_v412x"]
+[ext_resource type="PackedScene" path="res://world/props/pedrinhas.tscn" id="23_fof2y"]
+[ext_resource type="PackedScene" path="res://world/props/rocha.tscn" id="25_qg7jq"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/natureza/Rocks_Diffuse.png" id="26_4eikl"]
+[ext_resource type="PackedScene" path="res://world/props/rocha_grande.tscn" id="27_aq5e3"]
+[ext_resource type="PackedScene" path="res://world/props/penhasco.tscn" id="28_umwon"]
+[ext_resource type="PackedScene" path="res://world/props/tronco_seco.tscn" id="29_tbsqj"]
+[ext_resource type="PackedScene" path="res://world/props/arvore_morta.tscn" id="30_naaq0"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/natureza/Grass.png" id="31_rq70w"]
+[ext_resource type="MultiMesh" path="res://levels/arenas/art/ethera_capim.res" id="32_2g4b0"]
 [ext_resource type="Script" path="res://battle/battle_arena.gd" id="arena"]
-[ext_resource type="Environment" path="res://assets/environment/fire_sky.tres" id="env"]
-[ext_resource type="Script" path="res://combat/combat_fx.gd" id="fx"]
-[ext_resource type="FontFile" path="res://assets/fonts/cinzel.ttf" id="font"]
 [ext_resource type="PackedScene" path="res://ui/battle_hud/battle_hud.tscn" id="battle_hud"]
+[ext_resource type="Environment" path="res://assets/environment/fire_sky.tres" id="env"]
+[ext_resource type="FontFile" path="res://assets/fonts/cinzel.ttf" id="font"]
+[ext_resource type="Script" path="res://combat/combat_fx.gd" id="fx"]
 
-[sub_resource type="PlaneMesh" id="GroundMesh"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nf0c1"]
+render_priority = 0
+shader = ExtResource("3_rxdsp")
+shader_parameter/mask = ExtResource("6_u1qf8")
+shader_parameter/area_center = Vector2(0, 0)
+shader_parameter/area_size = Vector2(80, 80)
+shader_parameter/noise = ExtResource("7_rdqjd")
+shader_parameter/cobble_albedo = ExtResource("4_n3ijt")
+shader_parameter/cobble_normal = ExtResource("5_r7bfm")
+shader_parameter/cobble_meters = 2.6
+shader_parameter/grass_light = Color(0.86, 0.6, 0.42, 1)
+shader_parameter/grass_dark = Color(0.7, 0.44, 0.3, 1)
+shader_parameter/grass_dry = Color(0.9, 0.7, 0.5, 1)
+shader_parameter/dirt_light = Color(0.62, 0.38, 0.26, 1)
+shader_parameter/dirt_dark = Color(0.45, 0.26, 0.18, 1)
+shader_parameter/pebble_color = Color(0.75, 0.6, 0.5, 1)
+shader_parameter/cobble_tint = Color(1, 0.82, 0.66, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_rxdsp"]
 size = Vector2(80, 80)
-
-[sub_resource type="StandardMaterial3D" id="Sand"]
-albedo_color = Color(0.78, 0.5, 0.3, 1)
-roughness = 0.95
 
 [sub_resource type="BoxShape3D" id="GroundShape"]
 size = Vector3(80, 1, 80)
 
-[sub_resource type="CylinderMesh" id="PillarMesh"]
-top_radius = 0.6
-bottom_radius = 0.75
-height = 4.0
+[sub_resource type="BoxMesh" id="BoxMesh_n3ijt"]
+size = Vector3(5.6, 0.3, 3.2)
 
-[sub_resource type="BoxMesh" id="AltarMesh"]
-size = Vector3(4, 0.8, 2)
+[sub_resource type="BoxMesh" id="BoxMesh_r7bfm"]
+size = Vector3(1.9, 0.65, 1.9)
 
-[sub_resource type="StandardMaterial3D" id="Stone"]
-albedo_color = Color(0.45, 0.3, 0.24, 1)
-roughness = 0.9
+[sub_resource type="BoxMesh" id="BoxMesh_u1qf8"]
+size = Vector3(1.9, 0.5, 1.9)
 
-[node name="EtheraArena" type="Node3D"]
+[sub_resource type="BoxMesh" id="BoxMesh_rdqjd"]
+size = Vector3(0.9, 0.4, 0.7)
+
+[sub_resource type="BoxMesh" id="BoxMesh_y0125"]
+size = Vector3(0.8, 0.9, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7aray"]
+size = Vector3(0.8, 0.9, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_prkw3"]
+resource_name = "PathRocks"
+cull_mode = 2
+albedo_color = Color(1, 0.72, 0.56, 1)
+albedo_texture = ExtResource("20_ll6hc")
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1fpf8"]
+resource_name = "PathRocks"
+cull_mode = 2
+albedo_color = Color(1, 0.72, 0.56, 1)
+albedo_texture = ExtResource("20_ll6hc")
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bgcjf"]
+resource_name = "PathRocks"
+cull_mode = 2
+albedo_color = Color(1, 0.72, 0.56, 1)
+albedo_texture = ExtResource("20_ll6hc")
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cqljx"]
+resource_name = "Rocks"
+cull_mode = 2
+albedo_color = Color(1, 0.72, 0.56, 1)
+albedo_texture = ExtResource("26_4eikl")
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6ypoc"]
+resource_name = "Rocks"
+cull_mode = 2
+albedo_color = Color(1, 0.72, 0.56, 1)
+albedo_texture = ExtResource("26_4eikl")
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tn4f2"]
+resource_name = "Rocks"
+cull_mode = 2
+albedo_color = Color(1, 0.72, 0.56, 1)
+albedo_texture = ExtResource("26_4eikl")
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1jj45"]
+resource_name = "Grass"
+cull_mode = 2
+albedo_color = Color(1, 0.78, 0.5, 1)
+albedo_texture = ExtResource("31_rq70w")
+metadata/_gltf_primary_texture_coord = 0
+
+[node name="EtheraArena" type="Node3D" unique_id=149450877]
 script = ExtResource("arena")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=185395177]
 environment = ExtResource("env")
 
-[node name="Sun" type="DirectionalLight3D" parent="."]
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1286507679]
 transform = Transform3D(-0.8064, -0.168, 0.567, 0, 0.9588, 0.2842, -0.5914, 0.2291, -0.7732, 0, 20, 0)
 light_color = Color(1, 0.62, 0.42, 1)
 light_energy = 1.5
 shadow_enabled = true
 
-[node name="Ground" type="MeshInstance3D" parent="."]
+[node name="Ground" type="MeshInstance3D" parent="." unique_id=1149014848]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
-mesh = SubResource("GroundMesh")
-material_override = SubResource("Sand")
+material_override = SubResource("ShaderMaterial_nf0c1")
+mesh = SubResource("PlaneMesh_rxdsp")
 
-[node name="GroundBody" type="StaticBody3D" parent="."]
+[node name="GroundBody" type="StaticBody3D" parent="." unique_id=860644789]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 
-[node name="Shape" type="CollisionShape3D" parent="GroundBody"]
+[node name="Shape" type="CollisionShape3D" parent="GroundBody" unique_id=1198075959]
 shape = SubResource("GroundShape")
 
-[node name="Ruins" type="Node3D" parent="."]
+[node name="Cenario" type="Node3D" parent="." unique_id=1830411769]
 
-[node name="Pillar0" type="MeshInstance3D" parent="Ruins"]
-transform = Transform3D(1, 0, 0, 0, 0.875, 0, 0, 0, 1, -2.0336, 1.75, -13.556)
-mesh = SubResource("PillarMesh")
-material_override = SubResource("Stone")
+[node name="Wall_UnevenBrick_Straight2" parent="Cenario" unique_id=183393498 instance=ExtResource("8_y0125")]
+transform = Transform3D(-0.019772239, 0, -0.9998045, 0, 0.63653576, 0, 0.9998045, 0, -0.019772239, 12.997458, -0.1, -1.7429602)
 
-[node name="Pillar1" type="MeshInstance3D" parent="Ruins"]
-transform = Transform3D(1, 0, 0, 0, 1.2, 0, 0, 0, 1, -6.2628, 2.4, -12.2528)
-mesh = SubResource("PillarMesh")
-material_override = SubResource("Stone")
+[node name="Prop_Brick22" parent="Cenario" unique_id=1732237999 instance=ExtResource("9_7aray")]
+transform = Transform3D(-0.54110825, 0, 0.84095293, -0.047787346, 0.9983841, -0.030748602, -0.83959407, -0.05682523, -0.5402339, 14.257166, -0.05, -0.6982578)
 
-[node name="Pillar2" type="MeshInstance3D" parent="Ruins"]
-transform = Transform3D(1, 0, 0, 0, 1.525, 0, 0, 0, 1, -9.7514, 3.05, -9.7373)
-mesh = SubResource("PillarMesh")
-material_override = SubResource("Stone")
+[node name="Prop_Brick32" parent="Cenario" unique_id=1644469414 instance=ExtResource("10_prkw3")]
+transform = Transform3D(-0.6983689, 0, -0.71573794, 0.266354, 0.928177, -0.25989032, 0.6643315, -0.372139, -0.6482099, 14.170927, -0.05, -3.1652477)
 
-[node name="Pillar3" type="MeshInstance3D" parent="Ruins"]
-transform = Transform3D(1, 0, 0, 0, 0.875, 0, 0, 0, 1, -12.0871, 1.75, -6.3071)
-mesh = SubResource("PillarMesh")
-material_override = SubResource("Stone")
+[node name="Wall_UnevenBrick_Straight3" parent="Cenario" unique_id=448281468 instance=ExtResource("8_y0125")]
+transform = Transform3D(-0.3590573, -0.9229565, -0.13866886, 0, 0.14857662, -0.9889009, 0.9333155, -0.35507208, -0.05334752, 12.133101, -0.25, 2.6677454)
 
-[node name="Pillar4" type="MeshInstance3D" parent="Ruins"]
-transform = Transform3D(1, 0, 0, 0, 1.2, 0, 0, 0, 1, -12.9936, 2.4, -2.3675)
-mesh = SubResource("PillarMesh")
-material_override = SubResource("Stone")
+[node name="Prop_Brick33" parent="Cenario" unique_id=1324379154 instance=ExtResource("10_prkw3")]
+transform = Transform3D(0.82745266, 0, -0.56153554, 0.12107813, 0.9764774, 0.1784151, 0.54832673, -0.21561971, 0.8079888, 12.902875, -0.05, 3.5587301)
 
-[node name="Pillar5" type="MeshInstance3D" parent="Ruins"]
-transform = Transform3D(1, 0, 0, 0, 1.525, 0, 0, 0, 1, -12.3637, 3.05, 1.6155)
-mesh = SubResource("PillarMesh")
-material_override = SubResource("Stone")
+[node name="Wall_UnevenBrick_Straight4" parent="Cenario" unique_id=755725074 instance=ExtResource("8_y0125")]
+transform = Transform3D(0.00907839, 0, 0.9999588, 0, 0.85396594, 0, -0.9999588, 0, 0.00907839, -12.999464, -0.1, -2.1180203)
 
-[node name="Pillar6" type="MeshInstance3D" parent="Ruins"]
-transform = Transform3D(1, 0, 0, 0, 0.875, 0, 0, 0, 1, -10.272, 1.75, 5.171)
-mesh = SubResource("PillarMesh")
-material_override = SubResource("Stone")
+[node name="Prop_Brick42" parent="Cenario" unique_id=1542029507 instance=ExtResource("11_1fpf8")]
+transform = Transform3D(0.9041136, 0, -0.42729226, 0.12978728, 0.95275384, 0.2746187, 0.40710434, -0.30374357, 0.8613977, -12.84892, -0.05, -2.8520234)
 
-[node name="Pillar7" type="MeshInstance3D" parent="Ruins"]
-transform = Transform3D(1, 0, 0, 0, 1.2, 0, 0, 0, 1, -6.9657, 2.4, 7.8786)
-mesh = SubResource("PillarMesh")
-material_override = SubResource("Stone")
+[node name="Prop_Brick12" parent="Cenario" unique_id=301146404 instance=ExtResource("12_bgcjf")]
+transform = Transform3D(0.20112203, 0, -0.9795662, -0.15808402, 0.98689204, -0.032457408, 0.9667261, 0.16138166, 0.19848573, -13.991025, -0.05, -0.73707616)
 
-[node name="Pillar8" type="MeshInstance3D" parent="Ruins"]
-transform = Transform3D(1, 0, 0, 0, 1.525, 0, 0, 0, 1, -2.8359, 3.05, 9.4182)
-mesh = SubResource("PillarMesh")
-material_override = SubResource("Stone")
+[node name="Prop_Brick43" parent="Cenario" unique_id=2012857270 instance=ExtResource("11_1fpf8")]
+transform = Transform3D(-0.16331948, 0, -0.9865732, -0.34414923, 0.93718493, 0.056971215, 0.92460155, 0.34883294, -0.15306056, -12.549378, -0.05, -0.9238368)
 
-[node name="Altar" type="MeshInstance3D" parent="Ruins"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -9)
-mesh = SubResource("AltarMesh")
-material_override = SubResource("Stone")
+[node name="Wall_UnevenBrick_Straight5" parent="Cenario" unique_id=898623715 instance=ExtResource("8_y0125")]
+transform = Transform3D(0.38813516, 0, 0.9216024, 0, 0.9992548, 0, -0.9216024, 0, 0.38813516, -11.980832, -0.1, -7.045758)
 
-[node name="PlayerSlot" type="Marker3D" parent="."]
+[node name="Prop_Brick13" parent="Cenario" unique_id=84816590 instance=ExtResource("12_bgcjf")]
+transform = Transform3D(-0.007863961, 0, 0.99996907, 0.115127675, 0.99335027, 0.00090538757, -0.9933195, 0.11513124, -0.007811668, -11.1502905, -0.05, -5.532762)
+
+[node name="Wall_UnevenBrick_Straight6" parent="Cenario" unique_id=1014803058 instance=ExtResource("8_y0125")]
+transform = Transform3D(0.6963077, 0, 0.71774334, 0, 0.8169697, 0, -0.71774334, 0, 0.6963077, -9.330665, -0.1, -11.051999)
+
+[node name="Prop_Brick14" parent="Cenario" unique_id=388730721 instance=ExtResource("12_bgcjf")]
+transform = Transform3D(0.06314576, 0, 0.9980043, 0.27712652, 0.96067345, -0.017534358, -0.95875627, 0.2776807, 0.060662452, -8.47733, -0.05, -12.226077)
+
+[node name="Wall_UnevenBrick_Straight7" parent="Cenario" unique_id=1884231647 instance=ExtResource("8_y0125")]
+transform = Transform3D(0.9190445, 0.3841901, 0.08806343, 0, 0.22342403, -0.9747214, -0.39415377, 0.89581233, 0.20533663, -5.1239967, -0.25, -13.947579)
+
+[node name="Prop_Brick34" parent="Cenario" unique_id=2069576668 instance=ExtResource("10_prkw3")]
+transform = Transform3D(-0.25432822, 0, -0.96711797, -0.11774571, 0.9925609, 0.030964224, 0.9599235, 0.121749066, -0.25243625, -5.962406, -0.05, -14.733171)
+
+[node name="Prop_Brick15" parent="Cenario" unique_id=954669769 instance=ExtResource("12_bgcjf")]
+transform = Transform3D(-0.57959044, 0, -0.8149079, -0.13145147, 0.986904, 0.09349279, 0.8042359, 0.16130838, -0.57200015, -6.4403186, -0.05, -14.817041)
+
+[node name="Wall_UnevenBrick_Straight8" parent="Cenario" unique_id=1646846406 instance=ExtResource("8_y0125")]
+transform = Transform3D(0.99850917, 0, -0.054584716, 0, 0.9134905, 0, 0.054584716, 0, 0.99850917, 0.70960206, -0.1, -14.9806185)
+
+[node name="Prop_Brick16" parent="Cenario" unique_id=1019269393 instance=ExtResource("12_bgcjf")]
+transform = Transform3D(-0.34905115, 0, 0.9371037, 0.3171912, 0.94097346, 0.11814696, -0.8817897, 0.33848038, -0.32844788, 2.1165779, -0.05, -13.605233)
+
+[node name="Wall_UnevenBrick_Straight9" parent="Cenario" unique_id=663377748 instance=ExtResource("8_y0125")]
+transform = Transform3D(0.70957863, -0.7016315, -0.064895615, 0, 0.09209934, -0.99574983, 0.70462626, 0.7065628, 0.065351725, 9.160139, -0.25, -11.224524)
+
+[node name="Prop_Brick44" parent="Cenario" unique_id=936110799 instance=ExtResource("11_1fpf8")]
+transform = Transform3D(-0.994021, 0, -0.1091889, -0.039693598, 0.9315819, 0.3613579, 0.1017184, 0.36353144, -0.926012, 9.292747, -0.05, -11.677179)
+
+[node name="Prop_Brick45" parent="Cenario" unique_id=1349772688 instance=ExtResource("11_1fpf8")]
+transform = Transform3D(0.8356819, 0, 0.54921377, 0.03901454, 0.99747366, -0.0593644, -0.5478263, 0.07103708, 0.8335707, 7.9949183, -0.05, -10.683375)
+
+[node name="Prop_Brick46" parent="Cenario" unique_id=728744716 instance=ExtResource("11_1fpf8")]
+transform = Transform3D(-0.99780923, 0, 0.06615658, -0.02549354, 0.92276984, -0.38450733, -0.061047297, -0.38535154, -0.9207483, 7.7224045, -0.05, -11.9631405)
+
+[node name="Wall_UnevenBrick_Door_Round2" parent="Cenario" unique_id=307917475 instance=ExtResource("13_cqljx")]
+transform = Transform3D(0.4116111, 0, -0.9113596, 0, 0.85, 0, 0.9113596, 0, 0.4116111, 11.847675, -0.1, -7.350943)
+
+[node name="Prop_Brick17" parent="Cenario" unique_id=1719819018 instance=ExtResource("12_bgcjf")]
+transform = Transform3D(0.88931334, 0, -0.45729834, -0.089185014, 0.98079807, -0.17343913, 0.44851732, 0.19502589, 0.8722368, 13.333527, -0.05, -8.475506)
+
+[node name="Prop_Brick35" parent="Cenario" unique_id=862645254 instance=ExtResource("10_prkw3")]
+transform = Transform3D(0.82140726, 0, 0.5703421, -0.15944041, 0.9601305, 0.22962622, -0.5476029, -0.27955222, 0.7886582, 13.40848, -0.05, -8.380455)
+
+[node name="Prop_Brick36" parent="Cenario" unique_id=1616241756 instance=ExtResource("10_prkw3")]
+transform = Transform3D(-0.6680366, 0, 0.74412847, -0.1994999, 0.9633914, -0.17909977, -0.716887, -0.26809874, -0.64358073, 11.907018, -0.05, -8.147247)
+
+[node name="Pilar" parent="Cenario" unique_id=1402937768 instance=ExtResource("14_6ypoc")]
+transform = Transform3D(0.9489514, 0, 0.31542218, 0, 1, 0, -0.31542218, 0, 0.9489514, -9.5, 0, -6.5)
+
+[node name="Pilar2" parent="Cenario" unique_id=1266680849 instance=ExtResource("14_6ypoc")]
+transform = Transform3D(-0.8281976, 0, 0.56043625, 0, 0.6, 0, -0.56043625, 0, -0.8281976, -5.5, 0, -10)
+
+[node name="Pilar3" parent="Cenario" unique_id=689984464 instance=ExtResource("14_6ypoc")]
+transform = Transform3D(-0.5109703, 0, 0.85959834, 0, 1, 0, -0.85959834, 0, -0.5109703, 5.5, 0, -10.5)
+
+[node name="Pilar4" parent="Cenario" unique_id=1227325261 instance=ExtResource("14_6ypoc")]
+transform = Transform3D(-0.9979851, 0, -0.06344837, 0, 0.45, 0, 0.06344837, 0, -0.9979851, 9.5, 0, -6)
+
+[node name="Pilar5" parent="Cenario" unique_id=430252227 instance=ExtResource("14_6ypoc")]
+transform = Transform3D(-0.53810936, 0, 0.84287506, 0, 0.75, 0, -0.84287506, 0, -0.53810936, -11, 0, 1.5)
+
+[node name="Pilar6" parent="Cenario" unique_id=1675791684 instance=ExtResource("14_6ypoc")]
+transform = Transform3D(-0.010173947, -0.14549415, 0.9893068, -0.9975641, 0.06975651, 0, -0.069010586, -0.98689693, -0.14584942, 11.5, 0.5, 0.5)
+
+[node name="Degrau" type="MeshInstance3D" parent="Cenario" unique_id=1686969178]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, -9)
+material_override = ExtResource("15_tn4f2")
+mesh = SubResource("BoxMesh_n3ijt")
+
+[node name="AltarEsq" type="MeshInstance3D" parent="Cenario" unique_id=1951619739]
+transform = Transform3D(0.9979514, 0.04993919, 0.039989334, -0.04997917, 0.99875027, 0, -0.03993936, -0.0019986336, 0.9992001, -1.05, 0.62, -9)
+material_override = ExtResource("15_tn4f2")
+mesh = SubResource("BoxMesh_r7bfm")
+
+[node name="AltarDir" type="MeshInstance3D" parent="Cenario" unique_id=520420924]
+transform = Transform3D(0.9910221, -0.119496785, -0.059964005, 0.119712204, 0.99280864, 0, 0.059532784, -0.007178423, 0.99820054, 1.1, 0.55, -9.05)
+material_override = ExtResource("15_tn4f2")
+mesh = SubResource("BoxMesh_u1qf8")
+
+[node name="Lasca" type="MeshInstance3D" parent="Cenario" unique_id=659336213]
+transform = Transform3D(0.76850426, -0.10375636, 0.6313762, 0.2896295, 0.9362934, -0.19866933, -0.5705402, 0.3355434, 0.7495963, 2.7, 0.35, -7.4)
+material_override = ExtResource("15_tn4f2")
+mesh = SubResource("BoxMesh_rdqjd")
+
+[node name="Inscricao" parent="Cenario" unique_id=293481370 instance=ExtResource("16_1jj45")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10.9)
+
+[node name="Pedestal" type="MeshInstance3D" parent="Cenario" unique_id=619531865]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0.45, -7.6)
+material_override = ExtResource("15_tn4f2")
+mesh = SubResource("BoxMesh_y0125")
+
+[node name="Fogo" type="Node3D" parent="Cenario" unique_id=1563749417 instance=ExtResource("17_xdeex")]
+transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, -4.2, 0.92, -7.6)
+
+[node name="Pedestal2" type="MeshInstance3D" parent="Cenario" unique_id=956035178]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2, 0.45, -7.6)
+material_override = ExtResource("15_tn4f2")
+mesh = SubResource("BoxMesh_7aray")
+
+[node name="Fogo2" type="Node3D" parent="Cenario" unique_id=344234265 instance=ExtResource("17_xdeex")]
+transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, 4.2, 0.92, -7.6)
+
+[node name="Estandarte" parent="Cenario" unique_id=725706773 instance=ExtResource("18_xscuu")]
+transform = Transform3D(0.9553365, 0, 0.29552022, 0, 1, 0, -0.29552022, 0, 0.9553365, -6.5, 0, 6.5)
+
+[node name="Estandarte2" parent="Cenario" unique_id=261721998 instance=ExtResource("18_xscuu")]
+transform = Transform3D(0.8253356, 0, 0.5646425, 0, 1, 0, -0.5646425, 0, 0.8253356, -9, 0, 4)
+
+[node name="Prop_Brick18" parent="Cenario" unique_id=2092069843 instance=ExtResource("12_bgcjf")]
+transform = Transform3D(0.77206707, 0, -0.635541, 0, 1, 0, 0.635541, 0, 0.77206707, 13.267006, -0.05, 3.2694764)
+
+[node name="Prop_Brick47" parent="Cenario" unique_id=1645368030 instance=ExtResource("11_1fpf8")]
+transform = Transform3D(0.6123617, 0, 0.7905777, 0, 1, 0, -0.7905777, 0, 0.6123617, 4.958458, -0.05, -8.293444)
+
+[node name="Pedregulhos" parent="Cenario" unique_id=851934446 instance=ExtResource("19_wcnc0")]
+transform = Transform3D(0.7673876, 0, -0.2764948, 0, 0.81567955, 0, 0.2764948, 0, 0.7673876, 4.842958, 0, -10.8942795)
+
+[node name="RockPath_Round_Wide" parent="Cenario/Pedregulhos/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_prkw3")
+
+[node name="Pedregulhos2" parent="Cenario" unique_id=2069686883 instance=ExtResource("19_wcnc0")]
+transform = Transform3D(0.96745706, 0, -0.092703216, 0, 0.9718884, 0, 0.092703216, 0, 0.96745706, 8.716141, 0, -4.9144635)
+
+[node name="RockPath_Round_Wide" parent="Cenario/Pedregulhos2/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_prkw3")
+
+[node name="Vase_Rubble_Medium2" parent="Cenario" unique_id=971859130 instance=ExtResource("21_c0lxt")]
+transform = Transform3D(-0.98855966, 0, -0.15083045, 0, 1, 0, 0.15083045, 0, -0.98855966, -6.301989, 0, 6.5455446)
+
+[node name="Pedras" parent="Cenario" unique_id=2094678012 instance=ExtResource("22_v412x")]
+transform = Transform3D(0.9412157, 0, -0.062314987, 0, 0.9432763, 0, 0.062314987, 0, 0.9412157, 8.982292, 0, -9.404082)
+
+[node name="RockPath_Square_Wide" parent="Cenario/Pedras/Model" index="0" unique_id=524355239]
+material_override = SubResource("StandardMaterial3D_1fpf8")
+
+[node name="Prop_Brick19" parent="Cenario" unique_id=1288648594 instance=ExtResource("12_bgcjf")]
+transform = Transform3D(-0.95712507, 0, -0.28967497, 0, 1, 0, 0.28967497, 0, -0.95712507, -9.120928, -0.05, -2.7567582)
+
+[node name="Vase_Rubble_Medium3" parent="Cenario" unique_id=1919712359 instance=ExtResource("21_c0lxt")]
+transform = Transform3D(0.6255284, 0, 0.7802014, 0, 1, 0, -0.7802014, 0, 0.6255284, -9.353114, 0, -7.971052)
+
+[node name="Pedregulhos3" parent="Cenario" unique_id=846872383 instance=ExtResource("19_wcnc0")]
+transform = Transform3D(0.7108605, 0, -0.75259525, 0, 1.0352402, 0, 0.75259525, 0, 0.7108605, 9.260224, 0, -5.8040066)
+
+[node name="RockPath_Round_Wide" parent="Cenario/Pedregulhos3/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_prkw3")
+
+[node name="Vase_Rubble_Medium4" parent="Cenario" unique_id=416348278 instance=ExtResource("21_c0lxt")]
+transform = Transform3D(-0.9877486, 0, -0.15605335, 0, 1, 0, 0.15605335, 0, -0.9877486, -2.3185847, 0, 13.130394)
+
+[node name="Pedrinhas" parent="Cenario" unique_id=1157716865 instance=ExtResource("23_fof2y")]
+transform = Transform3D(0.7661096, 0, 0.5003117, 0, 0.91500586, 0, -0.5003117, 0, 0.7661096, 9.983949, 0, 2.0662124)
+
+[node name="Pebble_Round_1" parent="Cenario/Pedrinhas/Model" index="0" unique_id=640072565]
+material_override = SubResource("StandardMaterial3D_bgcjf")
+
+[node name="Pedras2" parent="Cenario" unique_id=949600458 instance=ExtResource("22_v412x")]
+transform = Transform3D(0.90732735, 0, -0.12814397, 0, 0.9163317, 0, 0.12814397, 0, 0.90732735, -6.16386, 0, -12.982543)
+
+[node name="RockPath_Square_Wide" parent="Cenario/Pedras2/Model" index="0" unique_id=524355239]
+material_override = SubResource("StandardMaterial3D_1fpf8")
+
+[node name="Prop_Brick20" parent="Cenario" unique_id=196418673 instance=ExtResource("12_bgcjf")]
+transform = Transform3D(-0.5060456, 0, 0.86250675, 0, 1, 0, -0.86250675, 0, -0.5060456, 10.708178, -0.05, -10.20143)
+
+[node name="Prop_Brick23" parent="Cenario" unique_id=1181083320 instance=ExtResource("9_7aray")]
+transform = Transform3D(-0.99260443, 0, -0.121393554, 0, 1, 0, 0.121393554, 0, -0.99260443, 6.92181, -0.05, -8.724934)
+
+[node name="Pedrinhas2" parent="Cenario" unique_id=1439565477 instance=ExtResource("23_fof2y")]
+transform = Transform3D(-0.85274523, 0, 0.07565182, 0, 0.8560944, 0, -0.07565182, 0, -0.85274523, -9.187628, 0, -5.7490873)
+
+[node name="Pebble_Round_1" parent="Cenario/Pedrinhas2/Model" index="0" unique_id=640072565]
+material_override = SubResource("StandardMaterial3D_bgcjf")
+
+[node name="Pedrinhas3" parent="Cenario" unique_id=762243491 instance=ExtResource("23_fof2y")]
+transform = Transform3D(1.1738082, 0, -0.51935947, 0, 1.2835732, 0, 0.51935947, 0, 1.1738082, -8.487224, 0, -8.008757)
+
+[node name="Pebble_Round_1" parent="Cenario/Pedrinhas3/Model" index="0" unique_id=640072565]
+material_override = SubResource("StandardMaterial3D_bgcjf")
+
+[node name="Pedrinhas4" parent="Cenario" unique_id=1352571029 instance=ExtResource("23_fof2y")]
+transform = Transform3D(0.39283115, 0, -0.75372607, 0, 0.8499525, 0, 0.75372607, 0, 0.39283115, 9.571914, 0, -10.810628)
+
+[node name="Pebble_Round_1" parent="Cenario/Pedrinhas4/Model" index="0" unique_id=640072565]
+material_override = SubResource("StandardMaterial3D_bgcjf")
+
+[node name="Vase_Rubble_Medium5" parent="Cenario" unique_id=892927075 instance=ExtResource("21_c0lxt")]
+transform = Transform3D(-0.48108178, 0, -0.8766757, 0, 1, 0, 0.8766757, 0, -0.48108178, 2.8416774, 0, -9.259927)
+
+[node name="Prop_Brick48" parent="Cenario" unique_id=798029786 instance=ExtResource("11_1fpf8")]
+transform = Transform3D(-0.82625353, 0, 0.5632984, 0, 1, 0, -0.5632984, 0, -0.82625353, -9.750332, -0.05, -0.12551881)
+
+[node name="Prop_Brick49" parent="Cenario" unique_id=1549068215 instance=ExtResource("11_1fpf8")]
+transform = Transform3D(-0.30104336, 0, -0.9536104, 0, 1, 0, 0.9536104, 0, -0.30104336, 4.884246, -0.05, -10.104006)
+
+[node name="Prop_Brick50" parent="Cenario" unique_id=1836321746 instance=ExtResource("11_1fpf8")]
+transform = Transform3D(0.031187082, 0, 0.99951357, 0, 1, 0, -0.99951357, 0, 0.031187082, -13.46814, -0.05, 2.2149215)
+
+[node name="Pedregulhos4" parent="Cenario" unique_id=1164229321 instance=ExtResource("19_wcnc0")]
+transform = Transform3D(-0.08576965, 0, -0.8145464, 0, 0.81904966, 0, 0.8145464, 0, -0.08576965, -11.436734, 0, -4.101133)
+
+[node name="RockPath_Round_Wide" parent="Cenario/Pedregulhos4/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_prkw3")
+
+[node name="Vase_Rubble_Medium6" parent="Cenario" unique_id=142408164 instance=ExtResource("21_c0lxt")]
+transform = Transform3D(-0.9046055, 0, 0.42624983, 0, 1, 0, -0.42624983, 0, -0.9046055, -7.8488684, 0, -4.3598256)
+
+[node name="Prop_Brick37" parent="Cenario" unique_id=1496001931 instance=ExtResource("10_prkw3")]
+transform = Transform3D(-0.99903685, 0, 0.043879632, 0, 1, 0, -0.043879632, 0, -0.99903685, 11.345899, -0.05, -0.18775296)
+
+[node name="Vase_Rubble_Medium7" parent="Cenario" unique_id=1138243907 instance=ExtResource("21_c0lxt")]
+transform = Transform3D(0.8136106, 0, -0.58141017, 0, 1, 0, 0.58141017, 0, 0.8136106, 9.804199, 0, -0.49520993)
+
+[node name="Prop_Brick24" parent="Cenario" unique_id=1784932651 instance=ExtResource("9_7aray")]
+transform = Transform3D(-0.02060105, 0, 0.99978775, 0, 1, 0, -0.99978775, 0, -0.02060105, -6.269613, -0.05, -10.85265)
+
+[node name="Prop_Brick25" parent="Cenario" unique_id=1089662736 instance=ExtResource("9_7aray")]
+transform = Transform3D(0.32478043, 0, -0.94578946, 0, 1, 0, 0.94578946, 0, 0.32478043, -10.507691, -0.05, -10.755444)
+
+[node name="Pedregulhos5" parent="Cenario" unique_id=485100013 instance=ExtResource("19_wcnc0")]
+transform = Transform3D(-1.0878661, 0, -0.5930896, 0, 1.239035, 0, 0.5930896, 0, -1.0878661, -1.4968827, 0, -9.590093)
+
+[node name="RockPath_Round_Wide" parent="Cenario/Pedregulhos5/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_prkw3")
+
+[node name="Tronco_seco" parent="Cenario" unique_id=145182682 instance=ExtResource("29_tbsqj")]
+transform = Transform3D(-0.7451519, 0, -0.83097506, 0, 1.1161411, 0, 0.83097506, 0, -0.7451519, -16.810766, -0.1, -29.510592)
+
+[node name="Rocha" parent="Cenario" unique_id=636087547 instance=ExtResource("25_qg7jq")]
+transform = Transform3D(-0.124576196, 0, 1.3547302, 0, 1.360446, 0, -1.3547302, 0, -0.124576196, 20.737535, -0.2, 10.907107)
+
+[node name="Rock_Medium_2" parent="Cenario/Rocha/Model" index="0" unique_id=364193856]
+material_override = SubResource("StandardMaterial3D_cqljx")
+
+[node name="Rocha_grande" parent="Cenario" unique_id=2078609353 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(1.2642373, 0, -0.48201704, 0, 1.3530102, 0, 0.48201704, 0, 1.2642373, -19.498566, -0.6, 2.1146908)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Pedregulhos6" parent="Cenario" unique_id=7400696 instance=ExtResource("19_wcnc0")]
+transform = Transform3D(-1.0206506, 0, -1.1717473, 0, 1.5539367, 0, 1.1717473, 0, -1.0206506, 25.878035, -0.2, -19.011625)
+
+[node name="RockPath_Round_Wide" parent="Cenario/Pedregulhos6/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_prkw3")
+
+[node name="Pedregulhos7" parent="Cenario" unique_id=909938090 instance=ExtResource("19_wcnc0")]
+transform = Transform3D(-0.6366395, 0, -0.97677916, 0, 1.1659362, 0, 0.97677916, 0, -0.6366395, -24.204288, -0.2, -0.3415162)
+
+[node name="RockPath_Round_Wide" parent="Cenario/Pedregulhos7/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_prkw3")
+
+[node name="Penhasco" parent="Cenario" unique_id=1763247410 instance=ExtResource("28_umwon")]
+transform = Transform3D(0.14744973, 0, -1.1738414, 0, 1.1830659, 0, 1.1738414, 0, 0.14744973, -27.407867, -0.6, 17.930359)
+
+[node name="Rock_Medium_3" parent="Cenario/Penhasco/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_tn4f2")
+
+[node name="Pedregulhos8" parent="Cenario" unique_id=40356747 instance=ExtResource("19_wcnc0")]
+transform = Transform3D(0.9435257, 0, 0.9133649, 0, 1.3131931, 0, -0.9133649, 0, 0.9435257, -17.324198, -0.2, 12.304227)
+
+[node name="RockPath_Round_Wide" parent="Cenario/Pedregulhos8/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_prkw3")
+
+[node name="Arvore_morta" parent="Cenario" unique_id=676133064 instance=ExtResource("30_naaq0")]
+transform = Transform3D(-0.4419068, 0, -0.8514944, 0, 0.9593353, 0, 0.8514944, 0, -0.4419068, 13.54432, -0.1, 30.012127)
+
+[node name="Tronco_seco2" parent="Cenario" unique_id=1569981775 instance=ExtResource("29_tbsqj")]
+transform = Transform3D(0.84151244, 0, -0.09939927, 0, 0.84736264, 0, 0.09939927, 0, 0.84151244, -26.831053, -0.1, -12.254387)
+
+[node name="Rocha_grande2" parent="Cenario" unique_id=1920620575 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(0.17285873, 0, -1.5213883, 0, 1.5311768, 0, 1.5213883, 0, 0.17285873, -7.181796, -0.6, -15.545303)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande2/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Rocha_grande3" parent="Cenario" unique_id=1625677631 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(0.28309542, 0, 1.14853, 0, 1.182905, 0, -1.14853, 0, 0.28309542, -22.57397, -0.6, -9.369101)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande3/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Pedregulhos9" parent="Cenario" unique_id=659802209 instance=ExtResource("19_wcnc0")]
+transform = Transform3D(-1.1866522, 0, 0.69221824, 0, 1.3737938, 0, -0.69221824, 0, -1.1866522, 17.110235, -0.2, -13.873889)
+
+[node name="RockPath_Round_Wide" parent="Cenario/Pedregulhos9/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_prkw3")
+
+[node name="Arvore_morta2" parent="Cenario" unique_id=2027940085 instance=ExtResource("30_naaq0")]
+transform = Transform3D(0.3763812, 0, 1.1190726, 0, 1.1806719, 0, -1.1190726, 0, 0.3763812, -30.344667, -0.1, 9.793312)
+
+[node name="Pedregulhos10" parent="Cenario" unique_id=189202889 instance=ExtResource("19_wcnc0")]
+transform = Transform3D(-0.86971104, 0, -0.6718284, 0, 1.0989771, 0, 0.6718284, 0, -0.86971104, 3.9927273, -0.2, 29.586466)
+
+[node name="RockPath_Round_Wide" parent="Cenario/Pedregulhos10/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_prkw3")
+
+[node name="Rocha_grande4" parent="Cenario" unique_id=933995990 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(-1.4880531, 0, -0.7919136, 0, 1.6856539, 0, 0.7919136, 0, -1.4880531, 23.06509, -0.6, -6.085411)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande4/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Rocha_grande5" parent="Cenario" unique_id=10723665 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(1.0882785, 0, 1.0514145, 0, 1.513216, 0, -1.0514145, 0, 1.0882785, -7.923642, -0.6, 23.924816)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande5/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Rocha_grande6" parent="Cenario" unique_id=1270534745 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(0.46287215, 0, -0.97513413, 0, 1.0794152, 0, 0.97513413, 0, 0.46287215, 16.161009, -0.6, 6.4807863)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande6/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Rocha_grande7" parent="Cenario" unique_id=2128684294 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(1.5015807, 0, 0.5712854, 0, 1.6065838, 0, -0.5712854, 0, 1.5015807, -14.224799, -0.6, -19.028336)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande7/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Penhasco2" parent="Cenario" unique_id=343219614 instance=ExtResource("28_umwon")]
+transform = Transform3D(-1.3740659, 0, 0.040723328, 0, 1.3746692, 0, -0.040723328, 0, -1.3740659, 9.356708, -0.6, -20.785065)
+
+[node name="Rock_Medium_3" parent="Cenario/Penhasco2/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_tn4f2")
+
+[node name="Penhasco3" parent="Cenario" unique_id=1078693632 instance=ExtResource("28_umwon")]
+transform = Transform3D(1.5271237, 0, -0.63113195, 0, 1.6524026, 0, 0.63113195, 0, 1.5271237, -23.490698, -0.6, -21.98911)
+
+[node name="Rock_Medium_3" parent="Cenario/Penhasco3/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_tn4f2")
+
+[node name="Rocha_grande8" parent="Cenario" unique_id=1554712602 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(-0.95066434, 0, -1.1910307, 0, 1.5239149, 0, 1.1910307, 0, -0.95066434, -15.304346, -0.6, 18.501156)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande8/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Arvore_morta3" parent="Cenario" unique_id=1650092825 instance=ExtResource("30_naaq0")]
+transform = Transform3D(0.5372526, 0, 0.59689695, 0, 0.8030731, 0, -0.59689695, 0, 0.5372526, 16.964752, -0.1, -5.694846)
+
+[node name="Penhasco4" parent="Cenario" unique_id=1836785150 instance=ExtResource("28_umwon")]
+transform = Transform3D(1.3718203, 0, -0.07189407, 0, 1.373703, 0, 0.07189407, 0, 1.3718203, -28.840324, -0.6, 2.3011804)
+
+[node name="Rock_Medium_3" parent="Cenario/Penhasco4/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_tn4f2")
+
+[node name="Penhasco5" parent="Cenario" unique_id=1582825988 instance=ExtResource("28_umwon")]
+transform = Transform3D(-0.475258, 0, 1.2916198, 0, 1.3762819, 0, -1.2916198, 0, -0.475258, 13.286232, -0.6, -11.134649)
+
+[node name="Rock_Medium_3" parent="Cenario/Penhasco5/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_tn4f2")
+
+[node name="Penhasco6" parent="Cenario" unique_id=119218354 instance=ExtResource("28_umwon")]
+transform = Transform3D(-0.6263151, 0, -1.318585, 0, 1.459773, 0, 1.318585, 0, -0.6263151, -21.930151, -0.6, 24.540134)
+
+[node name="Rock_Medium_3" parent="Cenario/Penhasco6/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_tn4f2")
+
+[node name="Arvore_morta4" parent="Cenario" unique_id=741182200 instance=ExtResource("30_naaq0")]
+transform = Transform3D(0.47790936, 0, -1.0185506, 0, 1.1250968, 0, 1.0185506, 0, 0.47790936, 25.115566, -0.1, -13.031557)
+
+[node name="Rocha_grande9" parent="Cenario" unique_id=578034834 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(-0.3523742, 0, -1.121837, 0, 1.1758766, 0, 1.121837, 0, -0.3523742, 30.29354, -0.6, 10.663228)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande9/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Rocha_grande10" parent="Cenario" unique_id=248729491 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(1.1475812, 0, -1.1561213, 0, 1.6289748, 0, 1.1561213, 0, 1.1475812, 24.42393, -0.6, 5.0687437)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande10/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Rocha_grande11" parent="Cenario" unique_id=1148734540 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(0.745243, 0, -1.3545966, 0, 1.5460657, 0, 1.3545966, 0, 0.745243, -8.51422, -0.6, -21.330116)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande11/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Tronco_seco3" parent="Cenario" unique_id=1739408461 instance=ExtResource("29_tbsqj")]
+transform = Transform3D(-1.1730328, 0, 0.23173904, 0, 1.1957043, 0, -0.23173904, 0, -1.1730328, -13.9007225, -0.1, 28.718983)
+
+[node name="Tronco_seco4" parent="Cenario" unique_id=1116663527 instance=ExtResource("29_tbsqj")]
+transform = Transform3D(-0.0069853216, 0, 1.0617505, 0, 1.0617735, 0, -1.0617505, 0, -0.0069853216, 3.6305788, -0.1, -21.262283)
+
+[node name="Tronco_seco5" parent="Cenario" unique_id=727138829 instance=ExtResource("29_tbsqj")]
+transform = Transform3D(0.22993483, 0, -0.97617954, 0, 1.002894, 0, 0.97617954, 0, 0.22993483, -13.193208, -0.1, -10.998677)
+
+[node name="Rocha_grande12" parent="Cenario" unique_id=30177793 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(-0.2631434, 0, -1.4783903, 0, 1.5016266, 0, 1.4783903, 0, -0.2631434, -17.062649, -0.6, 25.097868)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande12/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Penhasco7" parent="Cenario" unique_id=1287243325 instance=ExtResource("28_umwon")]
+transform = Transform3D(-0.45175892, 0, -1.3025149, 0, 1.3786339, 0, 1.3025149, 0, -0.45175892, 21.702965, -0.6, 16.978146)
+
+[node name="Rock_Medium_3" parent="Cenario/Penhasco7/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_tn4f2")
+
+[node name="Pedregulhos11" parent="Cenario" unique_id=74609779 instance=ExtResource("19_wcnc0")]
+transform = Transform3D(1.0012951, 0, 0.5283596, 0, 1.1321465, 0, -0.5283596, 0, 1.0012951, -18.490921, -0.2, -23.695353)
+
+[node name="RockPath_Round_Wide" parent="Cenario/Pedregulhos11/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_prkw3")
+
+[node name="Tronco_seco6" parent="Cenario" unique_id=28049844 instance=ExtResource("29_tbsqj")]
+transform = Transform3D(0.90050954, 0, -0.41863516, 0, 0.9930623, 0, 0.41863516, 0, 0.90050954, -8.37012, -0.1, -27.080091)
+
+[node name="Rocha_grande13" parent="Cenario" unique_id=823181639 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(-0.63068527, 0, 0.9809443, 0, 1.1661971, 0, -0.9809443, 0, -0.63068527, -1.0107642, -0.6, -23.103338)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande13/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Arvore_morta5" parent="Cenario" unique_id=2035947170 instance=ExtResource("30_naaq0")]
+transform = Transform3D(-0.46841192, 0, -1.0194151, 0, 1.121881, 0, 1.0194151, 0, -0.46841192, 18.512068, -0.1, 0.9732418)
+
+[node name="Rocha2" parent="Cenario" unique_id=1667860733 instance=ExtResource("25_qg7jq")]
+transform = Transform3D(-1.5254595, 0, 0.4180344, 0, 1.5817015, 0, -0.4180344, 0, -1.5254595, 0.3061514, -0.2, -32.736156)
+
+[node name="Rock_Medium_2" parent="Cenario/Rocha2/Model" index="0" unique_id=364193856]
+material_override = SubResource("StandardMaterial3D_cqljx")
+
+[node name="Rocha_grande14" parent="Cenario" unique_id=139136070 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(1.0713232, 0, 0.30224514, 0, 1.1131421, 0, -0.30224514, 0, 1.0713232, -33.693752, -0.6, 1.1048592)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande14/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Penhasco8" parent="Cenario" unique_id=1098521438 instance=ExtResource("28_umwon")]
+transform = Transform3D(0.84928054, 0, 0.6733985, 0, 1.0838556, 0, -0.6733985, 0, 0.84928054, -24.558607, -0.6, 11.341562)
+
+[node name="Rock_Medium_3" parent="Cenario/Penhasco8/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_tn4f2")
+
+[node name="Penhasco9" parent="Cenario" unique_id=1174840249 instance=ExtResource("28_umwon")]
+transform = Transform3D(-1.4193444, 0, 0.034332655, 0, 1.4197596, 0, -0.034332655, 0, -1.4193444, 19.977985, -0.6, -17.697247)
+
+[node name="Rock_Medium_3" parent="Cenario/Penhasco9/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_tn4f2")
+
+[node name="Penhasco10" parent="Cenario" unique_id=247118325 instance=ExtResource("28_umwon")]
+transform = Transform3D(-1.0365075, 0, 0.91340506, 0, 1.3815414, 0, -0.91340506, 0, -1.0365075, -20.200243, -0.6, -18.13261)
+
+[node name="Rock_Medium_3" parent="Cenario/Penhasco10/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_tn4f2")
+
+[node name="Pedregulhos12" parent="Cenario" unique_id=53903330 instance=ExtResource("19_wcnc0")]
+transform = Transform3D(0.8781309, 0, 0.95633, 0, 1.2983378, 0, -0.95633, 0, 0.8781309, 24.774046, -0.2, 13.165377)
+
+[node name="RockPath_Round_Wide" parent="Cenario/Pedregulhos12/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_prkw3")
+
+[node name="Rocha_grande15" parent="Cenario" unique_id=2052230010 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(1.2058277, 0, -0.7085935, 0, 1.3986155, 0, 0.7085935, 0, 1.2058277, 13.439503, -0.6, 24.472622)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande15/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Rocha_grande16" parent="Cenario" unique_id=188331460 instance=ExtResource("27_aq5e3")]
+transform = Transform3D(1.298836, 0, 0.1543368, 0, 1.3079735, 0, -0.1543368, 0, 1.298836, 25.956203, -0.6, -0.06697632)
+
+[node name="Rock_Medium_1" parent="Cenario/Rocha_grande16/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_6ypoc")
+
+[node name="Pedregulhos13" parent="Cenario" unique_id=1987662721 instance=ExtResource("19_wcnc0")]
+transform = Transform3D(-1.3715718, 0, 0.6488768, 0, 1.5173168, 0, -0.6488768, 0, -1.3715718, -3.39701, -0.2, -29.1752)
+
+[node name="RockPath_Round_Wide" parent="Cenario/Pedregulhos13/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_prkw3")
+
+[node name="Capim" type="MultiMeshInstance3D" parent="Cenario" unique_id=2013445575]
+material_override = SubResource("StandardMaterial3D_1jj45")
+cast_shadow = 0
+multimesh = ExtResource("32_2g4b0")
+
+[node name="PlayerSlot" type="Marker3D" parent="." unique_id=1349562297]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 4.5)
 
-[node name="EnemySlots" type="Node3D" parent="."]
+[node name="EnemySlots" type="Node3D" parent="." unique_id=1543895159]
 
-[node name="Slot0" type="Marker3D" parent="EnemySlots"]
+[node name="Slot0" type="Marker3D" parent="EnemySlots" unique_id=248049216]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -1.5)
 
-[node name="Slot1" type="Marker3D" parent="EnemySlots"]
+[node name="Slot1" type="Marker3D" parent="EnemySlots" unique_id=1150370406]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0.6, -1.5)
 
-[node name="Slot2" type="Marker3D" parent="EnemySlots"]
+[node name="Slot2" type="Marker3D" parent="EnemySlots" unique_id=715691291]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0.6, -1.5)
 
-[node name="Slot3" type="Marker3D" parent="EnemySlots"]
+[node name="Slot3" type="Marker3D" parent="EnemySlots" unique_id=1986496564]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0.6, -3.1)
 
-[node name="BossSlot" type="Marker3D" parent="."]
+[node name="BossSlot" type="Marker3D" parent="." unique_id=212374940]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -3.2)
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="Camera3D" type="Camera3D" parent="." unique_id=615128938]
 transform = Transform3D(0.9573, -0.0563, 0.2835, 0, 0.9808, 0.1949, -0.289, -0.1866, 0.939, 3.2, 3.2, 9.6)
 current = true
 fov = 55.0
 
-[node name="FX" type="Node3D" parent="."]
+[node name="FX" type="Node3D" parent="." unique_id=341004950]
 script = ExtResource("fx")
 font = ExtResource("font")
 
-[node name="BattleHUD" parent="." instance=ExtResource("battle_hud")]
+[node name="BattleHUD" parent="." unique_id=749482249 instance=ExtResource("battle_hud")]
+
+[editable path="Cenario/Pedregulhos"]
+[editable path="Cenario/Pedregulhos/Model"]
+[editable path="Cenario/Pedregulhos2"]
+[editable path="Cenario/Pedregulhos2/Model"]
+[editable path="Cenario/Pedras"]
+[editable path="Cenario/Pedras/Model"]
+[editable path="Cenario/Pedregulhos3"]
+[editable path="Cenario/Pedregulhos3/Model"]
+[editable path="Cenario/Pedrinhas"]
+[editable path="Cenario/Pedrinhas/Model"]
+[editable path="Cenario/Pedras2"]
+[editable path="Cenario/Pedras2/Model"]
+[editable path="Cenario/Pedrinhas2"]
+[editable path="Cenario/Pedrinhas2/Model"]
+[editable path="Cenario/Pedrinhas3"]
+[editable path="Cenario/Pedrinhas3/Model"]
+[editable path="Cenario/Pedrinhas4"]
+[editable path="Cenario/Pedrinhas4/Model"]
+[editable path="Cenario/Pedregulhos4"]
+[editable path="Cenario/Pedregulhos4/Model"]
+[editable path="Cenario/Pedregulhos5"]
+[editable path="Cenario/Pedregulhos5/Model"]
+[editable path="Cenario/Rocha"]
+[editable path="Cenario/Rocha/Model"]
+[editable path="Cenario/Rocha_grande"]
+[editable path="Cenario/Rocha_grande/Model"]
+[editable path="Cenario/Pedregulhos6"]
+[editable path="Cenario/Pedregulhos6/Model"]
+[editable path="Cenario/Pedregulhos7"]
+[editable path="Cenario/Pedregulhos7/Model"]
+[editable path="Cenario/Penhasco"]
+[editable path="Cenario/Penhasco/Model"]
+[editable path="Cenario/Pedregulhos8"]
+[editable path="Cenario/Pedregulhos8/Model"]
+[editable path="Cenario/Rocha_grande2"]
+[editable path="Cenario/Rocha_grande2/Model"]
+[editable path="Cenario/Rocha_grande3"]
+[editable path="Cenario/Rocha_grande3/Model"]
+[editable path="Cenario/Pedregulhos9"]
+[editable path="Cenario/Pedregulhos9/Model"]
+[editable path="Cenario/Pedregulhos10"]
+[editable path="Cenario/Pedregulhos10/Model"]
+[editable path="Cenario/Rocha_grande4"]
+[editable path="Cenario/Rocha_grande4/Model"]
+[editable path="Cenario/Rocha_grande5"]
+[editable path="Cenario/Rocha_grande5/Model"]
+[editable path="Cenario/Rocha_grande6"]
+[editable path="Cenario/Rocha_grande6/Model"]
+[editable path="Cenario/Rocha_grande7"]
+[editable path="Cenario/Rocha_grande7/Model"]
+[editable path="Cenario/Penhasco2"]
+[editable path="Cenario/Penhasco2/Model"]
+[editable path="Cenario/Penhasco3"]
+[editable path="Cenario/Penhasco3/Model"]
+[editable path="Cenario/Rocha_grande8"]
+[editable path="Cenario/Rocha_grande8/Model"]
+[editable path="Cenario/Penhasco4"]
+[editable path="Cenario/Penhasco4/Model"]
+[editable path="Cenario/Penhasco5"]
+[editable path="Cenario/Penhasco5/Model"]
+[editable path="Cenario/Penhasco6"]
+[editable path="Cenario/Penhasco6/Model"]
+[editable path="Cenario/Rocha_grande9"]
+[editable path="Cenario/Rocha_grande9/Model"]
+[editable path="Cenario/Rocha_grande10"]
+[editable path="Cenario/Rocha_grande10/Model"]
+[editable path="Cenario/Rocha_grande11"]
+[editable path="Cenario/Rocha_grande11/Model"]
+[editable path="Cenario/Rocha_grande12"]
+[editable path="Cenario/Rocha_grande12/Model"]
+[editable path="Cenario/Penhasco7"]
+[editable path="Cenario/Penhasco7/Model"]
+[editable path="Cenario/Pedregulhos11"]
+[editable path="Cenario/Pedregulhos11/Model"]
+[editable path="Cenario/Rocha_grande13"]
+[editable path="Cenario/Rocha_grande13/Model"]
+[editable path="Cenario/Rocha2"]
+[editable path="Cenario/Rocha2/Model"]
+[editable path="Cenario/Rocha_grande14"]
+[editable path="Cenario/Rocha_grande14/Model"]
+[editable path="Cenario/Penhasco8"]
+[editable path="Cenario/Penhasco8/Model"]
+[editable path="Cenario/Penhasco9"]
+[editable path="Cenario/Penhasco9/Model"]
+[editable path="Cenario/Penhasco10"]
+[editable path="Cenario/Penhasco10/Model"]
+[editable path="Cenario/Pedregulhos12"]
+[editable path="Cenario/Pedregulhos12/Model"]
+[editable path="Cenario/Rocha_grande15"]
+[editable path="Cenario/Rocha_grande15/Model"]
+[editable path="Cenario/Rocha_grande16"]
+[editable path="Cenario/Rocha_grande16/Model"]
+[editable path="Cenario/Pedregulhos13"]
+[editable path="Cenario/Pedregulhos13/Model"]
