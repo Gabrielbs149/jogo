@@ -36,7 +36,8 @@
 - [x] Editor de mapas no jogo
 - [x] Ethera com o mesmo cuidado visual de Arandu (D035)
 - [x] Sons: música, passos, luta, interface (D034)
-- [ ] Tika no esqueleto novo; inimigos com modelo
+- [x] Inimigos de Ethera com modelo e animação; arena vestida (D036)
+- [ ] Tika no esqueleto novo
 - [ ] Save/load
 - [ ] Playtest com 2–3 pessoas de fora
 - [ ] [A DEFINIR] donos de cada tarefa

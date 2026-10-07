@@ -58,3 +58,18 @@ func test_dodge_and_falling_down() -> void:
 	assert_eq(_player.current_animation, String(_anim.down))
 	_tico.revive(5)
 	assert_eq(_player.current_animation, String(_anim.idle))
+
+
+## Os inimigos de Ethera (D036) têm todas as animações que o Animator deles pede, e uma por habilidade.
+func test_enemies_have_every_animation() -> void:
+	for path: String in ["res://actors/enemies/escaravelho_de_cinza.tscn", "res://actors/enemies/sentinela_estelar.tscn",
+			"res://actors/enemies/ultimo_guardiao.tscn"]:
+		var enemy := (load(path) as PackedScene).instantiate() as Combatant
+		add_child_autofree(enemy)
+		var player := enemy.get_node("Model").find_children("*", "AnimationPlayer", true, false)[0] as AnimationPlayer
+		var anim := enemy.get_node("Animator") as CombatantAnimator
+		assert_eq(anim.ability_animations.size(), enemy.abilities.size(), path)
+		var names: Array[StringName] = [anim.idle, anim.walk, anim.run, anim.dodge, anim.hit, anim.down]
+		names.append_array(anim.ability_animations)
+		for name: StringName in names:
+			assert_true(player.has_animation(name), "%s: %s" % [path.get_file(), name])

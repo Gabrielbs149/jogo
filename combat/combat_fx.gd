@@ -101,6 +101,8 @@ func shake(unit: Combatant) -> void:
 
 
 func fall(unit: Combatant) -> void:
+	if unit.get_node_or_null("Animator"):  # deixa a animação de morte terminar antes de afundar
+		await get_tree().create_timer(1.5).timeout
 	var tween := create_tween().set_parallel()
 	tween.tween_property(unit, "global_position:y", unit.global_position.y - 1.6, 1.4).set_ease(Tween.EASE_IN)
 	tween.tween_property(unit, "scale", Vector3.ONE * 0.5, 1.4)

@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://actors/enemies/escaravelho/escaravelho.glb" id="1_model"]
+
+[node name="Escaravelho" type="Node3D"]
+
+[node name="Mesh" parent="." instance=ExtResource("1_model")]
+
+[node name="Brilho" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+light_color = Color(1, 0.45, 0.16, 1)
+light_energy = 0.7
+omni_range = 2.2

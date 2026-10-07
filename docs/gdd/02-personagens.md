@@ -22,7 +22,7 @@
 - [A DEFINIR] **Fenrir:** personagem ou NPC?
 - [A DEFINIR] **Tika no jogo:** só aparece em cenas? Vira objetivo (resgate)? Jogável depois?
 - [A DEFINIR] **Moradores de Arandu:** as falas (padeira, vendedor, guarda, criança "moço-planta") são *(proposta)*. Valem?
-- [A DEFINIR] **Inimigos:** os servos dos Astros (escaravelhos de cinza, sentinelas estelares) e o Último Guardião são *(proposta)* de design; os modelos são provisórios. Estilo dos inimigos (KayKit Skeletons foi citado como opção)?
+- [A DEFINIR] **Inimigos:** os servos dos Astros (escaravelhos de cinza, sentinelas estelares) e o Último Guardião são *(proposta)* de design. O visual da D036 (carvão com brasa, arenito com estrela) também é proposta: aprovar ou mudar?
 
 ## Heróis jogáveis
 | Herói | Classe (no jogo) | Vida | CA | Habilidades (esq. / Q / E / R) | Começa em |
@@ -72,3 +72,5 @@ Padeira (Mage), vendedor de frutas (Barbarian com caneco), guarda do portão (Kn
 | Escaravelho de cinza | 16 | 13 | Mordida | servo dos Astros, em dupla |
 | Sentinela estelar | 20 | 14 | Raio vigia | servo dos Astros |
 | **Último Guardião** (chefe) | 85 | 15 | Pancada · Onda de cinza | o espírito que protege o selo que não existe mais |
+
+**Visual (D036, proposta):** escaravelho de carvão com brasa nas frestas e olhos acesos (~1 m); sentinela de arenito que flutua, mãos soltas, núcleo de estrela no peito e uma constelação girando em volta (~1,9 m); Último Guardião, colosso de arenito de ~3 m com rachaduras de brasa, olho em fenda e coroa de estrelas. Modelos em `actors/enemies/<nome>/`, feitos por `tools/blender/gerado/modelar_inimigos.py`.

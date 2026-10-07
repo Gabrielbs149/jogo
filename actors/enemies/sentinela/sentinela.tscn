@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://actors/enemies/sentinela/sentinela.glb" id="1_model"]
+
+[node name="Sentinela" type="Node3D"]
+
+[node name="Mesh" parent="." instance=ExtResource("1_model")]
+
+[node name="Brilho" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, -0.45)
+light_color = Color(1, 0.86, 0.6, 1)
+light_energy = 0.6
+omni_range = 3.0
