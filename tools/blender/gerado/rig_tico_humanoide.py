@@ -71,7 +71,9 @@ def _skin_mask(mesh):
     r, g, b = c[:, 0], c[:, 1], c[:, 2]
     skin = (g > r + 0.06) & (g > b + 0.08) & (g > 0.28)
     peach = (r > 0.6) & (r > g + 0.1) & (g > b)
-    return skin, peach
+    # capa/manga: verde-azulado escuro (verde e azul parecidos, os dois acima do vermelho)
+    teal = (g > r + 0.03) & (b > r + 0.03) & (np.abs(g - b) < 0.1) & ~skin
+    return skin, peach, teal
 
 
 def _weights(mesh, rig) -> None:
@@ -126,14 +128,17 @@ def _weights(mesh, rig) -> None:
             allowed[:, j] = (z > 0.36) & (z < 0.8)
         elif b == "Chest":
             allowed[:, j] = z > 0.5
-    # pela cor da textura: braço e mão seguem o osso só onde é PELE (verde; palma cor de pêssego na mão).
-    # Capa e camisa ao lado do braço ficam presas ao peito (não balançam com o braço).
-    skin, peach = _skin_mask(mesh)
+    # pela cor da textura: braço e mão seguem o osso onde é PELE (verde; palma cor de pêssego na mão).
+    # Perto do osso também vale o que não é pele: as garras (escuras) seguem a mão e a manga da capa segue o braço
+    # (antes ficavam presas na barriga e esticavam em espinhos quando a mão mexia). O resto da capa fica no peito.
+    skin, peach, teal = _skin_mask(mesh)
     for j, b in enumerate(names):
-        if "UpperArm" in b or "LowerArm" in b:
-            allowed[:, j] &= skin
+        if "UpperArm" in b:
+            allowed[:, j] &= skin | ((d[:, j] < 0.06 * K) & (z > 0.5))
+        elif "LowerArm" in b:
+            allowed[:, j] &= skin | ((d[:, j] < 0.045 * K) & ~teal)
         elif "Hand" in b:
-            allowed[:, j] &= skin | peach
+            allowed[:, j] &= skin | peach | ((d[:, j] < 0.05 * K) & ~teal)
     print("pele:", int(skin.sum()), "de", n, "vértices")
     d = np.where(allowed, d, np.inf)
 
