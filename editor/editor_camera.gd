@@ -1,6 +1,6 @@
 class_name EditorCamera
 extends Node3D
-## Câmera do editor de mapas: olha o mapa de cima. WASD/setas andam (Shift corre), a roda aproxima,
+## Câmera do editor de mapas: olha o mapa de cima. WASD anda (as setas movem a peça escolhida) (Shift corre), a roda aproxima,
 ## o botão direito arrastado gira, o do meio arrastado arrasta o mapa. T alterna "bem de cima".
 ## O nó fica no chão (o ponto que a câmera olha); a Camera3D fica afastada dele.
 
@@ -50,13 +50,13 @@ func _process(delta: float) -> void:
 	if _typing():
 		return
 	var move := Vector2.ZERO
-	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
+	if Input.is_key_pressed(KEY_W):
 		move.y += 1.0
-	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
+	if Input.is_key_pressed(KEY_S):
 		move.y -= 1.0
-	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
+	if Input.is_key_pressed(KEY_D):
 		move.x += 1.0
-	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
+	if Input.is_key_pressed(KEY_A):
 		move.x -= 1.0
 	if move == Vector2.ZERO or Input.is_key_pressed(KEY_CTRL):
 		return

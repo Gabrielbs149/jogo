@@ -54,7 +54,7 @@ res://
 ├─ battle/        arena por turnos (BattleArena: iniciativa, PA, QTE, esquivar/aparar)
 ├─ player/        controle no mapa (WASD, primeiro golpe)
 ├─ world/         Level, Encounter, Interactable (F), HeroSpot, Figurante, props/ (peças do catálogo)
-├─ editor/        editor de mapas dentro do jogo (F2 numa fase ou botão na tela inicial)
+├─ editor/        editor de mapas dentro do jogo (F2 numa fase ou botão na tela inicial): map_editor.gd, biblioteca.gd (peças por categoria), icones/ (miniaturas de tools/editor/gerar_icones.gd), grade
 ├─ story/         cenas por roteiro: Roteiro (.tres) + CutscenePlayer; prólogo e cenas dos heróis
 ├─ levels/        fases: levels/<nome>/<nome>.tscn + levels/<nome>/art/ (arandu, ethera, arenas)
 ├─ ui/            hud/, battle_hud/, title/, character_select/, options/ (Opções), menu_fundo/ (cena 3D dos menus), theme/ (Cinzel + Lato)
