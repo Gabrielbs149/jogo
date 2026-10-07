@@ -29,7 +29,7 @@ Como fazer o sync:
 ## Branches (D030, substitui o trunk-based da D003)
 - **`main`**: sempre roda e **só recebe PR**. Ninguém commita direto nela.
 - **Branch por feature**: `<tipo>/<assunto>` saindo da `main` atualizada (`feat/garras-do-tico`, `fix/capa`, `docs/gdd-som`, `level/ethera`). Vida curta (dias). Envie cedo (`git push -u origin <branch>`).
-- **PR** para a `main` (`gh pr create`, template do repo) com CI verde. Merge em **squash**. Revisão do parceiro: [A DEFINIR] obrigatória ou opcional.
+- **PR** para a `main` (`gh pr create`, template do repo) com CI verde. Merge em **squash**. Revisão do parceiro não é obrigatória: com CI verde, quem abriu faz o merge.
 - Depois do merge: `git switch main && git pull` e apague a branch.
 - **`prototypes/`** é uma pasta, não uma branch.
 - **Tags** `v0.1.0`, `v0.2.0`...: fim de fase/ciclo. Build oficial sai de tag.

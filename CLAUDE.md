@@ -90,7 +90,7 @@ Asset de uma coisa só mora junto dela. Só sobe para `assets/` quando duas ou m
   1. `git switch main && git pull` → `git switch -c <tipo>/<assunto>` (ex.: `feat/garras-do-tico`, `fix/capa-do-tico`, `docs/gdd-som`, `level/ethera`).
   2. Commits pequenos no padrão. Envie a branch cedo e sempre (`git push -u origin <branch>`).
   3. Abra o PR para a `main` (`gh pr create`, template do repo). CI verde é obrigatório.
-  4. [A DEFINIR] revisão do parceiro obrigatória ou opcional? Merge em **squash**.
+  4. Revisão do parceiro **não é obrigatória**: com CI verde, quem abriu faz o merge em **squash**. (Quer opinião do outro? Marque ele no PR.)
   5. Branch de vida curta (dias, não semanas). Depois do merge: `git switch main && git pull` e apague a branch.
 - **Arquivos quentes** (`project.godot`, autoloads, a fase que os dois usam, temas de UI): avise antes, PR só disso.
 - **Mover/renomear** arquivo do jogo só pelo FileSystem do editor, em PR próprio.

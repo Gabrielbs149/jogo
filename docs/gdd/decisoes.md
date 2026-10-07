@@ -10,12 +10,12 @@
 - Formato: número · data · tema · decisão · motivo · situação.
 
 ## Em aberto
-- [A DEFINIR] D030 (fluxo por branches e PR) substitui o trunk-based da D003, que tinha sido combinado com o John. Ele concorda?
+- Nada no momento.
 
 | Nº | Data | Tema | Decisão | Motivo | Situação |
 |---|---|---|---|---|---|
 | D031 | 2026-10-07 | Projeto | Design organizado em `docs/gdd/` (visão, história, personagens, mecânicas, arte, som, níveis, roadmap, decisões), que é a **fonte da verdade**; um comando do Claude por tema em `.claude/commands/`. GDD.md, HISTORIA.md, ESTILO.md e ROADMAP.md antigos viram ponteiros. | Gabriel pediu "repartições por tema" | vale |
-| D030 | 2026-10-07 | Git | **Branch por feature + PR** para a `main` (com CI verde); cada um com sua conta do Claude, sincronizando pelo GitHub. | Gabriel pediu esse fluxo ao organizar o projeto | vale; substitui D003 |
+| D030 | 2026-10-07 | Git | **Branch por feature + PR** para a `main` (CI verde obrigatório; **revisão do parceiro não é obrigatória**, quem abriu pode fazer o merge). Cada um com sua conta do Claude, sincronizando pelo GitHub. | Gabriel pediu esse fluxo ao organizar o projeto e confirmou que substitui a D003 sem precisar do parceiro | vale; substitui D003 |
 | D029 | 2026-10-07 | História | Abertura do Tico com o rato assado dividido com a Tika (ele dá o bumbum). | Gabriel pediu "o Tico oferecendo um rato pra Tika" | vale (falas = proposta) |
 | D028 | 2026-10-07 | Arte | Esqueleto humanoide + 76 animações do KayKit por retarget (Tico primeiro). | animações feitas à mão estavam ruins | vale; substitui D020 |
 | D027 | 2026-10-07 | Arte / Níveis | Arandu replanejada como cidade de verdade (ruas, praça, muralha, chão pintado, grama, gente). | "só ouço risada dessa cidade" | vale |

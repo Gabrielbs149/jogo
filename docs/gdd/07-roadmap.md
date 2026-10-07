@@ -5,7 +5,7 @@
 
 ## Decisões fechadas
 - **Fases do projeto:** 0 Setup → 1 Ideia e protótipos → 2 Vertical slice (`v0.1.0`) → 3 Produção (`v0.x` por ciclo) → 4 Testes e polimento → 5 Lançamento (`v1.0.0`) (roadmap original).
-- **Fluxo:** branch por feature e PR para a `main` (D030). Cada um com sua conta do Claude; o que vale para os dois mora no repo (D002).
+- **Fluxo:** branch por feature e PR para a `main`, sem revisão obrigatória (D030). Cada um com sua conta do Claude; o que vale para os dois mora no repo (D002).
 - **Ideia não é tarefa:** ideia vira issue `ideia`; só entra no jogo depois de aprovada e virar `tarefa` (FLUXO).
 - **Design:** `docs/gdd/` é a fonte da verdade (D031).
 
