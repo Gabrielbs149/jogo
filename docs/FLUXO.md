@@ -18,7 +18,7 @@ O **GitHub é a nuvem** do projeto. Não é tempo real como o Google Docs, mas f
 ## O ciclo de todo dia
 1. **Abriu → sync** (puxa o que o parceiro mandou).
 2. **Vai mexer em arquivo quente** (fase compartilhada, `project.godot`, autoload)? Avisa ("vou mexer na forest") ou move a issue para **Fazendo**.
-3. **Funcionou algo → sync com mensagem** (commit, puxa e manda). Meta: a cada 30–60 min, não só no fim do dia.
+3. **Funcionou algo → sync com mensagem** (commit e push **da sua branch**). Meta: a cada 30–60 min, não só no fim do dia. Pronto? PR para a `main`.
 4. **O Godot perguntou se quer recarregar arquivos que mudaram no disco → sempre RECARREGAR.** Se salvar por cima, você apaga o que o parceiro mandou.
 5. **Vai sair → sync.** Trabalho não passa a noite só na sua máquina.
 
@@ -26,10 +26,12 @@ Como fazer o sync:
 - **Pelo Claude:** "sincroniza" (skill `sync`). Ele separa em commits, escreve as mensagens no padrão e resolve conflito se aparecer.
 - **Sem Claude** (por exemplo, quando bater o limite do Pro): duplo clique em `sync.cmd`, ou no terminal: `sync "feat(ui): menu de pausa"`.
 
-## Branches
-- **`main`**: sempre roda. Os dois trabalham direto nela, com sync frequente. É o **trunk-based development**, o modelo que as pesquisas do DORA (Google) associam aos times de alta performance. Com duas pessoas, branch longa só serve para juntar conflito gigante.
-- **`exp/<assunto>`**: só para mudança que deixaria o jogo quebrado por mais de 1 dia (refatorar sistema central, trocar algo de base, testar ideia maluca). Vida curta (até 3 dias). Volta por PR (`gh pr create`), com CI verde e uma olhada do outro, em **squash merge**.
-- **`prototypes/`** é uma pasta, não uma branch: protótipos de 1 dia da Fase 1.
+## Branches (D030, substitui o trunk-based da D003)
+- **`main`**: sempre roda e **só recebe PR**. Ninguém commita direto nela.
+- **Branch por feature**: `<tipo>/<assunto>` saindo da `main` atualizada (`feat/garras-do-tico`, `fix/capa`, `docs/gdd-som`, `level/ethera`). Vida curta (dias). Envie cedo (`git push -u origin <branch>`).
+- **PR** para a `main` (`gh pr create`, template do repo) com CI verde. Merge em **squash**. Revisão do parceiro: [A DEFINIR] obrigatória ou opcional.
+- Depois do merge: `git switch main && git pull` e apague a branch.
+- **`prototypes/`** é uma pasta, não uma branch.
 - **Tags** `v0.1.0`, `v0.2.0`...: fim de fase/ciclo. Build oficial sai de tag.
 
 ## Commits
@@ -85,8 +87,8 @@ Nada se perde: o Git para e espera.
 
 ## Ideias
 1. **Teve ideia → issue `ideia`** (template no GitHub, ou para o Claude: "anota essa ideia: ..."). Sem filtro. A discussão acontece nos comentários.
-2. **Call semanal de 20 min:** cada ideia vira **sim** (entra no `docs/GDD.md` e vira issue `tarefa`), **depois** (continua aberta) ou **não** (fecha com o motivo).
-3. Decisão de design fica em `docs/GDD.md`. Decisão técnica fica em `docs/DECISOES.md`.
+2. **Call semanal de 20 min:** cada ideia vira **sim** (entra no arquivo do tema em `docs/gdd/` e vira issue `tarefa`), **depois** (continua aberta) ou **não** (fecha com o motivo).
+3. Decisão (de design ou técnica) fica no arquivo do tema em `docs/gdd/` + uma linha em `docs/gdd/decisoes.md`.
 
 Por que no GitHub e não num Google Doc: os dois Claudes leem issues e docs do repo. O que está fora do repo, a IA do outro não enxerga.
 

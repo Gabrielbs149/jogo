@@ -1,31 +1,9 @@
-# GDD: Game Design Document
+# GDD
 
-> Versão 1. História completa em `docs/HISTORIA.md`; visual em `docs/ESTILO.md`.
+Este conteúdo foi para **[docs/gdd/](gdd/00-visao-geral.md)** (D031), que é a fonte da verdade do design.
 
-## Pitch (1 frase)
-Você escolhe um dos cinco heróis que perderam as sombras e atravessa o Plano do Fogo em 3ª pessoa, com regras de D&D 5.5 em tempo real, encontrando os outros pelo caminho e montando o seu grupo (D018).
+- Visão geral: [gdd/00-visao-geral.md](gdd/00-visao-geral.md)
+- Mecânicas: [gdd/03-mecanicas.md](gdd/03-mecanicas.md)
+- Todos os temas: [CLAUDE.md](../CLAUDE.md#docsgdd-é-a-fonte-da-verdade-do-design)
 
-## Pilares (3, no máximo)
-O que o jogo SEMPRE tem que ser. Toda feature nova é checada contra isto.
-1. **Ação com cara de D&D**: cada golpe rola dado de verdade (d20 contra CA, salvamentos, vantagem), e o registro mostra; habilidades "tipo LoL" (Q/E/R com recarga) traduzidas das classes (D018).
-2. **O grupo é escolha sua**: você começa com o seu personagem da mesa e decide quem chamar; Caiaque, Umu e Juca em volta (D013).
-3. **Ruínas que contam a história**: inscrições, fogueira e conversas entre uma luta e outra (`docs/ESTILO.md`).
-
-## Loop central
-- **30 s:** mirar, golpear, esquivar do golpe que está carregando, guardar o R para quando juntar inimigo.
-- **5–10 min:** atravessar uma área, achar um herói, decidir se chama, enfrentar os servos de um Astro.
-- **Sessão:** um capítulo: acampamento → caminho com heróis e inscrições → guardião do capítulo → volta para a fogueira *(proposta)*.
-
-## Referências
-Jogos, filmes, artes. O que pegar de cada um.
-
-## Escopo
-- Duração alvo:
-- Plataforma:
-- 3D, câmera em 3ª pessoa, ação em tempo real com regras de D&D 5.5 (D018)
-- O que o jogo **NÃO** é (corta discussão futura):
-
-## Direção de arte e som
-
-## Conteúdo
-Fases, personagens, inimigos, itens. Lista curta, que vai crescendo.
+O texto antigo deste arquivo continua no histórico do Git.
