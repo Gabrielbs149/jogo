@@ -3,7 +3,7 @@
 Regras do projeto para os **dois** Claudes: o do Gabriel e o do John. Cada um roda na própria conta, no próprio clone. Vocês **não compartilham memória nem conversa**: o que precisa valer para os dois mora no repo (aqui, em `docs/`, nas issues e no histórico do Git).
 
 ## O jogo em resumo
-- **"A Noite Sem Nome" / Plano do Fogo:** RPG 3D baseado na campanha de RPG de mesa do grupo, em Novazul. Você escolhe 1 de 5 heróis (Tico-Lirou, Naumfode, Chumasso, José Maria, Bahamut), começa sozinho no lugar de origem dele e encontra os outros pelo caminho.
+- **"A Noite Sem Nome" / Plano do Fogo:** RPG 3D baseado na campanha de RPG de mesa do grupo, em Novazul. Você escolhe 1 de 5 heróis (Tico-Lirou, Namfoodle, Chumasso, José Maria, Bahamut), começa sozinho no lugar de origem dele e encontra os outros pelo caminho.
 - **Exploração em 3ª pessoa** (WASD + mouse) e **luta por turnos com QTE numa arena separada**, estilo Clair Obscur, com regras de D&D 5.5 (d20, vantagem, salvamentos). Na luta, só o seu personagem.
 - **Visual estilizado:** kits Quaternius (cenário) + KayKit (moradores e animações); heróis com modelo próprio.
 - Detalhes de cada tema: `docs/gdd/` (abaixo).

@@ -1,7 +1,9 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://combat/combatant.gd" id="c_script"]
-[ext_resource type="PackedScene" path="res://actors/shared/robed_figure.tscn" id="16_r"]
+[ext_resource type="PackedScene" path="res://actors/naumfode/naumfode.tscn" id="16_r"]
+[ext_resource type="Script" path="res://actors/shared/combatant_animator.gd" id="animator"]
+[ext_resource type="AnimationLibrary" path="res://assets/kits/kaykit/animacoes/humanoide.res" id="kaykit"]
 [ext_resource type="PackedScene" path="res://actors/naumfode/donkey.tscn" id="17_r"]
 [ext_resource type="Script" path="res://combat/ability.gd" id="a_script"]
 [ext_resource type="Resource" path="res://data/abilities/coice_de_burro.tres" id="ab_coice_de_burro"]
@@ -9,40 +11,13 @@
 [ext_resource type="Resource" path="res://data/abilities/burro_de_reparo.tres" id="ab_burro_de_reparo"]
 [ext_resource type="Resource" path="res://data/abilities/estouro_de_burros.tres" id="ab_estouro_de_burros"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_56"]
-albedo_color = Color(1.0, 0.65, 0.3, 1)
-roughness = 0.35
-rim_enabled = true
-rim = 0.4
-rim_tint = 0.6
-metallic = 0.7
-emission_enabled = true
-emission = Color(1.0, 0.65, 0.3, 1)
-emission_energy_multiplier = 0.3
-
-[sub_resource type="TorusMesh" id="TorusMesh_57"]
-inner_radius = 0.035
-outer_radius = 0.06
-rings = 12
-ring_segments = 6
-
-[sub_resource type="BoxMesh" id="BoxMesh_58"]
-size = Vector3(0.36, 0.42, 0.22)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_59"]
-albedo_color = Color(0.35, 0.22, 0.12, 1)
-roughness = 0.85
-rim_enabled = true
-rim = 0.4
-rim_tint = 0.6
-
 [sub_resource type="CapsuleShape3D" id="Capsule_body"]
-radius = 0.4
-height = 1.6
+radius = 0.32
+height = 0.95
 
-[node name="Naumfode" type="CharacterBody3D"]
+[node name="Namfoodle" type="CharacterBody3D"]
 script = ExtResource("c_script")
-display_name = "Naumfode"
+display_name = "Namfoodle"
 hero_id = "naumfode"
 class_title = "Artífice 3"
 bio = "Artífice. Não luta sozinho: luta com burros. Burro que dá coice, burro que atropela, burrinho que conserta os amigos."
@@ -61,32 +36,26 @@ dodge_distance = 4
 dodge_cooldown = 3
 flying = false
 color = Color(0.78, 0.5, 0.25, 1)
-greeting = "Naumfode aperta um parafuso no burro. — Esse aqui não para. Precisa de ajuda com o que tem nas ruínas?"
+greeting = "Namfoodle aperta um parafuso no burro. — Esse aqui não para. Precisa de ajuda com o que tem nas ruínas?"
 
 [node name="Shape" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.475, 0)
 shape = SubResource("Capsule_body")
 
 [node name="Model" parent="." instance=ExtResource("16_r")]
-cloth_color = Color(0.62, 0.38, 0.18, 1)
-trim_color = Color(1.0, 0.6, 0.3, 1)
-
-[node name="GoggleL" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, -3.673e-06, -1, 0, 1, -3.673e-06, -0.07, 1.42, -0.17)
-mesh = SubResource("TorusMesh_57")
-material_override = SubResource("StandardMaterial3D_56")
-cast_shadow = 0
-
-[node name="GoggleR" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, -3.673e-06, -1, 0, 1, -3.673e-06, 0.07, 1.42, -0.17)
-mesh = SubResource("TorusMesh_57")
-material_override = SubResource("StandardMaterial3D_56")
-cast_shadow = 0
-
-[node name="Pack" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0.24)
-mesh = SubResource("BoxMesh_58")
-material_override = SubResource("StandardMaterial3D_59")
 
 [node name="Companion" parent="Model" instance=ExtResource("17_r")]
-transform = Transform3D(0.5732, 0, 0.1773, 0, 0.6, 0, -0.1773, 0, 0.5732, 0.75, 0, 0.45)
+transform = Transform3D(0.5732, 0, 0.1773, 0, 0.6, 0, -0.1773, 0, 0.5732, 0.7, 0, 0.35)
+
+[node name="Animator" type="Node" parent="."]
+script = ExtResource("animator")
+idle = &"Parado"
+walk = &"Andar"
+run = &"Correr"
+ability_animations = Array[StringName]([&"Disparar", &"Disparar", &"Invocar_Torreta", &"Invocar_Torreta"])
+dodge = &"kaykit/Dodge_Forward"
+hit = &"Dano"
+down = &"Morte"
+extra_library = ExtResource("kaykit")
+walk_reference_speed = 2.6
+run_reference_speed = 5.0

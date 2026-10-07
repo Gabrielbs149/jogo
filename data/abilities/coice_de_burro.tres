@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_ability")
 title = "Coice de burro"
-description = "O burro de guerra do Naumfode dá um coice no alvo."
+description = "O burro de guerra do Namfoodle dá um coice no alvo."
 dnd_note = "Ação · ataque do companheiro de aço"
 kind = 0
 shape = 0

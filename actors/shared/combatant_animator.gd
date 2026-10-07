@@ -12,6 +12,10 @@ extends Node
 @export var dodge: StringName = &"dodge"
 @export var hit: StringName = &"hit"
 @export var down: StringName = &"down"
+## Animações extras de outra fonte (ex.: a biblioteca do KayKit, `kaykit/Dodge_Forward`), para quem tem animações
+## próprias mas não todas. Precisa de esqueleto humanoide (D028). Os nomes acima usam o prefixo do apelido.
+@export var extra_library: AnimationLibrary
+@export var extra_library_name: StringName = &"kaykit"
 ## Velocidade (m/s) em que a caminhada e a corrida rodam no ritmo normal.
 @export var walk_reference_speed: float = 4.0
 @export var run_reference_speed: float = 7.5
@@ -36,6 +40,8 @@ func _ready() -> void:
 		push_warning("%s: modelo sem AnimationPlayer, sem animação" % _me.display_name)
 		set_physics_process(false)
 		return
+	if extra_library and not _player.has_animation_library(extra_library_name):
+		_player.add_animation_library(extra_library_name, extra_library)
 	for loop_name: StringName in [idle, walk, run]:
 		if _player.has_animation(loop_name):
 			_player.get_animation(loop_name).loop_mode = Animation.LOOP_LINEAR

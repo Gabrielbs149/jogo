@@ -32,6 +32,7 @@
 - [x] Arandu (cidade completa) com a cena de abertura do Tico
 - [x] Ethera com encontros, arena por turnos com QTE e chefe
 - [x] Tico com modelo final, esqueleto e animações
+- [x] Namfoodle com modelo final e animações (D032)
 - [x] Editor de mapas no jogo
 - [ ] Ethera com o mesmo cuidado visual de Arandu ([04-arte.md](04-arte.md))
 - [ ] Sons mínimos ([05-som.md](05-som.md))
@@ -55,7 +56,7 @@ Build fechada para amigos, triagem de bugs, performance, juice (partículas, tre
 Export presets, build pela CI, página (itch.io e/ou Steam) — [A DEFINIR] plataforma e preço em [00-visao-geral.md](00-visao-geral.md).
 
 ## Pendências que vieram das conversas
-- Confirmar grafias (Chumasso/Chumaço, Naumfode, Cindralight/Cindralich) e as "asas" da Tika.
+- Confirmar grafias (Chumasso/Chumaço, Namfoodle, Cindralight/Cindralich) e as "asas" da Tika.
 - Garras psíquicas do Tico no lugar da Adaga? *(proposta)*
 - Gesto de comer sentado na cena do rato.
 - Limpeza opcional do histórico do Git (62 MB de texturas que foram fora do LFS no commit `6dd8733`) — só com push forçado, decisão dos dois.

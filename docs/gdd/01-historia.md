@@ -17,7 +17,7 @@
 - [A DEFINIR] **Tom:** quanto de humor (o Tico e a Tika brincam) e quanto de drama (sequestro, astros caçando o grupo)? Algo como "aventura leve com momentos tristes"?
 - [A DEFINIR] **Cindralight × Cindralich:** qual é a grafia? (o texto do Tico diz Cindralight; as mensagens do grupo, Cindralich)
 - [A DEFINIR] **"Duas asas simples" da Tika:** são adagas? garras? (as garras de energia do Tico são "igual a de Tika")
-- [A DEFINIR] **Começo dos outros quatro heróis** (Naumfode, Chumasso, José Maria, Bahamut): onde cada um está quando a história começa e com que cena? Hoje os quatro começam em Ethera.
+- [A DEFINIR] **Começo dos outros quatro heróis** (Namfoodle, Chumasso, José Maria, Bahamut): onde cada um está quando a história começa e com que cena? Hoje os quatro começam em Ethera.
 - [A DEFINIR] **Como os cinco perdem as sombras no jogo:** isso aparece (flashback, prólogo jogável) ou o jogo começa depois?
 - [A DEFINIR] **Ordem dos capítulos / Astros** depois de Ethera: quais Astros, em que ordem, com que arena?
 - [A DEFINIR] **Os três caminhos do fim** viram três finais escolhidos pelo jogador? *(proposta da HISTORIA antiga)*

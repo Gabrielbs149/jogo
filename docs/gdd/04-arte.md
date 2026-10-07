@@ -15,7 +15,7 @@
 ## Em aberto
 - [A DEFINIR] **Paleta oficial:** quais cores definem o jogo? (hoje: Arandu = tarde quente com telhados laranja e grama verde; Ethera = deserto avermelhado ao entardecer). Cada região tem paleta própria?
 - [A DEFINIR] **Ethera** ainda não passou pelo replanejamento que Arandu teve. Mesmo cuidado?
-- [A DEFINIR] **Modelos de Naumfode, Chumasso, José Maria e Bahamut:** faltam os desenhos de referência.
+- [A DEFINIR] **Modelos de Chumasso, José Maria e Bahamut:** faltam os desenhos/modelos.
 - [A DEFINIR] **Tika no esqueleto novo** (o modelo tem o braço colado no corpo; pode precisar de ajuste ou modelo novo em pose T).
 - [A DEFINIR] **Inimigos:** estilo e modelos (hoje provisórios). KayKit Skeletons foi citado como opção.
 - [A DEFINIR] **Animações que faltam:** gesto de comer sentado (cena do rato), animações próprias de cada habilidade.
@@ -47,6 +47,7 @@
 | Tico-Lirou | `actors/tico_lirou/` (`tico_lirou_humanoide.glb`, fonte em `art_src/`) | final |
 | Tika-Muro | `actors/tika_muro/` | modelo sem esqueleto |
 | Rato assado, pão | `actors/props/rato/`, `world/props/pao.tscn` | em uso / fora da cena |
-| Naumfode, Chumasso, José Maria, Bahamut | `actors/heroes/` | provisórios |
+| Namfoodle | `actors/naumfode/` (`naumfode.glb`, preparado por `tools/blender/gerado/preparar_naumfode.py`) | final, com animações próprias |
+| Chumasso, José Maria, Bahamut | `actors/heroes/` | provisórios |
 | Inimigos de Ethera | `actors/enemies/` | provisórios |
 | Fontes Cinzel e Lato | `assets/fonts/` | em uso |

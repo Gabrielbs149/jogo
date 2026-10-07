@@ -64,7 +64,7 @@ enum Save { DEX, CON, WIS }
 
 @export_group("Visual")
 @export var projectile: bool = false
-## Em vez da bola de luz, esta cena corre pelo chão até o alvo (os burros do Naumfode).
+## Em vez da bola de luz, esta cena corre pelo chão até o alvo (os burros do Namfoodle).
 @export var projectile_scene: PackedScene
 @export var vfx_color: Color = Color(1.0, 0.85, 0.55)
 
