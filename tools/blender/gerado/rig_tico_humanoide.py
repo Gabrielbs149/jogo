@@ -47,6 +47,33 @@ BONES = {
 }
 
 
+def _skin_mask(mesh):
+    """Cor média da textura em cada vértice -> (é pele verde, é pêssego)."""
+    import numpy as np
+    mat = mesh.data.materials[0]
+    img = [nd.image for nd in mat.node_tree.nodes if nd.type == "TEX_IMAGE"][0]
+    w, h = img.size
+    px = np.array(img.pixels[:]).reshape(h, w, 4)
+    loops = mesh.data.loops
+    uv = np.empty(len(loops) * 2)
+    mesh.data.uv_layers.active.data.foreach_get("uv", uv)
+    uv = uv.reshape(-1, 2)
+    vi = np.empty(len(loops), int)
+    loops.foreach_get("vertex_index", vi)
+    x = np.clip((uv[:, 0] % 1.0) * (w - 1), 0, w - 1).astype(int)
+    y = np.clip((uv[:, 1] % 1.0) * (h - 1), 0, h - 1).astype(int)
+    n = len(mesh.data.vertices)
+    acc = np.zeros((n, 3))
+    cnt = np.zeros(n)
+    np.add.at(acc, vi, px[y, x, :3])
+    np.add.at(cnt, vi, 1)
+    c = acc / np.maximum(cnt, 1)[:, None]
+    r, g, b = c[:, 0], c[:, 1], c[:, 2]
+    skin = (g > r + 0.06) & (g > b + 0.08) & (g > 0.28)
+    peach = (r > 0.6) & (r > g + 0.1) & (g > b)
+    return skin, peach
+
+
 def _weights(mesh, rig) -> None:
     """Pesos por "o ponto da pele enxerga o osso": para cada vértice, os ossos visíveis (raio até o ponto mais
     perto do osso sem atravessar o corpo) ganham peso 1/d^4; depois suaviza pelas arestas da malha (juntas macias).
@@ -99,6 +126,15 @@ def _weights(mesh, rig) -> None:
             allowed[:, j] = (z > 0.36) & (z < 0.8)
         elif b == "Chest":
             allowed[:, j] = z > 0.5
+    # pela cor da textura: braço e mão seguem o osso só onde é PELE (verde; palma cor de pêssego na mão).
+    # Capa e camisa ao lado do braço ficam presas ao peito (não balançam com o braço).
+    skin, peach = _skin_mask(mesh)
+    for j, b in enumerate(names):
+        if "UpperArm" in b or "LowerArm" in b:
+            allowed[:, j] &= skin
+        elif "Hand" in b:
+            allowed[:, j] &= skin | peach
+    print("pele:", int(skin.sum()), "de", n, "vértices")
     d = np.where(allowed, d, np.inf)
 
     # visibilidade: só testa os ossos até 2,2x a distância do mais perto
@@ -137,7 +173,7 @@ def _weights(mesh, rig) -> None:
         np.add.at(acc, edges[:, 1], w[edges[:, 0]])
         avg = np.where(deg > 0, acc / np.maximum(deg, 1), w)
         w = 0.5 * w + 0.5 * avg
-        w = np.where(allowed | (w > 0.0), w, 0.0)
+        w = np.where(allowed, w, 0.0)
         w /= np.maximum(w.sum(1, keepdims=True), 1e-9)
     # no máximo 4 ossos por vértice
     order = np.argsort(-w, axis=1)

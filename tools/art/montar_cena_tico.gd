@@ -91,7 +91,12 @@ func _run() -> void:
 		var a := i * TAU / 8.0
 		_scene("res://assets/kits/quaternius/natureza/Pebble_Round_%d.gltf" % (1 + i % 5), "Pedra", fire,
 			Transform3D(Basis(Vector3.UP, a).scaled(Vector3.ONE * 0.55), fire_at + Vector3(cos(a), 0, sin(a)) * 0.2))
-	_scene("res://assets/vfx/fogo.tscn", "Fogo", fire, Transform3D(Basis().scaled(Vector3.ONE * 0.32), fire_at + Vector3.UP * 0.03))
+	var flame := _scene("res://assets/vfx/fogo.tscn", "Fogo", fire, Transform3D(Basis().scaled(Vector3.ONE * 0.32), fire_at + Vector3.UP * 0.03))
+	var glow := flame.get_node("Light") as OmniLight3D
+	glow.light_energy = 0.9
+	glow.set("base_energy", 0.9)
+	glow.omni_range = 3.0
+	level.set_editable_instance(flame, true)
 	fire.visible = false
 	var toward: Vector3 = fire_at - to_world.call(Vector3(0, 0, tico_z))
 	toward.y = 0.0
@@ -99,6 +104,8 @@ func _run() -> void:
 	_add(Marker3D.new(), cena, Transform3D(spit, fire_at + Vector3.UP * 0.2)).name = "EspetoNoFogo"
 	var rat := _scene("res://actors/props/rato/rato_espeto.glb", "Rato", cena, Transform3D(spit, fire_at + Vector3.UP * 0.2))
 	rat.visible = false
+	rat.set_meta("pega", Vector3(-0.34, -0.02, 0.0))  # ponta do graveto (cutscene: [na mão: Rato])
+	rat.set_meta("inclinacao", 0.45)
 	var piece := _scene("res://actors/props/rato/rato_traseiro.glb", "PedacoDaTika", cena,
 		Transform3D(basis.rotated(Vector3.UP, 0.6), to_world.call(Vector3(-0.12, 0.48, tika_z + 0.22))))
 	piece.visible = false

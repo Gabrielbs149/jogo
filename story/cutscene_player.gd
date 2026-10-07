@@ -367,6 +367,17 @@ func _attach_to_hand(thing: Node3D, who: Node3D) -> void:
 	skeleton.add_child(holder)
 	holder.bone_name = hand
 	thing.reparent(holder, false)
+	if thing.has_meta("pega"):
+		# segurado por um ponto (a ponta do espeto), apontando para a frente de quem segura e um pouco para cima
+		var forward := -who.global_basis.z.normalized()
+		var tilt := float(thing.get_meta("inclinacao", 0.4))
+		var axis := (forward * cos(tilt) + Vector3.UP * sin(tilt)).normalized()
+		var side := axis.cross(Vector3.UP).normalized()
+		var basis := Basis(axis, side.cross(axis), -side)
+		var grip: Vector3 = thing.get_meta("pega")
+		var palm_at := holder.global_transform * Vector3(0.0, 0.06, 0.02)
+		thing.global_transform = Transform3D(basis, palm_at - basis * grip)
+		return
 	var size := holder.global_basis.get_scale()
 	# na palma, não no pulso: um pouco para a ponta do osso da mão (eixo Y do osso) e para dentro
 	var palm := Vector3(0.0, 0.075, 0.025) if hand == "RightHand" else Vector3.ZERO
