@@ -11,6 +11,7 @@
 - **Vida entre lutas:** não enche sozinha; a **fogueira** (F) enche (D022).
 - **Cenas de história** por roteiro (D025); prólogo em todo jogo novo.
 - **Editor de mapas dentro do jogo** (F2 ou tela inicial) para montar e testar fases (D023).
+- **Missões (D040):** conversa com escolhas numeradas (`ui/dialogue/`), testes de perícia do D&D 5.5 (d20 + bônus contra CD; 20 natural passa, 1 natural falha; a rolagem aparece na conversa), objetivo no canto de cima à direita, marca "!" em quem tem missão e seta onde entregar. O estado fica em `Game.flags` / `Game.items` / `Game.objective` e vai para o jogo salvo. Cada missão é um script em `world/quests/` ligado às pessoas da fase (Interactable com ação QUEST).
 - **Jogo salvo (D037):** um arquivo só (`user://save.json`), gravado sozinho ao entrar numa fase, ao voltar de uma luta, ao descansar na fogueira ("Jogo salvo") e ao sair para o menu ou fechar o jogo. Nunca grava no meio de uma luta nem no Testar do editor. Guarda herói, grupo, lutas vencidas, vida, fases já vistas e o lugar no mapa. Tela inicial: **Continuar** (só aparece se tem jogo salvo) e **Novo jogo** (começa do zero e grava por cima).
 
 ## Em aberto

@@ -18,12 +18,14 @@
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Wall_UnevenBrick_Straight.gltf" id="13_614qq"]
 [ext_resource type="PackedScene" path="res://world/props/arvore.tscn" id="13_rim2w"]
 [ext_resource type="PackedScene" path="res://world/props/arbusto_baixo.tscn" id="14_bl8x0"]
+[ext_resource type="PackedScene" path="res://world/props/morador.tscn" id="16_j5u7p"]
 [ext_resource type="PackedScene" path="res://world/props/arbusto.tscn" id="17_cbaqg"]
 [ext_resource type="PackedScene" path="res://world/props/casa_estreita.tscn" id="19_bo4rr"]
 [ext_resource type="PackedScene" path="res://world/props/casa.tscn" id="20_isatd"]
 [ext_resource type="PackedScene" path="res://world/props/casa_estreita_pedra.tscn" id="21_l2c7x"]
 [ext_resource type="Script" path="res://world/figurante.gd" id="23_1wlkg"]
 [ext_resource type="PackedScene" path="res://world/props/casa_barro.tscn" id="24_r8gri"]
+[ext_resource type="PackedScene" path="res://world/props/padaria.tscn" id="25_253vp"]
 [ext_resource type="PackedScene" path="res://world/props/casa_longa.tscn" id="25_jh6xx"]
 [ext_resource type="PackedScene" path="res://world/props/sobrado_longo.tscn" id="26_fb661"]
 [ext_resource type="PackedScene" path="res://world/props/balde.tscn" id="26_oqo87"]
@@ -284,6 +286,7 @@
 [ext_resource type="PackedScene" path="res://assets/vfx/fogo.tscn" id="288_3bqkj"]
 [ext_resource type="PackedScene" path="res://actors/props/rato/rato_espeto.glb" id="289_tqjqu"]
 [ext_resource type="PackedScene" path="res://actors/props/rato/rato_traseiro.glb" id="290_1wela"]
+[ext_resource type="Script" path="res://world/quests/missao_padaria.gd" id="293_3bqkj"]
 [ext_resource type="Script" path="res://systems/camera/third_person_camera.gd" id="cam"]
 [ext_resource type="FontFile" path="res://assets/fonts/cinzel.ttf" id="font"]
 [ext_resource type="Script" path="res://combat/combat_fx.gd" id="fx"]
@@ -490,27 +493,41 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -11.
 
 [node name="People" type="Node3D" parent="." unique_id=1560292177]
 
-[node name="@Node3D@4" type="Node3D" parent="People" unique_id=951647349]
-transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, -7, 0, -7.2)
+[node name="Viuva" type="Node3D" parent="People" unique_id=951647349]
+transform = Transform3D(7.54979e-08, 0, 1, 0, 1, 0, -1, 0, 7.54979e-08, -4.3, 0, -25.7)
 
-[node name="Figure" type="Node3D" parent="People/@Node3D@4" unique_id=410822440]
+[node name="Figure" type="Node3D" parent="People/Viuva" unique_id=410822440]
 transform = Transform3D(0.62, 0, 0, 0, 0.62, 0, 0, 0, 0.62, 0, 0, 0)
 script = ExtResource("23_1wlkg")
 personagem = "Mage"
 
-[node name="Collision" type="StaticBody3D" parent="People/@Node3D@4" unique_id=1231984832]
+[node name="Collision" type="StaticBody3D" parent="People/Viuva" unique_id=1231984832]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 collision_layer = 4
 collision_mask = 0
 
-[node name="Shape" type="CollisionShape3D" parent="People/@Node3D@4/Collision" unique_id=587320543]
+[node name="Shape" type="CollisionShape3D" parent="People/Viuva/Collision" unique_id=587320543]
 shape = SubResource("CapsuleShape3D_97")
 
-[node name="Talk" type="Node3D" parent="People/@Node3D@4" unique_id=1910351068]
+[node name="Talk" type="Node3D" parent="People/Viuva" unique_id=1910351068]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("inter")
-prompt_text = "Falar com a padeira"
-text = "— Tico-Lirou! Sobrou pão de ontem. Pega antes que o padeiro veja."
+action = 4
+prompt_text = "Falar com a viúva"
+
+[node name="MarcaEntrega" type="Label3D" parent="People/Viuva" unique_id=1540216541]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.15, 0)
+visible = false
+pixel_size = 0.0009
+billboard = 1
+no_depth_test = true
+fixed_size = true
+modulate = Color(1, 0.82, 0.3, 1)
+outline_modulate = Color(0.2, 0.08, 0.02, 1)
+text = "▼"
+font = ExtResource("font")
+font_size = 72
+outline_size = 14
 
 [node name="@Node3D@6" type="Node3D" parent="People" unique_id=1657705581]
 transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 7, 0, -7.2)
@@ -583,6 +600,32 @@ script = ExtResource("inter")
 prompt_text = "Falar com a criança"
 text = "— Moço-planta! Faz de novo aquele truque das folhas?"
 
+[node name="Padeiro" parent="People" unique_id=916468253 instance=ExtResource("16_j5u7p")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8.5, 0, 16.05)
+
+[node name="Figure" parent="People/Padeiro" index="0"]
+personagem = "Barbarian"
+animacao = "Unarmed_Idle"
+
+[node name="Talk" parent="People/Padeiro" index="2"]
+action = 4
+prompt_text = "Falar com o padeiro"
+text = ""
+
+[node name="MarcaMissao" type="Label3D" parent="People/Padeiro" unique_id=1554704891]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.15, 0)
+visible = false
+pixel_size = 0.0009
+billboard = 1
+no_depth_test = true
+fixed_size = true
+modulate = Color(1, 0.82, 0.3, 1)
+outline_modulate = Color(0.2, 0.08, 0.02, 1)
+text = "!"
+font = ExtResource("font")
+font_size = 72
+outline_size = 14
+
 [node name="Gate" type="Node3D" parent="." unique_id=341104906]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -34.8)
 script = ExtResource("inter")
@@ -649,7 +692,7 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -8, 
 [node name="Armazem" parent="Buildings" unique_id=1822359947 instance=ExtResource("8_4nmll")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -9, 0, 26.6)
 
-[node name="Padaria" parent="Buildings" unique_id=1670334845 instance=ExtResource("24_r8gri")]
+[node name="Padaria" parent="Buildings" unique_id=397430271 instance=ExtResource("25_253vp")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8, 0, 15)
 
 [node name="Casa_estreita_pedra2" parent="Buildings" unique_id=1982546042 instance=ExtResource("21_l2c7x")]
@@ -4095,4 +4138,14 @@ fov = 55.0
 transform = Transform3D(-0.42288604, 0.2620295, -0.8674721, 0, 0.95728153, 0.28915742, 0.9061829, 0.122280635, -0.404821, -0.32999992, 0.42, -0.28409958)
 fov = 38.0
 
+[node name="Missoes" type="Node" parent="." unique_id=313488569]
+
+[node name="MissaoPadaria" type="Node" parent="Missoes" unique_id=1762497791 node_paths=PackedStringArray("padeiro", "viuva", "marca_padeiro", "marca_viuva")]
+script = ExtResource("293_3bqkj")
+padeiro = NodePath("../../People/Padeiro/Talk")
+viuva = NodePath("../../People/Viuva/Talk")
+marca_padeiro = NodePath("../../People/Padeiro/MarcaMissao")
+marca_viuva = NodePath("../../People/Viuva/MarcaEntrega")
+
+[editable path="People/Padeiro"]
 [editable path="CenaTico/Fogueirinha/Fogo"]

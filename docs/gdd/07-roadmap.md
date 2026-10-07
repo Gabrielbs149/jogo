@@ -39,6 +39,7 @@
 - [x] Inimigos de Ethera com modelo e animação; arena vestida (D036)
 - [ ] Tika no esqueleto novo
 - [x] Jogo salvo automático + Continuar (D037)
+- [x] 1ª missão (Fome / padaria) com conversa, testes de perícia e objetivo (D040)
 - [x] Menus no padrão de jogo: fundo 3D, Opções (som, tela, mouse, teclas), créditos, fade entre telas, HUD novo (D038)
 - [ ] Playtest com 2–3 pessoas de fora
 - [ ] [A DEFINIR] donos de cada tarefa

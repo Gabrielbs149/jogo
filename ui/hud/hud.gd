@@ -45,6 +45,9 @@ var _modal: bool = false
 @onready var _prompt_box: Control = %PromptBox
 @onready var _tips: Control = %Tips
 @onready var _options: OptionsMenu = %OptionsMenu
+## Conversas das missões (D040).
+@onready var dialogue: DialogueBox = %Dialogue
+@onready var _objective: Control = %Objective
 @onready var _player_name: Label = %PlayerName
 @onready var _player_hp_text: Label = %PlayerHpText
 @onready var _player_hp: ProgressBar = %PlayerHp
@@ -87,6 +90,8 @@ func _ready() -> void:
 	%ResultMenu.pressed.connect(func() -> void: Game.go_to_title())
 	%PauseResume.pressed.connect(func() -> void: set_paused(false))
 	%PauseMenu.pressed.connect(func() -> void: Game.go_to_title())
+	Game.objective_changed.connect(_on_objective)
+	_on_objective(Game.objective)
 	%PauseOptions.pressed.connect(func() -> void:
 		%Pause.hide()
 		_options.open())
@@ -157,6 +162,31 @@ func toast(text: String) -> void:
 	_toast_tween = create_tween()
 	_toast_tween.tween_interval(1.4)
 	_toast_tween.tween_property(_toast, "modulate:a", 0.0, 0.5)
+
+
+## Começa uma conversa: trava o personagem e solta o mouse. A missão chama end_talk() no fim.
+func begin_talk() -> void:
+	_modal = true
+	if _controller:
+		_controller.enabled = false
+	_prompt_box.hide()
+	_set_mouse(true)
+
+
+func end_talk() -> void:
+	dialogue.close()
+	_modal = false
+	if _controller:
+		_controller.enabled = true
+	_set_mouse(false)
+
+
+func _on_objective(text: String) -> void:
+	_objective.visible = text != ""
+	(%ObjectiveText as Label).text = text
+	if text != "":
+		_objective.modulate = Color(1.4, 1.25, 1.0)
+		create_tween().tween_property(_objective, "modulate", Color.WHITE, 1.2)
 
 
 ## Cartão de dicas com as teclas do mapa (some sozinho). Desliga em Opções > "Mostrar dicas de controle".

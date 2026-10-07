@@ -32,6 +32,9 @@ static var editing: bool = false
 
 const CUTSCENE := "res://story/cutscene_player.tscn"
 
+## Depois das cenas de abertura, quando você ganha o controle (as missões começam aqui).
+signal play_started
+
 var player: Combatant
 var controller: PlayerController
 var companions: Array[Combatant] = []
@@ -140,6 +143,7 @@ func _ready() -> void:
 	if not Game.seen.has(scene_file_path):
 		Game.seen.append(scene_file_path)
 	ready_to_play = true
+	play_started.emit()
 	save_here(false)
 
 
@@ -287,7 +291,7 @@ func surface_at(point: Vector3) -> String:
 
 
 func _on_used(_by: Combatant, what: Interactable) -> void:
-	var sound: String = ["ler", "descansar", "conversar", "viajar"][what.action]
+	var sound: String = ["ler", "descansar", "conversar", "viajar", "conversar"][what.action]
 	Audio.play(sound, -4.0)
 	match what.action:
 		Interactable.Action.READ:

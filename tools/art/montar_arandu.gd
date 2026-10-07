@@ -220,7 +220,7 @@ func _town() -> void:
 		[["casa_grande_barro", "PousoDoPortao"], ["casa_estreita", ""], ["casa", ""], ["casa_estreita_pedra", ""]])
 	# rua do sul
 	_row(Vector3(-4.6, 0, 12), Vector3.BACK, Vector3.RIGHT, [["casa", ""], ["casa_estreita", ""], ["casa_grande", "Armazem"]])
-	_row(Vector3(4.6, 0, 12), Vector3.BACK, Vector3.LEFT, [["casa_barro", "Padaria"], ["casa_estreita_pedra", ""], ["casa", ""], ["casa_estreita", ""]])
+	_row(Vector3(4.6, 0, 12), Vector3.BACK, Vector3.LEFT, [["padaria", "Padaria"], ["casa_estreita_pedra", ""], ["casa", ""], ["casa_estreita", ""]])
 	# rua do oeste
 	_row(Vector3(-12, 0, -4.6), Vector3.LEFT, Vector3.BACK, [["casa", ""], ["casa_estreita", ""], ["casa_barro", ""], ["casa_estreita_pedra", ""]])
 	_row(Vector3(-12, 0, 4.6), Vector3.LEFT, Vector3.FORWARD, [["casa_barro", ""], ["casa_longa", ""], ["casa_estreita", ""], ["casa_estreita", ""]])

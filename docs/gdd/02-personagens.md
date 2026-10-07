@@ -64,7 +64,7 @@ Cena de abertura (D029, falas *(proposta)*): beco, fogueirinha, rato espetado as
 - Citados na enquete do grupo: Blenk, Blonk, Baba/Bebe/Bibi/Bobo/Bubu, Tonhonhonho, **Robinho** (morreu pelo povo, ao se jogar de uma casa de dois andares), Lancelot, Golias. **Bren** (o que trapaceia nas apostas, citado em Ethera).
 
 ## Moradores de Arandu *(proposta)*
-Padeira (Mage), vendedor de frutas (Barbarian com caneco), guarda do portão (Knight com espada: "lá fora as estrelas andam estranhas"), criança que chama o Tico de "moço-planta" (Rogue). Mais figurantes sem fala pela cidade (D027).
+Padeiro, dono da padaria (Barbarian, atrás do balcão, D040), viúva na porta da Casa da Viúva (Mage, recebe a encomenda; antes era a padeira da praça), vendedor de frutas (Barbarian com caneco), guarda do portão (Knight com espada: "lá fora as estrelas andam estranhas"), criança que chama o Tico de "moço-planta" (Rogue). Mais figurantes sem fala pela cidade (D027).
 
 ## Inimigos (capítulo de Ethera)
 | Inimigo | Vida | CA | Habilidades | Papel |
