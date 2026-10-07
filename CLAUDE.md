@@ -58,7 +58,7 @@ res://
 ├─ story/         cenas por roteiro: Roteiro (.tres) + CutscenePlayer; prólogo e cenas dos heróis
 ├─ levels/        fases: levels/<nome>/<nome>.tscn + levels/<nome>/art/ (arandu, ethera, arenas)
 ├─ ui/            hud/, battle_hud/, title/, character_select/, theme/ (Cinzel + Lato)
-├─ systems/       game/ (autoload Game), camera/ (3ª pessoa)
+├─ systems/       game/ (autoload Game), audio/ (autoload Audio: música, ambiente, efeitos), camera/ (3ª pessoa)
 ├─ data/          abilities/*.tres
 ├─ assets/        o que várias cenas usam: kits/ (Quaternius + KayKit), materials/, shaders/, skies/, vfx/, fonts/, environment/
 ├─ tests/         testes GUT, espelhando as pastas do código

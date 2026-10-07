@@ -225,6 +225,7 @@ func _say(who: String, text: String) -> void:
 	_dialogue.show()
 	_name.text = who
 	_line.text = text
+	Audio.play("fala", -12.0, 0.1)
 	_hint.modulate.a = 0.0
 	_line.visible_ratio = 0.0
 	if not auto:
@@ -321,8 +322,13 @@ func _play_sound(arg: String) -> void:
 	var parts := arg.split("|")
 	var file := parts[0].strip_edges()
 	for ext: String in [".ogg", ".wav", ".mp3"]:
-		if ResourceLoader.exists(SFX_DIR + file + ext):
-			var stream := load(SFX_DIR + file + ext) as AudioStream
+		var path := ""
+		for dir: String in [SFX_DIR, "res://assets/audio/ambiente/", "res://assets/audio/musica/", "res://assets/audio/sfx/"]:
+			if ResourceLoader.exists(dir + file + ext):
+				path = dir + file + ext
+				break
+		if path != "":
+			var stream := load(path) as AudioStream
 			if stream is AudioStreamOggVorbis:
 				(stream as AudioStreamOggVorbis).loop = true
 			elif stream is AudioStreamWAV:

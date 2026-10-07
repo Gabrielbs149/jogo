@@ -87,6 +87,11 @@ func _ready() -> void:
 	cooldowns.fill(0.0)
 	collision_layer = 2
 	collision_mask = 1 | 2 | 4
+	hurt.connect(func(_by: Combatant) -> void: Audio.play_at("impacto", global_position + Vector3.UP * 0.6, -2.0))
+	dodged.connect(func() -> void: Audio.play_at("esquiva", global_position, -4.0))
+	downed_changed.connect(func(is_down: bool) -> void:
+		if is_down:
+			Audio.play_at("queda", global_position, -2.0))
 
 
 func is_active() -> bool:

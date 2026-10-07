@@ -14,6 +14,7 @@
 
 | Nº | Data | Tema | Decisão | Motivo | Situação |
 |---|---|---|---|---|---|
+| D034 | 2026-10-07 | Som | Primeira trilha com sons CC0 (Kenney + OpenGameArt): autoload `Audio`, música por fase e na luta, passos por tipo de chão, sons de luta, QTE, interface, interação e fogo. | o jogo não tinha nenhum som | vale |
 | D033 | 2026-10-07 | Personagens | O nome é **Namfoodle** (não Naumfode). A torreta dele é um burro ("Invocar_Torreta" = chamar os burros). Altura de 0,95 m fica. Id interno nos arquivos continua `naumfode`. | Gabriel respondeu as perguntas do D032 | vale |
 | D032 | 2026-10-07 | Arte / Personagens | Namfoodle ganha o modelo enviado pelo Gabriel (anão de barba, óculos, avental e mochila; 0,95 m), com o esqueleto e as 7 animações que vieram nele (Parado, Andar, Correr, Disparar, Invocar_Torreta, Dano, Morte) + as do KayKit pelo retarget (esquiva etc.). O burrinho continua ao lado dele. | Gabriel mandou o modelo pronto | vale |
 | D031 | 2026-10-07 | Projeto | Design organizado em `docs/gdd/` (visão, história, personagens, mecânicas, arte, som, níveis, roadmap, decisões), que é a **fonte da verdade**; um comando do Claude por tema em `.claude/commands/`. GDD.md, HISTORIA.md, ESTILO.md e ROADMAP.md antigos viram ponteiros. | Gabriel pediu "repartições por tema" | vale |

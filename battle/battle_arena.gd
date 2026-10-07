@@ -126,6 +126,8 @@ func _run() -> void:
 		order.erase(player)
 		order.push_front(player)
 	ap = start_ap + (1 if _first_strike else 0)
+	Audio.play_music("batalha", 0.6)
+	Audio.play_ambient("")
 	_hud.banner("Primeiro golpe!  +1 PA" if _first_strike else "Luta!")
 	await _wait(0.8)
 	while not is_over():
@@ -146,6 +148,8 @@ func _run() -> void:
 			_hud.refresh()
 	var victory := player.is_active()
 	CombatRules.turn_mode = false
+	Audio.stop_music(0.8)
+	Audio.play("vitoria" if victory else "derrota", -2.0, 0.0)
 	finished.emit(victory)
 	if auto_play:
 		return
@@ -158,6 +162,7 @@ func _run() -> void:
 # ---------- seu turno
 
 func _player_turn() -> void:
+	Audio.play("turno", -8.0, 0.0)
 	player.sneak_ready_at = 0.0
 	if target == null or not is_instance_valid(target) or target.hp <= 0:
 		cycle_target(1)
@@ -184,7 +189,9 @@ func _player_action(index: int) -> void:
 	if melee:
 		await _approach(player, tgt.global_position, 1.4)
 	player.ability_used.emit(index)
+	Audio.play_at("golpe", player.global_position, -3.0)
 	var grade := await _attack_qte(tgt)
+	Audio.play("qte_" + grade, -4.0, 0.0)
 	var adv: int = {"perfeito": 1, "bom": 0, "errou": -1}[grade]
 	_hud.banner({"perfeito": "PERFEITO!  vantagem", "bom": "Bom", "errou": "Errou o tempo  desvantagem"}[grade],
 		{"perfeito": Color(1, 0.85, 0.3), "bom": Color(0.9, 0.9, 0.9), "errou": Color(0.8, 0.6, 0.6)}[grade])
@@ -250,6 +257,7 @@ func _enemy_turn(enemy: Combatant) -> void:
 		await _approach(enemy, player.global_position, 2.6 if enemy.is_boss else 1.6)
 	_hud.banner(ability.title, Color(1, 0.6, 0.5))
 	_fx.lunge(enemy)
+	Audio.play_at("golpe", enemy.global_position, -3.0)
 	var defense := await _defense_qte(ability)
 	if ability.projectile:
 		await _fx.projectile(enemy.global_position, player.global_position, ability.vfx_color, ability.projectile_scene)
@@ -262,6 +270,8 @@ func _enemy_turn(enemy: Combatant) -> void:
 			player.rolled.emit("%s · %s → %s: esquivou!" % [enemy.display_name, ability.title, player.display_name])
 			_hop(player)
 		"aparou":
+			Audio.play_at("aparar", player.global_position + Vector3.UP, 0.0)
+			Audio.play("qte_perfeito", -6.0, 0.0)
 			_fx.floating_text(player.global_position, "APAROU!", Color(1, 0.85, 0.3), true)
 			player.rolled.emit("%s · %s → %s: aparou! Contra-ataque (+1 PA)" % [enemy.display_name, ability.title, player.display_name])
 			ap = mini(ap + 1, max_ap)
