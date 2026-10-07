@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Animal-Kit/Cat.glb" id="1_Cat"]
+
+
+[node name="Gato" type="Node3D"]
+
+[node name="Modelo" parent="." instance=ExtResource("1_Cat")]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0, 0)

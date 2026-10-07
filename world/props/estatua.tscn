@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://assets/materials/pedra_poco.tres" id="1_pedra_poco"]
+[ext_resource type="Material" path="res://assets/materials/calcada.tres" id="2_calcada"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Low-Poly-Outdoor-Garden-Decorations/Statue_3.glb" id="3_Statue_3"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
+size = Vector3(1.4, 1.2, 1.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2"]
+size = Vector3(1.6, 0.15, 1.6)
+
+[node name="Estatua" type="Node3D" groups=["colisao_auto"]]
+
+[node name="Pedestal" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+mesh = SubResource("BoxMesh_1")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Topo" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.27, 0)
+mesh = SubResource("BoxMesh_2")
+material_override = ExtResource("2_calcada")
+
+[node name="Figura" parent="." instance=ExtResource("3_Statue_3")]
+transform = Transform3D(-1.3, 0, 0, 0, 1.3, 0, 0, 0, -1.3, 0, 3.092, 0)

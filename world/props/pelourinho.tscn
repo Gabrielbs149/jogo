@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://assets/materials/tabuas.tres" id="1_tabuas"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Medieval-Torture-Devices/Pilory.glb" id="2_Pilory"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
+size = Vector3(1.6, 0.25, 1.6)
+
+[node name="Pelourinho" type="Node3D" groups=["colisao_auto"]]
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
+mesh = SubResource("BoxMesh_1")
+material_override = ExtResource("1_tabuas")
+
+[node name="Modelo" parent="." instance=ExtResource("2_Pilory")]
+transform = Transform3D(-1.3, 0, 0, 0, 1.3, 0, 0, 0, -1.3, 0, 0.25, 0)

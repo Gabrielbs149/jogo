@@ -1,0 +1,76 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://assets/materials/pedra_poco.tres" id="1_pedra_poco"]
+[ext_resource type="Material" path="res://assets/materials/calcada.tres" id="2_calcada"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Low-Poly-Outdoor-Garden-Decorations/Water_Fountain.glb" id="3_Water_Fountain"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_1"]
+top_radius = 6.4
+bottom_radius = 6.46
+height = 0.18
+radial_segments = 40
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_2"]
+top_radius = 5.9
+bottom_radius = 5.96
+height = 0.36
+radial_segments = 40
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_3"]
+top_radius = 3.9
+bottom_radius = 4
+height = 0.75
+radial_segments = 40
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_4"]
+top_radius = 3.65
+bottom_radius = 3.65
+height = 0.05
+radial_segments = 40
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
+albedo_color = Color(0.25, 0.48, 0.55, 1)
+roughness = 0.08
+emission_enabled = true
+emission = Color(0.12, 0.3, 0.38, 1)
+emission_energy_multiplier = 0.25
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_6"]
+top_radius = 3.7
+bottom_radius = 3.7
+height = 0.5
+radial_segments = 40
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7"]
+albedo_color = Color(0.2, 0.26, 0.24, 1)
+roughness = 0.9
+
+[node name="Chafariz" type="Node3D" groups=["colisao_auto"]]
+
+[node name="Degrau" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
+mesh = SubResource("CylinderMesh_1")
+material_override = ExtResource("2_calcada")
+
+[node name="Degrau2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18, 0)
+mesh = SubResource("CylinderMesh_2")
+material_override = ExtResource("2_calcada")
+
+[node name="Borda" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.735, 0)
+mesh = SubResource("CylinderMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Agua" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CylinderMesh_4")
+material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Fundo" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
+mesh = SubResource("CylinderMesh_6")
+material_override = SubResource("StandardMaterial3D_7")
+
+[node name="Fonte" parent="." instance=ExtResource("3_Water_Fountain")]
+transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 0, 3.92, 0)

@@ -1,0 +1,51 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Medieval-Village-Pack/Market_Stand_2.glb" id="1_Market_Stand_2"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Baked-Goods/Bread.glb" id="2_Bread"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Baked-Goods/Baguette.glb" id="3_Baguette"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Baked-Goods/Bread_Roll.glb" id="4_Bread_Roll"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Baked-Goods/Pie_Apple.glb" id="5_Pie_Apple"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Baked-Goods/Croissant.glb" id="6_Croissant"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/FarmCrate_Empty.gltf" id="7_FarmCrate_Empt"]
+
+
+[node name="Banca_paes" type="Node3D" groups=["colisao_auto"]]
+
+[node name="Banca" parent="." instance=ExtResource("1_Market_Stand_2")]
+transform = Transform3D(-3, 0, 0, 0, 3, 0, 0, 0, -3, 0, 0, 0)
+
+[node name="Mercadoria" parent="." instance=ExtResource("2_Bread")]
+transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, -0.95, 1.05, -0.25)
+
+[node name="Mercadoria2" parent="." instance=ExtResource("3_Baguette")]
+transform = Transform3D(0.3442, 0, 0.2899, 0, 0.45, 0, -0.2899, 0, 0.3442, -0.95, 1.05, 0.15)
+
+[node name="Mercadoria3" parent="." instance=ExtResource("4_Bread_Roll")]
+transform = Transform3D(0.085, 0, 0.4927, 0, 0.5, 0, -0.4927, 0, 0.085, -0.45, 1.05, -0.25)
+
+[node name="Mercadoria4" parent="." instance=ExtResource("5_Pie_Apple")]
+transform = Transform3D(-0.1767, 0, 0.3021, 0, 0.35, 0, -0.3021, 0, -0.1767, -0.45, 1.05, 0.15)
+
+[node name="Mercadoria5" parent="." instance=ExtResource("6_Croissant")]
+transform = Transform3D(-0.3769, 0, 0.134, 0, 0.4, 0, -0.134, 0, -0.3769, 0.05, 1.05, -0.25)
+
+[node name="Mercadoria6" parent="." instance=ExtResource("2_Bread")]
+transform = Transform3D(-0.4214, 0, -0.1579, 0, 0.45, 0, 0.1579, 0, -0.4214, 0.05, 1.05, 0.15)
+
+[node name="Mercadoria7" parent="." instance=ExtResource("3_Baguette")]
+transform = Transform3D(-0.2206, 0, -0.3922, 0, 0.45, 0, 0.3922, 0, -0.2206, 0.55, 1.05, -0.25)
+
+[node name="Mercadoria8" parent="." instance=ExtResource("4_Bread_Roll")]
+transform = Transform3D(0.0933, 0, -0.4912, 0, 0.5, 0, 0.4912, 0, 0.0933, 0.55, 1.05, 0.15)
+
+[node name="Mercadoria9" parent="." instance=ExtResource("5_Pie_Apple")]
+transform = Transform3D(0.2714, 0, -0.2209, 0, 0.35, 0, 0.2209, 0, 0.2714, 1, 1.05, -0.25)
+
+[node name="Mercadoria10" parent="." instance=ExtResource("6_Croissant")]
+transform = Transform3D(0.3999, 0, 0.0067, 0, 0.4, 0, -0.0067, 0, 0.3999, 1, 1.05, 0.15)
+
+[node name="Caixote" parent="." instance=ExtResource("7_FarmCrate_Empt")]
+transform = Transform3D(0.9492, 0, -0.3146, 0, 1, 0, 0.3146, 0, 0.9492, -1.6, 0, -1.1)
+
+[node name="Caixote2" parent="." instance=ExtResource("7_FarmCrate_Empt")]
+transform = Transform3D(0.9492, 0, 0.3146, 0, 1, 0, -0.3146, 0, 0.9492, 1.6, 0, -1.1)

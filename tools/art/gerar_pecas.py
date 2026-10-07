@@ -9,6 +9,7 @@ import os
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))).replace("\\", "/") + "/"
 OUT = ROOT + "world/props/"
 Q = "res://assets/kits/quaternius/"
+PP = "res://assets/kits/polypizza/"
 os.makedirs(OUT, exist_ok=True)
 for f in os.listdir(OUT):
     if f.endswith(".tscn"):
@@ -88,6 +89,12 @@ class Scene:
         """Uma peça de kit (glTF do Quaternius): 'vila/Wall_Plaster_Straight'."""
         rid = self.ext_res("PackedScene", Q + kit_path + ".gltf")
         base = name or kit_path.split("/")[-1]
+        self.node(self.unique(base) if parent == "." else base, None, parent, "transform = " + xf(pos, rot, scale), instance=rid)
+
+    def glb(self, path, pos=(0, 0, 0), rot=0.0, scale=1, name=None, parent="."):
+        """Modelo .glb do poly.pizza (D041): 'Medieval-Village-Pack/Fantasy_Inn'."""
+        rid = self.ext_res("PackedScene", PP + path + ".glb")
+        base = name or path.split("/")[-1]
         self.node(self.unique(base) if parent == "." else base, None, parent, "transform = " + xf(pos, rot, scale), instance=rid)
 
     def scene(self, name, path, pos=(0, 0, 0), rot=0.0, scale=1, parent=".", *props):
@@ -289,6 +296,176 @@ def padaria():
 
 
 padaria()
+
+
+# --- cidade (D041): prédios do Medieval Village Pack (Quaternius) e o resto do poly.pizza ------------------------
+MV = "Medieval-Village-Pack/"
+K_MV = 3.0  # o pacote vem 3x menor que o mundo (porta de 0,72 -> 2,2 m)
+GD = "Low-Poly-Outdoor-Garden-Decorations/"
+FOOD = "Food-Kit/"
+
+
+def sign(s, text, pos, rot=0.0, width=1.0):
+    """Placa pendurada num braço de madeira (frente em -Z), com o nome do lugar."""
+    wood = s.mat("tabuas")
+    x, y, z = pos
+    s.mesh("PlacaBraco", s.box((0.08, 0.08, 0.9)), wood, (x, y + 0.62, z - 0.45), (0, rot, 0))
+    s.mesh("Placa", s.box((width, 0.45, 0.06)), wood, (x, y, z - 0.8), (0, rot, 0))
+    font = s.ext_res("FontFile", "res://assets/fonts/cinzel.ttf")
+    for side, r in ((-1, math.pi), (1, 0.0)):
+        s.node(s.unique("PlacaTexto"), "Label3D", ".", "transform = " + xf((x, y - 0.02, z - 0.8 + side * 0.035), rot + r),
+               "pixel_size = 0.0035", 'text = "%s"' % text, 'font = ExtResource("%s")' % font, "font_size = 44",
+               "modulate = Color(0.25, 0.13, 0.06, 1)", "outline_size = 0", "double_sided = false")
+
+
+def building(file, title, model, label=None, label_pos=(1.6, 2.4, -0.2), extra=None):
+    """Prédio do Medieval Village Pack, virado para -Z (a porta do pacote é +Z)."""
+    s = Scene(title, groups=AUTO)
+    s.glb(MV + model, (0, 0, 0), math.pi, K_MV, name="Modelo")
+    if label:
+        sign(s, label, label_pos)
+    if extra:
+        extra(s)
+    s.save(file)
+
+
+def _forge(s):
+    s.piece("objetos/Anvil", (-2.2, 0, -5.2), 0.4, 1.2, name="Bigorna")
+    s.piece("objetos/WeaponStand", (2.6, 0, -5.0), math.pi, 1.0, name="Armas")
+    s.piece("objetos/Whetstone", (-3.6, 0, -4.4), 0.2, 1.0, name="Rebolo")
+    s.piece("objetos/Barrel", (-4.6, 0, -3.6), 0.0, 1.0, name="Barril")
+    s.glb("Ultimate-RPG-Items-Bundle/Shield_Round", (4.0, 1.2, -4.3), math.pi, 0.5, name="Escudo")
+    s.glb("Ultimate-RPG-Items-Bundle/Shield_2", (4.8, 1.2, -4.3), math.pi, 0.5, name="Escudo")
+    s.scene("Brasa", "res://assets/vfx/fogo.tscn", (-3.0, 0.2, -3.8), 0.0, 0.35)
+
+
+def _stable(s):
+    for k in range(6):
+        s.glb(MV + "Fence", (-8.5 + k * 2.4, 0, -7.5), 0.0, K_MV, name="Cerca")
+    for k in range(2):
+        s.glb(MV + "Fence", (-9.7, 0, -6.3 + k * 2.4), math.pi / 2, K_MV, name="Cerca")
+    s.glb("Farm-Animal-Pack/Horse", (-6.0, 0, -5.4), 1.9, 0.25, name="Cavalo")
+    s.glb("Farm-Animal-Pack/Horse", (-3.2, 0, -6.2), -0.6, 0.24, name="Cavalo")
+    for k, (x, z) in enumerate(((-8.2, -4.6), (-7.6, -4.2), (-8.6, -3.8))):
+        s.glb(MV + "Hay", (x, 0, z), 0.4 * k, K_MV * 1.4, name="Feno")
+    s.glb(MV + "Cart", (3.8, 0, -5.6), 2.4, K_MV, name="Carroca")
+
+
+def _mill(s):
+    for k, (x, z) in enumerate(((3.6, -3.6), (4.2, -2.8), (3.2, -2.4))):
+        s.glb(MV + "Bags", (x, 0, z), k, K_MV, name="Sacos")
+    s.glb(MV + "Hay", (-3.8, 0, -3.0), 0.0, K_MV * 1.4, name="Feno")
+
+
+def _barracks(s):
+    s.piece("objetos/WeaponStand", (2.4, 0, -4.2), math.pi, 1.0, name="Armas")
+    s.piece("objetos/Dummy", (-2.6, 0, -4.8), 0.3, 1.0, name="Boneco")
+    s.piece("objetos/Banner_1", (1.4, 0, -3.4), math.pi, 1.0, name="Estandarte")
+
+
+building("estalagem", "Estalagem", "Fantasy_Inn", "Estalagem", (2.2, 2.6, -6.3))
+building("ferreiro", "Ferreiro", "Blacksmith", "Ferreiro", (0.5, 2.6, -5.2), _forge)
+building("estabulo", "Estabulo", "Fantasy_Stable", "Estábulo", (4.5, 2.4, -4.0), _stable)
+building("moinho", "Moinho", "Mill", None, extra=_mill)
+building("serraria", "Serraria", "Fantasy_Sawmill")
+building("guarita", "Guarita", "Fantasy_Barracks", None, extra=_barracks)
+building("torre_sino", "Torre_sino", "Bell_Tower")
+building("casa_enxaimel", "Casa_enxaimel", "Fantasy_House_2")
+building("casa_enxaimel2", "Casa_enxaimel2", "Fantasy_House_3")
+
+# poço de pedra com telhado (praças menores) e carroça
+s = Scene("Poco_telhado", groups=AUTO)
+s.glb(MV + "Well", (0, 0.75, 0), math.pi, K_MV, name="Modelo")
+s.save("poco_telhado")
+
+
+def stall(file, title, model, goods, cover_y=1.05):
+    """Banca de feira com mercadoria por cima do balcão. goods: lista de (pacote/modelo, escala)."""
+    s = Scene(title, groups=AUTO)
+    s.glb(MV + model, (0, 0, 0), math.pi, K_MV, name="Banca")
+    k = 0
+    for gx in (-0.95, -0.45, 0.05, 0.55, 1.0):
+        for gz in (-0.25, 0.15):
+            path, sc = goods[k % len(goods)]
+            s.glb(path, (gx, cover_y, gz), 0.7 * k, sc, name="Mercadoria")
+            k += 1
+    for x in (-1.6, 1.6):
+        s.piece("objetos/FarmCrate_Empty", (x, 0, -1.1), 0.2 * x, 1.0, name="Caixote")
+    s.save(file)
+
+
+stall("banca_frutas", "Banca_frutas", "Market_Stand_2", [(FOOD + "Apple", 0.45), (FOOD + "Pear", 0.45), (FOOD + "Watermelon", 0.45), (FOOD + "Cherries", 0.45), (FOOD + "Lemon", 0.45)])
+stall("banca_verduras", "Banca_verduras", "Market_Stand_2", [(FOOD + "Cabbage", 0.45), (FOOD + "Carrot", 0.4), (FOOD + "Pumpkin", 0.5), (FOOD + "Eggplant", 0.45), (FOOD + "Corn", 0.45), (FOOD + "Leek", 0.4)])
+stall("banca_paes", "Banca_paes", "Market_Stand_2", [("Baked-Goods/Bread", 0.45), ("Baked-Goods/Baguette", 0.45), ("Baked-Goods/Bread_Roll", 0.5), ("Baked-Goods/Pie_Apple", 0.35), ("Baked-Goods/Croissant", 0.4)])
+stall("banca_peixe", "Banca_peixe", "Market_Stand_2", [(FOOD + "Fish", 0.6), (FOOD + "Fish", 0.6), (FOOD + "Onion", 0.45)])
+s = Scene("Carroca_feira", groups=AUTO)
+s.glb(MV + "Cart", (0, 0, 0), math.pi, K_MV, name="Carroca")
+for k, (x, z) in enumerate(((-0.25, -0.2), (0.15, 0.1), (-0.1, 0.35), (0.3, -0.3))):
+    s.glb(FOOD + ("Apple", "Pumpkin", "Cabbage", "Pear")[k], (x, 1.05, z), k, 0.45, name="Mercadoria")
+s.save("carroca_feira")
+
+# --- praça ----------------------------------------------------------------------------------------------
+s = Scene("Chafariz", groups=AUTO)
+stone = s.mat("pedra_poco")
+for k, (r, h) in enumerate(((6.4, 0.18), (5.9, 0.36))):
+    s.mesh("Degrau", s.cyl(r, r + 0.06, h, 40), s.mat("calcada"), (0, h / 2, 0))
+s.mesh("Borda", s.cyl(3.9, 4.0, 0.75, 40), stone, (0, 0.36 + 0.375, 0))
+s.mesh("Agua", s.cyl(3.65, 3.65, 0.05, 40), s.color((0.25, 0.48, 0.55), 0.08, ((0.12, 0.3, 0.38), 0.25)), (0, 1.0, 0))
+s.mesh("Fundo", s.cyl(3.7, 3.7, 0.5, 40), s.color((0.2, 0.26, 0.24), 0.9), (0, 0.65, 0))
+s.glb(GD + "Water_Fountain", (0, 0.92 + 1.25 * 2.4, 0), 0.0, 2.4, name="Fonte")
+s.save("chafariz")
+
+s = Scene("Estatua", groups=AUTO)
+s.mesh("Pedestal", s.box((1.4, 1.2, 1.4)), s.mat("pedra_poco"), (0, 0.6, 0))
+s.mesh("Topo", s.box((1.6, 0.15, 1.6)), s.mat("calcada"), (0, 1.27, 0))
+s.glb(GD + "Statue_3", (0, 1.35 + 1.34 * 1.3, 0), math.pi, 1.3, name="Figura")
+s.save("estatua")
+
+s = Scene("Poste")
+# haste de ferro fina, braço curto e a lanterna em cima (3,2 m), luz quente sem sombra
+iron = s.color((0.12, 0.11, 0.1), 0.5)
+s.mesh("Base", s.cyl(0.16, 0.2, 0.3, 10), s.mat("pedra_poco"), (0, 0.15, 0))
+s.mesh("Haste", s.cyl(0.05, 0.065, 2.7, 10), iron, (0, 1.6, 0))
+s.mesh("Topo", s.cyl(0.11, 0.08, 0.08, 10), iron, (0, 2.95, 0))
+s.glb(GD + "Lamp", (0, 2.99, 0), 0.0, 0.62, name="Lanterna")
+s.mesh("Luz", s.sub("SphereMesh", ("bulbo",), "radius = 0.07\nheight = 0.14"), s.color((1, 0.85, 0.6), 0.5, ((1, 0.75, 0.45), 5.0)), (0, 3.2, 0))
+s.node("Light", "OmniLight3D", ".", "transform = " + xf((0, 3.2, 0)), "light_color = Color(1, 0.74, 0.45, 1)", "light_energy = 1.5",
+       "omni_range = 9.0", "omni_attenuation = 1.3")
+s.body(("cyl", (0.12, 3.0)), (0, 1.5, 0))
+s.save("poste")
+
+s = Scene("Canteiro", groups=AUTO)
+s.glb(GD + "Flower_Bed_2", (0, 0.38, 0), 0.0, 1.0, name="Borda")
+s.mesh("Terra", s.cyl(1.55, 1.55, 0.08, 8), s.color((0.32, 0.22, 0.14), 1.0), (0, 0.42, 0), (0, math.pi / 8, 0))
+s.glb(GD + "Flowers", (0.9, 0.4 + 0.63 * 0.55, 0.5), 0.0, 0.55, name="Flores")
+s.glb(GD + "Flowers", (-0.8, 0.4 + 0.63 * 0.5, -0.6), 1.2, 0.5, name="Flores")
+s.scene("Arvore", "res://world/props/arvore_pequena.tscn", (0, 0.42, 0), 0.4, 0.9)
+s.save("canteiro")
+
+s = Scene("Banco_praca", groups=AUTO)
+s.glb(GD + "Bench", (0, 0.35 * 1.1, 0), 0.0, 1.1, name="Modelo")
+s.save("banco_praca")
+
+s = Scene("Pelourinho", groups=AUTO)
+s.mesh("Base", s.box((1.6, 0.25, 1.6)), s.mat("tabuas"), (0, 0.12, 0))
+s.glb("Medieval-Torture-Devices/Pilory", (0, 0.25, 0), math.pi, 1.3, name="Modelo")
+s.save("pelourinho")
+
+for name, path, sc in (("cavalo", "Farm-Animal-Pack/Horse", 0.25), ("vaca", "Farm-Animal-Pack/Cow", 0.25), ("porco", "Farm-Animal-Pack/Pig", 0.15),
+                       ("galinha", "Animal-Kit/Chicken", 0.8), ("cachorro", "Animal-Kit/Dog", 0.42), ("gato", "Animal-Kit/Cat", 0.4)):
+    s = Scene(name.capitalize())
+    s.glb(path, (0, 0, 0), 0.0, sc, name="Modelo")
+    s.save(name)
+
+s = Scene("Horta")
+for k in range(3):
+    s.glb(FOOD + ("Cabbage", "Carrot", "Pumpkin")[k % 3], (-0.5 + k * 0.5, 0, 0), k * 1.3, 0.9, name="Verdura")
+s.save("horta")
+
+for k, model in enumerate(("Wooden_Sign_3", "Wooden_Sign_7", "Wooden_Sign_2")):
+    s = Scene("Placa_rua%d" % (k + 1), groups=AUTO)
+    s.glb("Signs-pack/" + model, (0, 0, 0), math.pi, 1.2, name="Modelo")
+    s.save("placa_rua%d" % (k + 1))
 house("casa_barro", "Casa_barro", 3, 3, 1, ["Wall_UnevenBrick"], "Roof_RoundTiles_6x6", "Roof_Front_Brick6")
 house("casa_grande", "Casa_grande", 4, 4, 2, ["Wall_UnevenBrick", "Wall_Plaster"], "Roof_RoundTiles_8x8", "Roof_Front_Brick8", 1)
 house("casa_grande_barro", "Casa_grande_barro", 4, 4, 2, ["Wall_Plaster", "Wall_Plaster_WoodGrid"], "Roof_RoundTiles_8x8", "Roof_Front_Brick8", 2)

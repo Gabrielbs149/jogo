@@ -1,9 +1,15 @@
 extends SceneTree
-## Monta Arandu (D027): planta da cidade, ruas, praça, casas, muralha, chão pintado, grama e decoração.
-## Mantém o que é da história (moradores e falas, portão de saída, canto do Tico) e refaz o resto.
-## Depois rode a montagem da cena do Tico (marquise, câmeras) e ajuste à mão no editor de mapas.
+## Monta Arandu (D041, refaz a D027): cidade murada de 92 m com portão ao norte, duas avenidas em cruz e uma praça
+## central de verdade (chafariz numa plataforma com degraus, canteiros, bancos, postes, estátuas, feira, pelourinho).
+## Prédios do Medieval Village Pack (estalagem, ferreiro, estábulo, moinho, serraria, guarita, torre do sino) e das
+## peças do kit; em cada quarteirão de dentro, um lugar com função (moinho com horta, estábulo com cercado, serraria,
+## capela com jardim). Cada prédio é MEDIDO e encostado na rua (nada sai torto); se não couber, não entra.
+## Árvores só em grama livre longe das casas, nos canteiros e fora da muralha (nunca na calçada).
+## Mantém o que é da história (People, Missoes, Gate, TicoCorner/Look, PlayerSpawn). Depois rode:
+##   godot --path . -s tools/art/montar_cena_tico.gd        (cena do rato no beco)
+##   godot --headless --path . -s tools/art/montar_missao_padaria.gd   (padeiro e viúva)
 ## ATENÇÃO: rodar de novo APAGA o que foi mudado à mão em prédios, ruas e decoração.
-## Uso: godot --headless --path . -s tools/art/montar_arandu.gd
+## Uso (COM janela: a grama é MultiMesh e precisa salvar posições): godot --path . -s tools/art/montar_arandu.gd
 
 const PROPS := "res://world/props/"
 const KIT := "res://assets/kits/quaternius/"
@@ -11,22 +17,26 @@ const LEVEL := "res://levels/arandu/arandu.tscn"
 const ART := "res://levels/arandu/art/"
 const AREA := 220.0
 const MASK_PX := 1024
-const HALF := 35.0  # muralha: quadrado de 70 m
-
-## Tamanho das casas: [largura da fachada, fundo]
-const SIZE := {
-	"casa": Vector2(6, 6), "casa_barro": Vector2(6, 6), "casa_grande": Vector2(8, 8), "casa_grande_barro": Vector2(8, 8),
-	"casa_estreita": Vector2(4, 6), "casa_estreita_pedra": Vector2(4, 6), "casa_longa": Vector2(6, 8),
-	"sobrado_longo": Vector2(6, 8), "torre": Vector2(4, 4),
+const HALF := 46.0  # muralha: quadrado de 92 m
+const AVE := 5.5  # meia largura das avenidas
+const PLAZA := 17.5  # meia largura da praça
+## Chaminés das casas do kit (ponto de onde sai a fumaça, no espaço da peça).
+const CHIMNEY := {
+	"casa": Vector3(1.8, 6.6, 1.4), "casa_barro": Vector3(1.8, 6.6, 1.4), "casa_grande": Vector3(2.8, 9.7, 2.4),
+	"casa_grande_barro": Vector3(2.8, 9.7, 2.4), "casa_longa": Vector3(1.8, 6.6, 2.4), "sobrado_longo": Vector3(1.8, 9.7, 2.4),
+	"padaria": Vector3(-1.85, 6.5, 2.2),
 }
 
 var level: Node3D
 var rng := RandomNumberGenerator.new()
 var mask: Image
-var blocks: Array[Rect2] = []  # onde não nasce grama nem árvore (casas, muros, barracas)
+var blocks: Array[Rect2] = []  # chão ocupado (casas, muros, bancas): não nasce grama nem árvore, não entra outro prédio
 var houses: Array[Dictionary] = []
 var groups := {}
 var tico_alley := Rect2()
+var spots := {}  # lugares da história e da gente: nome -> Transform3D
+var _smoke_mesh: QuadMesh
+var _smoke_process: ParticleProcessMaterial
 
 
 func _initialize() -> void:
@@ -34,7 +44,7 @@ func _initialize() -> void:
 
 
 func _run() -> void:
-	rng.seed = 2027
+	rng.seed = 2041
 	(load("res://world/level.gd") as GDScript).set("editing", true)
 	level = (ResourceLoader.load(LEVEL, "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene).instantiate(PackedScene.GEN_EDIT_STATE_MAIN) as Node3D
 	root.add_child(level)
@@ -43,19 +53,24 @@ func _run() -> void:
 	mask = Image.create(MASK_PX, MASK_PX, false, Image.FORMAT_RGB8)
 	mask.fill(Color(0, 0, 0))
 	_streets()
-	_town()
 	_walls()
 	_plaza()
+	_town()
+	_quarters()
+	_fill_quarters()
+	_street_life()
 	_story_spots()
-	_yards()
 	_crowd()
+	_animals()
+	_smoke()
 	_outside()
 	_paint_ground()
 	await physics_frame
 	level.call("_auto_collision")  # para a grama não nascer dentro das casas novas
 	await physics_frame
+	_yards()
 	_grass()
-	_light_and_camera()
+	_light()
 	var packed := PackedScene.new()
 	print("pack ", packed.pack(level), " save ", ResourceSaver.save(packed, LEVEL))
 	quit()
@@ -79,7 +94,8 @@ func _group(name: String, nav: bool = true) -> Node3D:
 
 
 func _clear() -> void:
-	for name: String in ["Buildings", "Walls", "Market", "Trees", "Rocks", "Props", "Lights", "Places", "Well", "CenaTico", "Grama", "Gardens", "Crowd"]:
+	for name: String in ["Buildings", "Walls", "Market", "Trees", "Rocks", "Props", "Lights", "Places", "Well", "CenaTico", "Grama", "Gardens",
+			"Crowd", "Plaza", "Animals", "Smoke"]:
 		var node := level.get_node_or_null(name)
 		if node:
 			level.remove_child(node)
@@ -122,17 +138,38 @@ func _yaw_facing(front: Vector3) -> float:
 	return atan2(-front.x, -front.z)
 
 
-func _block(center: Vector3, size: Vector2, yaw: float, margin: float = 0.6) -> void:
-	# retângulo que cobre a peça girada (para a grama e as árvores não nascerem em cima)
-	var c := absf(cos(yaw))
-	var s := absf(sin(yaw))
-	var w := size.x * c + size.y * s + margin * 2.0
-	var d := size.x * s + size.y * c + margin * 2.0
-	blocks.append(Rect2(center.x - w / 2.0, center.z - d / 2.0, w, d))
+## Caixa (no chão) de tudo que se vê numa peça já colocada.
+func _aabb(node: Node3D) -> AABB:
+	var box := AABB()
+	var first := true
+	for found: Node in node.find_children("*", "MeshInstance3D", true, false):
+		var mi := found as MeshInstance3D
+		var b := mi.global_transform * mi.get_aabb()
+		box = b if first else box.merge(b)
+		first = false
+	return box
+
+
+func _rect(box: AABB, shrink: float = 0.0) -> Rect2:
+	return Rect2(box.position.x + shrink, box.position.z + shrink, box.size.x - shrink * 2.0, box.size.z - shrink * 2.0)
+
+
+func _overlaps(r: Rect2) -> bool:
+	for b: Rect2 in blocks:
+		if b.intersects(r):
+			return true
+	return false
+
+
+func _block_rect(r: Rect2, margin: float = 0.6) -> void:
+	blocks.append(r.grow(margin))
+
+
+func _block(center: Vector3, size: Vector2, margin: float = 0.6) -> void:
+	_block_rect(Rect2(center.x - size.x / 2.0, center.z - size.y / 2.0, size.x, size.y), margin)
 
 
 func _free_at(p: Vector3, margin: float = 0.0) -> bool:
-	# margem negativa = pode chegar mais perto (a grama encosta nas paredes)
 	for r: Rect2 in blocks:
 		if p.x > r.position.x - margin and p.x < r.end.x + margin and p.z > r.position.y - margin and p.z < r.end.y + margin:
 			return false
@@ -157,104 +194,35 @@ func _paint_rect(r: Rect2, channel: int) -> void:
 
 
 func _paint_disc(center: Vector2, radius: float, channel: int) -> void:
-	_paint_shape(center, radius, channel, func(p: Vector2) -> bool: return p.distance_to(center) <= radius)
-
-
-func _paint_shape(center: Vector2, reach: float, channel: int, inside: Callable) -> void:
 	var px_per_m := MASK_PX / AREA
 	var cx := int((center.x / AREA + 0.5) * MASK_PX)
 	var cz := int((center.y / AREA + 0.5) * MASK_PX)
-	var rp := int(reach * px_per_m) + 1
+	var rp := int(radius * px_per_m) + 1
 	for x: int in range(maxi(cx - rp, 0), mini(cx + rp + 1, MASK_PX)):
 		for z: int in range(maxi(cz - rp, 0), mini(cz + rp + 1, MASK_PX)):
 			var world := Vector2((float(x) / MASK_PX - 0.5) * AREA, (float(z) / MASK_PX - 0.5) * AREA)
-			if inside.call(world):
+			if world.distance_to(center) <= radius:
 				var c := mask.get_pixel(x, z)
 				c[channel] = 1.0
 				mask.set_pixel(x, z, c)
 
 
-# --- ruas e praça (só a pintura do chão) ----------------------------------------------------------
+## Caminho de terra de a até b (pontos no chão), largura w.
+func _path(a: Vector2, b: Vector2, w: float) -> void:
+	var steps := int(a.distance_to(b) / 0.6) + 1
+	for i: int in steps + 1:
+		_paint_disc(a.lerp(b, float(i) / steps), w / 2.0, 0)
+
+
+# --- ruas -----------------------------------------------------------------------------------------
 
 func _streets() -> void:
-	# calçada de pedra nas ruas principais e na praça; terra em volta, nos becos e na estrada
-	# a calçada vai até as fachadas (as casas ficam 0,4 m para trás da beira da rua)
-	for r: Rect2 in [Rect2(-5.2, -HALF, 10.4, HALF - 10), Rect2(-5.2, 10, 10.4, HALF - 12), Rect2(-HALF + 2, -5.2, HALF - 12, 10.4),
-			Rect2(10, -5.2, HALF - 12, 10.4)]:
-		_paint_rect(r, 1)
-	_paint_disc(Vector2.ZERO, 14.5, 1)
-	_paint_rect(Rect2(14.0, 6.0, 15.0, 6.0), 0)  # quintal da ferraria
-	_paint_rect(Rect2(-3.2, -110, 6.4, 110 - HALF + 1), 0)  # estrada que sai pelo portão
-	_paint_rect(Rect2(-1.2, -HALF - 2, 2.4, 6), 1)
-
-
-# --- casas ----------------------------------------------------------------------------------------
-
-## Uma fileira de casas com a frente na beira da rua. lots: ["chave", "Nome"] ou ["vão", metros].
-func _row(start: Vector3, along: Vector3, front: Vector3, lots: Array) -> void:
-	var cursor := 0.0
-	var yaw := _yaw_facing(front)
-	for lot: Array in lots:
-		if lot[0] == "vão":
-			var gap: float = lot[1]
-			if lot.size() > 2 and lot[2] == "beco_tico":
-				var a := start + along * cursor
-				var b := start + along * (cursor + gap) - front * 7.0
-				tico_alley = Rect2(minf(a.x, b.x), minf(a.z, b.z), absf(a.x - b.x), absf(a.z - b.z))
-			cursor += gap
-			continue
-		var key: String = lot[0]
-		var size: Vector2 = SIZE[key]
-		var center := start + along * (cursor + size.x / 2.0) - front * (size.y / 2.0 + 0.4)
-		var house := _place(key, _group("Buildings"), center, yaw, 1.0, lot[1] if lot.size() > 1 else "")
-		_block(center, size, yaw)
-		houses.append({"node": house, "center": center, "front": front, "along": along, "size": size})
-		cursor += size.x + 0.3
-
-
-func _town() -> void:
-	# rua do portão (norte)
-	_row(Vector3(-4.6, 0, -HALF + 2), Vector3.BACK, Vector3.RIGHT,
-		[["casa_estreita", "CasaDoPortao"], ["casa", "CasaDaViuva"], ["vão", 3.2, "beco_tico"], ["casa_estreita_pedra", "Sapateiro"], ["casa_estreita", "Alfaiate"]])
-	_row(Vector3(4.6, 0, -HALF + 2), Vector3.BACK, Vector3.LEFT,
-		[["casa_grande_barro", "PousoDoPortao"], ["casa_estreita", ""], ["casa", ""], ["casa_estreita_pedra", ""]])
-	# rua do sul
-	_row(Vector3(-4.6, 0, 12), Vector3.BACK, Vector3.RIGHT, [["casa", ""], ["casa_estreita", ""], ["casa_grande", "Armazem"]])
-	_row(Vector3(4.6, 0, 12), Vector3.BACK, Vector3.LEFT, [["padaria", "Padaria"], ["casa_estreita_pedra", ""], ["casa", ""], ["casa_estreita", ""]])
-	# rua do oeste
-	_row(Vector3(-12, 0, -4.6), Vector3.LEFT, Vector3.BACK, [["casa", ""], ["casa_estreita", ""], ["casa_barro", ""], ["casa_estreita_pedra", ""]])
-	_row(Vector3(-12, 0, 4.6), Vector3.LEFT, Vector3.FORWARD, [["casa_barro", ""], ["casa_longa", ""], ["casa_estreita", ""], ["casa_estreita", ""]])
-	# rua do leste
-	_row(Vector3(12, 0, -4.6), Vector3.RIGHT, Vector3.BACK, [["casa_estreita", ""], ["casa", ""], ["casa_barro", ""], ["casa_estreita_pedra", ""]])
-	_row(Vector3(12, 0, 4.6), Vector3.RIGHT, Vector3.FORWARD, [["casa_longa", "Ferraria"], ["vão", 5.5], ["casa", ""], ["casa_estreita", ""]])
-	# esquinas da praça: prédios maiores virados para o centro
-	for spot: Array in [[Vector3(19, 0, -19), "casa_grande_barro", "Taverna"], [Vector3(-19, 0, -19), "sobrado_longo", "CasaDoConselho"],
-			[Vector3(19, 0, 19), "casa_grande", "CasaDoMercador"], [Vector3(-19.5, 0, 19.5), "casa_longa", "Capela"]]:
-		var front: Vector3 = -(spot[0] as Vector3).normalized()
-		var yaw := _yaw_facing(front)
-		var house := _place(spot[1], _group("Buildings"), spot[0], yaw, 1.0, spot[2])
-		_block(spot[0], SIZE[spot[1]], yaw)
-		houses.append({"node": house, "center": spot[0], "front": front, "along": front.cross(Vector3.UP), "size": SIZE[spot[1]]})
-	# a capela ganha um campanário
-	_place("torre", _group("Buildings"), Vector3(-27, 0, 27), PI / 4.0, 1.0, "Campanario")
-	_block(Vector3(-27, 0, 27), SIZE["torre"], PI / 4.0)
-	# coisas na frente das casas: barris, caixotes, sacos, flores, bancos e lanternas
-	var small: Array[String] = ["barril", "caixote", "cesto", "balde", "vaso", "caixote_macas", "banquinho", "barril_vinho"]
-	for h: Dictionary in houses:
-		var c: Vector3 = h["center"]
-		var f: Vector3 = h["front"]
-		var a: Vector3 = h["along"]
-		var size: Vector2 = h["size"]
-		var door := c + f * (size.y / 2.0 + 0.4)
-		if rng.randf() < 0.75:
-			var side := 1.0 if rng.randf() < 0.5 else -1.0
-			_place(small[rng.randi() % small.size()], _group("Props"), door + f * 0.5 + a * side * (size.x / 2.0 - 0.6), rng.randf() * TAU)
-		if rng.randf() < 0.35:
-			_place(small[rng.randi() % small.size()], _group("Props"), door + f * 0.45 - a * (size.x / 2.0 - 0.9), rng.randf() * TAU)
-		if rng.randf() < 0.55:
-			_place("lanterna", _group("Lights", false), door + f * 0.02 + a * 1.25 + Vector3.UP * 2.75, _yaw_facing(f))
-		if rng.randf() < 0.3:
-			_place("flores", _group("Gardens", false), door + f * 0.6 - a * (size.x / 2.0 - 0.4), rng.randf() * TAU, 0.45)
+	# avenidas de pedra em cruz, do portão (norte) até a muralha do sul e de leste a oeste; praça de pedra no meio
+	_paint_rect(Rect2(-AVE, -HALF - 1, AVE * 2, HALF * 2 + 1), 1)
+	_paint_rect(Rect2(-HALF, -AVE, HALF * 2, AVE * 2), 1)
+	_paint_rect(Rect2(-PLAZA, -PLAZA, PLAZA * 2, PLAZA * 2), 1)
+	# estrada de terra que chega ao portão
+	_paint_rect(Rect2(-3.4, -110, 6.8, 110 - HALF), 0)
 
 
 # --- muralha -------------------------------------------------------------------------------------
@@ -267,7 +235,6 @@ func _wall_run(a: Vector3, b: Vector3) -> void:
 	var outward := Vector3(signf(mid.x), 0, 0) if absf(dir.z) > 0.5 else Vector3(0, 0, signf(mid.z))
 	var yaw := atan2(outward.x, outward.z)  # a face de pedra do kit (+Z) fica para fora
 	var at := 0.0
-	# dois muros de costas um para o outro: pedra dos dois lados (de dentro da cidade também)
 	while length - at >= 6.0 - 0.01:
 		_place("muro", _group("Walls"), a + dir * (at + 3.0), yaw)
 		_place("muro", _group("Walls"), a + dir * (at + 3.0) - outward * 0.42, yaw + PI, 1.0, "MuroDentro")
@@ -276,68 +243,331 @@ func _wall_run(a: Vector3, b: Vector3) -> void:
 		_kit("vila/Wall_UnevenBrick_Straight", _group("Walls"), a + dir * (at + 1.0), yaw)
 		_kit("vila/Wall_UnevenBrick_Straight", _group("Walls"), a + dir * (at + 1.0) - outward * 0.42, yaw + PI)
 		at += 2.0
-	_block((a + b) / 2.0, Vector2(length, 1.0), yaw, 0.8)
+	var c := (a + b) / 2.0
+	_block(c, Vector2(length, 1.6) if absf(dir.x) > 0.5 else Vector2(1.6, length), 0.6)
 
 
 func _walls() -> void:
 	var h := HALF
 	for corner: Vector3 in [Vector3(-h, 0, -h), Vector3(h, 0, -h), Vector3(h, 0, h), Vector3(-h, 0, h)]:
 		_place("torre", _group("Walls"), corner, 0.0, 1.0, "Torre")
-		_block(corner, Vector2(4, 4), 0.0)
+		_block(corner, Vector2(4, 4))
 	for x: float in [-3.0, 3.0]:
 		_place("torre", _group("Walls"), Vector3(x, 0, -h), 0.0, 1.0, "TorreDoPortao")
-		_block(Vector3(x, 0, -h), Vector2(4, 4), 0.0)
+	_block(Vector3(0, 0, -h), Vector2(10, 4), 0.2)
 	_kit("vila/Wall_Arch", _group("Walls"), Vector3(0, 0, -h))
 	_kit("vila/Wall_Arch", _group("Walls"), Vector3(0, 0, -h + 0.35), PI)
+	# a muralha do meio de cada lado tem uma torre a mais (ritmo, e não um muro reto e vazio)
+	for spot: Array in [[Vector3(-h, 0, 0), PI / 2.0], [Vector3(h, 0, 0), PI / 2.0], [Vector3(0, 0, h), 0.0]]:
+		_place("torre", _group("Walls"), spot[0], spot[1], 1.0, "TorreDoMeio")
+		_block(spot[0], Vector2(4, 4))
 	_wall_run(Vector3(-h + 2, 0, -h), Vector3(-5, 0, -h))
 	_wall_run(Vector3(5, 0, -h), Vector3(h - 2, 0, -h))
-	_wall_run(Vector3(-h + 2, 0, h), Vector3(h - 2, 0, h))
-	_wall_run(Vector3(-h, 0, -h + 2), Vector3(-h, 0, h - 2))
-	_wall_run(Vector3(h, 0, -h + 2), Vector3(h, 0, h - 2))
+	_wall_run(Vector3(-h + 2, 0, h), Vector3(-2, 0, h))
+	_wall_run(Vector3(2, 0, h), Vector3(h - 2, 0, h))
+	_wall_run(Vector3(-h, 0, -h + 2), Vector3(-h, 0, -2))
+	_wall_run(Vector3(-h, 0, 2), Vector3(-h, 0, h - 2))
+	_wall_run(Vector3(h, 0, -h + 2), Vector3(h, 0, -2))
+	_wall_run(Vector3(h, 0, 2), Vector3(h, 0, h - 2))
 	for x: float in [-5.2, 5.2]:
 		_place("estandarte", _group("Walls"), Vector3(x, 0.4, -h + 2.35), 0.0, 1.0, "Estandarte")
 		_place("tocha", _group("Lights", false), Vector3(x * 0.42, 2.2, -h + 0.6), 0.0, 1.0, "TochaDoPortao")
 
 
-# --- praça ----------------------------------------------------------------------------------------
+# --- praça: o centro da cidade -------------------------------------------------------------------------
 
 func _plaza() -> void:
-	_place("poco", _group("Buildings"), Vector3.ZERO, 0.3, 1.0, "Well")
-	_block(Vector3.ZERO, Vector2(3, 3), 0.0)
-	var stalls: Array[String] = ["barraca", "barraca", "barraca_carroca", "barraca"]
+	var plaza := _group("Plaza")
+	_place("chafariz", plaza, Vector3.ZERO, 0.0, 1.0, "Chafariz")
+	_block(Vector3.ZERO, Vector2(13, 13), 0.4)
+	# quatro canteiros com árvore nas diagonais, bancos virados para o chafariz entre eles
 	for i: int in 4:
-		var angle := PI / 4.0 + i * PI / 2.0
-		var at := Vector3(cos(angle), 0, sin(angle)) * 8.8
-		var yaw := _yaw_facing(-at.normalized())
-		_place(stalls[i], _group("Market"), at, yaw, 1.0, "Barraca%d" % (i + 1))
-		_block(at, Vector2(3, 1.5), yaw)
-		var side := (-at.normalized()).cross(Vector3.UP)
-		_place(["barril", "caixote", "cesto", "caixote_macas"][i], _group("Props"), at + side * 2.1 + at.normalized() * 0.6, rng.randf() * TAU)
-		for k: int in [-1, 1]:
-			var tree_angle := angle + k * 0.3
-			var tree_at := Vector3(cos(tree_angle), 0, sin(tree_angle)) * 12.2
-			_place("arvore_pequena", _group("Trees"), tree_at, rng.randf() * TAU, rng.randf_range(0.85, 1.05))
-			_block(tree_at, Vector2(1.2, 1.2), 0.0)
-	for i: int in 4:
-		var angle := i * PI / 2.0 + PI / 4.0
-		var at := Vector3(cos(angle), 0, sin(angle)) * 4.2
-		_place("banco", _group("Props"), at, _yaw_facing(at.normalized()) + PI, 0.8)
+		var a := PI / 4.0 + i * PI / 2.0
+		var at := Vector3(cos(a), 0, sin(a)) * 11.5
+		_place("canteiro", plaza, at, rng.randf() * TAU, 1.0, "Canteiro")
+		_block(at, Vector2(3.6, 3.6), 0.2)
+		for side: float in [-1.0, 1.0]:
+			var b := a + side * 0.42
+			var bench := Vector3(cos(b), 0, sin(b)) * 9.2
+			_place("banco_praca", plaza, bench, _yaw_facing(-bench.normalized()) + PI, 1.0, "Banco")
+			_block(bench, Vector2(2.2, 2.2), 0.0)
+			spots["banco_%d_%d" % [i, int(side)]] = Transform3D(Basis(Vector3.UP, _yaw_facing(-bench.normalized())), bench - bench.normalized() * 0.1)
+	# postes de luz em volta (8) e nas entradas da praça
+	for i: int in 8:
+		var a := PI / 8.0 + i * PI / 4.0
+		var at := Vector3(cos(a), 0, sin(a)) * 14.2
+		_place("poste", _group("Lights", false), at, 0.0, 1.0, "PostePraca")
+		_block(at, Vector2(0.6, 0.6), 0.0)
+	# estátuas guardando as entradas do norte e do sul
+	for spot: Array in [[Vector3(-7.0, 0, -PLAZA + 1.2), 0.0], [Vector3(7.0, 0, -PLAZA + 1.2), 0.0], [Vector3(-7.0, 0, PLAZA - 1.2), PI],
+			[Vector3(7.0, 0, PLAZA - 1.2), PI]]:
+		_place("estatua", plaza, spot[0], spot[1] + PI, 1.0, "Estatua")
+		_block(spot[0], Vector2(1.8, 1.8), 0.2)
+	# feira no lado leste da praça, bancas viradas para o chafariz
+	var stalls: Array[String] = ["banca_frutas", "banca_verduras", "banca_paes", "banca_peixe"]
+	for k: int in stalls.size():
+		var at := Vector3(PLAZA - 2.6, 0, -9.0 + k * 6.0)
+		_place(stalls[k], _group("Market"), at, _yaw_facing(Vector3.LEFT), 1.0, "Banca")
+		_block(at, Vector2(3.6, 5.0), 0.2)
+		spots["feira_%d" % k] = Transform3D(Basis(Vector3.UP, _yaw_facing(Vector3.RIGHT)), at + Vector3(-2.6, 0, 0.6))
+	_place("carroca_feira", _group("Market"), Vector3(PLAZA - 2.4, 0, 12.6), _yaw_facing(Vector3.LEFT) + 0.3, 1.0, "Carroca")
+	_block(Vector3(PLAZA - 2.4, 0, 12.6), Vector2(3.4, 3.4), 0.2)
+	for k: int in 5:
+		var at := Vector3(PLAZA - 0.9, 0, -12.2 + k * 5.5)
+		_place(["barril", "caixote", "caixote_macas", "barris", "cesto"][k], _group("Market"), at, rng.randf() * TAU)
+	# do lado oeste: pelourinho e o mural de avisos; a torre do sino fica na esquina sudoeste
+	_place("pelourinho", plaza, Vector3(-PLAZA + 3.0, 0, -9.5), 0.6, 1.0, "Pelourinho")
+	_block(Vector3(-PLAZA + 3.0, 0, -9.5), Vector2(2, 2), 0.2)
+	_place("placa_rua1", plaza, Vector3(-PLAZA + 2.4, 0, 9.0), PI / 2.0, 1.0, "Placa")
+	# placas de direção nas entradas
+	for spot: Array in [[Vector3(AVE + 1.2, 0, -PLAZA - 1.0), PI], [Vector3(-AVE - 1.2, 0, PLAZA + 1.0), 0.0]]:
+		_place("placa_rua1", plaza, spot[0], spot[1], 1.0, "PlacaDirecao")
+
+
+# --- casas nas ruas --------------------------------------------------------------------------------------
+
+## Uma fileira de prédios com a frente na beira da rua. Cada um é medido e encostado: a frente fica a `setback`
+## da linha `start` (beira da rua), um do lado do outro ao longo de `along`. lots: ["chave", "Nome"] ou ["vão", m].
+## Prédio que bateria em outro é deixado de fora.
+func _row(start: Vector3, along: Vector3, front: Vector3, lots: Array, setback: float = 0.3) -> void:
+	var cursor := 0.0
+	var yaw := _yaw_facing(front)
+	for lot: Array in lots:
+		if lot[0] == "vão":
+			var gap: float = lot[1]
+			if lot.size() > 2 and lot[2] == "beco_tico":
+				var a := start + along * cursor
+				var b := start + along * (cursor + gap) - front * 7.0
+				tico_alley = Rect2(minf(a.x, b.x), minf(a.z, b.z), absf(a.x - b.x), absf(a.z - b.z))
+			cursor += gap
+			continue
+		var key: String = lot[0]
+		var house := _place(key, _group("Buildings"), Vector3.ZERO, yaw, 1.0, lot[1] if lot.size() > 1 else "")
+		var box := _aabb(house)
+		var width := absf(box.size.dot(along.abs()))
+		var depth := absf(box.size.dot(front.abs()))
+		var target := start + along * (cursor + width / 2.0) - front * (depth / 2.0 + setback)
+		var shift := target - box.get_center()
+		shift.y = 0.0
+		house.position += shift
+		var rect := _rect(AABB(box.position + shift, box.size), 0.1)
+		if _overlaps(rect):
+			print("não coube: ", key, " ", lot[1] if lot.size() > 1 else "", " em ", target.snapped(Vector3.ONE * 0.1))
+			house.get_parent().remove_child(house)
+			house.free()
+			cursor += width + 0.4
+			continue
+		_block_rect(rect, 0.4)
+		houses.append({"node": house, "key": key, "center": house.position, "front": front, "along": along, "size": Vector2(width, depth),
+			"door": start + along * (cursor + width / 2.0) - front * setback})
+		cursor += width + 0.4
+
+
+func _town() -> void:
+	var n := Vector3.FORWARD  # -Z: norte
+	var s := Vector3.BACK
+	var e := Vector3.RIGHT
+	var w := Vector3.LEFT
+	# Cada esquina da praça tem um dono só (as fileiras não disputam o mesmo chão):
+	# avenida do portão, lado oeste: do portão até a praça (casa da viúva, beco do Tico, sapateiro, alfaiate)
+	_row(Vector3(-AVE, 0, -HALF + 2.4), s, e, [["casa_estreita", "CasaDoPortao"], ["casa", "CasaDaViuva"], ["vão", 3.2, "beco_tico"],
+		["casa_estreita_pedra", "Sapateiro"]])
+	# avenida do portão, lado leste: guarita e uma casa; a esquina com a praça é da estalagem
+	_row(Vector3(AVE, 0, -HALF + 2.4), s, w, [["guarita", "Guarita"], ["casa_estreita_pedra", ""]])
+	_row(Vector3(AVE + 0.6, 0, -PLAZA), e, s, [["estalagem", "Estalagem"]])
+	# lado oeste da praça: casa do conselho (norte) e do mercador (sul)
+	_row(Vector3(-PLAZA, 0, -PLAZA + 0.4), s, e, [["sobrado_longo", "CasaDoConselho"], ["casa_estreita", ""]])
+	_row(Vector3(-PLAZA, 0, AVE + 1.0), s, e, [["casa_grande", "CasaDoMercador"]])
+	# lado sul da praça: capela (oeste) e taverna (leste)
+	_row(Vector3(-PLAZA, 0, PLAZA), e, n, [["casa_longa", "Capela"], ["casa_estreita_pedra", ""]])
+	_row(Vector3(AVE + 0.6, 0, PLAZA), e, n, [["casa_grande_barro", "Taverna"], ["casa_estreita", ""]])
+	# avenida do leste: padaria (missão da fome) e ferreiro do lado norte, casas do lado sul
+	_row(Vector3(PLAZA + 0.6, 0, -AVE), e, s, [["padaria", "Padaria"], ["ferreiro", "Ferreiro"]])
+	_row(Vector3(PLAZA + 0.6, 0, AVE), e, n, [["casa_enxaimel2", ""], ["casa_barro", ""], ["casa_estreita_pedra", ""]])
+	# avenida do oeste: depois das casas da beira da praça
+	_row(Vector3(-PLAZA - 11.0, 0, -AVE), w, s, [["casa", ""], ["casa_estreita", ""]])
+	_row(Vector3(-PLAZA - 11.0, 0, AVE), w, n, [["casa_barro", ""]])
+	# avenida do sul: depois da capela e da taverna
+	_row(Vector3(-AVE, 0, PLAZA + 11.0), s, e, [["casa", ""], ["casa_estreita", ""]])
+	_row(Vector3(AVE, 0, PLAZA + 11.0), s, w, [["casa_enxaimel2", ""], ["casa_estreita_pedra", ""]])
+	# torre do sino na esquina sudoeste da praça
+	var bell := _place("torre_sino", _group("Buildings"), Vector3(-PLAZA - 3.8, 0, PLAZA + 3.8), _yaw_facing(Vector3(1, 0, -1).normalized()), 1.0, "Campanario")
+	var bb := _aabb(bell)
+	if _overlaps(_rect(bb, 0.2)):
+		bell.get_parent().remove_child(bell)
+		bell.free()
+	else:
+		_block_rect(_rect(bb), 0.3)
+	# coisas na frente das casas: barris, caixotes, flores, lanternas e placas
+	var small: Array[String] = ["barril", "caixote", "cesto", "balde", "vaso", "caixote_macas", "banquinho", "barril_vinho"]
+	for h: Dictionary in houses:
+		var f: Vector3 = h["front"]
+		var a: Vector3 = h["along"]
+		var size: Vector2 = h["size"]
+		var door: Vector3 = h["door"]
+		var key: String = h["key"]
+		if key in ["estalagem", "ferreiro", "estabulo", "guarita"]:
+			continue  # já vêm com as coisas deles
+		if rng.randf() < 0.7:
+			var side := 1.0 if rng.randf() < 0.5 else -1.0
+			_place(small[rng.randi() % small.size()], _group("Props"), door + f * 0.55 + a * side * (size.x / 2.0 - 0.6), rng.randf() * TAU)
+		if rng.randf() < 0.5:
+			_place("lanterna", _group("Lights", false), door - f * 0.25 + a * 1.25 + Vector3.UP * 2.75, _yaw_facing(f))
+		if rng.randf() < 0.35:
+			_place("flores", _group("Gardens", false), door + f * 0.6 - a * (size.x / 2.0 - 0.4), rng.randf() * TAU, 0.45)
+
+
+# --- quarteirões de dentro: cada um com uma função ---------------------------------------------------------
+
+## Põe um prédio grande centrado em `center`, de frente para `front`; devolve o nó (ou null se não couber).
+func _landmark(key: String, center: Vector3, front: Vector3, label: String) -> Node3D:
+	var piece := _place(key, _group("Buildings"), Vector3.ZERO, _yaw_facing(front), 1.0, label)
+	var box := _aabb(piece)
+	var shift := center - box.get_center()
+	shift.y = 0.0
+	piece.position += shift
+	var rect := _rect(AABB(box.position + shift, box.size), 0.2)
+	if _overlaps(rect):
+		print("não coube: ", label)
+		piece.get_parent().remove_child(piece)
+		piece.free()
+		return null
+	_block_rect(rect, 0.5)
+	return piece
+
+
+func _quarters() -> void:
+	var inner := (HALF + PLAZA) / 2.0 + 2.0  # ~33.7: meio dos quarteirões de fora
+	# nordeste: estábulo com cercado, virado para a avenida do portão
+	var stable := _landmark("estabulo", Vector3(inner, 0, -inner), Vector3.LEFT, "Estabulo")
+	if stable:
+		_path(Vector2(AVE, -inner), Vector2(inner - 9.0, -inner), 3.4)
+	# noroeste: moinho com horta e plantação
+	var mill := _landmark("moinho", Vector3(-inner - 2.0, 0, -inner + 1.0), Vector3(1, 0, 1).normalized(), "Moinho")
+	if mill:
+		_path(Vector2(-AVE, -24.0), Vector2(-inner + 4.0, -inner + 5.0), 3.0)
+		_crops(Vector3(-inner + 6.5, 0, -inner - 7.5), 5, 4)
+	# sudeste: serraria com toras, virada para a avenida do leste
+	var saw := _landmark("serraria", Vector3(inner + 1.0, 0, inner + 1.0), Vector3.FORWARD, "Serraria")
+	if saw:
+		_path(Vector2(inner, AVE), Vector2(inner, inner - 6.0), 3.2)
+		for k: int in 3:
+			_place("tronco_seco", _group("Props"), Vector3(inner - 6.0 + k * 1.2, 0, inner - 6.5), PI / 2.0 + rng.randf_range(-0.1, 0.1), 0.8, "Tora")
+	# sudoeste: jardim da capela com estátua, gazebo de pedra e um poço com telhado
+	var garden := Vector3(-inner, 0, inner)
+	_path(Vector2(-AVE, inner), Vector2(-inner + 4.0, inner), 3.0)
+	_paint_disc(Vector2(garden.x, garden.z), 4.2, 1)
+	_place("poco_telhado", _group("Plaza"), garden, 0.4, 1.0, "PocoDoJardim")
+	_block(garden, Vector2(3.4, 3.4), 0.2)
+	for k: int in 4:
+		var a := k * PI / 2.0
+		var at := garden + Vector3(cos(a), 0, sin(a)) * 6.2
+		if _free_at(at, 1.4):
+			_place("canteiro", _group("Plaza"), at, rng.randf() * TAU, 0.9, "CanteiroJardim")
+			_block(at, Vector2(3.4, 3.4), 0.2)
+	_place("estatua", _group("Plaza"), garden + Vector3(0, 0, 9.0), PI, 1.0, "EstatuaJardim")
+
+
+## Miolo dos quarteirões: casas espalhadas na grama livre, cada uma virada para a rua mais perto, com um caminho de
+## terra da porta até a rua e um quintal na frente. Só entra onde couber com folga (nada torto, nada encostado).
+func _fill_quarters() -> void:
+	var kinds: Array[String] = ["casa", "casa_estreita", "casa_barro", "casa_estreita_pedra", "casa_enxaimel", "casa_enxaimel2", "casa_longa"]
+	var placed := 0
+	var tries := 0
+	var lim := HALF - 4.0
+	while placed < 22 and tries < 900:
+		tries += 1
+		var p := Vector3(snappedf(rng.randf_range(-lim, lim), 1.0), 0, snappedf(rng.randf_range(-lim, lim), 1.0))
+		if absf(p.x) < PLAZA + 6.0 and absf(p.z) < PLAZA + 6.0:
+			continue
+		if _mask_at(p).g > 0.05:
+			continue
+		# de frente para a avenida mais perto (as avenidas são x = 0 e z = 0)
+		var front := Vector3(-signf(p.x), 0, 0) if absf(p.x) < absf(p.z) else Vector3(0, 0, -signf(p.z))
+		var key := kinds[rng.randi() % kinds.size()]
+		var house := _place(key, _group("Buildings"), Vector3.ZERO, _yaw_facing(front), 1.0)
+		var box := _aabb(house)
+		var shift := p - box.get_center()
+		shift.y = 0.0
+		house.position += shift
+		var rect := _rect(AABB(box.position + shift, box.size), 0.0)
+		var inside := rect.position.x > -HALF + 2.5 and rect.end.x < HALF - 2.5 and rect.position.y > -HALF + 2.5 and rect.end.y < HALF - 2.5
+		if not inside or _overlaps(rect.grow(1.6)):
+			house.get_parent().remove_child(house)
+			house.free()
+			continue
+		_block_rect(rect, 0.6)
+		var depth := absf(box.size.dot(front.abs()))
+		var door := p + front * (depth / 2.0 + 0.3)
+		# caminho de terra da porta até a calçada
+		var walk := door
+		for k: int in 40:
+			if _mask_at(walk).g > 0.5:
+				break
+			walk += front
+		_path(Vector2(door.x, door.z), Vector2(walk.x, walk.z), 1.8)
+		var along := front.cross(Vector3.UP)
+		houses.append({"node": house, "key": key, "center": house.position, "front": front, "along": along,
+			"size": Vector2(absf(box.size.dot(along.abs())), depth), "door": door})
+		placed += 1
+	print("casas no miolo: ", placed)
+
+
+## Plantação: fileiras de terra com verduras (peça "horta") e um espantalho no canto.
+func _crops(corner: Vector3, rows: int, cols: int) -> void:
+	for r: int in rows:
+		var z := corner.z + r * 1.6
+		_paint_rect(Rect2(corner.x - 0.8, z - 0.5, cols * 1.6 + 1.0, 1.0), 0)
+		for c: int in cols:
+			_place("horta", _group("Gardens", false), Vector3(corner.x + c * 1.6 + 0.4, 0, z), 0.0, 1.0, "Horta")
+	_place("boneco_treino", _group("Props"), corner + Vector3(cols * 1.6 + 0.8, 0, rows * 0.8), 0.6, 0.9, "Espantalho")
+	_block(corner + Vector3(cols * 0.8, 0, rows * 0.8 - 0.8), Vector2(cols * 1.6 + 2.6, rows * 1.6 + 1.2), 0.0)
+
+
+# --- vida da rua: postes, placas, bancos ----------------------------------------------------------------
+
+func _street_life() -> void:
+	# postes acesos ao longo das avenidas, alternando os lados, a 1,2 m da beira
+	for spec: Array in [[Vector3(0, 0, -1), -PLAZA - 4.0, -HALF + 6.0], [Vector3(0, 0, 1), PLAZA + 4.0, HALF - 4.0],
+			[Vector3(1, 0, 0), PLAZA + 4.0, HALF - 4.0], [Vector3(-1, 0, 0), -PLAZA - 4.0, -HALF + 4.0]]:
+		var dir: Vector3 = spec[0]
+		var side := Vector3(-dir.z, 0, dir.x)
+		var t: float = absf(spec[1])
+		var k := 0
+		while t < absf(spec[2]):
+			var at := dir * t + side * (AVE - 1.2) * (1.0 if k % 2 == 0 else -1.0)
+			if _free_at(at, 0.3):
+				_place("poste", _group("Lights", false), at, 0.0, 1.0, "Poste")
+				_block(at, Vector2(0.5, 0.5), 0.0)
+			t += 8.0
+			k += 1
 
 
 # --- lugares da história: moradores, portão, beco do Tico ------------------------------------------
 
 func _story_spots() -> void:
 	var people := level.get_node("People")
-	var spots := {
-		"Padeira": [Vector3(7.6, 0, 16.0), Vector3.LEFT],
-		"Vendedor": [Vector3(6.2, 0, -5.4), Vector3(-1, 0, 1).normalized()],
-		"Guarda": [Vector3(2.6, 0, -HALF + 3.0), Vector3.BACK],
-		"Crianca": [Vector3(2.4, 0, 2.6), Vector3(-1, 0, -1).normalized()],
-	}
+	# dá nome aos moradores com fala (no arquivo eles são "@Node3D@n")
 	for person: Node in people.get_children():
-		if spots.has(String(person.name)):
-			var spot: Array = spots[String(person.name)]
-			(person as Node3D).global_transform = Transform3D(Basis(Vector3.UP, _yaw_facing(spot[1])), spot[0])
+		var talk := person.get_node_or_null("Talk")
+		if talk == null:
+			continue
+		var prompt := String(talk.get("prompt_text"))
+		for pair: Array in [["vendedor", "Vendedor"], ["guarda", "Guarda"], ["criança", "Crianca"]]:
+			if prompt.contains(pair[0]):
+				person.name = pair[1]
+	var place := {
+		"Vendedor": spots.get("feira_0", Transform3D()).translated(Vector3(1.0, 0, 0)),
+		"Guarda": Transform3D(Basis(Vector3.UP, _yaw_facing(Vector3.BACK)), Vector3(2.4, 0, -HALF + 4.0)),
+		"Crianca": Transform3D(Basis(Vector3.UP, _yaw_facing(Vector3(-1, 0, -1).normalized())), Vector3(5.6, 0, 6.4)),
+	}
+	# o vendedor fica atrás da banca de frutas (do lado de dentro, olhando para a praça)
+	var stall: Transform3D = spots.get("feira_0", Transform3D())
+	place["Vendedor"] = Transform3D(Basis(Vector3.UP, _yaw_facing(Vector3.LEFT)), stall.origin + Vector3(3.8, 0, -0.6))
+	for name: String in place:
+		var person := people.get_node_or_null(name) as Node3D
+		if person:
+			person.global_transform = place[name]
 	var gate := level.get_node_or_null("Gate") as Node3D
 	if gate:
 		gate.global_position = Vector3(0, 1, -HALF + 0.2)
@@ -361,7 +591,6 @@ func _story_spots() -> void:
 	cup.name = "Cup"
 	_place("caixote", corner, Vector3(tico_alley.position.x + 0.6, 0, tico_alley.end.y - 0.6), 0.3, 0.8, "Crate1")
 	_place("barril", corner, Vector3(tico_alley.position.x + 0.5, 0, tico_alley.end.y - 1.6), 0.0, 1.0, "Barrel")
-	# o fundo do beco é fechado por um muro
 	for k: int in 2:
 		_kit("vila/Wall_UnevenBrick_Straight", corner, Vector3(tico_alley.position.x - 0.2, 0, tico_alley.position.y + 0.6 + k * 2.0), PI / 2.0)
 	var look := corner.get_node_or_null("Look") as Node3D
@@ -369,55 +598,8 @@ func _story_spots() -> void:
 		look.position = spot + Vector3(0.4, 0.6, 0.4)
 	var spawn := level.get_node("PlayerSpawn") as Node3D
 	spawn.global_transform = Transform3D(Basis(Vector3.UP, _yaw_facing(Vector3.RIGHT)), Vector3(tico_alley.end.x - 1.0, 1.0, tico_alley.get_center().y))
-	_block(Vector3(tico_alley.get_center().x, 0, tico_alley.get_center().y), tico_alley.size, 0.0, 0.0)
+	_block_rect(tico_alley, 0.0)
 	_paint_rect(tico_alley, 0)
-
-
-# --- quintais, hortas e pomares atrás das casas -------------------------------------------------------
-
-func _yards() -> void:
-	var inner := HALF - 2.5
-	var tries := 0
-	var placed := 0
-	while placed < 46 and tries < 2000:
-		tries += 1
-		var p := Vector3(rng.randf_range(-inner, inner), 0, rng.randf_range(-inner, inner))
-		if not _free_at(p, 1.4) or _mask_at(p).r > 0.5 or _mask_at(p).g > 0.5:
-			continue
-		var roll := rng.randf()
-		if roll < 0.55:
-			_place(["arvore", "arvore_pequena", "pinheiro"][rng.randi() % 3], _group("Trees"), p, rng.randf() * TAU, rng.randf_range(0.75, 1.1))
-			_block(p, Vector2(1.4, 1.4), 0.0)
-		elif roll < 0.8:
-			_place(["arbusto", "arbusto_baixo"][rng.randi() % 2], _group("Gardens", false), p, rng.randf() * TAU, rng.randf_range(0.7, 1.1))
-		else:
-			_place(["carroca", "barris", "caixote_alto", "mesa", "boneco_treino"][rng.randi() % 5], _group("Props"), p, rng.randf() * TAU)
-			_block(p, Vector2(2, 2), 0.0)
-		placed += 1
-	# cercas nos quintais grandes dos cantos
-	for corner: Vector3 in [Vector3(-26, 0, -26), Vector3(26, 0, -26), Vector3(26, 0, 26)]:
-		for k: int in 3:
-			var at := corner + Vector3(k * 2.06 - 2.06, 0, 0)
-			if _free_at(at, 0.2):
-				_place("cerca", _group("Props"), at, 0.0)
-	# fim das ruas, junto da muralha: carroça, barris, caixotes e uma árvore (a rua não termina no vazio)
-	for end: Array in [[Vector3(-HALF + 3.2, 0, -2.2), Vector3.RIGHT], [Vector3(HALF - 3.2, 0, 2.2), Vector3.LEFT], [Vector3(2.4, 0, HALF - 3.0), Vector3.FORWARD]]:
-		var at: Vector3 = end[0]
-		var look: Vector3 = end[1]
-		var side := look.cross(Vector3.UP)
-		_place("carroca", _group("Props"), at, _yaw_facing(side), 1.0)
-		_place("barris", _group("Props"), at - side * 3.4 + look * 0.2, _yaw_facing(look))
-		_place("caixote", _group("Props"), at + side * 2.8 + look * 0.6, rng.randf() * TAU)
-		_place("caixote_alto", _group("Props"), at + side * 3.6 - look * 0.2, rng.randf() * TAU, 0.8)
-		_place("arvore_pequena", _group("Trees"), at - side * 5.6 - look * 0.6, rng.randf() * TAU, 0.9)
-		_place("lanterna", _group("Lights", false), at - look * 0.5 + Vector3.UP * 2.75 + side * 1.2, _yaw_facing(look))
-		_block(at, Vector2(9, 4), 0.0)
-	# ferraria: bigorna, bancada e barris no quintal ao lado
-	var smithy := Vector3(21.5, 0, 8.2)
-	_place("bigorna", _group("Props"), smithy, 0.4)
-	_place("bancada", _group("Props"), smithy + Vector3(1.8, 0, 1.2), -0.3)
-	_place("barris", _group("Props"), smithy + Vector3(-1.6, 0, 1.6), 1.2)
-	_place("tocha", _group("Lights", false), smithy + Vector3(0.6, 1.4, -0.6), 0.0)
 
 
 # --- gente de fundo: quem vive na cidade (sem fala; os moradores com fala ficam em People) -------------
@@ -452,33 +634,131 @@ func _figurante(pos: Vector3, look: Vector3, who: String, anim: String, hand: St
 	shape.shape = capsule
 	body.add_child(shape)
 	shape.owner = level
-	_block(pos, Vector2(0.8, 0.8), 0.0, 0.0)
 
 
 func _crowd() -> void:
-	# guardas nas torres do portão, por dentro
-	_figurante(Vector3(-5.2, 0, -HALF + 3.2), Vector3(0, 0, 0), "Knight", "2H_Melee_Idle", "2H_Sword", 0.66, "GuardaPortao")
-	# feira: gente olhando as barracas
-	for i: int in 4:
-		var angle := PI / 4.0 + i * PI / 2.0
-		var stall := Vector3(cos(angle), 0, sin(angle)) * 8.8
-		var buyer := stall - stall.normalized() * 1.9 + stall.normalized().cross(Vector3.UP) * (0.7 if i % 2 == 0 else -0.7)
-		_figurante(buyer, stall, ["Rogue_Hooded", "Mage", "Barbarian", "Rogue"][i], ["Interact", "Idle", "Unarmed_Idle", "Use_Item"][i], "", 0.6, "Comprador")
-	# bancos da praça: gente sentada
-	for i: int in [0, 2]:
-		var angle := i * PI / 2.0 + PI / 4.0
-		var bench := Vector3(cos(angle), 0, sin(angle)) * 4.2
-		_figurante(bench + bench.normalized() * 0.15, bench * 2.0, ["Mage", "Rogue_Hooded"][int(i / 2.0)], "Sit_Chair_Idle", "", 0.6, "Sentado")
-	# conversa na porta da taverna
-	var tavern := Vector3(19, 0, -19) + Vector3(-1, 0, 1).normalized() * 6.2
-	_figurante(tavern + Vector3(-0.9, 0, 0), tavern + Vector3(0.6, 0, 0.4), "Barbarian", "Cheer", "Mug", 0.64, "NaTaverna")
-	_figurante(tavern + Vector3(0.7, 0, 0.5), tavern + Vector3(-0.9, 0, 0), "Knight", "Idle", "", 0.64, "NaTaverna")
-	# ferreiro trabalhando na bigorna
-	_figurante(Vector3(21.5, 0, 9.4), Vector3(21.5, 0, 8.2), "Barbarian", "Use_Item", "1H_Axe", 0.66, "Ferreiro")
-	# crianças brincando na rua do sul e alguém sentado no chão perto da capela
-	_figurante(Vector3(-1.5, 0, 20), Vector3(1, 0, 22), "Rogue", "Cheer", "", 0.45, "Crianca2")
-	_figurante(Vector3(1.0, 0, 22.3), Vector3(-1.5, 0, 20), "Rogue_Hooded", "Idle", "", 0.43, "Crianca3")
-	_figurante(Vector3(-12.5, 0, 13.5), Vector3(-6, 0, 8), "Mage", "Sit_Floor_Idle", "Spellbook_open", 0.6, "Leitora")
+	# guardas no portão, por dentro
+	_figurante(Vector3(-2.6, 0, -HALF + 4.0), Vector3(0, 0, 0), "Knight", "2H_Melee_Idle", "2H_Sword", 0.66, "GuardaPortao")
+	# feira: fregueses na frente das bancas
+	var looks := ["Rogue_Hooded", "Mage", "Barbarian", "Rogue_Hooded"]
+	var anims := ["Interact", "Idle", "Unarmed_Idle", "Use_Item"]
+	for k: int in 4:
+		if k == 0:
+			continue  # o vendedor de frutas (com fala) já está ali
+		var stall: Transform3D = spots["feira_%d" % k]
+		_figurante(stall.origin + Vector3(-0.4, 0, -0.4 * k), stall.origin + Vector3(3, 0, 0), looks[k], anims[k], "", 0.6, "Freguês")
+	# bancos da praça: gente sentada em dois deles
+	for key: String in ["banco_0_-1", "banco_2_1"]:
+		if spots.has(key):
+			var t: Transform3D = spots[key]
+			_figurante(t.origin, t.origin - t.basis.z * 3.0, ["Mage", "Rogue_Hooded"][int(key == "banco_2_1")], "Sit_Chair_Idle", "", 0.6, "Sentado")
+	# conversa na porta da taverna e da estalagem
+	for h: Dictionary in houses:
+		var node: Node3D = h["node"]
+		var door: Vector3 = h["door"]
+		var f: Vector3 = h["front"]
+		var a: Vector3 = h["along"]
+		match String(node.name):
+			"Taverna":
+				_figurante(door + f * 1.4 - a * 0.7, door + f * 1.4 + a, "Barbarian", "Cheer", "Mug", 0.64, "NaTaverna")
+				_figurante(door + f * 1.6 + a * 0.6, door + f * 1.4 - a, "Knight", "Idle", "", 0.64, "NaTaverna")
+			"Estalagem":
+				_figurante(door + f * 1.2 + a * 2.5, door + f * 3.0, "Mage", "Idle", "", 0.62, "Hospede")
+			"Ferreiro":
+				var anvil := node.global_transform * Vector3(-2.2, 0, -6.3)
+				_figurante(anvil, node.global_transform * Vector3(-2.2, 0, -5.2), "Barbarian", "Use_Item", "1H_Axe", 0.66, "FerreiroTrabalhando")
+	# crianças correndo perto do chafariz, alguém lendo no jardim da capela
+	_figurante(Vector3(-6.4, 0, 6.8), Vector3(-3, 0, 4), "Rogue", "Cheer", "", 0.45, "Crianca2")
+	_figurante(Vector3(-4.6, 0, 8.4), Vector3(-6.4, 0, 6.8), "Rogue_Hooded", "Idle", "", 0.43, "Crianca3")
+	var inner := (HALF + PLAZA) / 2.0 + 2.0
+	_figurante(Vector3(-inner + 2.4, 0, inner - 2.2), Vector3(-inner, 0, inner), "Mage", "Sit_Floor_Idle", "Spellbook_open", 0.6, "Leitora")
+	# moleiro na porta do moinho e cavalariço no estábulo
+	var mill := level.get_node_or_null("Buildings/Moinho") as Node3D
+	if mill:
+		_figurante(mill.global_transform * Vector3(2.5, 0, -5.0), mill.global_transform * Vector3(0, 0, -9.0), "Barbarian", "Idle", "", 0.62, "Moleiro")
+	var stable := level.get_node_or_null("Buildings/Estabulo") as Node3D
+	if stable:
+		_figurante(stable.global_transform * Vector3(-4.5, 0, -6.6), stable.global_transform * Vector3(-6.0, 0, -5.4), "Rogue_Hooded", "Interact", "", 0.6, "Cavalarico")
+
+
+func _animals() -> void:
+	var holder := _group("Animals", false)
+	# galinhas soltas perto do moinho e do estábulo, cachorro na praça, gato na porta da padaria
+	var mill := level.get_node_or_null("Buildings/Moinho") as Node3D
+	if mill:
+		for k: int in 5:
+			_place("galinha", holder, mill.global_transform * Vector3(rng.randf_range(-3, 3), 0, rng.randf_range(-8, -6)), rng.randf() * TAU)
+		_place("porco", holder, mill.global_transform * Vector3(-5.5, 0, -2.0), rng.randf() * TAU)
+		_place("vaca", holder, mill.global_transform * Vector3(-6.5, 0, 1.5), rng.randf() * TAU)
+	var stable := level.get_node_or_null("Buildings/Estabulo") as Node3D
+	if stable:
+		for k: int in 3:
+			_place("galinha", holder, stable.global_transform * Vector3(rng.randf_range(1, 5), 0, rng.randf_range(-9, -8)), rng.randf() * TAU)
+	_place("cachorro", holder, Vector3(4.2, 0, 7.6), 2.4)
+	var bakery := level.get_node_or_null("Buildings/Padaria") as Node3D
+	if bakery:
+		_place("gato", holder, bakery.global_transform * Vector3(2.4, 0, -3.6), 0.8)
+
+
+# --- fumaça nas chaminés -----------------------------------------------------------------------------------
+
+func _smoke() -> void:
+	var holder := _group("Smoke", false)
+	_smoke_process = ParticleProcessMaterial.new()
+	_smoke_process.direction = Vector3(0, 1, 0)
+	_smoke_process.spread = 12.0
+	_smoke_process.initial_velocity_min = 0.5
+	_smoke_process.initial_velocity_max = 0.9
+	_smoke_process.gravity = Vector3(0.25, 0.12, 0.1)
+	_smoke_process.scale_min = 0.6
+	_smoke_process.scale_max = 1.0
+	var grow := Curve.new()
+	grow.add_point(Vector2(0, 0.35))
+	grow.add_point(Vector2(1, 1.8))
+	var grow_tex := CurveTexture.new()
+	grow_tex.curve = grow
+	_smoke_process.scale_curve = grow_tex
+	var fade := Gradient.new()
+	fade.set_color(0, Color(0.8, 0.78, 0.75, 0.45))
+	fade.set_color(1, Color(0.9, 0.9, 0.9, 0.0))
+	var fade_tex := GradientTexture1D.new()
+	fade_tex.gradient = fade
+	_smoke_process.color_ramp = fade_tex
+	_smoke_mesh = QuadMesh.new()
+	_smoke_mesh.size = Vector2(1.1, 1.1)
+	var mat := StandardMaterial3D.new()
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	mat.vertex_color_use_as_albedo = true
+	var puff := GradientTexture2D.new()
+	puff.fill = GradientTexture2D.FILL_RADIAL
+	puff.fill_from = Vector2(0.5, 0.5)
+	puff.fill_to = Vector2(1.0, 0.5)
+	var g := Gradient.new()
+	g.set_color(0, Color(1, 1, 1, 1))
+	g.set_color(1, Color(1, 1, 1, 0))
+	puff.gradient = g
+	mat.albedo_texture = puff
+	_smoke_mesh.material = mat
+	for h: Dictionary in houses:
+		var key: String = h["key"]
+		if not CHIMNEY.has(key) or rng.randf() > 0.6:
+			continue
+		var node: Node3D = h["node"]
+		var at: Vector3 = node.global_transform * (CHIMNEY[key] as Vector3)
+		var smoke := GPUParticles3D.new()
+		smoke.name = "Fumaca"
+		smoke.amount = 10
+		smoke.lifetime = 6.0
+		smoke.preprocess = 6.0
+		smoke.process_material = _smoke_process
+		smoke.draw_pass_1 = _smoke_mesh
+		smoke.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		smoke.visibility_aabb = AABB(Vector3(-4, -1, -4), Vector3(8, 10, 8))
+		holder.add_child(smoke, true)
+		smoke.owner = level
+		smoke.global_position = at
 
 
 # --- fora da muralha: estrada, floresta, pedras ---------------------------------------------------
@@ -486,48 +766,78 @@ func _crowd() -> void:
 func _outside() -> void:
 	var tries := 0
 	var placed := 0
-	while placed < 230 and tries < 6000:
+	while placed < 260 and tries < 8000:
 		tries += 1
 		var a := rng.randf() * TAU
-		var r := rng.randf_range(HALF + 7.0, 104.0)
+		var r := rng.randf_range(HALF + 8.0, 104.0)
 		var p := Vector3(cos(a) * r, 0, sin(a) * r)
-		if absf(p.x) < 6.5 and p.z < -HALF:
+		if absf(p.x) < 7.0 and p.z < -HALF:
 			continue  # estrada livre
-		if absf(p.x) > 106 or absf(p.z) > 106:
+		if absf(p.x) > 106 or absf(p.z) > 106 or (absf(p.x) < HALF + 6.0 and absf(p.z) < HALF + 6.0):
 			continue
-		var far := smoothstep(HALF + 7.0, 70.0, r)
 		var roll := rng.randf()
-		if roll < 0.35 + far * 0.35:
-			_place(["pinheiro", "arvore", "pinheiro", "arvore", "arvore_pequena"][rng.randi() % 5] if rng.randf() > 0.06 else "arvore_torta", _group("Trees"), p, rng.randf() * TAU,
-				rng.randf_range(0.9, 1.5) * (1.0 if rng.randf() > 0.05 else 0.5))
-		elif roll < 0.8:
+		if roll < 0.55:
+			_place(["pinheiro", "arvore", "pinheiro", "arvore", "arvore_pequena"][rng.randi() % 5], _group("Trees"), p, rng.randf() * TAU, rng.randf_range(0.9, 1.5))
+		elif roll < 0.85:
 			_place(["arbusto", "arbusto_baixo"][rng.randi() % 2], _group("Gardens", false), p, rng.randf() * TAU, rng.randf_range(0.8, 1.3))
 		else:
 			_place(["rocha", "rocha_grande", "pedregulhos"][rng.randi() % 3], _group("Rocks"), p, rng.randf() * TAU, rng.randf_range(0.7, 1.3))
 		_block(p, Vector2(1.5, 1.5), 0.0)
 		placed += 1
-	# cerca dos dois lados da estrada que chega ao portão
+	# cerca dos dois lados da estrada que chega ao portão, com postes
 	for k: int in 6:
-		for x: float in [-4.6, 4.6]:
+		for x: float in [-4.8, 4.8]:
 			_place("cerca", _group("Props"), Vector3(x, 0, -HALF - 6.0 - k * 2.06), PI / 2.0)
+	for z: float in [-HALF - 7.0, -HALF - 15.0]:
+		_place("poste", _group("Lights", false), Vector3(3.6, 0, z), 0.0, 1.0, "PosteEstrada")
+
+
+# --- quintais: árvores e hortas só em grama livre, longe das casas (nunca na calçada) -----------------------
+
+func _yards() -> void:
+	var inner := HALF - 2.5
+	var tries := 0
+	var placed := 0
+	while placed < 40 and tries < 4000:
+		tries += 1
+		var p := Vector3(rng.randf_range(-inner, inner), 0, rng.randf_range(-inner, inner))
+		var m := _mask_at(p)
+		if not _free_at(p, 2.2) or m.r > 0.05 or m.g > 0.05:
+			continue
+		# também longe da beira das ruas (o desfoque da máscara é ~0,7 m)
+		if _mask_at(p + Vector3(2.5, 0, 0)).g > 0.05 or _mask_at(p - Vector3(2.5, 0, 0)).g > 0.05 \
+				or _mask_at(p + Vector3(0, 0, 2.5)).g > 0.05 or _mask_at(p - Vector3(0, 0, 2.5)).g > 0.05:
+			continue
+		var roll := rng.randf()
+		if roll < 0.5:
+			_place(["arvore", "arvore_pequena", "pinheiro"][rng.randi() % 3], _group("Trees"), p, rng.randf() * TAU, rng.randf_range(0.75, 1.05))
+			_block(p, Vector2(2.4, 2.4), 0.0)
+		elif roll < 0.85:
+			_place(["arbusto", "arbusto_baixo", "flores"][rng.randi() % 3], _group("Gardens", false), p, rng.randf() * TAU, rng.randf_range(0.6, 1.0))
+			_block(p, Vector2(1.2, 1.2), 0.0)
+		else:
+			_place(["carroca", "barris", "caixote_alto", "mesa"][rng.randi() % 4], _group("Props"), p, rng.randf() * TAU)
+			_block(p, Vector2(2.4, 2.4), 0.0)
+		placed += 1
 
 
 # --- chão -----------------------------------------------------------------------------------------
 
 func _paint_ground() -> void:
-	# bordas macias: reduz e volta a ampliar (desfoca uns 70 cm), o shader ainda quebra com ruído
 	var soft := mask.duplicate() as Image
 	soft.resize(MASK_PX / 3, MASK_PX / 3, Image.INTERPOLATE_LANCZOS)
 	soft.resize(MASK_PX, MASK_PX, Image.INTERPOLATE_CUBIC)
 	DirAccess.make_dir_recursive_absolute(ART)
-	soft.save_png(ART + "chao_mascara.png")  # para ver/pintar à mão
+	soft.save_png(ART + "chao_mascara.png")
 	ResourceSaver.save(ImageTexture.create_from_image(soft), ART + "chao_mascara.res")
 	var mat := ShaderMaterial.new()
 	mat.shader = load("res://assets/shaders/chao_pintado.gdshader")
 	var vila := "res://assets/kits/quaternius/vila/"
 	mat.set_shader_parameter("noise", load(vila + "T_Noise_Terrain.png"))
-	mat.set_shader_parameter("cobble_albedo", load(vila + "T_Brick_BaseColor.png"))
-	mat.set_shader_parameter("cobble_normal", load(vila + "T_Brick_Normal.png"))
+	mat.set_shader_parameter("cobble_albedo", load(vila + "T_UnevenBrick_BaseColor.png"))
+	mat.set_shader_parameter("cobble_normal", load(vila + "T_UnevenBrick_Normal.png"))
+	mat.set_shader_parameter("cobble_meters", 2.4)
+	mat.set_shader_parameter("cobble_tint", Color(0.98, 0.93, 0.86))
 	mat.set_shader_parameter("area_size", Vector2(AREA, AREA))
 	var ground := level.get_node("Ground")
 	var dirt := ground.get_node("Dirt") as MeshInstance3D
@@ -540,11 +850,12 @@ func _paint_ground() -> void:
 	bs.size = Vector3(AREA, 1.0, AREA)
 	shape.shape = bs
 	mat.set_shader_parameter("mask", load(ART + "chao_mascara.res"))
+	level.set("mapa_do_piso", load(ART + "chao_mascara.res"))
 	var nav := level.get_node("Navigation") as NavigationRegion3D
 	nav.navigation_mesh.filter_baking_aabb = AABB(Vector3(-HALF - 3, -2, -HALF - 3), Vector3(HALF * 2 + 6, 22, HALF * 2 + 6))
 
 
-# --- grama espalhada (muitas, leves, por pedaços de 20 m que somem de longe) -------------------------
+# --- grama ----------------------------------------------------------------------------------------
 
 func _grass_mesh(name: String) -> Mesh:
 	var path := KIT + "natureza/malhas/" + name + ".res"
@@ -562,7 +873,7 @@ func _grass() -> void:
 	var kinds := {"Grass_Common_Short": [0.42, 0.7], "Grass_Wispy_Short": [0.4, 0.6], "Clover_1": [0.35, 0.55], "Plant_7": [0.8, 1.2],
 		"Flower_3_Single": [0.3, 0.45]}
 	var weights := {"Grass_Common_Short": 0.5, "Grass_Wispy_Short": 0.2, "Clover_1": 0.15, "Plant_7": 0.1, "Flower_3_Single": 0.05}
-	var chunks := {}  # "kind|cx|cz" -> Array[Transform3D]
+	var chunks := {}
 	var space := level.get_world_3d().direct_space_state
 	var count := 0
 	var step := 1.25
@@ -573,15 +884,13 @@ func _grass() -> void:
 			var p := Vector3(x + rng.randf_range(-0.55, 0.55), 0, z + rng.randf_range(-0.55, 0.55))
 			z += step
 			var m := _mask_at(p)
-			var dist := Vector2(p.x, p.z).length()
-			var keep := 0.85 if dist < 95.0 else 0.0
-			# mato também na terra (menos) e encostado nas paredes; na calçada, não
-			keep *= (1.0 - clampf(m.g * 2.5, 0.0, 1.0)) * (1.0 - m.r * 0.7)
+			var keep := 0.85 if Vector2(p.x, p.z).length() < 120.0 else 0.0
+			keep *= (1.0 - clampf(m.g * 3.0, 0.0, 1.0)) * (1.0 - m.r * 0.7)
 			if rng.randf() > keep or not _free_at(p, -0.55):
 				continue
-			var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(p + Vector3.UP * 12.0, p + Vector3.DOWN, 1 | 4))
+			var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(p + Vector3.UP * 14.0, p + Vector3.DOWN, 1 | 4))
 			if hit.is_empty() or (hit["position"] as Vector3).y > 0.15:
-				continue  # caiu em cima de alguma coisa
+				continue
 			var kind := _pick_weighted(weights)
 			var range_s: Array = kinds[kind]
 			var t := Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(range_s[0], range_s[1])), p)
@@ -629,33 +938,50 @@ func _pick_weighted(weights: Dictionary) -> String:
 	return weights.keys()[0]
 
 
-# --- luz e câmera ---------------------------------------------------------------------------------
+# --- luz: fim de tarde dourado ----------------------------------------------------------------------------
 
-func _light_and_camera() -> void:
+func _light() -> void:
 	var env := (level.get_node("WorldEnvironment") as WorldEnvironment).environment
-	env.ambient_light_energy = 0.75
-	env.tonemap_mode = Environment.TONE_MAPPER_ACES
-	env.tonemap_exposure = 1.05
+	env.background_energy_multiplier = 1.0
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
+	env.ambient_light_sky_contribution = 0.85
+	env.ambient_light_energy = 0.55
+	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
+	env.tonemap_mode = Environment.TONE_MAPPER_AGX
+	env.tonemap_exposure = 1.0
 	env.ssao_enabled = true
-	env.ssao_radius = 1.4
-	env.ssao_intensity = 1.8
+	env.ssao_radius = 1.2
+	env.ssao_intensity = 1.6
+	env.ssao_power = 1.4
+	env.ssil_enabled = true
+	env.ssil_intensity = 0.6
 	env.glow_enabled = true
-	env.glow_intensity = 0.35
-	env.glow_bloom = 0.04
+	env.glow_intensity = 0.45
+	env.glow_bloom = 0.05
+	env.glow_hdr_threshold = 1.1
 	env.fog_enabled = true
-	env.fog_light_color = Color(0.84, 0.86, 0.8)
-	env.fog_density = 0.0045
-	env.fog_aerial_perspective = 0.55
-	env.fog_sky_affect = 0.35
+	env.fog_light_color = Color(0.9, 0.82, 0.7)
+	env.fog_density = 0.0018
+	env.fog_aerial_perspective = 0.6
+	env.fog_sky_affect = 0.2
+	env.volumetric_fog_enabled = true
+	env.volumetric_fog_density = 0.0032
+	env.volumetric_fog_albedo = Color(0.95, 0.88, 0.78)
+	env.volumetric_fog_anisotropy = 0.55
+	env.volumetric_fog_length = 80.0
 	env.adjustment_enabled = true
+	env.adjustment_brightness = 1.0
+	env.adjustment_contrast = 1.08
 	env.adjustment_saturation = 1.12
-	env.adjustment_contrast = 1.06
 	var sun := level.get_node("Sun") as DirectionalLight3D
-	sun.rotation_degrees = Vector3(-42, -38, 0)
-	sun.light_color = Color(1.0, 0.92, 0.78)
-	sun.light_energy = 1.9
-	sun.shadow_blur = 1.6
-	sun.directional_shadow_max_distance = 110.0
+	sun.rotation_degrees = Vector3(-30, -132, 0)  # sol baixo vindo do oeste/sudoeste: sombras longas e quentes
+	sun.light_color = Color(1.0, 0.82, 0.62)
+	sun.light_energy = 2.3
+	sun.light_volumetric_fog_energy = 1.5
+	sun.shadow_enabled = true
+	sun.shadow_blur = 1.2
+	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
+	sun.directional_shadow_max_distance = 120.0
 	var rig := level.get_node("CameraRig")
 	rig.set("distance", 5.8)
 	rig.set("height", 1.9)
