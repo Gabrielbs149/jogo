@@ -1,0 +1,25 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Medieval-Village-Pack/Cart.glb" id="1_Cart"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Food-Kit/Apple.glb" id="2_Apple"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Food-Kit/Pumpkin.glb" id="3_Pumpkin"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Food-Kit/Cabbage.glb" id="4_Cabbage"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Food-Kit/Pear.glb" id="5_Pear"]
+
+
+[node name="Carroca_feira" type="Node3D" groups=["colisao_auto"]]
+
+[node name="Carroca" parent="." instance=ExtResource("1_Cart")]
+transform = Transform3D(-3, 0, 0, 0, 3, 0, 0, 0, -3, 0, 0, 0)
+
+[node name="Mercadoria" parent="." instance=ExtResource("2_Apple")]
+transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, -0.25, 1.05, -0.2)
+
+[node name="Mercadoria2" parent="." instance=ExtResource("3_Pumpkin")]
+transform = Transform3D(0.2431, 0, 0.3787, 0, 0.45, 0, -0.3787, 0, 0.2431, 0.15, 1.05, 0.1)
+
+[node name="Mercadoria3" parent="." instance=ExtResource("4_Cabbage")]
+transform = Transform3D(-0.1873, 0, 0.4092, 0, 0.45, 0, -0.4092, 0, -0.1873, -0.1, 1.05, 0.35)
+
+[node name="Mercadoria4" parent="." instance=ExtResource("5_Pear")]
+transform = Transform3D(-0.4455, 0, 0.0635, 0, 0.45, 0, -0.0635, 0, -0.4455, 0.3, 1.05, -0.3)

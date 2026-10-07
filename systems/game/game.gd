@@ -60,6 +60,12 @@ var edit_draft: String = ""
 var save_path: String = "user://save.json"
 ## Jogando uma fase pelo Testar do editor: não grava por cima do jogo de verdade.
 var testing: bool = false
+## Missões (D040): marcas da história ("padaria.estado" -> "entrega"...), itens que você carrega e o objetivo atual.
+var flags: Dictionary = {}
+var items: Array[String] = []
+var objective: String = ""
+
+signal objective_changed(text: String)
 
 
 func _ready() -> void:
@@ -86,6 +92,9 @@ func new_game(hero_id: String) -> void:
 	returning = false
 	pending_story = ""
 	seen.clear()
+	flags.clear()
+	items.clear()
+	objective = ""
 	prologue_pending = true
 	testing = false
 	Transition.go(start_level(hero_id))
@@ -121,6 +130,9 @@ func save_game(level_path: String, where: Transform3D) -> bool:
 		"vencidos": defeated,
 		"vida": hero_hp,
 		"vistas": seen,
+		"marcas": flags,
+		"itens": items,
+		"objetivo": objective,
 		"fase": level_path,
 		"posicao": [where.origin.x, where.origin.y, where.origin.z],
 		"giro": where.basis.get_euler().y,
@@ -164,6 +176,9 @@ func continue_game(change: bool = true) -> bool:
 			party.append(String(id))
 	defeated.assign((data.get("vencidos", []) as Array).map(func(v: Variant) -> String: return String(v)))
 	seen.assign((data.get("vistas", []) as Array).map(func(v: Variant) -> String: return String(v)))
+	flags = (data.get("marcas", {}) as Dictionary).duplicate()
+	items.assign((data.get("itens", []) as Array).map(func(v: Variant) -> String: return String(v)))
+	objective = String(data.get("objetivo", ""))
 	hero_hp = int(data.get("vida", -1))
 	battle = {}
 	pending_story = ""
@@ -244,6 +259,34 @@ func open_editor(level_path: String = "") -> void:
 
 
 ## Joga uma fase do editor do começo, com o herói escolhido (Tico se ninguém foi escolhido), sem abertura.
+# --- missões (D040) --------------------------------------------------------------------------------
+
+func flag(key: String, default: Variant = null) -> Variant:
+	return flags.get(key, default)
+
+
+func set_flag(key: String, value: Variant) -> void:
+	flags[key] = value
+
+
+func has_item(item: String) -> bool:
+	return items.has(item)
+
+
+func add_item(item: String) -> void:
+	items.append(item)
+
+
+func remove_item(item: String) -> void:
+	items.erase(item)
+
+
+## Objetivo que aparece no canto da tela. Vazio = nenhum.
+func set_objective(text: String) -> void:
+	objective = text
+	objective_changed.emit(text)
+
+
 func test_level(scene_path: String) -> void:
 	if not HEROES.has(chosen):
 		chosen = "tico"
@@ -254,5 +297,8 @@ func test_level(scene_path: String) -> void:
 	returning = false
 	pending_story = ""
 	testing = true
+	flags.clear()
+	items.clear()
+	objective = ""
 	seen.assign([scene_path])
 	Transition.go(scene_path)

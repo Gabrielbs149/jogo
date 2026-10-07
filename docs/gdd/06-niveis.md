@@ -5,7 +5,7 @@
 
 ## Decisões fechadas
 - **Começo calmo e pequeno**, e cada herói começa num lugar diferente (`Game.START_LEVELS`) (D019).
-- **Arandu** (`levels/arandu/`): começo do Tico, cidade natal dele, **sem inimigos**; o portão norte leva a Ethera (D019, D027).
+- **Arandu** (`levels/arandu/`): começo do Tico, cidade natal dele, **sem inimigos**; o portão norte leva a Ethera (D019, D027, refeita na D041).
 - **Ruínas de Ethera** (`levels/ethera/`): acampamento com fogueira ao sul, heróis esperando pelo caminho, grupos de inimigos e as ruínas no centro com o **Último Guardião** (D013, D018, D022).
 - **Arena de Ethera** (`levels/arenas/ethera_arena.tscn`): onde todas as lutas de Ethera acontecem (D022).
 - **Estrutura da campanha:** um Astro por capítulo, cada um com arena, servos e regra de batalha própria (HISTORIA / D013).
@@ -24,7 +24,7 @@
 ## Fases existentes
 | Fase | Arquivo | O que tem | Estado |
 |---|---|---|---|
-| Arandu | `levels/arandu/arandu.tscn` | muralha 70 × 70 m com torres e portão; ruas em cruz; praça com poço e feira; taverna, conselho, mercador, capela, ferraria; beco do Tico com a cena de abertura; 4 moradores com fala + figurantes; floresta em volta | jogável; montada por `tools/art/montar_arandu.gd` (rodar de novo apaga ajustes à mão) |
+| Arandu | `levels/arandu/arandu.tscn` | muralha 92 × 92 m com torres e portão ao norte; avenidas de pedra em cruz com postes acesos; **praça central** com chafariz numa plataforma de degraus, canteiros com árvore, bancos, estátuas, feira (frutas, verduras, pães, peixe), pelourinho; estalagem, taverna, padaria (missão da fome), ferreiro, casa do conselho e do mercador, capela com torre do sino; quarteirões de dentro com estábulo e cercado, moinho com horta, serraria, jardim com poço; casas no miolo com caminhos de terra; animais, fumaça nas chaminés; beco do Tico; floresta em volta | jogável; montada por `tools/art/montar_arandu.gd` + `montar_cena_tico.gd` + `montar_missao_padaria.gd` (rodar de novo apaga ajustes à mão) |
 | Ruínas de Ethera | `levels/ethera/ethera.tscn` | acampamento + fogueira, 4 heróis esperando, 5 grupos de inimigos (2 de escaravelhos, 2 sentinelas, Último Guardião), pilares com inscrições; praça de pedra com anel de muros partidos, portal de colunas, trilha batida, capim seco | jogável; montada por `tools/art/montar_ethera.gd` (D035; rodar de novo apaga ajustes à mão na decoração) |
 | Arena de Ethera | `levels/arenas/ethera_arena.tscn` | coração das ruínas: lajes e terra batida, muros partidos e colunas atrás dos inimigos, altar do selo partido com dois braseiros, penhascos no horizonte, capim seco; posições do jogador e de até 4 inimigos | jogável; decoração montada por `tools/art/montar_arena_ethera.gd` (D036) |
 

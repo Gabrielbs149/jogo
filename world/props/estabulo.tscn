@@ -1,0 +1,92 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Medieval-Village-Pack/Fantasy_Stable.glb" id="1_Fantasy_Stable"]
+[ext_resource type="Material" path="res://assets/materials/tabuas.tres" id="2_tabuas"]
+[ext_resource type="FontFile" path="res://assets/fonts/cinzel.ttf" id="3_cinzel"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Medieval-Village-Pack/Fence.glb" id="4_Fence"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Farm-Animal-Pack/Horse.glb" id="5_Horse"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Medieval-Village-Pack/Hay.glb" id="6_Hay"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Medieval-Village-Pack/Cart.glb" id="7_Cart"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
+size = Vector3(0.08, 0.08, 0.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2"]
+size = Vector3(1, 0.45, 0.06)
+
+[node name="Estabulo" type="Node3D" groups=["colisao_auto"]]
+
+[node name="Modelo" parent="." instance=ExtResource("1_Fantasy_Stable")]
+transform = Transform3D(-3, 0, 0, 0, 3, 0, 0, 0, -3, 0, 0, 0)
+
+[node name="PlacaBraco" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.02, -4.45)
+mesh = SubResource("BoxMesh_1")
+material_override = ExtResource("2_tabuas")
+
+[node name="Placa" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.4, -4.8)
+mesh = SubResource("BoxMesh_2")
+material_override = ExtResource("2_tabuas")
+
+[node name="PlacaTexto" type="Label3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 4.5, 2.38, -4.835)
+pixel_size = 0.0035
+text = "Estábulo"
+font = ExtResource("3_cinzel")
+font_size = 44
+modulate = Color(0.25, 0.13, 0.06, 1)
+outline_size = 0
+double_sided = false
+
+[node name="PlacaTexto2" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.38, -4.765)
+pixel_size = 0.0035
+text = "Estábulo"
+font = ExtResource("3_cinzel")
+font_size = 44
+modulate = Color(0.25, 0.13, 0.06, 1)
+outline_size = 0
+double_sided = false
+
+[node name="Cerca" parent="." instance=ExtResource("4_Fence")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -8.5, 0, -7.5)
+
+[node name="Cerca2" parent="." instance=ExtResource("4_Fence")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -6.1, 0, -7.5)
+
+[node name="Cerca3" parent="." instance=ExtResource("4_Fence")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -3.7, 0, -7.5)
+
+[node name="Cerca4" parent="." instance=ExtResource("4_Fence")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -1.3, 0, -7.5)
+
+[node name="Cerca5" parent="." instance=ExtResource("4_Fence")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 1.1, 0, -7.5)
+
+[node name="Cerca6" parent="." instance=ExtResource("4_Fence")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 3.5, 0, -7.5)
+
+[node name="Cerca7" parent="." instance=ExtResource("4_Fence")]
+transform = Transform3D(0, 0, 3, 0, 3, 0, -3, 0, 0, -9.7, 0, -6.3)
+
+[node name="Cerca8" parent="." instance=ExtResource("4_Fence")]
+transform = Transform3D(0, 0, 3, 0, 3, 0, -3, 0, 0, -9.7, 0, -3.9)
+
+[node name="Cavalo" parent="." instance=ExtResource("5_Horse")]
+transform = Transform3D(-0.0808, 0, 0.2366, 0, 0.25, 0, -0.2366, 0, -0.0808, -6, 0, -5.4)
+
+[node name="Cavalo2" parent="." instance=ExtResource("5_Horse")]
+transform = Transform3D(0.1981, 0, -0.1355, 0, 0.24, 0, 0.1355, 0, 0.1981, -3.2, 0, -6.2)
+
+[node name="Feno" parent="." instance=ExtResource("6_Hay")]
+transform = Transform3D(4.2, 0, 0, 0, 4.2, 0, 0, 0, 4.2, -8.2, 0, -4.6)
+
+[node name="Feno2" parent="." instance=ExtResource("6_Hay")]
+transform = Transform3D(3.8685, 0, 1.6356, 0, 4.2, 0, -1.6356, 0, 3.8685, -7.6, 0, -4.2)
+
+[node name="Feno3" parent="." instance=ExtResource("6_Hay")]
+transform = Transform3D(2.9262, 0, 3.0129, 0, 4.2, 0, -3.0129, 0, 2.9262, -8.6, 0, -3.8)
+
+[node name="Carroca" parent="." instance=ExtResource("7_Cart")]
+transform = Transform3D(-2.2122, 0, 2.0264, 0, 3, 0, -2.0264, 0, -2.2122, 3.8, 0, -5.6)

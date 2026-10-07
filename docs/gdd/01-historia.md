@@ -14,6 +14,9 @@
 - Ritmo calmo, focado em história: o mundo se conta por objetos para examinar e pessoas para conversar (D009, no que continua valendo).
 
 ## Em aberto
+- **1ª missão do Tico: Fome (D040).** Ele acorda sem a Tika e com fome; a padaria de Arandu fica na rua do leste. "Caminho 1 — Pedir" (texto do Gabriel): o dono não dá comida de graça; dá para conversar, convencer, fazer um pequeno favor ("Tem uma entrega que preciso fazer. Leva isso até aquela casa." — a casa da viúva, perto do portão do norte), intimidar ou roubar. Falas do padeiro e da viúva *(proposta)* em `world/quests/missao_padaria.gd`.
+- [A DEFINIR] **Outros caminhos da fome** (o texto do Gabriel é o "Caminho 1"): quais são os outros?
+- [A DEFINIR] **Consequências** de intimidar ou roubar o padeiro mais adiante na história?
 - [A DEFINIR] **Tom:** quanto de humor (o Tico e a Tika brincam) e quanto de drama (sequestro, astros caçando o grupo)? Algo como "aventura leve com momentos tristes"?
 - [A DEFINIR] **Cindralight × Cindralich:** qual é a grafia? (o texto do Tico diz Cindralight; as mensagens do grupo, Cindralich)
 - [A DEFINIR] **"Duas asas simples" da Tika:** são adagas? garras? (as garras de energia do Tico são "igual a de Tika")

@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Medieval-Village-Pack/Mill.glb" id="1_Mill"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Medieval-Village-Pack/Bags.glb" id="2_Bags"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Medieval-Village-Pack/Hay.glb" id="3_Hay"]
+
+
+[node name="Moinho" type="Node3D" groups=["colisao_auto"]]
+
+[node name="Modelo" parent="." instance=ExtResource("1_Mill")]
+transform = Transform3D(-3, 0, 0, 0, 3, 0, 0, 0, -3, 0, 0, 0)
+
+[node name="Sacos" parent="." instance=ExtResource("2_Bags")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 3.6, 0, -3.6)
+
+[node name="Sacos2" parent="." instance=ExtResource("2_Bags")]
+transform = Transform3D(1.6209, 0, 2.5244, 0, 3, 0, -2.5244, 0, 1.6209, 4.2, 0, -2.8)
+
+[node name="Sacos3" parent="." instance=ExtResource("2_Bags")]
+transform = Transform3D(-1.2484, 0, 2.7279, 0, 3, 0, -2.7279, 0, -1.2484, 3.2, 0, -2.4)
+
+[node name="Feno" parent="." instance=ExtResource("3_Hay")]
+transform = Transform3D(4.2, 0, 0, 0, 4.2, 0, 0, 0, 4.2, -3.8, 0, -3)

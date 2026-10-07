@@ -9,6 +9,7 @@ import os
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))).replace("\\", "/") + "/"
 OUT = ROOT + "world/props/"
 Q = "res://assets/kits/quaternius/"
+PP = "res://assets/kits/polypizza/"
 os.makedirs(OUT, exist_ok=True)
 for f in os.listdir(OUT):
     if f.endswith(".tscn"):
@@ -90,9 +91,15 @@ class Scene:
         base = name or kit_path.split("/")[-1]
         self.node(self.unique(base) if parent == "." else base, None, parent, "transform = " + xf(pos, rot, scale), instance=rid)
 
+    def glb(self, path, pos=(0, 0, 0), rot=0.0, scale=1, name=None, parent="."):
+        """Modelo .glb do poly.pizza (D041): 'Medieval-Village-Pack/Fantasy_Inn'."""
+        rid = self.ext_res("PackedScene", PP + path + ".glb")
+        base = name or path.split("/")[-1]
+        self.node(self.unique(base) if parent == "." else base, None, parent, "transform = " + xf(pos, rot, scale), instance=rid)
+
     def scene(self, name, path, pos=(0, 0, 0), rot=0.0, scale=1, parent=".", *props):
         rid = self.ext_res("PackedScene", path)
-        self.node(name, None, parent, "transform = " + xf(pos, rot, scale), *props, instance=rid)
+        self.node(self.unique(name) if parent == "." else name, None, parent, "transform = " + xf(pos, rot, scale), *props, instance=rid)
 
     def body(self, shape, pos, layer=1, name="Body", rot=(0, 0, 0)):
         kind, dims = shape
@@ -190,6 +197,297 @@ def house(file, title, w, d, floors, walls, roof, gable, door_cell=None, chimney
 
 
 house("casa", "Casa", 3, 3, 1, ["Wall_Plaster"], "Roof_RoundTiles_6x6", "Roof_Front_Brick6")
+
+
+def padaria():
+    """Padaria de verdade (D040), 3x3 células (6 x 6 m), dá para entrar: vitrines com venezianas abertas, porta aberta,
+    placa pendurada, balcão com pães, prateleiras de pão na parede do fundo, forno de tijolo aceso com chaminé,
+    sacos de farinha e barris. Frente (porta) em -Z. Atrás do balcão há uma passagem estreita (lado +X) para os fundos."""
+    s = Scene("Padaria", groups=AUTO)
+    hw = hd = 3.0
+    for i in range(3):
+        for j in range(3):
+            s.piece("vila/Floor_WoodDark", (-hw + 1.0 + i * 2.0, 0, -hd + 1.0 + j * 2.0))
+    # fachada: vitrine, porta (aberta para dentro), vitrine
+    for i, kind in enumerate(("vitrine", "porta", "vitrine")):
+        x = -hw + 1.0 + i * 2.0
+        if kind == "porta":
+            s.piece("vila/Wall_Plaster_Door_Round", (x, 0, -hd), math.pi)
+            s.piece("vila/Door_1_Round", (x + 0.53, 0, -hd + 0.35), -math.pi / 2, name="Porta")
+        else:
+            s.piece("vila/Wall_Plaster_Window_Wide_Flat", (x, 0, -hd), math.pi)
+            s.piece("vila/Window_Wide_Flat1", (x, 0, -hd), math.pi)
+            s.piece("vila/WindowShutters_Wide_Flat_Open", (x, 0, -hd), math.pi)
+    # fundos de tijolo (o forno encosta) e laterais com uma janela perto da frente
+    for i in range(3):
+        s.piece("vila/Wall_UnevenBrick_Straight", (-hw + 1.0 + i * 2.0, 0, hd), 0.0)
+    for j in range(3):
+        z = -hd + 1.0 + j * 2.0
+        for sign, rot in ((1, math.pi / 2), (-1, -math.pi / 2)):
+            if j == 0:
+                s.piece("vila/Wall_Plaster_Window_Wide_Round", (sign * hw, 0, z), rot)
+                s.piece("vila/Window_Wide_Round1", (sign * hw, 0, z), rot)
+            else:
+                s.piece("vila/Wall_Plaster_Straight", (sign * hw, 0, z), rot)
+    for cx, cz in ((hw, hd), (-hw, hd), (hw, -hd), (-hw, -hd)):
+        s.piece("vila/Corner_Exterior_Wood", (cx, 0, cz))
+    s.piece("vila/Roof_RoundTiles_6x6", (0, WALL_H, 0))
+    s.piece("vila/Roof_Front_Brick6", (0, WALL_H, hd))
+    s.piece("vila/Roof_Front_Brick6", (0, WALL_H, -hd), math.pi)
+    # forno de tijolo no canto do fundo à esquerda, aceso, com a chaminé saindo pelo telhado
+    brick = s.mat("tijolo_vermelho")
+    ox, oz = -1.85, 2.1
+    s.mesh("Forno", s.box((1.5, 1.0, 1.1)), brick, (ox, 0.5, oz))
+    s.mesh("FornoCupula", s.sub("SphereMesh", ("cupula",), "radius = 0.75\nheight = 1.1\nradial_segments = 20\nrings = 10"), brick, (ox, 1.0, oz), scale=(1.0, 0.75, 0.75))
+    s.mesh("FornoBoca", s.box((0.62, 0.42, 0.06)), s.color((0.06, 0.025, 0.015), 0.95), (ox, 0.62, oz - 0.53))
+    s.mesh("Brasa", s.box((0.5, 0.06, 0.04)), s.color((0.9, 0.3, 0.08), 0.8, ((1.0, 0.35, 0.08), 3.0)), (ox, 0.44, oz - 0.57))
+    s.mesh("FornoArco", s.box((0.78, 0.1, 0.12)), s.mat("arenito"), (ox, 0.88, oz - 0.55))
+    s.mesh("FornoBase", s.box((0.78, 0.08, 0.14)), s.mat("arenito"), (ox, 0.38, oz - 0.55))
+    s.scene("FogoDoForno", "res://assets/vfx/fogo.tscn", (ox, 0.44, oz - 0.6), 0.0, 0.16)
+    s.mesh("Cano", s.cyl(0.18, 0.2, 2.2, 12), brick, (ox, 2.4, oz + 0.1))
+    s.piece("vila/Prop_Chimney", (ox, WALL_H + 0.4, oz + 0.1), name="Chamine")
+    s.piece("objetos/Peg_Rack", (ox + 1.25, 1.6, hd - 0.33), math.pi, name="Ganchos")
+    # balcão: mesa grande + armário, com a passagem estreita do lado +X para trás do balcão
+    wood = s.mat("tabuas")
+    s.mesh("Balcao", s.box((2.6, 0.92, 0.62)), wood, (-1.05, 0.46, -0.3))
+    s.mesh("BalcaoTampo", s.box((2.75, 0.06, 0.78)), s.color((0.42, 0.26, 0.15), 0.7), (-1.05, 0.95, -0.3))
+    s.mesh("BalcaoRodape", s.box((2.62, 0.1, 0.64)), s.color((0.25, 0.15, 0.09), 0.8), (-1.05, 0.05, -0.3))
+    s.piece("objetos/Cabinet", (1.11, 0, -0.3), name="BalcaoArmario")
+    for k, x in enumerate((-2.1, -1.65, -1.2, -0.35, 0.05)):
+        s.scene("PaoBalcao", "res://world/props/pao.tscn", (x, 1.03, -0.45 + (k % 2) * 0.18), 0.4 * k, 1.6)
+    s.piece("objetos/Bucket_Wooden_1", (-0.8, 0.98, -0.1), name="Cesto")
+    for k in range(3):
+        s.scene("PaoCesto", "res://world/props/pao.tscn", (-0.85 + k * 0.07, 1.23, -0.12 + (k % 2) * 0.06), 0.9 * k, (1.4, 1.4, 1.4))
+    s.piece("objetos/Table_Plate", (1.05, 1.0, -0.3), name="Prato")
+    s.scene("MeioPao", "res://world/props/meio_pao.tscn", (1.05, 1.04, -0.3), 0.6, 1.6)
+    # prateleiras de pão na parede do fundo (direita)
+    for level, y in enumerate((0.85, 1.35, 1.85)):
+        for x in (0.75, 1.95):
+            s.piece("objetos/Shelf_Simple", (x, y, hd - 0.31), math.pi, name="Prateleira")
+            for k in range(3):
+                s.scene("PaoPrateleira", "res://world/props/pao.tscn", (x - 0.35 + k * 0.35, y + 0.15, hd - 0.48), 0.2 + k + level, 1.5)
+    # farinha, barris, banquinho
+    for k, (x, z) in enumerate(((-0.55, 2.3), (-0.05, 2.45), (-0.35, 1.85))):
+        s.piece("objetos/Bag", (x, 0, z), 0.7 * k, 0.8, name="Farinha")
+    s.piece("objetos/Barrel", (2.25, 0, 0.9), name="Barril")
+    s.piece("objetos/Stool", (0.4, 0, 0.7), name="Banquinho")
+    # lado dos fregueses: caixotes de pão embaixo das vitrines e um barril com cesto perto da porta
+    for x in (-2.0, 2.0):
+        s.piece("objetos/FarmCrate_Empty", (x, 0.55, -2.35), math.pi, name="Caixote")
+        s.piece("objetos/Barrel", (x, 0, -2.35), name="BarrilVitrine")
+        for k in range(3):
+            s.scene("PaoVitrine", "res://world/props/pao.tscn", (x - 0.2 + k * 0.2, 0.68, -2.35), 1.0 + k, 1.5)
+    # luz de dentro (duas lanternas nas laterais) e lanterna na porta
+    for sign in (1, -1):
+        s.scene("LanternaDentro", "res://world/props/lanterna.tscn", (sign * (hw - 0.33), 2.0, 0.6), -sign * math.pi / 2)
+    s.scene("LanternaPorta", "res://world/props/lanterna.tscn", (1.2, 2.3, -hd - 0.12), 0.0)
+    # placa pendurada na frente: braço de madeira, duas correntes, tábua com "Padaria" dos dois lados e um pão em cima
+    s.mesh("PlacaBraco", s.box((0.08, 0.08, 1.0)), wood, (-1.15, 2.85, -hd - 0.55))
+    for x in (-1.4, -0.9):
+        s.mesh("PlacaCorrente", s.box((0.02, 0.32, 0.02)), s.color((0.2, 0.18, 0.16), 0.6), (x, 2.66, -hd - 0.95))
+    s.mesh("Placa", s.box((0.95, 0.5, 0.06)), wood, (-1.15, 2.25, -hd - 0.95))
+    font = s.ext_res("FontFile", "res://assets/fonts/cinzel.ttf")
+    for side, rot in ((-1, math.pi), (1, 0.0)):
+        s.node(s.unique("PlacaTexto"), "Label3D", ".", "transform = " + xf((-1.15, 2.22, -hd - 0.95 + side * 0.035), rot),
+               "pixel_size = 0.004", 'text = "Padaria"', 'font = ExtResource("%s")' % font, "font_size = 48",
+               "modulate = Color(0.25, 0.13, 0.06, 1)", "outline_size = 0", "double_sided = false")
+    s.scene("PaoPlaca", "res://world/props/pao.tscn", (-1.15, 2.54, -hd - 0.95), 0.0, 2.2)
+    s.save("padaria")
+
+
+padaria()
+
+
+# --- cidade (D041): prédios do Medieval Village Pack (Quaternius) e o resto do poly.pizza ------------------------
+MV = "Medieval-Village-Pack/"
+K_MV = 3.0  # o pacote vem 3x menor que o mundo (porta de 0,72 -> 2,2 m)
+GD = "Low-Poly-Outdoor-Garden-Decorations/"
+FOOD = "Food-Kit/"
+
+
+def sign(s, text, pos, rot=0.0, width=1.0):
+    """Placa pendurada num braço de madeira (frente em -Z), com o nome do lugar."""
+    wood = s.mat("tabuas")
+    x, y, z = pos
+    s.mesh("PlacaBraco", s.box((0.08, 0.08, 0.9)), wood, (x, y + 0.62, z - 0.45), (0, rot, 0))
+    s.mesh("Placa", s.box((width, 0.45, 0.06)), wood, (x, y, z - 0.8), (0, rot, 0))
+    font = s.ext_res("FontFile", "res://assets/fonts/cinzel.ttf")
+    for side, r in ((-1, math.pi), (1, 0.0)):
+        s.node(s.unique("PlacaTexto"), "Label3D", ".", "transform = " + xf((x, y - 0.02, z - 0.8 + side * 0.035), rot + r),
+               "pixel_size = 0.0035", 'text = "%s"' % text, 'font = ExtResource("%s")' % font, "font_size = 44",
+               "modulate = Color(0.25, 0.13, 0.06, 1)", "outline_size = 0", "double_sided = false")
+
+
+def building(file, title, model, label=None, label_pos=(1.6, 2.4, -0.2), extra=None):
+    """Prédio do Medieval Village Pack, virado para -Z (a porta do pacote é +Z)."""
+    s = Scene(title, groups=AUTO)
+    s.glb(MV + model, (0, 0, 0), math.pi, K_MV, name="Modelo")
+    if label:
+        sign(s, label, label_pos)
+    if extra:
+        extra(s)
+    s.save(file)
+
+
+def _forge(s):
+    s.piece("objetos/Anvil", (-2.2, 0, -5.2), 0.4, 1.2, name="Bigorna")
+    s.piece("objetos/WeaponStand", (2.6, 0, -5.0), math.pi, 1.0, name="Armas")
+    s.piece("objetos/Whetstone", (-3.6, 0, -4.4), 0.2, 1.0, name="Rebolo")
+    s.piece("objetos/Barrel", (-4.6, 0, -3.6), 0.0, 1.0, name="Barril")
+    s.glb("Ultimate-RPG-Items-Bundle/Shield_Round", (4.0, 1.2, -4.3), math.pi, 0.5, name="Escudo")
+    s.glb("Ultimate-RPG-Items-Bundle/Shield_2", (4.8, 1.2, -4.3), math.pi, 0.5, name="Escudo")
+    s.scene("Brasa", "res://assets/vfx/fogo.tscn", (-3.0, 0.2, -3.8), 0.0, 0.35)
+
+
+def _stable(s):
+    for k in range(6):
+        s.glb(MV + "Fence", (-8.5 + k * 2.4, 0, -7.5), 0.0, K_MV, name="Cerca")
+    for k in range(2):
+        s.glb(MV + "Fence", (-9.7, 0, -6.3 + k * 2.4), math.pi / 2, K_MV, name="Cerca")
+    s.glb("Farm-Animal-Pack/Horse", (-6.0, 0, -5.4), 1.9, 0.25, name="Cavalo")
+    s.glb("Farm-Animal-Pack/Horse", (-3.2, 0, -6.2), -0.6, 0.24, name="Cavalo")
+    for k, (x, z) in enumerate(((-8.2, -4.6), (-7.6, -4.2), (-8.6, -3.8))):
+        s.glb(MV + "Hay", (x, 0, z), 0.4 * k, K_MV * 1.4, name="Feno")
+    s.glb(MV + "Cart", (3.8, 0, -5.6), 2.4, K_MV, name="Carroca")
+
+
+def _mill(s):
+    for k, (x, z) in enumerate(((3.6, -3.6), (4.2, -2.8), (3.2, -2.4))):
+        s.glb(MV + "Bags", (x, 0, z), k, K_MV, name="Sacos")
+    s.glb(MV + "Hay", (-3.8, 0, -3.0), 0.0, K_MV * 1.4, name="Feno")
+
+
+def _barracks(s):
+    s.piece("objetos/WeaponStand", (2.4, 0, -4.2), math.pi, 1.0, name="Armas")
+    s.piece("objetos/Dummy", (-2.6, 0, -4.8), 0.3, 1.0, name="Boneco")
+    s.piece("objetos/Banner_1", (1.4, 0, -3.4), math.pi, 1.0, name="Estandarte")
+
+
+building("estalagem", "Estalagem", "Fantasy_Inn", "Estalagem", (2.2, 2.6, -6.3))
+building("ferreiro", "Ferreiro", "Blacksmith", "Ferreiro", (0.5, 2.6, -5.2), _forge)
+building("estabulo", "Estabulo", "Fantasy_Stable", "Estábulo", (4.5, 2.4, -4.0), _stable)
+building("moinho", "Moinho", "Mill", None, extra=_mill)
+building("serraria", "Serraria", "Fantasy_Sawmill")
+building("guarita", "Guarita", "Fantasy_Barracks", None, extra=_barracks)
+building("torre_sino", "Torre_sino", "Bell_Tower")
+building("casa_enxaimel", "Casa_enxaimel", "Fantasy_House_2")
+building("casa_enxaimel2", "Casa_enxaimel2", "Fantasy_House_3")
+
+# poço de pedra com telhado (praças menores) e carroça
+s = Scene("Poco_telhado", groups=AUTO)
+s.glb(MV + "Well", (0, 0.75, 0), math.pi, K_MV, name="Modelo")
+s.save("poco_telhado")
+
+
+COUNTER_Y = 0.765  # tampo do balcão da Market_Stand_2 (medido nos vértices)
+
+
+def crate_of(s, item, scale, at, lying=False):
+    """Caixote raso cheio de uma mercadoria (duas camadas), apoiado no balcão em `at`."""
+    x, y, z = at
+    s.piece("objetos/FarmCrate_Empty", (x, y, z), 0.0, 1.0, name="Caixote")
+    k = 0
+    for layer in range(2):
+        for i in range(5):
+            for j in range(3):
+                jitter = ((k * 37) % 7 - 3) * 0.006
+                rot = (math.pi / 2, k * 1.7, 0) if lying else (0, k * 1.7, 0)
+                s.glb(item, (x - 0.24 + i * 0.12 + jitter + layer * 0.06, y + 0.06 + layer * 0.06, z - 0.11 + j * 0.11 - jitter), rot, scale, name="Mercadoria")
+                k += 1
+
+
+def stall(file, title, crates=(), loaves=()):
+    """Banca de feira: caixotes cheios em cima do balcão (frutas, verduras) ou pães enfileirados na tábua."""
+    s = Scene(title, groups=AUTO)
+    s.glb(MV + "Market_Stand_2", (0, 0, 0), math.pi, K_MV, name="Banca")
+    for k, (item, sc, lying) in enumerate(crates):
+        crate_of(s, item, sc, (-0.85 + k * 0.85, COUNTER_Y, -0.25), lying)
+    for k, (item, sc, rot) in enumerate(loaves):
+        s.glb(item, (-1.0 + (k % 6) * 0.4, COUNTER_Y, -0.45 + (k // 6) * 0.35), (0, rot + k * 0.3, 0), sc, name="Mercadoria")
+    for x in (-1.6, 1.6):
+        s.piece("objetos/FarmCrate_Empty", (x, 0, -1.1), 0.2 * x, 1.0, name="CaixoteChao")
+    s.save(file)
+
+
+stall("banca_frutas", "Banca_frutas", crates=[(FOOD + "Apple", 0.45, False), (FOOD + "Pear", 0.45, False), (FOOD + "Lemon", 0.45, False)])
+stall("banca_verduras", "Banca_verduras", crates=[(FOOD + "Cabbage", 0.42, False), (FOOD + "Carrot", 0.35, True), (FOOD + "Onion", 0.45, False)])
+stall("banca_paes", "Banca_paes", loaves=[("Baked-Goods/Bread", 0.45, 0.0), ("Baked-Goods/Baguette", 0.42, 1.57), ("Baked-Goods/Bread_Roll", 0.5, 0.0),
+                                           ("Baked-Goods/Pie_Apple", 0.32, 0.0), ("Baked-Goods/Croissant", 0.4, 0.4), ("Baked-Goods/Bread", 0.45, 0.6)] * 2)
+stall("banca_peixe", "Banca_peixe", crates=[(FOOD + "Fish", 0.55, False), (FOOD + "Fish", 0.55, False), (FOOD + "Onion", 0.45, False)])
+s = Scene("Carroca_feira", groups=AUTO)
+s.glb(MV + "Cart", (0, 0, 0), math.pi, K_MV, name="Carroca")
+for k, (x, z) in enumerate(((-0.25, -0.2), (0.15, 0.1), (-0.1, 0.35), (0.3, -0.3))):
+    s.glb(FOOD + ("Apple", "Pumpkin", "Cabbage", "Pear")[k], (x, 1.05, z), k, 0.45, name="Mercadoria")
+s.save("carroca_feira")
+
+# --- praça ----------------------------------------------------------------------------------------------
+s = Scene("Chafariz", groups=AUTO)
+stone = s.mat("pedra_poco")
+for k, (r, h) in enumerate(((6.4, 0.18), (5.9, 0.36))):
+    s.mesh("Degrau", s.cyl(r, r + 0.06, h, 40), s.mat("calcada"), (0, h / 2, 0))
+# bacia: mureta de 16 lados (oca), com o fundo escuro mais baixo e a água à vista
+for k in range(16):
+    ang = k * 2 * math.pi / 16
+    s.mesh("Mureta", s.box((2 * 3.85 * math.tan(math.pi / 16) + 0.06, 0.75, 0.38)), stone,
+           (math.sin(ang) * 3.85, 0.36 + 0.375, math.cos(ang) * 3.85), (0, ang, 0))
+    s.mesh("Capa", s.box((2 * 3.85 * math.tan(math.pi / 16) + 0.1, 0.08, 0.5)), s.mat("calcada"),
+           (math.sin(ang) * 3.85, 1.15, math.cos(ang) * 3.85), (0, ang, 0))
+s.mesh("Fundo", s.cyl(3.7, 3.7, 0.3, 32), s.color((0.14, 0.2, 0.2), 0.9), (0, 0.51, 0))
+s.glb(GD + "Water_Fountain", (0, 0.92 + 1.25 * 2.4, 0), 0.0, 2.4, name="Fonte")
+s.scene("Agua", "res://assets/vfx/agua_chafariz.tscn", (0, 0, 0))
+s.save("chafariz")
+
+s = Scene("Estatua", groups=AUTO)
+s.mesh("Pedestal", s.box((1.4, 1.2, 1.4)), s.mat("pedra_poco"), (0, 0.6, 0))
+s.mesh("Topo", s.box((1.6, 0.15, 1.6)), s.mat("calcada"), (0, 1.27, 0))
+s.glb(GD + "Statue_3", (0, 1.35 + 1.34 * 1.3, 0), math.pi, 1.3, name="Figura")
+s.save("estatua")
+
+s = Scene("Poste")
+# haste de ferro fina, braço curto e a lanterna em cima (3,2 m), luz quente sem sombra
+iron = s.color((0.12, 0.11, 0.1), 0.5)
+s.mesh("Base", s.cyl(0.16, 0.2, 0.3, 10), s.mat("pedra_poco"), (0, 0.15, 0))
+s.mesh("Haste", s.cyl(0.05, 0.065, 2.7, 10), iron, (0, 1.6, 0))
+s.mesh("Topo", s.cyl(0.11, 0.08, 0.08, 10), iron, (0, 2.95, 0))
+s.glb(GD + "Lamp", (0, 2.99, 0), 0.0, 0.62, name="Lanterna")
+s.mesh("Luz", s.sub("SphereMesh", ("bulbo",), "radius = 0.07\nheight = 0.14"), s.color((1, 0.85, 0.6), 0.5, ((1, 0.75, 0.45), 5.0)), (0, 3.2, 0))
+s.node("Light", "OmniLight3D", ".", "transform = " + xf((0, 3.2, 0)), "light_color = Color(1, 0.74, 0.45, 1)", "light_energy = 1.5",
+       "omni_range = 9.0", "omni_attenuation = 1.3")
+s.body(("cyl", (0.12, 3.0)), (0, 1.5, 0))
+s.save("poste")
+
+s = Scene("Canteiro", groups=AUTO)
+s.glb(GD + "Flower_Bed_2", (0, 0.38, 0), 0.0, 1.0, name="Borda")
+s.mesh("Terra", s.cyl(1.55, 1.55, 0.08, 8), s.color((0.32, 0.22, 0.14), 1.0), (0, 0.42, 0), (0, math.pi / 8, 0))
+s.glb(GD + "Flowers", (0.9, 0.4 + 0.63 * 0.55, 0.5), 0.0, 0.55, name="Flores")
+s.glb(GD + "Flowers", (-0.8, 0.4 + 0.63 * 0.5, -0.6), 1.2, 0.5, name="Flores")
+s.scene("Arvore", "res://world/props/arvore_pequena.tscn", (0, 0.42, 0), 0.4, 0.9)
+s.save("canteiro")
+
+s = Scene("Banco_praca", groups=AUTO)
+s.glb(GD + "Bench", (0, 0.35 * 1.1, 0), 0.0, 1.1, name="Modelo")
+s.save("banco_praca")
+
+s = Scene("Pelourinho", groups=AUTO)
+s.mesh("Base", s.box((1.6, 0.25, 1.6)), s.mat("tabuas"), (0, 0.12, 0))
+s.glb("Medieval-Torture-Devices/Pilory", (0, 0.25, 0), math.pi, 1.3, name="Modelo")
+s.save("pelourinho")
+
+for name, path, sc in (("cavalo", "Farm-Animal-Pack/Horse", 0.25), ("vaca", "Farm-Animal-Pack/Cow", 0.25), ("porco", "Farm-Animal-Pack/Pig", 0.15),
+                       ("galinha", "Animal-Kit/Chicken", 0.8), ("cachorro", "Animal-Kit/Dog", 0.42), ("gato", "Animal-Kit/Cat", 0.4)):
+    s = Scene(name.capitalize())
+    s.glb(path, (0, 0, 0), 0.0, sc, name="Modelo")
+    s.save(name)
+
+s = Scene("Horta")
+for k in range(3):
+    s.glb(FOOD + ("Cabbage", "Carrot", "Pumpkin")[k % 3], (-0.5 + k * 0.5, 0, 0), k * 1.3, 0.9, name="Verdura")
+s.save("horta")
+
+for k, model in enumerate(("Wooden_Sign_3", "Wooden_Sign_7", "Wooden_Sign_2")):
+    s = Scene("Placa_rua%d" % (k + 1), groups=AUTO)
+    s.glb("Signs-pack/" + model, (0, 0, 0), math.pi, 1.2, name="Modelo")
+    s.save("placa_rua%d" % (k + 1))
 house("casa_barro", "Casa_barro", 3, 3, 1, ["Wall_UnevenBrick"], "Roof_RoundTiles_6x6", "Roof_Front_Brick6")
 house("casa_grande", "Casa_grande", 4, 4, 2, ["Wall_UnevenBrick", "Wall_Plaster"], "Roof_RoundTiles_8x8", "Roof_Front_Brick8", 1)
 house("casa_grande_barro", "Casa_grande_barro", 4, 4, 2, ["Wall_Plaster", "Wall_Plaster_WoodGrid"], "Roof_RoundTiles_8x8", "Roof_Front_Brick8", 2)

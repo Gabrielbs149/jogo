@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Food-Kit/Cabbage.glb" id="1_Cabbage"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Food-Kit/Carrot.glb" id="2_Carrot"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Food-Kit/Pumpkin.glb" id="3_Pumpkin"]
+
+
+[node name="Horta" type="Node3D"]
+
+[node name="Verdura" parent="." instance=ExtResource("1_Cabbage")]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, -0.5, 0, 0)
+
+[node name="Verdura2" parent="." instance=ExtResource("2_Carrot")]
+transform = Transform3D(0.2407, 0, 0.8672, 0, 0.9, 0, -0.8672, 0, 0.2407, 0, 0, 0)
+
+[node name="Verdura3" parent="." instance=ExtResource("3_Pumpkin")]
+transform = Transform3D(-0.7712, 0, 0.464, 0, 0.9, 0, -0.464, 0, -0.7712, 0.5, 0, 0)

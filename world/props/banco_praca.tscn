@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Low-Poly-Outdoor-Garden-Decorations/Bench.glb" id="1_Bench"]
+
+
+[node name="Banco_praca" type="Node3D" groups=["colisao_auto"]]
+
+[node name="Modelo" parent="." instance=ExtResource("1_Bench")]
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 0, 0.385, 0)

@@ -33,12 +33,12 @@ func test_level_opens_still_without_hero() -> void:
 	assert_false(names.has("Terrain"), "o chão não se clica")
 
 
-func test_well_is_one_piece_and_walls_carry_their_collision() -> void:
+func test_fountain_is_one_piece_and_walls_carry_their_collision() -> void:
 	var editor := await _open(Game.ARANDU)
 	var names: Array[String] = []
 	for item: Node3D in editor.items():
 		names.append(String(item.name))
-	assert_true(names.has("Well"), "o poço é uma peça")
+	assert_true(names.has("Chafariz"), "o chafariz do centro (D041) é uma peça só")
 	assert_false(names.has("Ring"))
 	var wall := editor.level.get_node("Walls/Muro") as Node3D
 	assert_true(names.has("Muro"), "a muralha é feita de pedaços de muro do kit")

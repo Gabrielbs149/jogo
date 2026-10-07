@@ -19,6 +19,8 @@
 - [A DEFINIR] **Tika no esqueleto novo** (o modelo tem o braço colado no corpo; pode precisar de ajuste ou modelo novo em pose T).
 - [A DEFINIR] **Inimigos:** o visual da D036 (peças rígidas de pedra/carvão com brilho) é proposta. Aprovar ou trocar?
 - [A DEFINIR] **Animações que faltam:** gesto de comer sentado (cena do rato), animações próprias de cada habilidade.
+- **Mais modelos grátis do poly.pizza (D041):** Medieval Village Pack do Quaternius (estalagem, ferreiro, estábulo, moinho, serraria, guarita, torre do sino, casas de enxaimel, bancas, poço), estátuas/chafariz/canteiros (Zsky, CC-BY), placas (iPoly3D), pães (Isa Lousberg), comida (Kenney), animais (Quaternius e madtrollstudio, CC-BY), itens de RPG e masmorra (Quaternius). Baixados por `tools/art/baixar_polypizza.py` (pacotes inteiros em `C:/dev/_pacotes/polypizza`) e só os usados entram no projeto (`tools/art/instalar_polypizza.py`).
+- **Luz de Arandu (D041):** fim de tarde dourado (sol baixo vindo do oeste, sombras longas), tonemap AgX, SSAO + SSIL, névoa leve com raios de sol, cores um pouco mais saturadas; postes e lanternas acesos.
 - [A DEFINIR] **Comprar arte paga?** Foi pesquisado: Synty Fantasy Kingdom (US$ 349,99 ou SyntyPass US$ 30/mês; dúvida sobre a licença depois de cancelar) e versões completas do Quaternius (~US$ 45 os três). Nada decidido.
 - [A DEFINIR] **Efeitos das habilidades** (cor, forma). Garras psíquicas do Tico em roxo/rosa? *(proposta)*
 - [A DEFINIR] **Referências visuais** oficiais (prints de jogos que o grupo quer como alvo).
@@ -38,6 +40,7 @@
 | Tipo | Onde | Estado |
 |---|---|---|
 | Kits de cenário (vila, objetos, natureza) | `assets/kits/quaternius/` | em uso |
+| Prédios, feira, praça, animais, comida (poly.pizza, D041) | `assets/kits/polypizza/` (créditos em `CREDITOS.md` da pasta) | em uso |
 | Personagens e 76 animações | `assets/kits/kaykit/` (biblioteca `animacoes/humanoide.res`) | em uso |
 | Peças do catálogo do editor (71) | `world/props/` (geradas por `tools/art/gerar_pecas.py`) | em uso |
 | Materiais (reboco, telha, calçada...) | `assets/materials/` (`tools/art/gerar_materiais.py`) | em uso |

@@ -3,9 +3,10 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://brcehsa70i2fq"
-path="res://.godot/imported/naumfode_Namfoodle_MetalRough_jogo.png-cc3e03415c20140ee36253231477e451.ctex"
+path.s3tc="res://.godot/imported/naumfode_Namfoodle_MetalRough_jogo.png-cc3e03415c20140ee36253231477e451.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "ae4bd220abcf1e5391a08b148f0661e9"
@@ -14,11 +15,11 @@ generator_parameters={
 [deps]
 
 source_file="res://actors/naumfode/naumfode_Namfoodle_MetalRough_jogo.png"
-dest_files=["res://.godot/imported/naumfode_Namfoodle_MetalRough_jogo.png-cc3e03415c20140ee36253231477e451.ctex"]
+dest_files=["res://.godot/imported/naumfode_Namfoodle_MetalRough_jogo.png-cc3e03415c20140ee36253231477e451.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -40,4 +41,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0

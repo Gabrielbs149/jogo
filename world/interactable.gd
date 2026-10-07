@@ -1,12 +1,12 @@
 class_name Interactable
 extends Node3D
 ## Algo que se usa de perto com F: inscrição ou morador (READ: mostra o texto), fogueira (REST: descansa),
-## herói encontrado no caminho (TALK: conversa e chama para o grupo), saída (TRAVEL: vai para outra fase).
-## A fase escuta o sinal "used".
+## herói encontrado no caminho (TALK: conversa e chama para o grupo), saída (TRAVEL: vai para outra fase),
+## conversa de missão (QUEST: quem cuida é o script da missão, D040). A fase escuta o sinal "used".
 
 signal used(by: Combatant, what: Interactable)
 
-enum Action { READ, REST, TALK, TRAVEL }
+enum Action { READ, REST, TALK, TRAVEL, QUEST }
 
 @export var action: Action = Action.READ
 ## O que aparece na tela: "F · Ler a inscrição".

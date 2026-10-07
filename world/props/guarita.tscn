@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Medieval-Village-Pack/Fantasy_Barracks.glb" id="1_Fantasy_Barrac"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/WeaponStand.gltf" id="2_WeaponStand"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Dummy.gltf" id="3_Dummy"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Banner_1.gltf" id="4_Banner_1"]
+
+
+[node name="Guarita" type="Node3D" groups=["colisao_auto"]]
+
+[node name="Modelo" parent="." instance=ExtResource("1_Fantasy_Barrac")]
+transform = Transform3D(-3, 0, 0, 0, 3, 0, 0, 0, -3, 0, 0, 0)
+
+[node name="Armas" parent="." instance=ExtResource("2_WeaponStand")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2.4, 0, -4.2)
+
+[node name="Boneco" parent="." instance=ExtResource("3_Dummy")]
+transform = Transform3D(0.9553, 0, 0.2955, 0, 1, 0, -0.2955, 0, 0.9553, -2.6, 0, -4.8)
+
+[node name="Estandarte" parent="." instance=ExtResource("4_Banner_1")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1.4, 0, -3.4)
