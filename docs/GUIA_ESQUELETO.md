@@ -37,6 +37,11 @@ vá no **Pintar pesos** (selecione o modelo, *Weight Paint*), escolha o osso na 
 **4. Exportar.** *Arquivo → Exportar → glTF (.glb)*, marcando "Selecionados", "+Y para cima", sem animações.
 Salve em `actors/<nome>/` e siga os passos 3 a 5 do jeito rápido.
 
+## Personagem que já vem com esqueleto e animações (ex.: Naumfode, D032)
+1. Copie o `.glb` para `art_src/` e prepare com um script como `tools/blender/gerado/preparar_naumfode.py` (tira sobras, corrige material).
+2. Crie o mapa de ossos dele em `tools/art/criar_mapas_de_ossos.gd` (nome do osso dele → osso padrão) e ligue no import (*Retarget → Bone Map*).
+3. No `Animator` do herói: use os nomes das animações dele e, no campo **Extra Library**, a biblioteca do KayKit para o que faltar (nome com prefixo: `kaykit/Dodge_Forward`).
+
 ## Coisas na mão (pão, espada, livro)
 Na cena: `[na mão: Pao]` prende o nó na palma do osso `RightHand`. No Godot à mão: um nó `BoneAttachment3D`
 filho do `GeneralSkeleton`, *Bone Name* = `RightHand`, e o objeto dentro dele.

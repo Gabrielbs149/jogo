@@ -14,6 +14,7 @@
 
 | Nº | Data | Tema | Decisão | Motivo | Situação |
 |---|---|---|---|---|---|
+| D032 | 2026-10-07 | Arte / Personagens | Naumfode ganha o modelo enviado pelo Gabriel (anão de barba, óculos, avental e mochila; 0,95 m), com o esqueleto e as 7 animações que vieram nele (Parado, Andar, Correr, Disparar, Invocar_Torreta, Dano, Morte) + as do KayKit pelo retarget (esquiva etc.). O burrinho continua ao lado dele. | Gabriel mandou o modelo pronto | vale |
 | D031 | 2026-10-07 | Projeto | Design organizado em `docs/gdd/` (visão, história, personagens, mecânicas, arte, som, níveis, roadmap, decisões), que é a **fonte da verdade**; um comando do Claude por tema em `.claude/commands/`. GDD.md, HISTORIA.md, ESTILO.md e ROADMAP.md antigos viram ponteiros. | Gabriel pediu "repartições por tema" | vale |
 | D030 | 2026-10-07 | Git | **Branch por feature + PR** para a `main` (CI verde obrigatório; **revisão do parceiro não é obrigatória**, quem abriu pode fazer o merge). Cada um com sua conta do Claude, sincronizando pelo GitHub. | Gabriel pediu esse fluxo ao organizar o projeto e confirmou que substitui a D003 sem precisar do parceiro | vale; substitui D003 |
 | D029 | 2026-10-07 | História | Abertura do Tico com o rato assado dividido com a Tika (ele dá o bumbum). | Gabriel pediu "o Tico oferecendo um rato pra Tika" | vale (falas = proposta) |

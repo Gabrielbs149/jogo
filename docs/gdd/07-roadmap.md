@@ -32,6 +32,7 @@
 - [x] Arandu (cidade completa) com a cena de abertura do Tico
 - [x] Ethera com encontros, arena por turnos com QTE e chefe
 - [x] Tico com modelo final, esqueleto e animações
+- [x] Naumfode com modelo final e animações (D032)
 - [x] Editor de mapas no jogo
 - [ ] Ethera com o mesmo cuidado visual de Arandu ([04-arte.md](04-arte.md))
 - [ ] Sons mínimos ([05-som.md](05-som.md))
