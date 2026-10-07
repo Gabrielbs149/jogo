@@ -11,6 +11,7 @@
 - **Vida entre lutas:** não enche sozinha; a **fogueira** (F) enche (D022).
 - **Cenas de história** por roteiro (D025); prólogo em todo jogo novo.
 - **Editor de mapas dentro do jogo** (F2 ou tela inicial) para montar e testar fases (D023).
+- **Jogo salvo (D037):** um arquivo só (`user://save.json`), gravado sozinho ao entrar numa fase, ao voltar de uma luta, ao descansar na fogueira ("Jogo salvo") e ao sair para o menu ou fechar o jogo. Nunca grava no meio de uma luta nem no Testar do editor. Guarda herói, grupo, lutas vencidas, vida, fases já vistas e o lugar no mapa. Tela inicial: **Continuar** (só aparece se tem jogo salvo) e **Novo jogo** (começa do zero e grava por cima).
 
 ## Em aberto
 - [A DEFINIR] **Progressão:** o herói sobe de nível? Ganha habilidades novas? Itens/equipamento? Dinheiro? O que se ganha ao vencer um Astro?
@@ -19,7 +20,7 @@
 - [A DEFINIR] **QTE:** janelas atuais (perfeito ±0,08 s, bom ±0,2 s, esquiva ±0,15 s, aparar ±0,08 s) estão boas? Opção de acessibilidade (janela maior / QTE automático)?
 - [A DEFINIR] **Habilidades no mapa:** hoje Q/E/R só funcionam na luta. Fica assim?
 - [A DEFINIR] **Controle (gamepad):** suportar? Qual mapeamento?
-- [A DEFINIR] **Save/load:** como e quando salva?
+- [A DEFINIR] **Jogo salvo:** mais de um espaço (um por herói?) ou salvar à mão? Avisar antes do "Novo jogo" apagar o salvo?
 - [A DEFINIR] **Break/stagger, mira livre, mecânica própria de cada herói** — citados como "talvez depois", nunca decididos.
 
 ## Core loop

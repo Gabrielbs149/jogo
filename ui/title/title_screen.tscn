@@ -84,13 +84,22 @@ autowrap_mode = 3
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 
+[node name="Continue" type="Button" parent="Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 54)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 22
+tooltip_text = "Volta para onde você parou (o jogo grava sozinho)"
+text = "Continuar"
+
 [node name="Start" type="Button" parent="Center"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 54)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 22
-text = "Começar"
+text = "Novo jogo"
 
 [node name="Editor" type="Button" parent="Center"]
 unique_name_in_owner = true

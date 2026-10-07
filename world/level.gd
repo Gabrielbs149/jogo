@@ -83,14 +83,14 @@ func _ready() -> void:
 	controller.enabled = false
 	player.add_child(controller)
 	_camera.target = player
-	_camera.yaw = _spawn.rotation.y
+	_camera.yaw = start.basis.get_euler().y
 	_camera.snap()
 	_hud.setup(player, controller)
 	_hud.watch(player)
 	_hud.continue_pressed.connect(func() -> void: _camera.capture(true))
 	for id: String in Game.party.duplicate():
 		var side := Vector3(1.5 * (companions.size() + 1), 0.0, 1.5)
-		_join(_spawn_hero(id, _spawn.transform.translated(side)))
+		_join(_spawn_hero(id, start.translated(side)))
 	for node: Node in get_tree().get_nodes_in_group("hero_spot"):
 		var spot := node as HeroSpot
 		if spot.hero_id == Game.chosen or Game.party.has(spot.hero_id) or not Game.HEROES.has(spot.hero_id):
@@ -138,6 +138,25 @@ func _ready() -> void:
 	if not Game.seen.has(scene_file_path):
 		Game.seen.append(scene_file_path)
 	ready_to_play = true
+	save_here(false)
+
+
+## Grava o jogo onde você está (D037): ao entrar na fase, ao voltar de uma luta, ao descansar e ao sair.
+## Não grava no meio de uma luta, no editor nem no Testar do editor.
+func save_here(show: bool = true) -> bool:
+	if editing or player == null or not ready_to_play or _finished or in_combat():
+		return false
+	if not player.downed:
+		Game.hero_hp = -1 if player.hp >= player.max_hp else player.hp
+	var ok := Game.save_game(scene_file_path, player.global_transform)
+	if ok and show:
+		_hud.toast("Jogo salvo")
+	return ok
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		save_here(false)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -280,6 +299,7 @@ func _on_used(_by: Combatant, what: Interactable) -> void:
 			for c: Combatant in companions:
 				c.rest()
 			_hud.show_story(what.text)
+			save_here()
 		Interactable.Action.TRAVEL:
 			if in_combat():
 				_hud.toast("Não dá para sair no meio de uma luta")
