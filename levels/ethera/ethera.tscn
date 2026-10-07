@@ -564,37 +564,31 @@ hero_id = "bahamut"
 script = ExtResource("encounter")
 
 [node name="Beetle1" parent="Encounters/EscaravelhosOeste" unique_id=404240652 instance=ExtResource("en_escaravelho_de_cinza")]
-transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, -5.6, 0.90000033, -7.2)
-velocity = Vector3(0, -4.5, 0)
+transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, -5.6, 0.13325217, -7.2)
 
 [node name="Beetle3" parent="Encounters/EscaravelhosOeste" unique_id=1761213526 instance=ExtResource("en_escaravelho_de_cinza")]
-transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, -4, 0.90000033, -0.8)
-velocity = Vector3(0, -4.5, 0)
+transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, -4, -0.11718737, -0.8)
 
 [node name="EscaravelhosLeste" type="Node3D" parent="Encounters" unique_id=1964605015]
 script = ExtResource("encounter")
 
 [node name="Beetle2" parent="Encounters/EscaravelhosLeste" unique_id=1962412434 instance=ExtResource("en_escaravelho_de_cinza")]
-transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 7.2, 0.90000033, -5.6)
-velocity = Vector3(0, -4.5, 0)
+transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 7.2, 0.05484394, -5.6)
 
 [node name="Beetle4" parent="Encounters/EscaravelhosLeste" unique_id=554450892 instance=ExtResource("en_escaravelho_de_cinza")]
-transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 7.2, 0.90000033, 0.8)
-velocity = Vector3(0, -4.5, 0)
+transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 7.2, 0.17166038, 0.8)
 
 [node name="SentinelaOeste" type="Node3D" parent="Encounters" unique_id=1405983411]
 script = ExtResource("encounter")
 
 [node name="Sentinel1" parent="Encounters/SentinelaOeste" unique_id=1664671158 instance=ExtResource("en_sentinela_estelar")]
-transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, -8.8, 0.90000033, -8.8)
-velocity = Vector3(0, -4.5, 0)
+transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, -8.8, 0.05718769, -8.8)
 
 [node name="SentinelaLeste" type="Node3D" parent="Encounters" unique_id=2017708097]
 script = ExtResource("encounter")
 
 [node name="Sentinel2" parent="Encounters/SentinelaLeste" unique_id=56420318 instance=ExtResource("en_sentinela_estelar")]
-transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 10.4, 0.90000033, -8.8)
-velocity = Vector3(0, -4.5, 0)
+transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 10.4, 0.09984395, -8.8)
 
 [node name="UltimoGuardiao" type="Node3D" parent="Encounters" unique_id=612817633]
 script = ExtResource("encounter")
@@ -602,8 +596,7 @@ after_text = "O Último Guardião descansa. Ethera pode descansar também.
 Caiaque, Umu e Juca vão querer ouvir essa história."
 
 [node name="Colossus" parent="Encounters/UltimoGuardiao" unique_id=1173310381 instance=ExtResource("en_ultimo_guardiao")]
-transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 0.8, 0.90000033, -5.6)
-velocity = Vector3(0, -4.5, 0)
+transform = Transform3D(-1, 0, 1.225e-16, 0, 1, 0, -1.225e-16, 0, -1, 0.8, 0.043593936, -5.6)
 
 [node name="CameraRig" type="Node3D" parent="." unique_id=673078022]
 transform = Transform3D(1, 0, 0, 0, 0.96105546, 0.27635565, 0, -0.27635565, 0.96105546, 0, 0, 0)

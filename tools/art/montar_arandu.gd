@@ -10,7 +10,7 @@ const KIT := "res://assets/kits/quaternius/"
 const LEVEL := "res://levels/arandu/arandu.tscn"
 const ART := "res://levels/arandu/art/"
 const AREA := 220.0
-const MASK_PX := 512
+const MASK_PX := 1024
 const HALF := 35.0  # muralha: quadrado de 70 m
 
 ## Tamanho das casas: [largura da fachada, fundo]
@@ -132,8 +132,9 @@ func _block(center: Vector3, size: Vector2, yaw: float, margin: float = 0.6) -> 
 
 
 func _free_at(p: Vector3, margin: float = 0.0) -> bool:
+	# margem negativa = pode chegar mais perto (a grama encosta nas paredes)
 	for r: Rect2 in blocks:
-		if r.grow(margin).has_point(Vector2(p.x, p.z)):
+		if p.x > r.position.x - margin and p.x < r.end.x + margin and p.z > r.position.y - margin and p.z < r.end.y + margin:
 			return false
 	return true
 
@@ -177,12 +178,12 @@ func _paint_shape(center: Vector2, reach: float, channel: int, inside: Callable)
 
 func _streets() -> void:
 	# calçada de pedra nas ruas principais e na praça; terra em volta, nos becos e na estrada
-	for r: Rect2 in [Rect2(-4.6, -HALF, 9.2, HALF - 11), Rect2(-4.6, 11, 9.2, HALF - 13), Rect2(-HALF + 2, -4.6, HALF - 13, 9.2),
-			Rect2(11, -4.6, HALF - 13, 9.2)]:
+	# a calçada vai até as fachadas (as casas ficam 0,4 m para trás da beira da rua)
+	for r: Rect2 in [Rect2(-5.2, -HALF, 10.4, HALF - 10), Rect2(-5.2, 10, 10.4, HALF - 12), Rect2(-HALF + 2, -5.2, HALF - 12, 10.4),
+			Rect2(10, -5.2, HALF - 12, 10.4)]:
 		_paint_rect(r, 1)
-		_paint_rect(r.grow(1.8), 0)
-	_paint_disc(Vector2.ZERO, 13.5, 1)
-	_paint_disc(Vector2.ZERO, 15.5, 0)
+	_paint_disc(Vector2.ZERO, 14.5, 1)
+	_paint_rect(Rect2(14.0, 6.0, 15.0, 6.0), 0)  # quintal da ferraria
 	_paint_rect(Rect2(-3.2, -110, 6.4, 110 - HALF + 1), 0)  # estrada que sai pelo portão
 	_paint_rect(Rect2(-1.2, -HALF - 2, 2.4, 6), 1)
 
@@ -266,11 +267,14 @@ func _wall_run(a: Vector3, b: Vector3) -> void:
 	var outward := Vector3(signf(mid.x), 0, 0) if absf(dir.z) > 0.5 else Vector3(0, 0, signf(mid.z))
 	var yaw := atan2(outward.x, outward.z)  # a face de pedra do kit (+Z) fica para fora
 	var at := 0.0
+	# dois muros de costas um para o outro: pedra dos dois lados (de dentro da cidade também)
 	while length - at >= 6.0 - 0.01:
 		_place("muro", _group("Walls"), a + dir * (at + 3.0), yaw)
+		_place("muro", _group("Walls"), a + dir * (at + 3.0) - outward * 0.42, yaw + PI, 1.0, "MuroDentro")
 		at += 6.0
 	while length - at >= 2.0 - 0.01:
 		_kit("vila/Wall_UnevenBrick_Straight", _group("Walls"), a + dir * (at + 1.0), yaw)
+		_kit("vila/Wall_UnevenBrick_Straight", _group("Walls"), a + dir * (at + 1.0) - outward * 0.42, yaw + PI)
 		at += 2.0
 	_block((a + b) / 2.0, Vector2(length, 1.0), yaw, 0.8)
 
@@ -396,6 +400,18 @@ func _yards() -> void:
 			var at := corner + Vector3(k * 2.06 - 2.06, 0, 0)
 			if _free_at(at, 0.2):
 				_place("cerca", _group("Props"), at, 0.0)
+	# fim das ruas, junto da muralha: carroça, barris, caixotes e uma árvore (a rua não termina no vazio)
+	for end: Array in [[Vector3(-HALF + 3.2, 0, -2.2), Vector3.RIGHT], [Vector3(HALF - 3.2, 0, 2.2), Vector3.LEFT], [Vector3(2.4, 0, HALF - 3.0), Vector3.FORWARD]]:
+		var at: Vector3 = end[0]
+		var look: Vector3 = end[1]
+		var side := look.cross(Vector3.UP)
+		_place("carroca", _group("Props"), at, _yaw_facing(side), 1.0)
+		_place("barris", _group("Props"), at - side * 3.4 + look * 0.2, _yaw_facing(look))
+		_place("caixote", _group("Props"), at + side * 2.8 + look * 0.6, rng.randf() * TAU)
+		_place("caixote_alto", _group("Props"), at + side * 3.6 - look * 0.2, rng.randf() * TAU, 0.8)
+		_place("arvore_pequena", _group("Trees"), at - side * 5.6 - look * 0.6, rng.randf() * TAU, 0.9)
+		_place("lanterna", _group("Lights", false), at - look * 0.5 + Vector3.UP * 2.75 + side * 1.2, _yaw_facing(look))
+		_block(at, Vector2(9, 4), 0.0)
 	# ferraria: bigorna, bancada e barris no quintal ao lado
 	var smithy := Vector3(21.5, 0, 8.2)
 	_place("bigorna", _group("Props"), smithy, 0.4)
@@ -501,7 +517,7 @@ func _outside() -> void:
 func _paint_ground() -> void:
 	# bordas macias: reduz e volta a ampliar (desfoca uns 70 cm), o shader ainda quebra com ruído
 	var soft := mask.duplicate() as Image
-	soft.resize(MASK_PX / 4, MASK_PX / 4, Image.INTERPOLATE_LANCZOS)
+	soft.resize(MASK_PX / 3, MASK_PX / 3, Image.INTERPOLATE_LANCZOS)
 	soft.resize(MASK_PX, MASK_PX, Image.INTERPOLATE_CUBIC)
 	DirAccess.make_dir_recursive_absolute(ART)
 	soft.save_png(ART + "chao_mascara.png")  # para ver/pintar à mão
@@ -549,7 +565,7 @@ func _grass() -> void:
 	var chunks := {}  # "kind|cx|cz" -> Array[Transform3D]
 	var space := level.get_world_3d().direct_space_state
 	var count := 0
-	var step := 1.4
+	var step := 1.25
 	var x := -100.0
 	while x < 100.0:
 		var z := -100.0
@@ -559,8 +575,9 @@ func _grass() -> void:
 			var m := _mask_at(p)
 			var dist := Vector2(p.x, p.z).length()
 			var keep := 0.85 if dist < 95.0 else 0.0
-			keep *= 1.0 - clampf(m.r * 1.6 + m.g * 2.0, 0.0, 1.0)
-			if rng.randf() > keep or not _free_at(p, 0.2):
+			# mato também na terra (menos) e encostado nas paredes; na calçada, não
+			keep *= (1.0 - clampf(m.g * 2.5, 0.0, 1.0)) * (1.0 - m.r * 0.7)
+			if rng.randf() > keep or not _free_at(p, -0.55):
 				continue
 			var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(p + Vector3.UP * 12.0, p + Vector3.DOWN, 1 | 4))
 			if hit.is_empty() or (hit["position"] as Vector3).y > 0.15:
