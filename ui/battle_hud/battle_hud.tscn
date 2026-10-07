@@ -8,11 +8,16 @@ content_margin_left = 14.0
 content_margin_top = 10.0
 content_margin_right = 14.0
 content_margin_bottom = 10.0
-bg_color = Color(0.16, 0.08, 0.05, 0.6)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+bg_color = Color(0.12, 0.07, 0.05, 0.84)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.82, 0.55, 0.3)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="HpFill"]
 bg_color = Color(0.85, 0.3, 0.2, 1)
@@ -118,8 +123,8 @@ grow_vertical = 0
 
 [node name="Hint" type="Label" parent="Root"]
 unique_name_in_owner = true
+theme_type_variation = &"ToastLabel"
 theme_override_font_sizes/font_size = 15
-theme_override_colors/font_color = Color(1, 0.9, 0.75, 0.8)
 horizontal_alignment = 1
 text = "Escolha: 1 ataca (+1 PA) · Q E R habilidades · A / D trocam o alvo"
 layout_mode = 1
@@ -145,7 +150,7 @@ anchor_right = 1.0
 offset_left = -310.0
 offset_top = 80.0
 offset_right = -16.0
-offset_bottom = 300.0
+offset_bottom = 80.0
 grow_horizontal = 0
 
 [node name="Enemies" type="VBoxContainer" parent="Root/EnemyPanel"]
@@ -154,24 +159,26 @@ layout_mode = 2
 theme_override_constants/separation = 10
 
 [node name="LogPanel" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
 mouse_filter = 2
 theme_override_styles/panel = SubResource("Soft")
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -460.0
+offset_left = -440.0
 offset_top = 320.0
 offset_right = -16.0
-offset_bottom = 560.0
+offset_bottom = 320.0
 grow_horizontal = 0
 
 [node name="Log" type="RichTextLabel" parent="Root/LogPanel"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-theme_override_font_sizes/normal_font_size = 13
-scroll_following = true
+theme_override_font_sizes/normal_font_size = 14
+fit_content = true
+scroll_active = false
 
 [node name="Banner" type="Label" parent="Root"]
 unique_name_in_owner = true

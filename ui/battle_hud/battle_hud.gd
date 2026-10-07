@@ -9,7 +9,7 @@ signal result_closed
 const KEYS: Array[String] = ["1", "Q", "E", "R"]
 const KEY_ACTIONS: Array[StringName] = [&"battle_attack", &"skill_q", &"skill_e", &"skill_r"]
 
-@export var log_lines: int = 8
+@export var log_lines: int = 5
 
 var _arena: BattleArena
 var _buttons: Array[Button] = []
@@ -40,6 +40,7 @@ func _ready() -> void:
 	_banner.modulate.a = 0.0
 	_actions.hide()
 	_hint.hide()
+	%LogPanel.hide()  # aparece na primeira rolagem (sem caixa vazia na tela)
 	%ResultButton.pressed.connect(func() -> void: result_closed.emit())
 
 
@@ -147,6 +148,7 @@ func log_line(line: String) -> void:
 	while _log.size() > log_lines:
 		_log.remove_at(0)
 	_log_label.text = "\n".join(_log)
+	%LogPanel.show()
 
 
 func show_result(victory: bool, text: String) -> void:

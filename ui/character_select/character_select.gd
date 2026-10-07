@@ -1,14 +1,16 @@
 extends Control
 ## Escolha de quem você vai seguir na história. Os outros heróis você encontra pelo caminho
-## e decide se chama para o grupo. Mostra o modelo girando, a ficha (D&D 5.5) e as habilidades.
+## e decide se chama para o grupo. Mostra o herói no acampamento (fundo 3D dos menus, D038), parado e respirando
+## (arraste com o mouse para girar), a ficha (D&D 5.5) e as habilidades.
 
 const KEYS: Array[String] = ["Botão esq.", "Q", "E", "R"]
-## Voltas por segundo do modelo no pedestal.
-@export var spin_speed: float = 0.35
+## Ângulo em que o herói fica virado para a câmera (graus; 0 = de frente).
+@export var facing: float = -20.0
 
 var _selected: String = ""
 var _preview: Combatant
 var _buttons: Dictionary = {}
+var _dragging: bool = false
 
 @onready var _list: VBoxContainer = %HeroList
 @onready var _pivot: Node3D = %Pivot
@@ -47,13 +49,18 @@ func select(id: String) -> void:
 	_preview = Game.hero_scene(id).instantiate() as Combatant
 	_preview.process_mode = Node.PROCESS_MODE_DISABLED
 	_pivot.add_child(_preview)
-	# o personagem fica parado no pedestal, mas respirando (animação "idle", se o modelo tiver)
+	_pivot.rotation.y = PI + deg_to_rad(facing)
+	# o personagem fica parado, mas respirando (a animação "parado" que o Animator dele usa)
+	var animator := _preview.get_node_or_null("Animator") as CombatantAnimator
+	var idle_name: StringName = animator.idle if animator else &"idle"
 	for node: Node in _preview.find_children("*", "AnimationPlayer", true, false):
 		var anim := node as AnimationPlayer
 		anim.process_mode = Node.PROCESS_MODE_ALWAYS
-		if anim.has_animation("idle"):
-			anim.get_animation("idle").loop_mode = Animation.LOOP_LINEAR
-			anim.play("idle")
+		if animator and animator.extra_library and not anim.has_animation_library(animator.extra_library_name):
+			anim.add_animation_library(animator.extra_library_name, animator.extra_library)
+		if anim.has_animation(idle_name):
+			anim.get_animation(idle_name).loop_mode = Animation.LOOP_LINEAR
+			anim.play(idle_name)
 	_name.text = _preview.display_name
 	_class.text = _preview.class_title
 	_stats.text = "CA %d   ·   PV %d   ·   Ataque +%d   ·   CD %d   ·   Deslocamento %.1f m/s\nSalvamentos: DES %+d   CON %+d   SAB %+d" % [
@@ -74,5 +81,8 @@ func select(id: String) -> void:
 	_skills.text = "\n\n".join(lines)
 
 
-func _process(delta: float) -> void:
-	_pivot.rotation.y += TAU * spin_speed * delta
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
+		_dragging = event.is_pressed()
+	elif event is InputEventMouseMotion and _dragging:
+		_pivot.rotation.y += (event as InputEventMouseMotion).relative.x * 0.01

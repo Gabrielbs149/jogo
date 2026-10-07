@@ -1,26 +1,16 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://ui/title/title_screen.gd" id="1_s"]
+[ext_resource type="PackedScene" path="res://ui/menu_fundo/fundo_menu.tscn" id="2_fundo"]
+[ext_resource type="PackedScene" path="res://ui/options/options_menu.tscn" id="3_opt"]
 
-[sub_resource type="Gradient" id="Gradient_dusk"]
-offsets = PackedFloat32Array(0, 0.55, 1)
-colors = PackedColorArray(0.16, 0.2, 0.34, 1, 0.45, 0.22, 0.14, 1, 0.92, 0.6, 0.4, 1)
+[sub_resource type="Gradient" id="Gradient_scrim"]
+offsets = PackedFloat32Array(0, 0.35, 0.62)
+colors = PackedColorArray(0.03, 0.015, 0.01, 0.82, 0.03, 0.015, 0.01, 0.55, 0.03, 0.015, 0.01, 0)
 
-[sub_resource type="GradientTexture2D" id="Sky"]
-gradient = SubResource("Gradient_dusk")
-fill_from = Vector2(0.5, 0)
-fill_to = Vector2(0.5, 1)
-
-[sub_resource type="StyleBoxFlat" id="Soft"]
-content_margin_left = 18.0
-content_margin_top = 14.0
-content_margin_right = 18.0
-content_margin_bottom = 14.0
-bg_color = Color(0.16, 0.08, 0.05, 0.55)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+[sub_resource type="GradientTexture2D" id="Scrim"]
+gradient = SubResource("Gradient_scrim")
+fill_to = Vector2(1, 0)
 
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
@@ -31,87 +21,250 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_s")
 
-[node name="Sky" type="TextureRect" parent="."]
+[node name="Fundo" parent="." instance=ExtResource("2_fundo")]
+
+[node name="Scrim" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = SubResource("Sky")
+mouse_filter = 2
+texture = SubResource("Scrim")
 expand_mode = 1
 
-[node name="Center" type="VBoxContainer" parent="."]
+[node name="Menu" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 96.0
+offset_top = -300.0
+offset_right = 620.0
+offset_bottom = 300.0
+grow_vertical = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Campaign" type="Label" parent="Menu"]
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_colors/font_color = Color(1, 0.8, 0.5, 1)
+theme_override_font_sizes/font_size = 18
+text = "A NOITE SEM NOME"
+
+[node name="Title" type="Label" parent="Menu"]
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 68
+text = "Plano do Fogo"
+
+[node name="Tagline" type="Label" parent="Menu"]
+custom_minimum_size = Vector2(460, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.82, 0.85)
+theme_override_font_sizes/font_size = 17
+text = "Cinco desconhecidos perderam as sombras no mesmo dia."
+autowrap_mode = 3
+
+[node name="Gap" type="Control" parent="Menu"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+
+[node name="Continue" type="Button" parent="Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MenuItem"
+text = "Continuar"
+alignment = 0
+
+[node name="SaveInfo" type="Label" parent="Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.86, 0.66, 0.75)
+theme_override_font_sizes/font_size = 14
+text = "Tico-Lirou · Arandu"
+
+[node name="Start" type="Button" parent="Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MenuItem"
+text = "Novo jogo"
+alignment = 0
+
+[node name="Options" type="Button" parent="Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MenuItem"
+text = "Opções"
+alignment = 0
+
+[node name="Editor" type="Button" parent="Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Monta e muda as fases (F2 dentro de uma fase também abre)"
+theme_type_variation = &"MenuItem"
+text = "Editor de mapas"
+alignment = 0
+
+[node name="Credits" type="Button" parent="Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MenuItem"
+text = "Créditos"
+alignment = 0
+
+[node name="Quit" type="Button" parent="Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MenuItem"
+text = "Sair"
+alignment = 0
+
+[node name="Version" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -40.0
+offset_right = 600.0
+offset_bottom = -16.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 0.92, 0.82, 0.55)
+theme_override_font_sizes/font_size = 13
+text = "Versão de teste"
+
+[node name="Confirm" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="Confirm"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.02, 0.015, 0.72)
+
+[node name="Panel" type="PanelContainer" parent="Confirm"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -450
-offset_top = -260
-offset_right = 450
-offset_bottom = 260
+offset_left = -280.0
+offset_top = -110.0
+offset_right = 280.0
+offset_bottom = 110.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Confirm/Panel"]
+layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="Campaign" type="Label" parent="Center"]
+[node name="Title" type="Label" parent="Confirm/Panel/VBox"]
 layout_mode = 2
 theme_type_variation = &"TitleLabel"
-theme_override_colors/font_color = Color(1, 0.86, 0.62, 0.85)
-theme_override_font_sizes/font_size = 20
-text = "A  NOITE  SEM  NOME"
+theme_override_font_sizes/font_size = 26
+text = "Começar um jogo novo?"
 horizontal_alignment = 1
 
-[node name="Title" type="Label" parent="Center"]
+[node name="ConfirmText" type="Label" parent="Confirm/Panel/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"TitleLabel"
-theme_override_font_sizes/font_size = 84
-text = "Plano do Fogo"
-horizontal_alignment = 1
-
-[node name="Tagline" type="Label" parent="Center"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 0.9, 0.78, 0.85)
-text = "Cinco desconhecidos perderam as sombras no mesmo dia. Escolha quem você vai seguir."
+text = "O jogo salvo vai ser substituído."
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="Gap" type="Control" parent="Center"]
-custom_minimum_size = Vector2(0, 30)
+[node name="Buttons" type="HBoxContainer" parent="Confirm/Panel/VBox"]
 layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
 
-[node name="Continue" type="Button" parent="Center"]
+[node name="ConfirmNo" type="Button" parent="Confirm/Panel/VBox/Buttons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(320, 54)
+custom_minimum_size = Vector2(200, 46)
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 22
-tooltip_text = "Volta para onde você parou (o jogo grava sozinho)"
-text = "Continuar"
+text = "Cancelar"
 
-[node name="Start" type="Button" parent="Center"]
+[node name="ConfirmYes" type="Button" parent="Confirm/Panel/VBox/Buttons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(320, 54)
+custom_minimum_size = Vector2(200, 46)
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 22
-text = "Novo jogo"
+text = "Começar do zero"
 
-[node name="Editor" type="Button" parent="Center"]
+[node name="CreditsPanel" type="Control" parent="."]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(320, 46)
-layout_mode = 2
-size_flags_horizontal = 4
-tooltip_text = "Monta e muda as fases (F2 dentro de uma fase também abre)"
-text = "Editor de mapas"
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Quit" type="Button" parent="Center"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(320, 46)
+[node name="Dim" type="ColorRect" parent="CreditsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.02, 0.015, 0.72)
+
+[node name="Panel" type="PanelContainer" parent="CreditsPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -380.0
+offset_top = -300.0
+offset_right = 380.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="CreditsPanel/Panel"]
 layout_mode = 2
-size_flags_horizontal = 4
-text = "Sair"
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="CreditsPanel/Panel/VBox"]
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 34
+text = "Créditos"
+
+[node name="CreditsText" type="RichTextLabel" parent="CreditsPanel/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+theme_override_font_sizes/normal_font_size = 16
+theme_override_font_sizes/bold_font_size = 17
+
+[node name="CreditsBack" type="Button" parent="CreditsPanel/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 46)
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Voltar"
+
+[node name="OptionsMenu" parent="." instance=ExtResource("3_opt")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1

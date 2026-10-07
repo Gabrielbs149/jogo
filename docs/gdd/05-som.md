@@ -18,7 +18,7 @@
 - [A DEFINIR] **Vinhetas de vitória/derrota:** escolhidas sem ouvir (Kenney "PIZZI07" e "PIZZI16"); trocar se não combinarem.
 - [A DEFINIR] **Sons próprios de cada habilidade** (hoje todo ataque usa o mesmo "golpe").
 - [A DEFINIR] **Vozes:** dublagem, murmúrios ou só texto?
-- [A DEFINIR] **Menu de opções** com os volumes dos três canais.
+- **Opções (D038):** volume geral, música, efeitos e ambiente, gravados em `user://opcoes.cfg`.
 
 ## Música
 | Onde | Faixa | Fonte |

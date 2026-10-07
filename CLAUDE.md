@@ -57,8 +57,8 @@ res://
 ├─ editor/        editor de mapas dentro do jogo (F2 numa fase ou botão na tela inicial)
 ├─ story/         cenas por roteiro: Roteiro (.tres) + CutscenePlayer; prólogo e cenas dos heróis
 ├─ levels/        fases: levels/<nome>/<nome>.tscn + levels/<nome>/art/ (arandu, ethera, arenas)
-├─ ui/            hud/, battle_hud/, title/, character_select/, theme/ (Cinzel + Lato)
-├─ systems/       game/ (autoload Game), audio/ (autoload Audio: música, ambiente, efeitos), camera/ (3ª pessoa)
+├─ ui/            hud/, battle_hud/, title/, character_select/, options/ (Opções), menu_fundo/ (cena 3D dos menus), theme/ (Cinzel + Lato)
+├─ systems/       game/ (autoload Game), audio/ (autoload Audio), settings/ (autoload Settings: opções), transition/ (autoload Transition: troca de tela com fade), camera/ (3ª pessoa)
 ├─ data/          abilities/*.tres
 ├─ assets/        o que várias cenas usam: kits/ (Quaternius + KayKit), materials/, shaders/, skies/, vfx/, fonts/, environment/
 ├─ tests/         testes GUT, espelhando as pastas do código

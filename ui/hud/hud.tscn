@@ -1,17 +1,23 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://ui/hud/hud.gd" id="1_hud"]
+[ext_resource type="PackedScene" path="res://ui/options/options_menu.tscn" id="2_opt"]
 
 [sub_resource type="StyleBoxFlat" id="Soft"]
 content_margin_left = 14.0
 content_margin_top = 10.0
 content_margin_right = 14.0
 content_margin_bottom = 10.0
-bg_color = Color(0.16, 0.08, 0.05, 0.55)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+bg_color = Color(0.12, 0.07, 0.05, 0.84)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.82, 0.55, 0.3)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="Dot"]
 bg_color = Color(1, 0.95, 0.85, 0.9)
@@ -159,26 +165,20 @@ grow_horizontal = 2
 
 [node name="Toast" type="Label" parent="Root"]
 unique_name_in_owner = true
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 0.85, 0.6, 1)
-horizontal_alignment = 1
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -300.0
-offset_top = 60.0
-offset_right = 300.0
-offset_bottom = 90.0
+offset_top = 70.0
+offset_bottom = 70.0
 grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Prompt" type="Label" parent="Root"]
-unique_name_in_owner = true
-theme_override_font_sizes/font_size = 22
+theme_type_variation = &"ToastLabel"
 horizontal_alignment = 1
+
+[node name="PromptBox" type="HBoxContainer" parent="Root"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -186,27 +186,39 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -300.0
-offset_top = -250.0
+offset_top = -170.0
 offset_right = 300.0
-offset_bottom = -215.0
+offset_bottom = -136.0
 grow_horizontal = 2
 grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="PromptKey" type="Label" parent="Root/PromptBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"Keycap"
+theme_override_font_sizes/font_size = 17
+text = "F"
+horizontal_alignment = 1
+
+[node name="Prompt" type="Label" parent="Root/PromptBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
 
 [node name="PlayerPanel" type="PanelContainer" parent="Root"]
-mouse_filter = 2
-theme_override_styles/panel = SubResource("Soft")
 layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
+anchors_preset = 2
 anchor_top = 1.0
-anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -345.0
-offset_top = -200.0
-offset_right = 345.0
-offset_bottom = -14.0
-grow_horizontal = 2
+offset_left = 24.0
+offset_top = -112.0
+offset_right = 404.0
+offset_bottom = -24.0
 grow_vertical = 0
+mouse_filter = 2
 
 [node name="VBox" type="VBoxContainer" parent="Root/PlayerPanel"]
 layout_mode = 2
@@ -222,7 +234,8 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TitleLabel"
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 17
+text_overrun_behavior = 3
 
 [node name="PlayerHpText" type="Label" parent="Root/PlayerPanel/VBox/Row"]
 unique_name_in_owner = true
@@ -243,11 +256,22 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(1, 0.9, 0.7, 0.9)
 
-[node name="SkillBar" type="HBoxContainer" parent="Root/PlayerPanel/VBox"]
+[node name="SkillBar" type="HBoxContainer" parent="Root"]
 unique_name_in_owner = true
-layout_mode = 2
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -240.0
+offset_top = -112.0
+offset_right = 240.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
 mouse_filter = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 alignment = 1
 
 [node name="PartyPanel" type="PanelContainer" parent="Root"]
@@ -280,10 +304,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -440.0
-offset_top = -200.0
-offset_right = -14.0
-offset_bottom = -14.0
+offset_left = -404.0
+offset_top = -176.0
+offset_right = -24.0
+offset_bottom = -24.0
 grow_horizontal = 0
 grow_vertical = 0
 
@@ -291,34 +315,41 @@ grow_vertical = 0
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-theme_override_font_sizes/normal_font_size = 13
+theme_override_font_sizes/normal_font_size = 14
 scroll_following = true
 fit_content = false
 
-[node name="Hint" type="Label" parent="Root"]
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(1, 0.9, 0.75, 0.6)
-text = "WASD andar · Shift correr · Mouse olhar · Botão esq. golpe (começa a luta com vantagem) · Espaço esquiva · F interagir · Esc pausa"
+[node name="Tips" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 0
-offset_left = 14.0
-offset_top = 10.0
-offset_right = 900.0
-offset_bottom = 32.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 404.0
+offset_bottom = 64.0
+mouse_filter = 2
+
+[node name="TipsList" type="VBoxContainer" parent="Root/Tips"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
 
 [node name="Story" type="PanelContainer" parent="Root"]
 unique_name_in_owner = true
 mouse_filter = 2
 theme_override_styles/panel = SubResource("Soft")
 layout_mode = 1
-anchors_preset = 5
+anchors_preset = 7
 anchor_left = 0.5
+anchor_top = 1.0
 anchor_right = 0.5
+anchor_bottom = 1.0
 offset_left = -400.0
-offset_top = 205.0
+offset_top = -300.0
 offset_right = 400.0
-offset_bottom = 330.0
+offset_bottom = -186.0
 grow_horizontal = 2
+grow_vertical = 0
 
 [node name="StoryText" type="Label" parent="Root/Story"]
 unique_name_in_owner = true
@@ -472,10 +503,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -320.0
-offset_top = -200.0
-offset_right = 320.0
-offset_bottom = 200.0
+offset_left = -230.0
+offset_top = -170.0
+offset_right = 230.0
+offset_bottom = 170.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -491,26 +522,23 @@ theme_override_font_sizes/font_size = 40
 text = "Pausado"
 horizontal_alignment = 1
 
-[node name="Controls" type="Label" parent="Root/Pause/Panel/VBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-horizontal_alignment = 1
-text = "Mapa: WASD andar · Shift correr · Mouse olhar · F interagir
-Botão esquerdo: golpe que começa a luta com vantagem
-Luta: 1 ataca · Q E R habilidades · A/D trocam o alvo
-Espaço no anel = golpe perfeito · Espaço esquiva · F apara"
-
 [node name="PauseResume" type="Button" parent="Root/Pause/Panel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 text = "Continuar"
 
+[node name="PauseOptions" type="Button" parent="Root/Pause/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Opções"
+
 [node name="PauseMenu" type="Button" parent="Root/Pause/Panel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-text = "Menu principal"
+text = "Salvar e sair para o menu"
 
 [node name="Intro" type="Control" parent="Root"]
 unique_name_in_owner = true
@@ -579,3 +607,8 @@ theme_override_colors/font_color = Color(1, 0.88, 0.7, 0.8)
 theme_override_font_sizes/font_size = 15
 text = "clique ou aperte qualquer tecla"
 horizontal_alignment = 1
+
+[node name="OptionsMenu" parent="Root" instance=ExtResource("2_opt")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1

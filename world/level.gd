@@ -130,6 +130,8 @@ func _ready() -> void:
 	controller.enabled = true
 	_camera.capture(true)
 	_hud.show_area(chapter_title)
+	if first_time:
+		_hud.show_tips()
 	if Game.pending_story != "":
 		_hud.show_story(Game.pending_story)
 		Game.pending_story = ""
