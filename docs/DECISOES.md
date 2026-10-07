@@ -6,6 +6,13 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D028: Esqueleto humanoide + animações prontas por retarget (Tico primeiro)** · 2026-10-07 · Gabriel ("as animações tão horríveis... ele segurando aquele suposto pão ta uma nojeira") · substitui a D020
+- **Por que:** a D020 fazia esqueleto e cada animação à mão em código (poses chutadas). Agora o personagem ganha um esqueleto humanoide com os nomes padrão do Godot e as **76 animações do KayKit** (feitas por animador) tocam nele pelo *retarget* do Godot (BoneMap + "Rename Bones" + "Fix Silhouette" só nos braços).
+- **Pesos:** o cálculo automático do Blender falha na malha do TRELLIS (buracos). `tools/blender/gerado/rig_tico_humanoide.py` calcula: tronco e rabo por "o ponto da pele enxerga o osso" (raio num corpo fechado por voxel), membros por região + distância, suavização pelas arestas, até 4 ossos por vértice.
+- **Arquivos:** `actors/tico_lirou/tico_lirou_humanoide.glb` (+ `mapa_ossos_tico.tres`), `assets/kits/kaykit/animacoes/humanoide.res` (biblioteca extraída por `tools/art/extrair_animacoes.gd`), mapas criados por `tools/art/criar_mapas_de_ossos.gd`. O Animator do Tico usa Idle, Walking_A, Running_A, Dualwield_Melee_Attack_Slice/Stab, Spellcast_Shoot, Use_Item, Dodge_Forward, Hit_A, Death_A. A cena do pão usa Sit_Floor_Idle; `[na mão:]` prende na palma do `RightHand`; pão remodelado (filão com cortes).
+- **Guia para fazer à mão:** `docs/GUIA_ESQUELETO.md`.
+- **Falta:** um gesto de "comer sentado" (não existe no pacote: precisaria ser animado no Blender); Tika e os outros heróis ainda sem esqueleto humanoide.
+
 **D027: Arandu replanejada como cidade de verdade** · 2026-10-07 · Gabriel ("faça o seu melhor trabalho em Arandu, pense na arquitetura da cidade"; "só ouço risada dessa cidade")
 - **Por que estava feia:** comparando com o jogo do Yoda (Unity, mesmo modelo de IA), a diferença não era o motor nem os modelos, e sim a montagem: chão de uma cor só, praça em disco duro, casas soltas no vazio, pouca vegetação e cidade sem gente.
 - **Planta:** muralha quadrada de 70 m com torres nos cantos e duas torres guardando o arco do portão norte (face de pedra para fora). Duas ruas de pedra em cruz (portão → praça → sul; oeste ↔ leste) e praça redonda com o poço, quatro barracas, bancos e árvores. Casas **coladas, de frente para a rua**, misturando estreitas de dois andares, térreas, compridas e sobrados; esquinas da praça com prédios maiores virados para o centro (Taverna, Casa do Conselho, Casa do Mercador, Capela com campanário). Ferraria com quintal, quintais com árvores e cercas, estrada de terra com cerca do portão para fora e floresta em volta.
@@ -68,7 +75,7 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 **D021: Mixamo para o Tico — testado e descartado** · 2026-10-06 · Gabriel
 O Tico foi para o Mixamo com os braços caídos e uma perna à frente: nas animações o braço entrava no corpo e o pé girava como pedal de bicicleta. Uma segunda tentativa em pose T falhou na montagem automática. O Gabriel preferiu voltar às animações por script da D020. Lição para a próxima vez: Mixamo só com o modelo em pose T, pernas retas e sem rabo/manto grande.
 
-**D020: Animação dos heróis: esqueleto e animações por script no Blender + Animator no Godot** · 2026-10-05 · Gabriel pediu as animações do Tico
+**D020: Animação dos heróis: esqueleto e animações por script no Blender + Animator no Godot** · 2026-10-05 · Gabriel pediu as animações do Tico · substituída pela D028
 - A malha do TRELLIS vem sem esqueleto. `tools/blender/gerado/animar_tico.py` monta um esqueleto de kobold (20 ossos: tronco, cabeça, braços, pernas, 3 do rabo), pesa cada vértice pela distância aos ossos com regras por região (mochila não balança com a cabeça, manto da perna vai com a perna) e cria 10 animações: `idle`, `walk`, `run`, `attack` (Adaga), `dash_strike` (Bote das sombras), `cast` (Espinhos), `hide` (Camuflagem), `dodge` (Ação ardilosa), `hit`, `down`.
 - No Godot, `CombatantAnimator` (nó `Animator` do herói) toca a certa sozinho. Nomes no Inspector, então outro herói usa o mesmo nó com as animações dele.
 - Limite: animação feita por script, sem animador de verdade; braço muito erguido estica a manga do manto. Para algo profissional: Mixamo (precisa de conta) ou animar à mão no Blender a partir de `art_src/tico_lirou_rig.blend`.

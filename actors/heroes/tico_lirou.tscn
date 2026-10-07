@@ -44,3 +44,12 @@ shape = SubResource("Capsule_body")
 
 [node name="Animator" type="Node" parent="."]
 script = ExtResource("animator")
+idle = &"Idle"
+walk = &"Walking_A"
+run = &"Running_A"
+ability_animations = Array[StringName]([&"Dualwield_Melee_Attack_Slice", &"Dualwield_Melee_Attack_Stab", &"Spellcast_Shoot", &"Use_Item"])
+dodge = &"Dodge_Forward"
+hit = &"Hit_A"
+down = &"Death_A"
+walk_reference_speed = 3.0
+run_reference_speed = 6.0

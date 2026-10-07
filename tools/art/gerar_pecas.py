@@ -318,20 +318,24 @@ s = Scene("Luz", "OmniLight3D", ["light_color = Color(1, 0.8, 0.55, 1)", "light_
 s.save("luz")
 
 # --- pão (cena do Tico) --------------------------------------------------------------------------
-CRUST, CRUMB = (0.62, 0.36, 0.14), (0.93, 0.82, 0.6)
+CRUST, CRUST_DARK, CRUMB = (0.78, 0.5, 0.22), (0.55, 0.3, 0.12), (0.95, 0.86, 0.66)
 
 
 def bread_parts(s, whole):
-    loaf = s.sub("CapsuleMesh", ("loaf",), "radius = 0.045\nheight = 0.2\nradial_segments = 12\nrings = 4")
-    half = s.sub("CapsuleMesh", ("half",), "radius = 0.045\nheight = 0.11\nradial_segments = 12\nrings = 4")
-    cut = s.sub("CylinderMesh", ("cut",), "top_radius = 0.04\nbottom_radius = 0.04\nheight = 0.004\nradial_segments = 12")
+    """Filão: oval com a base achatada, três cortes claros por cima; a metade mostra o miolo."""
+    loaf = s.sub("SphereMesh", ("loaf",), "radius = 0.05\nheight = 0.1\nradial_segments = 20\nrings = 10")
+    crumb = s.sub("CylinderMesh", ("crumb",), "top_radius = 0.046\nbottom_radius = 0.046\nheight = 0.004\nradial_segments = 20")
+    cut = s.sub("BoxMesh", ("cut",), "size = Vector3(0.012, 0.006, 0.055)")
     parent = "."
     if whole:
-        s.mesh("Inteiro", loaf, s.color(CRUST, 0.75), (0, 0, 0), (0, 0, math.pi / 2), (1, 1, 0.85))
+        s.mesh("Inteiro", loaf, s.color(CRUST, 0.7), (0, 0, 0), (0, 0, 0), (1.7, 0.72, 1.0))
+        for i, x in enumerate((-0.045, 0.0, 0.045)):
+            s.mesh("Corte%d" % i, cut, s.color((0.92, 0.74, 0.45), 0.8), (x, 0.034, 0), (0, 0.6, 0))
         s.node("Metade", "Node3D", ".", "visible = false")
         parent = "Metade"
-    s.mesh("Casca", half, s.color(CRUST, 0.75), (0, 0, 0), (0, 0, math.pi / 2), (1, 1, 0.85), parent=parent)
-    s.mesh("Miolo", cut, s.color(CRUMB, 0.95), (0.055, 0, 0), (0, 0, math.pi / 2), parent=parent)
+    s.mesh("Casca", loaf, s.color(CRUST, 0.7), (-0.02, 0, 0), (0, 0, 0), (0.95, 0.72, 1.0), parent=parent)
+    s.mesh("Miolo", crumb, s.color(CRUMB, 0.95), (0.026, 0, 0), (0, 0, math.pi / 2), (1.0, 1.0, 0.72), parent=parent)
+    s.mesh("Base", s.box((0.15, 0.004, 0.07)), s.color(CRUST_DARK, 0.8), (-0.02 if not whole else 0, -0.034, 0), parent=parent)
 
 
 s = Scene("Pao")

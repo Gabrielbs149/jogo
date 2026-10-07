@@ -1,7 +1,15 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://actors/tico_lirou/tico_lirou.glb" id="1_model"]
+[ext_resource type="PackedScene" path="res://actors/tico_lirou/tico_lirou_humanoide.glb" id="1_model"]
+[ext_resource type="AnimationLibrary" path="res://assets/kits/kaykit/animacoes/humanoide.res" id="2_anims"]
 
 [node name="TicoLirou" type="Node3D"]
 
 [node name="Mesh" parent="." instance=ExtResource("1_model")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Mesh"]
+root_node = NodePath("..")
+libraries = {
+&"": ExtResource("2_anims")
+}

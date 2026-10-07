@@ -359,16 +359,18 @@ func _attach_to_hand(thing: Node3D, who: Node3D) -> void:
 	if skeletons.is_empty():
 		return
 	var skeleton := skeletons[0] as Skeleton3D
-	var bone := skeleton.find_bone("hand_r")
-	if bone < 0:
+	var hand := "RightHand" if skeleton.find_bone("RightHand") >= 0 else "hand_r"  # esqueleto humanoide (D028) ou o antigo
+	if skeleton.find_bone(hand) < 0:
 		return
 	var holder := BoneAttachment3D.new()
 	holder.name = "Mao_" + thing.name
 	skeleton.add_child(holder)
-	holder.bone_name = "hand_r"
+	holder.bone_name = hand
 	thing.reparent(holder, false)
 	var size := holder.global_basis.get_scale()
-	thing.transform = Transform3D(Basis().scaled(Vector3(1.0 / size.x, 1.0 / size.y, 1.0 / size.z)), Vector3.ZERO)
+	# na palma, não no pulso: um pouco para a ponta do osso da mão (eixo Y do osso) e para dentro
+	var palm := Vector3(0.0, 0.075, 0.025) if hand == "RightHand" else Vector3.ZERO
+	thing.transform = Transform3D(Basis().scaled(Vector3(1.0 / size.x, 1.0 / size.y, 1.0 / size.z)).rotated(Vector3.FORWARD, PI / 2.0), palm / size)
 
 
 func _find(path: String) -> Node:

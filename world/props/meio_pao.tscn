@@ -1,39 +1,48 @@
 [gd_scene format=3]
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_1"]
-radius = 0.045
-height = 0.2
-radial_segments = 12
-rings = 4
+[sub_resource type="SphereMesh" id="SphereMesh_1"]
+radius = 0.05
+height = 0.1
+radial_segments = 20
+rings = 10
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_2"]
-radius = 0.045
-height = 0.11
-radial_segments = 12
-rings = 4
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_3"]
-top_radius = 0.04
-bottom_radius = 0.04
+[sub_resource type="CylinderMesh" id="CylinderMesh_2"]
+top_radius = 0.046
+bottom_radius = 0.046
 height = 0.004
-radial_segments = 12
+radial_segments = 20
+
+[sub_resource type="BoxMesh" id="BoxMesh_3"]
+size = Vector3(0.012, 0.006, 0.055)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
-albedo_color = Color(0.62, 0.36, 0.14, 1)
-roughness = 0.75
+albedo_color = Color(0.78, 0.5, 0.22, 1)
+roughness = 0.7
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
-albedo_color = Color(0.93, 0.82, 0.6, 1)
+albedo_color = Color(0.95, 0.86, 0.66, 1)
 roughness = 0.95
+
+[sub_resource type="BoxMesh" id="BoxMesh_6"]
+size = Vector3(0.15, 0.004, 0.07)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7"]
+albedo_color = Color(0.55, 0.3, 0.12, 1)
+roughness = 0.8
 
 [node name="Meio_pao" type="Node3D"]
 
 [node name="Casca" type="MeshInstance3D" parent="."]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 0.85, 0, 0, 0)
-mesh = SubResource("CapsuleMesh_2")
+transform = Transform3D(0.95, 0, 0, 0, 0.72, 0, 0, 0, 1, -0.02, 0, 0)
+mesh = SubResource("SphereMesh_1")
 material_override = SubResource("StandardMaterial3D_4")
 
 [node name="Miolo" type="MeshInstance3D" parent="."]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0.055, 0, 0)
-mesh = SubResource("CylinderMesh_3")
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 0.72, 0.026, 0, 0)
+mesh = SubResource("CylinderMesh_2")
 material_override = SubResource("StandardMaterial3D_5")
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.02, -0.034, 0)
+mesh = SubResource("BoxMesh_6")
+material_override = SubResource("StandardMaterial3D_7")

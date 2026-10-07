@@ -10,7 +10,7 @@ texto = "# 1ª Cena do Tico (texto do Gabriel). As linhas entre [ ] são os coma
 [mostra: Tika]
 [mostra: Pao]
 [coloca: Tico TicoSentado]
-[anima: Tico sit]
+[anima: Tico Sit_Floor_Idle]
 [na mão: Pao]
 Tela preta.
 Sons de cidade ao fundo.
@@ -47,7 +47,7 @@ Ele quebra o pão ao meio.
 Tico: \"...metade.\"
 Tika: \"Idiota.\"
 Eles comem.
-[anima: Tico sit_eat]
+[anima: Tico Sit_Floor_Idle]
 [câmera: Plano4 5]
 [pausa 1.5]
 É uma cena simples, mas já mostra a relação dos dois.
