@@ -13,7 +13,7 @@
 - **Dificuldade medida por simulação** (`tools/simulate_arena.gd`, três perfis de jogador; números na D022).
 
 ## Em aberto
-- [A DEFINIR] **Fases de início** de Naumfode, Chumasso, José Maria e Bahamut (hoje os quatro começam em Ethera).
+- [A DEFINIR] **Fases de início** de Namfoodle, Chumasso, José Maria e Bahamut (hoje os quatro começam em Ethera).
 - [A DEFINIR] **Capítulos depois de Ethera:** quais Astros, em que ordem, que lugares?
 - [A DEFINIR] **Acampamento** com Caiaque, Umu e Juca entre capítulos *(proposta)*: é uma fase própria?
 - [A DEFINIR] **Curva de dificuldade:** hoje o chefe de Ethera vence o jogador "fraco" no QTE 3 de 4 vezes. É o alvo? Dificuldade selecionável?

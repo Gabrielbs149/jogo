@@ -4,21 +4,20 @@
 > `data/abilities/` — os números abaixo são cópia para leitura; se divergirem, vale o arquivo do jogo.
 
 ## Decisões fechadas
-- **Jogáveis:** os 5 heróis da campanha — Tico-Lirou, Naumfode, Chumasso, José Maria e Bahamut (D013, D018). O jogador escolhe 1; os outros esperam pela fase e entram no grupo se chamados, mas **não lutam** (D022).
+- **Jogáveis:** os 5 heróis da campanha — Tico-Lirou, Namfoodle, Chumasso, José Maria e Bahamut (D013, D018). O jogador escolhe 1; os outros esperam pela fase e entram no grupo se chamados, mas **não lutam** (D022).
 - **Vida na arena:** heróis com 2× a vida da ficha; inimigos com a vida da ficha (D022).
 - **Habilidades:** 4 por herói (botão esquerdo, Q, E, R), com custo em Pontos de Ação (D018, D022).
-- **Modelos:** cada herói terá modelo próprio (D017). **Tico** (D028) e **Naumfode** (D032) já têm modelo final, esqueleto e animações. Chumasso, José Maria e Bahamut usam bonecos provisórios.
+- **Namfoodle** é a grafia certa (antes estava "Naumfode"). A **torreta dele é um burro**: "Invocar_Torreta" é a animação de chamar os burros. Altura de 0,95 m confirmada (D033). O id interno nos arquivos continua `naumfode`.
+- **Modelos:** cada herói terá modelo próprio (D017). **Tico** (D028) e **Namfoodle** (D032) já têm modelo final, esqueleto e animações. Chumasso, José Maria e Bahamut usam bonecos provisórios.
 - **Tico-Lirou** e **Tika-Muro**: história escrita pelo Gabriel (abaixo). A Tika foi levada (não está mais no acampamento).
 - **Moradores e figurantes** usam os personagens do KayKit (D026): Knight, Barbarian, Mage, Rogue, Rogue_Hooded.
 
 ## Em aberto
-- [A DEFINIR] **Grafias:** Chumasso ou Chumaço? Naumfode, Naumfoodle ou Namfoodle? Cindralight ou Cindralich?
+- [A DEFINIR] **Grafias:** Chumasso ou Chumaço? Cindralight ou Cindralich?
 - [A DEFINIR] **Nomes e efeitos das habilidades** são *(proposta)* (D018): batem com a ficha real de cada um na mesa?
 - [A DEFINIR] **Garras psíquicas do Tico:** trocar a Adaga por garras de energia no formato das da Tika (efeito roxo/rosa)?
 - [A DEFINIR] **Desenhos de referência / modelos** de Chumasso, José Maria e Bahamut.
-- [A DEFINIR] **Naumfode: burros ou torreta?** As habilidades dele são de burro, mas o modelo veio com a animação "Invocar_Torreta" e um aparelho roxo na mochila. Ele invoca torreta, burros, ou os dois? (hoje as habilidades usam "Disparar" e "Invocar_Torreta" como animação)
-- [A DEFINIR] **Altura do Naumfode:** o modelo tem 0,95 m (o Tico tem ~1,1 m). Fica assim?
-- [A DEFINIR] **História e começo** de Naumfode, Chumasso, José Maria e Bahamut (como a do Tico).
+- [A DEFINIR] **História e começo** de Namfoodle, Chumasso, José Maria e Bahamut (como a do Tico).
 - [A DEFINIR] **Caiaque, Umu (ou Umo?) e Juca:** quem são, aparência, jeito de falar, o que já fizeram na campanha? *(proposta)* Ficam no acampamento entre batalhas.
 - [A DEFINIR] **Fenrir:** personagem ou NPC?
 - [A DEFINIR] **Tika no jogo:** só aparece em cenas? Vira objetivo (resgate)? Jogável depois?
@@ -29,7 +28,7 @@
 | Herói | Classe (no jogo) | Vida | CA | Habilidades (esq. / Q / E / R) | Começa em |
 |---|---|---|---|---|---|
 | **Tico-Lirou** | Ladino 3 · Kobold | 44 | 15 | Adaga · Bote das sombras · Espinhos · Camuflagem | Arandu |
-| **Naumfode** | Artífice 3 | 48 | 15 | Coice de burro · Carga de burro · Burro de reparo · Estouro de burros | Ethera (provisório) |
+| **Namfoodle** | Artífice 3 | 48 | 15 | Coice de burro · Carga de burro · Burro de reparo · Estouro de burros | Ethera (provisório) |
 | **Chumasso** | Clérigo 3 (Guerra) · Golias | 60 | 18 | Martelo de guerra · Martelo sagrado · Bênção · Escudo da fé | Ethera (provisório) |
 | **José Maria** | Patrulheiro 3 | 52 | 14 | Flecha · Tiro duplo · Marca do caçador · Chuva de flechas | Ethera (provisório) |
 | **Bahamut** | Dragão dourado (voa) | 68 | 16 | Garras · Investida alada · Rugido · Sopro dourado | Ethera (provisório) |
@@ -53,7 +52,7 @@ História (texto do Gabriel, 06/10):
 Cena de abertura (D029, falas *(proposta)*): beco, fogueirinha, rato espetado assando. Tika: "Isso aí é o que eu tô pensando?" — Tico: "Depende. Você tá pensando em jantar?" — "Tô pensando que isso tava vivo de manhã." — "E agora tá crocante. Evolução." — "Pega. Fica com o bumbum." — "Você SEMPRE me dá o bumbum." — "Porque é a melhor parte." — "Porque é a única parte que você não quer." — "...Também." — "Idiota."
 
 ### Os outros heróis
-- **Naumfode:** artífice que luta com burros (burro que dá coice, que atropela, burrinho que conserta os amigos). Modelo (D032): anão de barba branca e óculos de proteção, avental de couro, luvas e mochila com um aparelho roxo; 0,95 m. Arquivo do Gabriel: `art_src/naumfode_original.glb` ("Namfoodle").
+- **Namfoodle:** artífice que luta com burros (burro que dá coice, que atropela, burrinho que conserta os amigos). Modelo (D032): anão de barba branca e óculos de proteção, avental de couro, luvas e mochila com um aparelho roxo; 0,95 m. Arquivo do Gabriel: `art_src/naumfode_original.glb` ("Namfoodle").
 - **Chumasso:** clérigo guerreiro, golias enorme; bate com o martelo e com a fé.
 - **José Maria:** patrulheiro de arco longo e perna de pau; anda devagar e erra pouco.
 - **Bahamut:** dragão; voa, morde e cospe fogo dourado.

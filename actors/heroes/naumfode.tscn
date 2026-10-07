@@ -15,9 +15,9 @@
 radius = 0.32
 height = 0.95
 
-[node name="Naumfode" type="CharacterBody3D"]
+[node name="Namfoodle" type="CharacterBody3D"]
 script = ExtResource("c_script")
-display_name = "Naumfode"
+display_name = "Namfoodle"
 hero_id = "naumfode"
 class_title = "Artífice 3"
 bio = "Artífice. Não luta sozinho: luta com burros. Burro que dá coice, burro que atropela, burrinho que conserta os amigos."
@@ -36,7 +36,7 @@ dodge_distance = 4
 dodge_cooldown = 3
 flying = false
 color = Color(0.78, 0.5, 0.25, 1)
-greeting = "Naumfode aperta um parafuso no burro. — Esse aqui não para. Precisa de ajuda com o que tem nas ruínas?"
+greeting = "Namfoodle aperta um parafuso no burro. — Esse aqui não para. Precisa de ajuda com o que tem nas ruínas?"
 
 [node name="Shape" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.475, 0)

@@ -15,7 +15,7 @@ const TICO := ["Root", "Hips", "Spine", "Chest", "Neck", "Head", "LeftUpperArm",
 	"RightUpperArm", "RightLowerArm", "RightHand", "LeftUpperLeg", "LeftLowerLeg", "LeftFoot",
 	"RightUpperLeg", "RightLowerLeg", "RightFoot"]
 
-## Naumfode (D032): esqueleto que veio com o modelo (nomes no estilo do Rigify).
+## Namfoodle (D032): esqueleto que veio com o modelo (nomes no estilo do Rigify).
 const NAUMFODE := {
 	"Root": "root", "Hips": "hips", "Spine": "spine", "Chest": "chest", "Neck": "neck", "Head": "head",
 	"LeftShoulder": "shoulder.L", "LeftUpperArm": "upper_arm.L", "LeftLowerArm": "forearm.L", "LeftHand": "hand.L",

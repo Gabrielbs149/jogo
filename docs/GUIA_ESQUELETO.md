@@ -2,7 +2,7 @@
 
 A ideia: o personagem ganha um **esqueleto humanoide padrão** (nomes de osso iguais aos do Godot) e as animações
 **não são feitas à mão** — vêm prontas de outro personagem (KayKit, 76 animações) pelo *retarget* do Godot.
-Serve para qualquer personagem de duas pernas e dois braços (Tico, Tika, Naumfode, José Maria...).
+Serve para qualquer personagem de duas pernas e dois braços (Tico, Tika, Namfoodle, José Maria...).
 
 ## Jeito rápido (o que o Claude roda)
 1. Modelo no Blender em `art_src/<nome>.blend`, um objeto só, **pés no chão (Z = 0)**, olhando para **+Y**.
@@ -37,7 +37,7 @@ vá no **Pintar pesos** (selecione o modelo, *Weight Paint*), escolha o osso na 
 **4. Exportar.** *Arquivo → Exportar → glTF (.glb)*, marcando "Selecionados", "+Y para cima", sem animações.
 Salve em `actors/<nome>/` e siga os passos 3 a 5 do jeito rápido.
 
-## Personagem que já vem com esqueleto e animações (ex.: Naumfode, D032)
+## Personagem que já vem com esqueleto e animações (ex.: Namfoodle, D032)
 1. Copie o `.glb` para `art_src/` e prepare com um script como `tools/blender/gerado/preparar_naumfode.py` (tira sobras, corrige material).
 2. Crie o mapa de ossos dele em `tools/art/criar_mapas_de_ossos.gd` (nome do osso dele → osso padrão) e ligue no import (*Retarget → Bone Map*).
 3. No `Animator` do herói: use os nomes das animações dele e, no campo **Extra Library**, a biblioteca do KayKit para o que faltar (nome com prefixo: `kaykit/Dodge_Forward`).

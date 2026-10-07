@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_ability")
 title = "Burro de reparo"
-description = "Um burrinho mecânico conserta um aliado na mira (sem ninguém na mira: quem está pior, ou o próprio Naumfode). Levanta quem caiu."
+description = "Um burrinho mecânico conserta um aliado na mira (sem ninguém na mira: quem está pior, ou o próprio Namfoodle). Levanta quem caiu."
 dnd_note = "Magia de 1º círculo (Curar ferimentos)"
 kind = 1
 shape = 0

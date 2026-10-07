@@ -47,7 +47,7 @@
 | Tico-Lirou | `actors/tico_lirou/` (`tico_lirou_humanoide.glb`, fonte em `art_src/`) | final |
 | Tika-Muro | `actors/tika_muro/` | modelo sem esqueleto |
 | Rato assado, pão | `actors/props/rato/`, `world/props/pao.tscn` | em uso / fora da cena |
-| Naumfode | `actors/naumfode/` (`naumfode.glb`, preparado por `tools/blender/gerado/preparar_naumfode.py`) | final, com animações próprias |
+| Namfoodle | `actors/naumfode/` (`naumfode.glb`, preparado por `tools/blender/gerado/preparar_naumfode.py`) | final, com animações próprias |
 | Chumasso, José Maria, Bahamut | `actors/heroes/` | provisórios |
 | Inimigos de Ethera | `actors/enemies/` | provisórios |
 | Fontes Cinzel e Lato | `assets/fonts/` | em uso |
