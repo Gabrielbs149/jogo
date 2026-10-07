@@ -98,7 +98,7 @@ func _widow() -> Node3D:
 	# a porta fica no meio da frente (-Z da casa); ela espera um passo para fora, olhando para a rua
 	var spot := house.global_transform * Vector3(0, 0, -3.7)
 	var out := -house.global_basis.z
-	widow.global_transform = Transform3D(Basis(Vector3.UP, atan2(-out.x, -out.z) + PI), spot)
+	widow.global_transform = Transform3D(Basis(Vector3.UP, atan2(-out.x, -out.z)), spot)  # de costas para a porta, olhando a rua
 	var talk := widow.get_node("Talk")
 	talk.set("action", 4)  # Interactable.Action.QUEST
 	talk.set("prompt_text", "Falar com a viúva")

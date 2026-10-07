@@ -20,6 +20,10 @@ const MASK_PX := 1024
 const HALF := 46.0  # muralha: quadrado de 92 m
 const AVE := 5.5  # meia largura das avenidas
 const PLAZA := 17.5  # meia largura da praça
+## Quanto sobe quem senta no banco da praça (assento a 0,58 m; o "sentado" do KayKit na escala 0,6 senta a ~0,3 m).
+const SIT_LIFT := 0.35
+## Quanto quem senta vai para a frente (medido: com 0,04 m as pernas caem pela beira do assento).
+const SIT_FORWARD := 0.04
 ## Chaminés das casas do kit (ponto de onde sai a fumaça, no espaço da peça).
 const CHIMNEY := {
 	"casa": Vector3(1.8, 6.6, 1.4), "casa_barro": Vector3(1.8, 6.6, 1.4), "casa_grande": Vector3(2.8, 9.7, 2.4),
@@ -291,7 +295,7 @@ func _plaza() -> void:
 			var bench := Vector3(cos(b), 0, sin(b)) * 9.2
 			_place("banco_praca", plaza, bench, _yaw_facing(-bench.normalized()) + PI, 1.0, "Banco")
 			_block(bench, Vector2(2.2, 2.2), 0.0)
-			spots["banco_%d_%d" % [i, int(side)]] = Transform3D(Basis(Vector3.UP, _yaw_facing(-bench.normalized())), bench - bench.normalized() * 0.1)
+			spots["banco_%d_%d" % [i, int(side)]] = Transform3D(Basis(Vector3.UP, _yaw_facing(-bench.normalized())), bench + Vector3.UP * SIT_LIFT - bench.normalized() * SIT_FORWARD)
 	# postes de luz em volta (8) e nas entradas da praça
 	for i: int in 8:
 		var a := PI / 8.0 + i * PI / 4.0
@@ -320,7 +324,7 @@ func _plaza() -> void:
 	_block(Vector3(-PLAZA + 3.0, 0, -9.5), Vector2(2, 2), 0.2)
 	_place("placa_rua1", plaza, Vector3(-PLAZA + 2.4, 0, 9.0), PI / 2.0, 1.0, "Placa")
 	# placas de direção nas entradas
-	for spot: Array in [[Vector3(AVE + 1.2, 0, -PLAZA - 1.0), PI], [Vector3(-AVE - 1.2, 0, PLAZA + 1.0), 0.0]]:
+	for spot: Array in [[Vector3(9.4, 0, -PLAZA + 1.0), PI], [Vector3(-9.4, 0, PLAZA - 1.0), 0.0]]:
 		_place("placa_rua1", plaza, spot[0], spot[1], 1.0, "PlacaDirecao")
 
 
@@ -451,8 +455,8 @@ func _quarters() -> void:
 	var saw := _landmark("serraria", Vector3(inner + 1.0, 0, inner + 1.0), Vector3.FORWARD, "Serraria")
 	if saw:
 		_path(Vector2(inner, AVE), Vector2(inner, inner - 6.0), 3.2)
-		for k: int in 3:
-			_place("tronco_seco", _group("Props"), Vector3(inner - 6.0 + k * 1.2, 0, inner - 6.5), PI / 2.0 + rng.randf_range(-0.1, 0.1), 0.8, "Tora")
+		_kit("objetos/Barrel", _group("Props"), Vector3(inner - 6.0, 0, inner - 6.5), 0.0)
+		_place("caixote_alto", _group("Props"), Vector3(inner - 4.6, 0, inner - 6.8), 0.3)
 	# sudoeste: jardim da capela com estátua, gazebo de pedra e um poço com telhado
 	var garden := Vector3(-inner, 0, inner)
 	_path(Vector2(-AVE, inner), Vector2(-inner + 4.0, inner), 3.0)
@@ -589,8 +593,8 @@ func _story_spots() -> void:
 	cardboard.position = spot + Vector3(0, 0.02, 0.15)
 	var cup := _kit("objetos/Mug", corner, spot + Vector3(0.9, 0, 0.9), 0.4, 1.0, false)
 	cup.name = "Cup"
-	_place("caixote", corner, Vector3(tico_alley.position.x + 0.6, 0, tico_alley.end.y - 0.6), 0.3, 0.8, "Crate1")
-	_place("barril", corner, Vector3(tico_alley.position.x + 0.5, 0, tico_alley.end.y - 1.6), 0.0, 1.0, "Barrel")
+	# caixote e barril no fundo do beco, longe da boca (de onde as câmeras da cena olham)
+	_place("caixote", corner, Vector3(tico_alley.position.x + 0.55, 0, tico_alley.end.y - 0.5), 0.3, 0.8, "Crate1")
 	for k: int in 2:
 		_kit("vila/Wall_UnevenBrick_Straight", corner, Vector3(tico_alley.position.x - 0.2, 0, tico_alley.position.y + 0.6 + k * 2.0), PI / 2.0)
 	var look := corner.get_node_or_null("Look") as Node3D
@@ -651,7 +655,7 @@ func _crowd() -> void:
 	for key: String in ["banco_0_-1", "banco_2_1"]:
 		if spots.has(key):
 			var t: Transform3D = spots[key]
-			_figurante(t.origin, t.origin - t.basis.z * 3.0, ["Mage", "Rogue_Hooded"][int(key == "banco_2_1")], "Sit_Chair_Idle", "", 0.6, "Sentado")
+			_figurante(t.origin, t.origin - t.basis.z * 3.0 + Vector3.DOWN * SIT_LIFT, ["Mage", "Rogue_Hooded"][int(key == "banco_2_1")], "Sit_Chair_Idle", "", 0.6, "Sentado")
 	# conversa na porta da taverna e da estalagem
 	for h: Dictionary in houses:
 		var node: Node3D = h["node"]

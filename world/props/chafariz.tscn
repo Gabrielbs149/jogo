@@ -3,6 +3,7 @@
 [ext_resource type="Material" path="res://assets/materials/pedra_poco.tres" id="1_pedra_poco"]
 [ext_resource type="Material" path="res://assets/materials/calcada.tres" id="2_calcada"]
 [ext_resource type="PackedScene" path="res://assets/kits/polypizza/Low-Poly-Outdoor-Garden-Decorations/Water_Fountain.glb" id="3_Water_Fountain"]
+[ext_resource type="PackedScene" path="res://assets/vfx/agua_chafariz.tscn" id="4_agua_chafariz"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_1"]
 top_radius = 6.4
@@ -16,33 +17,20 @@ bottom_radius = 5.96
 height = 0.36
 radial_segments = 40
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_3"]
-top_radius = 3.9
-bottom_radius = 4
-height = 0.75
-radial_segments = 40
+[sub_resource type="BoxMesh" id="BoxMesh_3"]
+size = Vector3(1.59163, 0.75, 0.38)
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_4"]
-top_radius = 3.65
-bottom_radius = 3.65
-height = 0.05
-radial_segments = 40
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(1.63163, 0.08, 0.5)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5"]
-albedo_color = Color(0.25, 0.48, 0.55, 1)
-roughness = 0.08
-emission_enabled = true
-emission = Color(0.12, 0.3, 0.38, 1)
-emission_energy_multiplier = 0.25
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_6"]
+[sub_resource type="CylinderMesh" id="CylinderMesh_5"]
 top_radius = 3.7
 bottom_radius = 3.7
-height = 0.5
-radial_segments = 40
+height = 0.3
+radial_segments = 32
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7"]
-albedo_color = Color(0.2, 0.26, 0.24, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
+albedo_color = Color(0.14, 0.2, 0.2, 1)
 roughness = 0.9
 
 [node name="Chafariz" type="Node3D" groups=["colisao_auto"]]
@@ -57,20 +45,173 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18, 0)
 mesh = SubResource("CylinderMesh_2")
 material_override = ExtResource("2_calcada")
 
-[node name="Borda" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.735, 0)
-mesh = SubResource("CylinderMesh_3")
+[node name="Mureta" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.735, 3.85)
+mesh = SubResource("BoxMesh_3")
 material_override = ExtResource("1_pedra_poco")
 
-[node name="Agua" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-mesh = SubResource("CylinderMesh_4")
-material_override = SubResource("StandardMaterial3D_5")
+[node name="Capa" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 3.85)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9239, 0, 0.3827, 0, 1, 0, -0.3827, 0, 0.9239, 1.4733, 0.735, 3.5569)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9239, 0, 0.3827, 0, 1, 0, -0.3827, 0, 0.9239, 1.4733, 1.15, 3.5569)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta3" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, 0.7071, 2.7224, 0.735, 2.7224)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa3" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, 0.7071, 2.7224, 1.15, 2.7224)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta4" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.3827, 0, 0.9239, 0, 1, 0, -0.9239, 0, 0.3827, 3.5569, 0.735, 1.4733)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa4" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.3827, 0, 0.9239, 0, 1, 0, -0.9239, 0, 0.3827, 3.5569, 1.15, 1.4733)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta5" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 3.85, 0.735, 0)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa5" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 3.85, 1.15, 0)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta6" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.3827, 0, 0.9239, 0, 1, 0, -0.9239, 0, -0.3827, 3.5569, 0.735, -1.4733)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa6" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.3827, 0, 0.9239, 0, 1, 0, -0.9239, 0, -0.3827, 3.5569, 1.15, -1.4733)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta7" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, -0.7071, 2.7224, 0.735, -2.7224)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa7" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, -0.7071, 2.7224, 1.15, -2.7224)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta8" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.9239, 0, 0.3827, 0, 1, 0, -0.3827, 0, -0.9239, 1.4733, 0.735, -3.5569)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa8" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.9239, 0, 0.3827, 0, 1, 0, -0.3827, 0, -0.9239, 1.4733, 1.15, -3.5569)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta9" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.735, -3.85)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa9" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.15, -3.85)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta10" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.9239, 0, -0.3827, 0, 1, 0, 0.3827, 0, -0.9239, -1.4733, 0.735, -3.5569)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa10" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.9239, 0, -0.3827, 0, 1, 0, 0.3827, 0, -0.9239, -1.4733, 1.15, -3.5569)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta11" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, -0.7071, -2.7224, 0.735, -2.7224)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa11" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, -0.7071, -2.7224, 1.15, -2.7224)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta12" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.3827, 0, -0.9239, 0, 1, 0, 0.9239, 0, -0.3827, -3.5569, 0.735, -1.4733)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa12" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.3827, 0, -0.9239, 0, 1, 0, 0.9239, 0, -0.3827, -3.5569, 1.15, -1.4733)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta13" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -3.85, 0.735, 0)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa13" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -3.85, 1.15, 0)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta14" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.3827, 0, -0.9239, 0, 1, 0, 0.9239, 0, 0.3827, -3.5569, 0.735, 1.4733)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa14" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.3827, 0, -0.9239, 0, 1, 0, 0.9239, 0, 0.3827, -3.5569, 1.15, 1.4733)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta15" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, 0.7071, -2.7224, 0.735, 2.7224)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa15" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, 0.7071, -2.7224, 1.15, 2.7224)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
+
+[node name="Mureta16" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9239, 0, -0.3827, 0, 1, 0, 0.3827, 0, 0.9239, -1.4733, 0.735, 3.5569)
+mesh = SubResource("BoxMesh_3")
+material_override = ExtResource("1_pedra_poco")
+
+[node name="Capa16" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9239, 0, -0.3827, 0, 1, 0, 0.3827, 0, 0.9239, -1.4733, 1.15, 3.5569)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("2_calcada")
 
 [node name="Fundo" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
-mesh = SubResource("CylinderMesh_6")
-material_override = SubResource("StandardMaterial3D_7")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.51, 0)
+mesh = SubResource("CylinderMesh_5")
+material_override = SubResource("StandardMaterial3D_6")
 
 [node name="Fonte" parent="." instance=ExtResource("3_Water_Fountain")]
 transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 0, 3.92, 0)
+
+[node name="Agua" parent="." instance=ExtResource("4_agua_chafariz")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

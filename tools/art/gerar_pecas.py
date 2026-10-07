@@ -379,25 +379,41 @@ s.glb(MV + "Well", (0, 0.75, 0), math.pi, K_MV, name="Modelo")
 s.save("poco_telhado")
 
 
-def stall(file, title, model, goods, cover_y=1.05):
-    """Banca de feira com mercadoria por cima do balcão. goods: lista de (pacote/modelo, escala)."""
-    s = Scene(title, groups=AUTO)
-    s.glb(MV + model, (0, 0, 0), math.pi, K_MV, name="Banca")
+COUNTER_Y = 0.765  # tampo do balcão da Market_Stand_2 (medido nos vértices)
+
+
+def crate_of(s, item, scale, at, lying=False):
+    """Caixote raso cheio de uma mercadoria (duas camadas), apoiado no balcão em `at`."""
+    x, y, z = at
+    s.piece("objetos/FarmCrate_Empty", (x, y, z), 0.0, 1.0, name="Caixote")
     k = 0
-    for gx in (-0.95, -0.45, 0.05, 0.55, 1.0):
-        for gz in (-0.25, 0.15):
-            path, sc = goods[k % len(goods)]
-            s.glb(path, (gx, cover_y, gz), 0.7 * k, sc, name="Mercadoria")
-            k += 1
+    for layer in range(2):
+        for i in range(5):
+            for j in range(3):
+                jitter = ((k * 37) % 7 - 3) * 0.006
+                rot = (math.pi / 2, k * 1.7, 0) if lying else (0, k * 1.7, 0)
+                s.glb(item, (x - 0.24 + i * 0.12 + jitter + layer * 0.06, y + 0.06 + layer * 0.06, z - 0.11 + j * 0.11 - jitter), rot, scale, name="Mercadoria")
+                k += 1
+
+
+def stall(file, title, crates=(), loaves=()):
+    """Banca de feira: caixotes cheios em cima do balcão (frutas, verduras) ou pães enfileirados na tábua."""
+    s = Scene(title, groups=AUTO)
+    s.glb(MV + "Market_Stand_2", (0, 0, 0), math.pi, K_MV, name="Banca")
+    for k, (item, sc, lying) in enumerate(crates):
+        crate_of(s, item, sc, (-0.85 + k * 0.85, COUNTER_Y, -0.25), lying)
+    for k, (item, sc, rot) in enumerate(loaves):
+        s.glb(item, (-1.0 + (k % 6) * 0.4, COUNTER_Y, -0.45 + (k // 6) * 0.35), (0, rot + k * 0.3, 0), sc, name="Mercadoria")
     for x in (-1.6, 1.6):
-        s.piece("objetos/FarmCrate_Empty", (x, 0, -1.1), 0.2 * x, 1.0, name="Caixote")
+        s.piece("objetos/FarmCrate_Empty", (x, 0, -1.1), 0.2 * x, 1.0, name="CaixoteChao")
     s.save(file)
 
 
-stall("banca_frutas", "Banca_frutas", "Market_Stand_2", [(FOOD + "Apple", 0.45), (FOOD + "Pear", 0.45), (FOOD + "Watermelon", 0.45), (FOOD + "Cherries", 0.45), (FOOD + "Lemon", 0.45)])
-stall("banca_verduras", "Banca_verduras", "Market_Stand_2", [(FOOD + "Cabbage", 0.45), (FOOD + "Carrot", 0.4), (FOOD + "Pumpkin", 0.5), (FOOD + "Eggplant", 0.45), (FOOD + "Corn", 0.45), (FOOD + "Leek", 0.4)])
-stall("banca_paes", "Banca_paes", "Market_Stand_2", [("Baked-Goods/Bread", 0.45), ("Baked-Goods/Baguette", 0.45), ("Baked-Goods/Bread_Roll", 0.5), ("Baked-Goods/Pie_Apple", 0.35), ("Baked-Goods/Croissant", 0.4)])
-stall("banca_peixe", "Banca_peixe", "Market_Stand_2", [(FOOD + "Fish", 0.6), (FOOD + "Fish", 0.6), (FOOD + "Onion", 0.45)])
+stall("banca_frutas", "Banca_frutas", crates=[(FOOD + "Apple", 0.45, False), (FOOD + "Pear", 0.45, False), (FOOD + "Lemon", 0.45, False)])
+stall("banca_verduras", "Banca_verduras", crates=[(FOOD + "Cabbage", 0.42, False), (FOOD + "Carrot", 0.35, True), (FOOD + "Onion", 0.45, False)])
+stall("banca_paes", "Banca_paes", loaves=[("Baked-Goods/Bread", 0.45, 0.0), ("Baked-Goods/Baguette", 0.42, 1.57), ("Baked-Goods/Bread_Roll", 0.5, 0.0),
+                                           ("Baked-Goods/Pie_Apple", 0.32, 0.0), ("Baked-Goods/Croissant", 0.4, 0.4), ("Baked-Goods/Bread", 0.45, 0.6)] * 2)
+stall("banca_peixe", "Banca_peixe", crates=[(FOOD + "Fish", 0.55, False), (FOOD + "Fish", 0.55, False), (FOOD + "Onion", 0.45, False)])
 s = Scene("Carroca_feira", groups=AUTO)
 s.glb(MV + "Cart", (0, 0, 0), math.pi, K_MV, name="Carroca")
 for k, (x, z) in enumerate(((-0.25, -0.2), (0.15, 0.1), (-0.1, 0.35), (0.3, -0.3))):
@@ -409,10 +425,16 @@ s = Scene("Chafariz", groups=AUTO)
 stone = s.mat("pedra_poco")
 for k, (r, h) in enumerate(((6.4, 0.18), (5.9, 0.36))):
     s.mesh("Degrau", s.cyl(r, r + 0.06, h, 40), s.mat("calcada"), (0, h / 2, 0))
-s.mesh("Borda", s.cyl(3.9, 4.0, 0.75, 40), stone, (0, 0.36 + 0.375, 0))
-s.mesh("Agua", s.cyl(3.65, 3.65, 0.05, 40), s.color((0.25, 0.48, 0.55), 0.08, ((0.12, 0.3, 0.38), 0.25)), (0, 1.0, 0))
-s.mesh("Fundo", s.cyl(3.7, 3.7, 0.5, 40), s.color((0.2, 0.26, 0.24), 0.9), (0, 0.65, 0))
+# bacia: mureta de 16 lados (oca), com o fundo escuro mais baixo e a água à vista
+for k in range(16):
+    ang = k * 2 * math.pi / 16
+    s.mesh("Mureta", s.box((2 * 3.85 * math.tan(math.pi / 16) + 0.06, 0.75, 0.38)), stone,
+           (math.sin(ang) * 3.85, 0.36 + 0.375, math.cos(ang) * 3.85), (0, ang, 0))
+    s.mesh("Capa", s.box((2 * 3.85 * math.tan(math.pi / 16) + 0.1, 0.08, 0.5)), s.mat("calcada"),
+           (math.sin(ang) * 3.85, 1.15, math.cos(ang) * 3.85), (0, ang, 0))
+s.mesh("Fundo", s.cyl(3.7, 3.7, 0.3, 32), s.color((0.14, 0.2, 0.2), 0.9), (0, 0.51, 0))
 s.glb(GD + "Water_Fountain", (0, 0.92 + 1.25 * 2.4, 0), 0.0, 2.4, name="Fonte")
+s.scene("Agua", "res://assets/vfx/agua_chafariz.tscn", (0, 0, 0))
 s.save("chafariz")
 
 s = Scene("Estatua", groups=AUTO)

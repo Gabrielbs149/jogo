@@ -15,37 +15,43 @@
 transform = Transform3D(-3, 0, 0, 0, 3, 0, 0, 0, -3, 0, 0, 0)
 
 [node name="Mercadoria" parent="." instance=ExtResource("2_Bread")]
-transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, -0.95, 1.05, -0.25)
+transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, -1, 0.765, -0.45)
 
 [node name="Mercadoria2" parent="." instance=ExtResource("3_Baguette")]
-transform = Transform3D(0.3442, 0, 0.2899, 0, 0.45, 0, -0.2899, 0, 0.3442, -0.95, 1.05, 0.15)
+transform = Transform3D(-0.1238, 0, 0.4013, 0, 0.42, 0, -0.4013, 0, -0.1238, -0.6, 0.765, -0.45)
 
 [node name="Mercadoria3" parent="." instance=ExtResource("4_Bread_Roll")]
-transform = Transform3D(0.085, 0, 0.4927, 0, 0.5, 0, -0.4927, 0, 0.085, -0.45, 1.05, -0.25)
+transform = Transform3D(0.4127, 0, 0.2823, 0, 0.5, 0, -0.2823, 0, 0.4127, -0.2, 0.765, -0.45)
 
 [node name="Mercadoria4" parent="." instance=ExtResource("5_Pie_Apple")]
-transform = Transform3D(-0.1767, 0, 0.3021, 0, 0.35, 0, -0.3021, 0, -0.1767, -0.45, 1.05, 0.15)
+transform = Transform3D(0.1989, 0, 0.2507, 0, 0.32, 0, -0.2507, 0, 0.1989, 0.2, 0.765, -0.45)
 
 [node name="Mercadoria5" parent="." instance=ExtResource("6_Croissant")]
-transform = Transform3D(-0.3769, 0, 0.134, 0, 0.4, 0, -0.134, 0, -0.3769, 0.05, 1.05, -0.25)
+transform = Transform3D(-0.0117, 0, 0.3998, 0, 0.4, 0, -0.3998, 0, -0.0117, 0.6, 0.765, -0.45)
 
 [node name="Mercadoria6" parent="." instance=ExtResource("2_Bread")]
-transform = Transform3D(-0.4214, 0, -0.1579, 0, 0.45, 0, 0.1579, 0, -0.4214, 0.05, 1.05, 0.15)
+transform = Transform3D(-0.2272, 0, 0.3884, 0, 0.45, 0, -0.3884, 0, -0.2272, 1, 0.765, -0.45)
 
-[node name="Mercadoria7" parent="." instance=ExtResource("3_Baguette")]
-transform = Transform3D(-0.2206, 0, -0.3922, 0, 0.45, 0, 0.3922, 0, -0.2206, 0.55, 1.05, -0.25)
+[node name="Mercadoria7" parent="." instance=ExtResource("2_Bread")]
+transform = Transform3D(-0.1022, 0, 0.4382, 0, 0.45, 0, -0.4382, 0, -0.1022, -1, 0.765, -0.1)
 
-[node name="Mercadoria8" parent="." instance=ExtResource("4_Bread_Roll")]
-transform = Transform3D(0.0933, 0, -0.4912, 0, 0.5, 0, 0.4912, 0, 0.0933, 0.55, 1.05, 0.15)
+[node name="Mercadoria8" parent="." instance=ExtResource("3_Baguette")]
+transform = Transform3D(-0.3627, 0, -0.2117, 0, 0.42, 0, 0.2117, 0, -0.3627, -0.6, 0.765, -0.1)
 
-[node name="Mercadoria9" parent="." instance=ExtResource("5_Pie_Apple")]
-transform = Transform3D(0.2714, 0, -0.2209, 0, 0.35, 0, 0.2209, 0, 0.2714, 1, 1.05, -0.25)
+[node name="Mercadoria9" parent="." instance=ExtResource("4_Bread_Roll")]
+transform = Transform3D(-0.3687, 0, 0.3377, 0, 0.5, 0, -0.3377, 0, -0.3687, -0.2, 0.765, -0.1)
 
-[node name="Mercadoria10" parent="." instance=ExtResource("6_Croissant")]
-transform = Transform3D(0.3999, 0, 0.0067, 0, 0.4, 0, -0.0067, 0, 0.3999, 1, 1.05, 0.15)
+[node name="Mercadoria10" parent="." instance=ExtResource("5_Pie_Apple")]
+transform = Transform3D(-0.2893, 0, 0.1368, 0, 0.32, 0, -0.1368, 0, -0.2893, 0.2, 0.765, -0.1)
 
-[node name="Caixote" parent="." instance=ExtResource("7_FarmCrate_Empt")]
+[node name="Mercadoria11" parent="." instance=ExtResource("6_Croissant")]
+transform = Transform3D(-0.3867, 0, -0.1022, 0, 0.4, 0, 0.1022, 0, -0.3867, 0.6, 0.765, -0.1)
+
+[node name="Mercadoria12" parent="." instance=ExtResource("2_Bread")]
+transform = Transform3D(-0.3267, 0, -0.3095, 0, 0.45, 0, 0.3095, 0, -0.3267, 1, 0.765, -0.1)
+
+[node name="CaixoteChao" parent="." instance=ExtResource("7_FarmCrate_Empt")]
 transform = Transform3D(0.9492, 0, -0.3146, 0, 1, 0, 0.3146, 0, 0.9492, -1.6, 0, -1.1)
 
-[node name="Caixote2" parent="." instance=ExtResource("7_FarmCrate_Empt")]
+[node name="CaixoteChao2" parent="." instance=ExtResource("7_FarmCrate_Empt")]
 transform = Transform3D(0.9492, 0, 0.3146, 0, 1, 0, -0.3146, 0, 0.9492, 1.6, 0, -1.1)
