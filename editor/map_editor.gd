@@ -17,46 +17,65 @@ const SYSTEM: Array[String] = ["WorldEnvironment", "Sun", "Navigation", "CameraR
 ## Peças do catálogo: arquivo em world/props -> [nome no botão, categoria, grupo da fase onde entra, varia ao colocar, dica].
 ## Peça nova em world/props aparece sozinha em "Outras".
 const CATALOG: Dictionary[String, Array] = {
-	"casa": ["Casa", "Construções", "Buildings", false, "Casa de reboco com telhado de barro"],
-	"casa_grande": ["Sobrado", "Construções", "Buildings", false, "Casa grande de dois andares (taverna, armazém)"],
-	"casa_barro": ["Casa de barro", "Construções", "Buildings", false, "Casa de reboco de barro com telhado de barro"],
-	"casa_grande_barro": ["Sobrado de barro", "Construções", "Buildings", false, "Sobrado de reboco de barro"],
-	"muro": ["Muro", "Construções", "Walls", false, "Pedaço de muralha de 6 m"],
-	"portao": ["Portão", "Construções", "Walls", false, "Portão de madeira e ferro (2 x 3 m)"],
-	"marquise": ["Marquise", "Construções", "Buildings", false, "Cobertura presa na parede (encoste o lado de trás na parede)"],
-	"barraca": ["Barraca", "Construções", "Market", false, "Barraca de feira com toldo e mercadorias"],
-	"poco": ["Poço", "Construções", "Buildings", false, "Poço de pedra com telhadinho de palha"],
+	"casa": ["Casa", "Construções", "Buildings", false, "Casa de reboco com telhado de telha (6 x 6 m)"],
+	"casa_barro": ["Casa de pedra", "Construções", "Buildings", false, "Casa de pedra com telhado de telha (6 x 6 m)"],
+	"casa_grande": ["Sobrado", "Construções", "Buildings", false, "Sobrado de dois andares, pedra embaixo e reboco em cima (8 x 8 m)"],
+	"casa_grande_barro": ["Sobrado enxaimel", "Construções", "Buildings", false, "Sobrado com o andar de cima em enxaimel (8 x 8 m)"],
+	"muro": ["Muro", "Construções", "Walls", false, "Muro de pedra de 6 m"],
+	"portao": ["Portão", "Construções", "Walls", false, "Arco de passagem entre muros"],
+	"marquise": ["Marquise", "Construções", "Buildings", false, "Cobertura de madeira presa na parede (encoste o lado de trás na parede)"],
+	"barraca": ["Barraca", "Construções", "Market", false, "Barraca de feira com frutas"],
+	"barraca_carroca": ["Carrinho de feira", "Construções", "Market", false, "Carrinho de vendedor"],
+	"poco": ["Poço", "Construções", "Buildings", false, "Poço de pedra com telhadinho"],
 	"pilar": ["Pilar", "Construções", "Ruins", false, "Pilar de arenito (ruínas)"],
-	"arvore": ["Árvore", "Natureza", "Trees", true, "Árvore-aljava (cada uma sai um pouco diferente)"],
-	"arvore_pequena": ["Árvore nova", "Natureza", "Trees", true, "Árvore-aljava pequena"],
-	"tronco_seco": ["Tronco seco", "Natureza", "Trees", true, "Tronco morto em pé"],
-	"toco": ["Toco", "Natureza", "Trees", true, "Toco de árvore cortada"],
-	"suculenta": ["Suculenta", "Natureza", "Trees", true, "Moita de suculentas, sem colisão"],
-	"arbusto": ["Arbusto", "Natureza", "Trees", true, "Arbusto seco, sem colisão"],
-	"arbusto_baixo": ["Moita", "Natureza", "Trees", true, "Moita baixa, sem colisão"],
-	"rocha": ["Rocha", "Natureza", "Rocks", true, "Rocha comprida"],
-	"rocha_grande": ["Rocha grande", "Natureza", "Rocks", true, "Rocha grande e alta"],
-	"penhasco": ["Penhasco", "Natureza", "Rocks", true, "Paredão de pedra de 8 m"],
-	"pedregulhos": ["Pedregulhos", "Natureza", "Rocks", true, "Punhado de pedras médias, sem colisão"],
-	"pedras": ["Pedras", "Natureza", "Rocks", true, "Pedras espalhadas no chão, sem colisão"],
-	"pedrinhas": ["Pedrinhas", "Natureza", "Rocks", true, "Cascalho espalhado, sem colisão"],
+	"arvore": ["Árvore", "Natureza", "Trees", true, "Árvore comum (cada uma sai um pouco diferente)"],
+	"arvore_pequena": ["Árvore pequena", "Natureza", "Trees", true, "Árvore pequena"],
+	"pinheiro": ["Pinheiro", "Natureza", "Trees", true, "Pinheiro"],
+	"arvore_torta": ["Árvore torta", "Natureza", "Trees", true, "Árvore grande e retorcida"],
+	"arvore_morta": ["Árvore morta", "Natureza", "Trees", true, "Árvore seca, sem folhas"],
+	"tronco_seco": ["Tronco seco", "Natureza", "Trees", true, "Tronco morto alto"],
+	"toco": ["Toco", "Natureza", "Trees", true, "Toco de árvore"],
+	"arbusto": ["Arbusto", "Natureza", "Trees", true, "Arbusto, sem colisão"],
+	"arbusto_baixo": ["Arbusto florido", "Natureza", "Trees", true, "Arbusto com flores, sem colisão"],
+	"suculenta": ["Planta", "Natureza", "Trees", true, "Planta de folhas grandes, sem colisão"],
+	"samambaia": ["Samambaia", "Natureza", "Trees", true, "Samambaia, sem colisão"],
+	"grama": ["Grama", "Natureza", "Trees", true, "Tufo de grama alta, sem colisão"],
+	"flores": ["Flores", "Natureza", "Trees", true, "Flores, sem colisão"],
+	"rocha": ["Rocha", "Natureza", "Rocks", true, "Rocha média"],
+	"rocha_grande": ["Rocha grande", "Natureza", "Rocks", true, "Rocha grande"],
+	"penhasco": ["Penhasco", "Natureza", "Rocks", true, "Rochedo enorme"],
+	"pedregulhos": ["Caminho de pedras", "Natureza", "Rocks", true, "Pedras redondas no chão, sem colisão"],
+	"pedras": ["Pedras no chão", "Natureza", "Rocks", true, "Pedras chatas no chão, sem colisão"],
+	"pedrinhas": ["Pedrinha", "Natureza", "Rocks", true, "Pedrinha solta, sem colisão"],
 	"caixote": ["Caixote", "Objetos", "Props", false, "Caixote de madeira"],
-	"caixote_alto": ["Caixote alto", "Objetos", "Props", false, "Caixote comprido"],
+	"caixote_alto": ["Caixote grande", "Objetos", "Props", false, "Caixote grande"],
+	"caixote_macas": ["Caixa de maçãs", "Objetos", "Props", false, "Caixinha com maçãs"],
 	"barril": ["Barril", "Objetos", "Props", false, "Barril"],
-	"barril_vinho": ["Barril deitado", "Objetos", "Props", false, "Barril de vinho"],
-	"barris": ["Barris", "Objetos", "Props", false, "Pilha de barris"],
+	"barril_vinho": ["Barril de maçãs", "Objetos", "Props", false, "Barril cheio de maçãs"],
+	"barris": ["Suporte de barris", "Objetos", "Props", false, "Barris deitados num suporte"],
 	"balde": ["Balde", "Objetos", "Props", false, "Balde de madeira"],
-	"cesto": ["Cesto", "Objetos", "Props", false, "Cesto de vime"],
-	"jarro": ["Jarro", "Objetos", "Props", false, "Jarro de barro"],
+	"cesto": ["Saco", "Objetos", "Props", false, "Saco de pano"],
+	"jarro": ["Panela", "Objetos", "Props", false, "Panela de barro"],
 	"vaso": ["Vaso", "Objetos", "Props", false, "Vaso de cerâmica"],
-	"banquinho": ["Banquinho", "Objetos", "Props", false, "Banquinho dobrável"],
+	"banquinho": ["Banquinho", "Objetos", "Props", false, "Banquinho"],
+	"cadeira": ["Cadeira", "Objetos", "Props", false, "Cadeira"],
 	"banco": ["Banco", "Objetos", "Props", false, "Banco de madeira"],
+	"mesa": ["Mesa", "Objetos", "Props", false, "Mesa grande"],
+	"bau": ["Baú", "Objetos", "Props", false, "Baú de madeira"],
+	"bigorna": ["Bigorna", "Objetos", "Props", false, "Bigorna de ferreiro"],
+	"bancada": ["Bancada", "Objetos", "Props", false, "Bancada de trabalho"],
+	"caldeirao": ["Caldeirão", "Objetos", "Props", false, "Caldeirão"],
+	"boneco_treino": ["Boneco de treino", "Objetos", "Props", false, "Boneco de palha para treinar"],
+	"carroca": ["Carroça", "Objetos", "Props", false, "Carroça de madeira"],
+	"cerca": ["Cerca", "Objetos", "Props", false, "Cerca de madeira de 2 m"],
+	"grade_ferro": ["Grade de ferro", "Objetos", "Props", false, "Grade de ferro de 2 m"],
+	"estandarte": ["Estandarte", "Objetos", "Props", false, "Estandarte de pano"],
 	"pao": ["Pão", "Objetos", "Props", false, "Pão (com a metade escondida, para cenas)"],
 	"meio_pao": ["Meio pão", "Objetos", "Props", false, "Metade de um pão"],
-	"bau": ["Baú", "Objetos", "Props", false, "Baú de tesouro"],
-	"lanterna": ["Lanterna", "Objetos", "Lights", false, "Lanterna acesa"],
+	"lanterna": ["Lanterna", "Objetos", "Lights", false, "Lanterna de parede acesa"],
+	"tocha": ["Tocha", "Objetos", "Lights", false, "Tocha acesa"],
 	"luz": ["Luz", "Objetos", "Lights", false, "Luz sozinha, que ilumina em volta"],
-	"morador": ["Morador", "Gente e história", "People", false, "Pessoa parada: F mostra a fala dela (edite a fala no painel)"],
+	"morador": ["Morador", "Gente e história", "People", false, "Pessoa da cidade: F mostra a fala. Escolha o personagem e a animação no painel"],
 	"inscricao": ["Inscrição", "Gente e história", "Ruins", false, "Pedra com inscrição: F mostra o texto"],
 	"fogueira": ["Fogueira", "Gente e história", "Places", false, "Fogueira: F descansa e enche a vida"],
 	"saida": ["Saída", "Gente e história", "Places", false, "Arco: F leva para outra fase (escolha qual no painel)"],
@@ -65,6 +84,14 @@ const CATALOG: Dictionary[String, Array] = {
 	"grupo_sentinela": ["Sentinela", "Inimigos", "Encounters", false, "Sentinela Estelar: encostar leva para a luta"],
 	"grupo_guardiao": ["Guardião", "Inimigos", "Encounters", false, "O Último Guardião, chefe de Ethera"],
 }
+## Peças soltas dos kits (D026): aparecem no catálogo com busca. Pasta -> [categoria, grupo da fase].
+const KITS: Dictionary[String, Array] = {
+	"res://assets/kits/quaternius/vila/": ["Kit: peças de casa", "Buildings"],
+	"res://assets/kits/quaternius/objetos/": ["Kit: objetos", "Props"],
+	"res://assets/kits/quaternius/natureza/": ["Kit: natureza", "Trees"],
+}
+## Peças pequenas dos kits (menos que isso, em metros) não ganham colisão.
+const KIT_MIN_COLLISION := 0.6
 ## Grupos que entram no mapa de navegação (os aliados e inimigos desviam deles).
 const NAV_GROUPS: Array[String] = ["Buildings", "Walls", "Market", "Ruins", "Trees", "Rocks", "Props", "Places"]
 const ACTION_NAMES: Array[String] = ["Mostrar texto", "Descansar", "Chamar herói", "Viajar"]
@@ -81,10 +108,11 @@ const FIELD_NAMES: Dictionary[String, String] = {
 	"background_color": "Cor do fundo", "ambient_light_color": "Luz ambiente", "ambient_light_energy": "Força ambiente",
 	"tonemap_exposure": "Exposição", "fog_enabled": "Neblina", "fog_light_color": "Cor da neblina",
 	"fog_density": "Densidade", "glow_enabled": "Brilho", "display_name": "Nome", "max_hp": "Vida máx.",
-	"hp": "Vida", "armor_class": "CA", "speed": "Velocidade",
+	"hp": "Vida", "armor_class": "CA", "speed": "Velocidade", "personagem": "Personagem", "animacao": "Animação",
+	"na_mao": "Na mão", "deslocamento": "Começa em (s)",
 }
 const HELP := "Clique: escolhe   Arrastar: move   Shift+clique: junta   Arrastar no vazio: seleciona área   Alt+clique: parte de dentro\n" \
-	+ "Q/E: gira (Shift = 5°)   PgUp/PgDn: altura   +/- ou Ctrl+roda: tamanho   R: zera giro/tamanho   Del: apaga   Ctrl+D: duplica\n" \
+	+ "Q/E: gira (Shift = 5°; com a grade ligada, 90°)   PgUp/PgDn: altura   +/- ou Ctrl+roda: tamanho   R: zera giro/tamanho   Del: apaga   Ctrl+D: duplica\n" \
 	+ "Ctrl+Z/Ctrl+Y: desfaz/refaz   Ctrl+S: salva   G: grade   F: foca   T: de cima   WASD: anda   Botão dir.: gira   Meio: arrasta   Esc: solta"
 
 ## A fase aberta (raiz da cena) e o arquivo dela.
@@ -152,6 +180,16 @@ func _ready() -> void:
 	%NewLevel.pressed.connect(_ask_new_level)
 	%Exit.pressed.connect(func() -> void: _leave(Game.go_to_title))
 	_snap_button.toggled.connect(func(on: bool) -> void: snap = on)
+	var grid_spin := SpinBox.new()
+	grid_spin.min_value = 0.25
+	grid_spin.max_value = 8.0
+	grid_spin.step = 0.25
+	grid_spin.value = grid
+	grid_spin.suffix = "m"
+	grid_spin.tooltip_text = "Tamanho da grade (as peças de casa dos kits encaixam em 2 m)"
+	grid_spin.value_changed.connect(func(v: float) -> void: grid = v)
+	_snap_button.get_parent().add_child(grid_spin)
+	_snap_button.get_parent().move_child(grid_spin, _snap_button.get_index() + 1)
 	_level_pick.item_selected.connect(_on_level_picked)
 	_tree.item_selected.connect(_on_tree_selected)
 	_new_dialog.confirmed.connect(_create_level)
@@ -329,6 +367,11 @@ func _create_level() -> void:
 # --- peças do catálogo ----------------------------------------------------------------------
 
 func _build_catalog() -> void:
+	var search := LineEdit.new()
+	search.placeholder_text = "Buscar peça (ex.: porta, telhado, barril)"
+	search.clear_button_enabled = true
+	search.text_changed.connect(_filter_catalog)
+	_catalog.add_child(search)
 	var by_category: Dictionary[String, Array] = {}
 	var order: Array[String] = []
 	var files: Array[String] = []
@@ -349,24 +392,75 @@ func _build_catalog() -> void:
 			order.append(category)
 		by_category[category].append(key)
 	for category: String in order:
-		var title := Label.new()
-		title.text = category
-		title.add_theme_color_override("font_color", Color(1.0, 0.78, 0.45))
-		_catalog.add_child(title)
-		var grid_box := GridContainer.new()
-		grid_box.columns = 2
-		_catalog.add_child(grid_box)
+		var entries: Array = []
 		for key: String in by_category[category]:
-			var button := Button.new()
-			button.text = String(CATALOG[key][0]) if CATALOG.has(key) else key.capitalize()
-			button.toggle_mode = true
-			button.focus_mode = Control.FOCUS_NONE
-			button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			button.clip_text = true
-			button.tooltip_text = (String(CATALOG[key][4]) + "\n" if CATALOG.has(key) else "") + PROPS_DIR + key + ".tscn"
-			button.set_meta("key", key)
-			button.pressed.connect(func() -> void: start_placing(key if _placing != key else ""))
-			grid_box.add_child(button)
+			entries.append([key, String(CATALOG[key][0]) if CATALOG.has(key) else key.capitalize(),
+				(String(CATALOG[key][4]) + "\n" if CATALOG.has(key) else "") + PROPS_DIR + key + ".tscn"])
+		_add_catalog_section(category, entries, false)
+	for dir: String in KITS:
+		var entries: Array = []
+		for file: String in DirAccess.get_files_at(dir):
+			if file.ends_with(".gltf") or file.ends_with(".glb"):
+				entries.append([dir + file, file.get_basename().replace("_", " "), dir + file])
+		if not entries.is_empty():
+			_add_catalog_section(String(KITS[dir][0]) + " (%d)" % entries.size(), entries, true)
+
+
+func _add_catalog_section(title: String, entries: Array, folded: bool) -> void:
+	var header := Button.new()
+	header.text = ("▸ " if folded else "▾ ") + title
+	header.flat = true
+	header.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	header.focus_mode = Control.FOCUS_NONE
+	header.add_theme_color_override("font_color", Color(1.0, 0.78, 0.45))
+	header.set_meta("header", true)
+	_catalog.add_child(header)
+	var grid_box := GridContainer.new()
+	grid_box.columns = 2
+	grid_box.visible = not folded
+	_catalog.add_child(grid_box)
+	header.pressed.connect(func() -> void:
+		grid_box.visible = not grid_box.visible
+		header.text = ("▾ " if grid_box.visible else "▸ ") + title)
+	for entry: Array in entries:
+		var key: String = entry[0]
+		var button := Button.new()
+		button.text = entry[1]
+		button.toggle_mode = true
+		button.focus_mode = Control.FOCUS_NONE
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.clip_text = true
+		button.tooltip_text = entry[2]
+		button.set_meta("key", key)
+		button.set_meta("search", (String(entry[1]) + " " + key).to_lower())
+		button.pressed.connect(func() -> void: start_placing(key if _placing != key else ""))
+		grid_box.add_child(button)
+
+
+## Busca no catálogo: mostra só as peças com esse texto (e abre as categorias que têm alguma).
+func _filter_catalog(text: String) -> void:
+	var query := text.strip_edges().to_lower()
+	var children := _catalog.get_children()
+	for i: int in children.size():
+		var grid_box := children[i] as GridContainer
+		if grid_box == null:
+			continue
+		var any := false
+		for child: Node in grid_box.get_children():
+			var button := child as Button
+			button.visible = query == "" or String(button.get_meta("search", "")).contains(query)
+			any = any or button.visible
+		var header := children[i - 1] as Button
+		if query != "":
+			grid_box.visible = any
+			header.visible = any
+		else:
+			header.visible = true
+			grid_box.visible = not header.text.begins_with("▸")
+
+
+func _scene_path(key: String) -> String:
+	return key if key.begins_with("res://") else PROPS_DIR + key + ".tscn"
 
 
 ## Começa a colocar uma peça: ela segue o mouse; clique coloca (pode colocar várias), Esc para.
@@ -377,7 +471,7 @@ func start_placing(key: String) -> void:
 	_placing = key
 	_ghost_yaw = 0.0
 	_ghost_scale = 1.0
-	_ghost = (load(PROPS_DIR + key + ".tscn") as PackedScene).instantiate() as Node3D
+	_ghost = (load(_scene_path(key)) as PackedScene).instantiate() as Node3D
 	_overlay.add_child(_ghost)
 	for body: Node in _ghost.find_children("*", "CollisionObject3D", true, false):
 		(body as CollisionObject3D).collision_layer = 0
@@ -388,12 +482,14 @@ func start_placing(key: String) -> void:
 
 ## Coloca uma peça do catálogo neste ponto (é o que o clique faz). Devolve a peça colocada.
 func place(key: String, at: Vector3, yaw: float = 0.0, size: float = 1.0) -> Node3D:
-	var scene := load(PROPS_DIR + key + ".tscn") as PackedScene
+	var scene := load(_scene_path(key)) as PackedScene
 	var piece := scene.instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node3D
 	var parent := _container_for(key)
 	parent.add_child(piece, true)
 	piece.owner = level
 	piece.global_transform = Transform3D(Basis(Vector3.UP, yaw).scaled(Vector3.ONE * size), _snapped(at))
+	if key.begins_with("res://") and _kit_collides(key, piece):
+		piece.add_to_group("colisao_auto", true)  # a fase dá colisão do formato da peça
 	_push({"kind": "add", "nodes": [piece], "parents": [parent], "indexes": [piece.get_index()], "owned": [_owned_paths(piece)]})
 	dirty = true
 	_refresh_all()
@@ -425,9 +521,23 @@ func _sync_catalog_buttons() -> void:
 		button.set_pressed_no_signal(String(button.get_meta("key", "")) == _placing)
 
 
+## Peça solta de kit: paredes e móveis ganham colisão; plantas e coisas pequenas, não.
+func _kit_collides(path: String, piece: Node3D) -> bool:
+	var file := path.get_file()
+	if path.contains("/natureza/"):
+		return file.begins_with("Rock_") or file.begins_with("DeadTree") or file.begins_with("TwistedTree")
+	var box := _bounds(piece)
+	return maxf(box.size.x, maxf(box.size.y, box.size.z)) >= KIT_MIN_COLLISION
+
+
 ## O grupo da fase onde a peça entra (cria o grupo se a fase ainda não tem).
 func _container_for(key: String) -> Node3D:
 	var group_name := String(CATALOG[key][2]) if CATALOG.has(key) else "Props"
+	for dir: String in KITS:
+		if key.begins_with(dir):
+			group_name = String(KITS[dir][1])
+			if dir.ends_with("natureza/") and key.get_file().begins_with("Rock"):
+				group_name = "Rocks"
 	var found := level.get_node_or_null(group_name) as Node3D
 	if found:
 		return found
@@ -582,7 +692,7 @@ func _on_key(event: InputEventKey) -> void:
 		return
 	match key:
 		KEY_Q, KEY_E:
-			var step := deg_to_rad(5.0 if fine else 15.0) * (1.0 if key == KEY_Q else -1.0)
+			var step := deg_to_rad(5.0 if fine else (90.0 if snap else 15.0)) * (1.0 if key == KEY_Q else -1.0)
 			if _ghost:
 				_ghost_yaw += step
 				_ghost.rotation.y = _ghost_yaw
@@ -1351,6 +1461,14 @@ func _spin(value: float, hint: int, hint_string: String, integer: bool, changed:
 
 
 func _text_control(object: Object, property: String, value: String, hint: int, hint_string: String) -> Control:
+	if hint == PROPERTY_HINT_ENUM:
+		var choices := OptionButton.new()
+		var names := hint_string.split(",")
+		for choice: String in names:
+			choices.add_item(choice)
+		choices.select(names.find(value))
+		choices.item_selected.connect(func(i: int) -> void: set_prop(object, property, names[i], false))
+		return choices
 	if property == "hero_id":
 		var heroes := OptionButton.new()
 		var ids: Array = Game.HEROES.keys()

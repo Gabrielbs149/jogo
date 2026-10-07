@@ -1,20 +1,9 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://assets/models/tree_stump_01.glb" id="1_tree_stump_0"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/DeadTree_5.gltf" id="1_DeadTree_5"]
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
-radius = 0.477
-height = 0.573
 
-[node name="Toco" type="Node3D"]
+[node name="Toco" type="Node3D" groups=["colisao_auto"]]
 
-[node name="Model" parent="." instance=ExtResource("1_tree_stump_0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-
-[node name="Body" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2865, 0)
-collision_layer = 4
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="Body"]
-shape = SubResource("CylinderShape3D_1")
+[node name="Model" parent="." instance=ExtResource("1_DeadTree_5")]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)

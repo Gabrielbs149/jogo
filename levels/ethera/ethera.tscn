@@ -7,25 +7,26 @@
 [ext_resource type="Material" path="res://assets/materials/tabuas.tres" id="5_xbrnh"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fogo.tscn" id="6_oox7e"]
 [ext_resource type="Script" path="res://combat/combat_fx.gd" id="7_r"]
-[ext_resource type="PackedScene" path="res://assets/models/stone_fire_pit.glb" id="9_6n1ac"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Pebble_Round_1.gltf" id="8_oox7e"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Pebble_Round_2.gltf" id="9_6n1ac"]
 [ext_resource type="PackedScene" path="res://world/props/rocha.tscn" id="10_jm22j"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Pebble_Round_3.gltf" id="10_vbsq4"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Pebble_Round_4.gltf" id="11_l8iap"]
 [ext_resource type="Script" path="res://world/interactable.gd" id="11_r"]
 [ext_resource type="PackedScene" path="res://world/props/rocha_grande.tscn" id="11_vbsq4"]
 [ext_resource type="PackedScene" path="res://world/props/pedrinhas.tscn" id="12_l8iap"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Pebble_Round_5.gltf" id="12_uvjll"]
 [ext_resource type="PackedScene" path="res://world/props/pedregulhos.tscn" id="13_uvjll"]
 [ext_resource type="PackedScene" path="res://world/props/penhasco.tscn" id="14_j3m11"]
 [ext_resource type="PackedScene" path="res://world/props/pedras.tscn" id="15_koml0"]
-[ext_resource type="Texture2D" path="res://assets/textures/old_sandstone_02/old_sandstone_02_diffuse.jpg" id="16_ncx0b"]
-[ext_resource type="Texture2D" path="res://assets/textures/old_sandstone_02/old_sandstone_02_nor_gl.jpg" id="17_wb3ig"]
-[ext_resource type="Texture2D" path="res://assets/textures/old_sandstone_02/old_sandstone_02_arm.jpg" id="18_u1kqu"]
+[ext_resource type="Material" path="res://assets/materials/arenito.tres" id="19_4e4y1"]
 [ext_resource type="Material" path="res://assets/materials/pedra_poco.tres" id="19_nonur"]
 [ext_resource type="FontFile" path="res://assets/fonts/cinzel.ttf" id="26_r"]
 [ext_resource type="PackedScene" path="res://world/props/arbusto.tscn" id="29_ib6io"]
-[ext_resource type="PackedScene" path="res://world/props/suculenta.tscn" id="30_mq02m"]
 [ext_resource type="PackedScene" path="res://world/props/tronco_seco.tscn" id="31_owhxv"]
-[ext_resource type="PackedScene" path="res://world/props/arbusto_baixo.tscn" id="32_8wli0"]
-[ext_resource type="PackedScene" path="res://world/props/arvore.tscn" id="33_dblu6"]
-[ext_resource type="PackedScene" path="res://world/props/arvore_pequena.tscn" id="34_vl7dk"]
+[ext_resource type="PackedScene" path="res://world/props/grama.tscn" id="33_j3m11"]
+[ext_resource type="PackedScene" path="res://world/props/arvore_torta.tscn" id="35_koml0"]
+[ext_resource type="PackedScene" path="res://world/props/arvore_morta.tscn" id="36_ncx0b"]
 [ext_resource type="Script" path="res://systems/camera/third_person_camera.gd" id="cam"]
 [ext_resource type="Script" path="res://world/encounter.gd" id="encounter"]
 [ext_resource type="PackedScene" path="res://actors/enemies/escaravelho_de_cinza.tscn" id="en_escaravelho_de_cinza"]
@@ -103,18 +104,6 @@ height = 1.6
 radius = 0.22
 height = 1.6
 
-[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_068gd"]
-resource_name = "arenito"
-albedo_color = Color(0.92, 0.78, 0.7, 1)
-albedo_texture = ExtResource("16_ncx0b")
-orm_texture = ExtResource("18_u1kqu")
-normal_enabled = true
-normal_texture = ExtResource("17_wb3ig")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
 [sub_resource type="CylinderMesh" id="CylinderMesh_41"]
 top_radius = 0.42
 height = 1.0
@@ -146,91 +135,19 @@ bottom_radius = 0.22
 height = 0.3
 radial_segments = 10
 
-[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_apfmn"]
-resource_name = "arenito"
-albedo_color = Color(0.92, 0.78, 0.7, 1)
-albedo_texture = ExtResource("16_ncx0b")
-orm_texture = ExtResource("18_u1kqu")
-normal_enabled = true
-normal_texture = ExtResource("17_wb3ig")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_48"]
 height = 2.1
-
-[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_rs46k"]
-resource_name = "arenito"
-albedo_color = Color(0.92, 0.78, 0.7, 1)
-albedo_texture = ExtResource("16_ncx0b")
-orm_texture = ExtResource("18_u1kqu")
-normal_enabled = true
-normal_texture = ExtResource("17_wb3ig")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_49"]
 height = 4.2
 
-[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_mso2c"]
-resource_name = "arenito"
-albedo_color = Color(0.92, 0.78, 0.7, 1)
-albedo_texture = ExtResource("16_ncx0b")
-orm_texture = ExtResource("18_u1kqu")
-normal_enabled = true
-normal_texture = ExtResource("17_wb3ig")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_52"]
 height = 1.4
-
-[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_ypq4d"]
-resource_name = "arenito"
-albedo_color = Color(0.92, 0.78, 0.7, 1)
-albedo_texture = ExtResource("16_ncx0b")
-orm_texture = ExtResource("18_u1kqu")
-normal_enabled = true
-normal_texture = ExtResource("17_wb3ig")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_53"]
 height = 2.6
 
-[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_qqs4p"]
-resource_name = "arenito"
-albedo_color = Color(0.92, 0.78, 0.7, 1)
-albedo_texture = ExtResource("16_ncx0b")
-orm_texture = ExtResource("18_u1kqu")
-normal_enabled = true
-normal_texture = ExtResource("17_wb3ig")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
-
 [sub_resource type="BoxMesh" id="BoxMesh_43"]
-
-[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_6jeff"]
-resource_name = "arenito"
-albedo_color = Color(0.92, 0.78, 0.7, 1)
-albedo_texture = ExtResource("16_ncx0b")
-orm_texture = ExtResource("18_u1kqu")
-normal_enabled = true
-normal_texture = ExtResource("17_wb3ig")
-uv1_scale = Vector3(0.4, 0.4, 0.4)
-uv1_triplanar = true
-uv1_world_triplanar = true
-texture_filter = 5
 
 [sub_resource type="BoxMesh" id="BoxMesh_54"]
 size = Vector3(1.6, 0.12, 0.03)
@@ -319,8 +236,40 @@ action = 1
 prompt_text = "Descansar na fogueira"
 text = "Descanso curto à beira do fogo. Todo mundo recupera os pontos de vida e as habilidades."
 
-[node name="Pit" parent="Camp" unique_id=987687053 instance=ExtResource("9_6n1ac")]
-transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 0, -0.05, 0)
+[node name="Pit" type="Node3D" parent="Camp" unique_id=1237528491]
+
+[node name="Pebble_Round_12" parent="Camp/Pit" unique_id=222131940 instance=ExtResource("8_oox7e")]
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 0.95, 0, 0)
+
+[node name="Pebble_Round_22" parent="Camp/Pit" unique_id=1371128117 instance=ExtResource("9_6n1ac")]
+transform = Transform3D(1.556319, 0, 1.0001855, 0, 1.85, 0, -1.0001855, 0, 1.556319, 0.7991909, 0, 0.51360875)
+
+[node name="Pebble_Round_32" parent="Camp/Pit" unique_id=285668369 instance=ExtResource("10_vbsq4")]
+transform = Transform3D(0.87237155, 0, 1.9102271, 0, 2.1, 0, -1.9102271, 0, 0.87237155, 0.39464426, 0, 0.8641504)
+
+[node name="Pebble_Round_42" parent="Camp/Pit" unique_id=2075309258 instance=ExtResource("11_l8iap")]
+transform = Transform3D(-0.22770374, 0, 1.5837144, 0, 1.6, 0, -1.5837144, 0, -0.22770374, -0.1351991, 0, 0.9403304)
+
+[node name="Pebble_Round_52" parent="Camp/Pit" unique_id=1317010003 instance=ExtResource("12_uvjll")]
+transform = Transform3D(-1.2114923, 0, 1.3981369, 0, 1.85, 0, -1.3981369, 0, -1.2114923, -0.6221177, 0, 0.7179621)
+
+[node name="Pebble_Round_13" parent="Camp/Pit" unique_id=451972212 instance=ExtResource("8_oox7e")]
+transform = Transform3D(-2.0149353, 0, 0.59163845, 0, 2.1, 0, -0.59163845, 0, -2.0149353, -0.91151834, 0, 0.26764593)
+
+[node name="Pebble_Round_23" parent="Camp/Pit" unique_id=1210918283 instance=ExtResource("9_6n1ac")]
+transform = Transform3D(-1.5351888, 0, -0.4507721, 0, 1.6, 0, 0.4507721, 0, -1.5351888, -0.91151834, 0, -0.26764593)
+
+[node name="Pebble_Round_33" parent="Camp/Pit" unique_id=1074555411 instance=ExtResource("10_vbsq4")]
+transform = Transform3D(-1.2114924, 0, -1.3981367, 0, 1.85, 0, 1.3981367, 0, -1.2114924, -0.6221177, 0, -0.7179621)
+
+[node name="Pebble_Round_43" parent="Camp/Pit" unique_id=23598934 instance=ExtResource("11_l8iap")]
+transform = Transform3D(-0.2988615, 0, -2.078625, 0, 2.1, 0, 2.078625, 0, -0.2988615, -0.1351991, 0, -0.9403304)
+
+[node name="Pebble_Round_53" parent="Camp/Pit" unique_id=756368429 instance=ExtResource("12_uvjll")]
+transform = Transform3D(0.6646642, 0, -1.4554112, 0, 1.6, 0, 1.4554112, 0, 0.6646642, 0.39464426, 0, -0.8641504)
+
+[node name="Pebble_Round_14" parent="Camp/Pit" unique_id=2098556162 instance=ExtResource("8_oox7e")]
+transform = Transform3D(1.5563189, 0, -1.0001856, 0, 1.85, 0, 1.0001856, 0, 1.5563189, 0.7991909, 0, -0.51360875)
 
 [node name="Rocks" type="Node3D" parent="." unique_id=21005073 groups=["nav_source"]]
 
@@ -406,7 +355,7 @@ Caso continue assim, será necessário diminuir o tamanho dos pães.»"
 
 [node name="Stone" type="MeshInstance3D" parent="Ruins/Pillar1" unique_id=813561044]
 transform = Transform3D(0.9988, -0.1699, 0, 0.04998, 3.396, 0, 0, 0, 1, 0, 1.4, 0)
-material_override = SubResource("ORMMaterial3D_068gd")
+material_override = ExtResource("19_4e4y1")
 mesh = SubResource("CylinderMesh_41")
 
 [node name="Glyph" type="MeshInstance3D" parent="Ruins/Pillar1" unique_id=1312123510]
@@ -442,7 +391,7 @@ Continuo dizendo que ele trapaceia.»"
 
 [node name="Stone" type="MeshInstance3D" parent="Ruins/Pillar2" unique_id=858061022]
 transform = Transform3D(0.9968, 0.1678, 0, -0.07991, 2.093, 0, 0, 0, 1, 0, 0.75, 0)
-material_override = SubResource("ORMMaterial3D_apfmn")
+material_override = ExtResource("19_4e4y1")
 mesh = SubResource("CylinderMesh_41")
 
 [node name="Glyph" type="MeshInstance3D" parent="Ruins/Pillar2" unique_id=210515845]
@@ -467,7 +416,7 @@ O mar sempre exige um novo preço.»"
 
 [node name="Stone" type="MeshInstance3D" parent="Ruins/Pillar3" unique_id=1295029564]
 transform = Transform3D(1, 0, 0, 0, 4.2, 0, 0, 0, 1, 0, 1.8, 0)
-material_override = SubResource("ORMMaterial3D_rs46k")
+material_override = ExtResource("19_4e4y1")
 mesh = SubResource("CylinderMesh_41")
 
 [node name="Glyph" type="MeshInstance3D" parent="Ruins/Pillar3" unique_id=1922149889]
@@ -503,7 +452,7 @@ Espero que ainda exista uma cidade para isso.»"
 
 [node name="Stone" type="MeshInstance3D" parent="Ruins/Pillar4" unique_id=819930589]
 transform = Transform3D(0.9928, -0.1676, 0, 0.1197, 1.39, 0, 0, 0, 1, 0, 0.4, 0)
-material_override = SubResource("ORMMaterial3D_mso2c")
+material_override = ExtResource("19_4e4y1")
 mesh = SubResource("CylinderMesh_41")
 
 [node name="Glyph" type="MeshInstance3D" parent="Ruins/Pillar4" unique_id=217481116]
@@ -528,7 +477,7 @@ Os sacerdotes dizem que isso é um bom presságio.»"
 
 [node name="Stone" type="MeshInstance3D" parent="Ruins/Pillar5" unique_id=5797085]
 transform = Transform3D(0.9992, 0.104, 0, -0.03999, 2.598, 0, 0, 0, 1, 0, 1, 0)
-material_override = SubResource("ORMMaterial3D_ypq4d")
+material_override = ExtResource("19_4e4y1")
 mesh = SubResource("CylinderMesh_41")
 
 [node name="Glyph" type="MeshInstance3D" parent="Ruins/Pillar5" unique_id=276698159]
@@ -554,12 +503,12 @@ Inscrição: «...o círculo foi rompido. Não por falha da magia, mas pela dest
 
 [node name="Base" type="MeshInstance3D" parent="Ruins/Wall" unique_id=1588921439]
 transform = Transform3D(2.867, 0, 0.3885, 0, 1.6, 0, -0.4334, 0, 2.571, 0.8, 0.5, 0.8)
-material_override = SubResource("ORMMaterial3D_qqs4p")
+material_override = ExtResource("19_4e4y1")
 mesh = SubResource("BoxMesh_43")
 
 [node name="Top" type="MeshInstance3D" parent="Ruins/Wall" unique_id=2104635318]
 transform = Transform3D(1.646, -0.09924, 0.6231, 0.2155, 0.8935, 0, -0.6959, 0.04196, 1.474, 0.5, 1.6, 1)
-material_override = SubResource("ORMMaterial3D_6jeff")
+material_override = ExtResource("19_4e4y1")
 mesh = SubResource("BoxMesh_43")
 
 [node name="Rune" type="MeshInstance3D" parent="Ruins/Wall" unique_id=140185014]
@@ -676,10 +625,10 @@ far = 400.0
 [node name="Arbusto" parent="Trees" unique_id=863066708 instance=ExtResource("29_ib6io")]
 transform = Transform3D(0.24841772, 0, -1.0723234, 0, 1.100722, 0, 1.0723234, 0, 0.24841772, -13.722464, 0.062063597, -2.61594)
 
-[node name="Suculenta" parent="Trees" unique_id=701949025 instance=ExtResource("30_mq02m")]
+[node name="Suculenta" parent="Trees" unique_id=780405375 instance=ExtResource("33_j3m11")]
 transform = Transform3D(0.8651767, 0, -0.08916282, 0, 0.86975896, 0, 0.08916282, 0, 0.8651767, -24.989847, -0.6442658, 2.6467857)
 
-[node name="Suculenta2" parent="Trees" unique_id=1229683085 instance=ExtResource("30_mq02m")]
+[node name="Suculenta2" parent="Trees" unique_id=1812211695 instance=ExtResource("33_j3m11")]
 transform = Transform3D(-0.957562, 0, -0.13002948, 0, 0.9663502, 0, 0.13002948, 0, -0.957562, 30.910858, 0.29346314, 44.55139)
 
 [node name="Tronco_seco" parent="Trees" unique_id=189264477 instance=ExtResource("31_owhxv")]
@@ -691,22 +640,22 @@ transform = Transform3D(0.99770594, 0, 0.19073907, 0, 1.0157748, 0, -0.19073907,
 [node name="Tronco_seco3" parent="Trees" unique_id=237550589 instance=ExtResource("31_owhxv")]
 transform = Transform3D(0.006430036, 0, 0.8432869, 0, 0.8433114, 0, -0.8432869, 0, 0.006430036, -23.209152, 0.9560913, 20.544098)
 
-[node name="Suculenta3" parent="Trees" unique_id=600191477 instance=ExtResource("30_mq02m")]
+[node name="Suculenta3" parent="Trees" unique_id=1625719621 instance=ExtResource("33_j3m11")]
 transform = Transform3D(1.1794689, 0, 0.7313801, 0, 1.3878269, 0, -0.7313801, 0, 1.1794689, -28.898724, 6.667956, -13.732727)
 
-[node name="Arbusto_baixo" parent="Trees" unique_id=315350284 instance=ExtResource("32_8wli0")]
+[node name="Arbusto_baixo" parent="Trees" unique_id=832627744 instance=ExtResource("33_j3m11")]
 transform = Transform3D(-0.73921907, 0, -0.6944747, 0, 1.0142682, 0, 0.6944747, 0, -0.73921907, 20.861755, -1.3145653, 33.90443)
 
-[node name="Arvore" parent="Trees" unique_id=2118563730 instance=ExtResource("33_dblu6")]
+[node name="Arvore" parent="Trees" unique_id=154346128 instance=ExtResource("35_koml0")]
 transform = Transform3D(0.055539496, 0, -1.0352597, 0, 1.0367484, 0, 1.0352597, 0, 0.055539496, 17.251469, -0.016107177, 9.814663)
 
-[node name="Arbusto_baixo2" parent="Trees" unique_id=827284336 instance=ExtResource("32_8wli0")]
+[node name="Arbusto_baixo2" parent="Trees" unique_id=1111519507 instance=ExtResource("33_j3m11")]
 transform = Transform3D(-0.025100239, 0, 1.0267712, 0, 1.0270779, 0, -1.0267712, 0, -0.025100239, -18.178246, 4.1514077, 28.828934)
 
 [node name="Arbusto2" parent="Trees" unique_id=169854101 instance=ExtResource("29_ib6io")]
 transform = Transform3D(-0.5038404, 0, -0.9128656, 0, 1.0426786, 0, 0.9128656, 0, -0.5038404, -19.413744, 0.14800492, -20.651016)
 
-[node name="Arvore_pequena" parent="Trees" unique_id=2090768918 instance=ExtResource("34_vl7dk")]
+[node name="Arvore_pequena" parent="Trees" unique_id=1894248065 instance=ExtResource("36_ncx0b")]
 transform = Transform3D(-1.0828513, 0, -0.04169168, 0, 1.0836536, 0, 0.04169168, 0, -1.0828513, -21.257908, 1.8073448, -4.8152847)
 
 [node name="Tronco_seco4" parent="Trees" unique_id=38057663 instance=ExtResource("31_owhxv")]
@@ -715,95 +664,95 @@ transform = Transform3D(0.6521267, 0, 1.0542591, 0, 1.2396498, 0, -1.0542591, 0,
 [node name="Tronco_seco5" parent="Trees" unique_id=1382077122 instance=ExtResource("31_owhxv")]
 transform = Transform3D(-1.0815823, 0, 0.52420104, 0, 1.2019181, 0, -0.52420104, 0, -1.0815823, 25.514973, 4.8504395, 8.401302)
 
-[node name="Arvore2" parent="Trees" unique_id=1764159323 instance=ExtResource("33_dblu6")]
+[node name="Arvore2" parent="Trees" unique_id=4222636 instance=ExtResource("35_koml0")]
 transform = Transform3D(-0.18345448, 0, -1.1192474, 0, 1.1341827, 0, 1.1192474, 0, -0.18345448, -24.102215, -0.8948647, 37.731358)
 
 [node name="Arbusto3" parent="Trees" unique_id=740492411 instance=ExtResource("29_ib6io")]
 transform = Transform3D(-0.9856842, 0, -0.5762044, 0, 1.1417464, 0, 0.5762044, 0, -0.9856842, 23.37212, 3.062716, 19.290535)
 
-[node name="Arvore3" parent="Trees" unique_id=196902860 instance=ExtResource("33_dblu6")]
+[node name="Arvore3" parent="Trees" unique_id=1088456258 instance=ExtResource("36_ncx0b")]
 transform = Transform3D(1.121059, 0, 0.26723048, 0, 1.1524692, 0, -0.26723048, 0, 1.121059, 2.8778534, -0.45284042, -22.057472)
 
 [node name="Arbusto4" parent="Trees" unique_id=2016140238 instance=ExtResource("29_ib6io")]
 transform = Transform3D(-0.6518622, 0, -0.6211234, 0, 0.9003991, 0, 0.6211234, 0, -0.6518622, 21.705711, 2.1884217, -17.214302)
 
-[node name="Arbusto_baixo3" parent="Trees" unique_id=2107260754 instance=ExtResource("32_8wli0")]
+[node name="Arbusto_baixo3" parent="Trees" unique_id=1057217870 instance=ExtResource("33_j3m11")]
 transform = Transform3D(-1.0112951, 0, 0.7771933, 0, 1.27544, 0, -0.7771933, 0, -1.0112951, 29.257523, -1.6426636, -11.972757)
 
 [node name="Arbusto5" parent="Trees" unique_id=1540406287 instance=ExtResource("29_ib6io")]
 transform = Transform3D(0.26644427, 0, 1.1707582, 0, 1.2006946, 0, -1.1707582, 0, 0.26644427, 31.57035, 5.688475, 38.13562)
 
-[node name="Suculenta4" parent="Trees" unique_id=1596499133 instance=ExtResource("30_mq02m")]
+[node name="Suculenta4" parent="Trees" unique_id=880140368 instance=ExtResource("33_j3m11")]
 transform = Transform3D(1.0075436, 0, 0.78947484, 0, 1.2800057, 0, -0.78947484, 0, 1.0075436, 31.826042, -1.8090912, -20.532534)
 
 [node name="Arbusto6" parent="Trees" unique_id=1509246891 instance=ExtResource("29_ib6io")]
 transform = Transform3D(1.0634272, 0, 0.8470265, 0, 1.3595335, 0, -0.8470265, 0, 1.0634272, 32.032776, -1.646299, -25.723825)
 
-[node name="Arvore_pequena2" parent="Trees" unique_id=139081215 instance=ExtResource("34_vl7dk")]
+[node name="Arvore_pequena2" parent="Trees" unique_id=1993022375 instance=ExtResource("36_ncx0b")]
 transform = Transform3D(1.0667274, 0, 0.0007243416, 0, 1.0667276, 0, -0.0007243416, 0, 1.0667274, 11.365608, -0.018548584, -6.5370083)
 
 [node name="Arbusto7" parent="Trees" unique_id=887945327 instance=ExtResource("29_ib6io")]
 transform = Transform3D(1.3736241, 0, 0.14178842, 0, 1.3809226, 0, -0.14178842, 0, 1.3736241, -27.22438, -0.84928286, 41.731964)
 
-[node name="Arvore_pequena3" parent="Trees" unique_id=2040331578 instance=ExtResource("34_vl7dk")]
+[node name="Arvore_pequena3" parent="Trees" unique_id=607674568 instance=ExtResource("36_ncx0b")]
 transform = Transform3D(-0.7149069, 0, -0.47730255, 0, 0.85959846, 0, 0.47730255, 0, -0.7149069, -31.756474, 7.257582, 38.70894)
 
 [node name="Arbusto8" parent="Trees" unique_id=1961565157 instance=ExtResource("29_ib6io")]
 transform = Transform3D(-0.1091298, 0, -1.3414651, 0, 1.3458967, 0, 1.3414651, 0, -0.1091298, 25.401245, 0.024378205, 42.92141)
 
-[node name="Arvore4" parent="Trees" unique_id=1655109280 instance=ExtResource("33_dblu6")]
+[node name="Arvore4" parent="Trees" unique_id=1219944503 instance=ExtResource("36_ncx0b")]
 transform = Transform3D(0.6569368, 0, -0.82672477, 0, 1.0559545, 0, 0.82672477, 0, 0.6569368, -9.232162, 0.3092865, -16.644459)
 
 [node name="Tronco_seco6" parent="Trees" unique_id=619110101 instance=ExtResource("31_owhxv")]
 transform = Transform3D(-0.8244972, 0, -0.2706216, 0, 0.867774, 0, 0.2706216, 0, -0.8244972, 9.020805, 2.2569566, -25.857058)
 
-[node name="Arvore5" parent="Trees" unique_id=119810560 instance=ExtResource("33_dblu6")]
+[node name="Arvore5" parent="Trees" unique_id=2030539992 instance=ExtResource("35_koml0")]
 transform = Transform3D(0.26762736, 0, -1.2680476, 0, 1.2959819, 0, 1.2680476, 0, 0.26762736, -13.829653, 4.642691, -21.317865)
 
 [node name="Arbusto9" parent="Trees" unique_id=1498191171 instance=ExtResource("29_ib6io")]
 transform = Transform3D(-0.6339533, 0, 0.8471208, 0, 1.0580692, 0, -0.8471208, 0, -0.6339533, 30.18731, 4.1372705, 12.156017)
 
-[node name="Arvore6" parent="Trees" unique_id=1408946018 instance=ExtResource("33_dblu6")]
+[node name="Arvore6" parent="Trees" unique_id=2135335594 instance=ExtResource("36_ncx0b")]
 transform = Transform3D(-0.04004092, 0, -1.2416477, 0, 1.2422932, 0, 1.2416477, 0, -0.04004092, 10.720638, 3.8618836, 45.874855)
 
-[node name="Suculenta5" parent="Trees" unique_id=902834824 instance=ExtResource("30_mq02m")]
+[node name="Suculenta5" parent="Trees" unique_id=1187752109 instance=ExtResource("33_j3m11")]
 transform = Transform3D(-1.1754342, 0, -0.21674095, 0, 1.1952499, 0, 0.21674095, 0, -1.1754342, -8.68511, 3.8830209, 46.409218)
 
 [node name="Arbusto10" parent="Trees" unique_id=727944618 instance=ExtResource("29_ib6io")]
 transform = Transform3D(1.1010427, 0, 0.8495368, 0, 1.390686, 0, -0.8495368, 0, 1.1010427, 15.86031, 0.15872422, -22.62746)
 
-[node name="Arvore_pequena4" parent="Trees" unique_id=1276922957 instance=ExtResource("34_vl7dk")]
+[node name="Arvore_pequena4" parent="Trees" unique_id=749009613 instance=ExtResource("36_ncx0b")]
 transform = Transform3D(-0.23289475, 0, -0.88258505, 0, 0.9127959, 0, 0.88258505, 0, -0.23289475, -22.785429, 0.9250244, -24.495306)
 
-[node name="Suculenta6" parent="Trees" unique_id=2111265623 instance=ExtResource("30_mq02m")]
+[node name="Suculenta6" parent="Trees" unique_id=152847912 instance=ExtResource("33_j3m11")]
 transform = Transform3D(1.297526, 0, -0.50274754, 0, 1.3915203, 0, 0.50274754, 0, 1.297526, -16.800776, 4.2079415, 36.331955)
 
-[node name="Arvore7" parent="Trees" unique_id=411069351 instance=ExtResource("33_dblu6")]
+[node name="Arvore7" parent="Trees" unique_id=1014159692 instance=ExtResource("36_ncx0b")]
 transform = Transform3D(-0.20280679, 0, -0.97203875, 0, 0.9929702, 0, 0.97203875, 0, -0.20280679, 8.286205, -0.084466554, -13.274706)
 
-[node name="Arvore8" parent="Trees" unique_id=164747706 instance=ExtResource("33_dblu6")]
+[node name="Arvore8" parent="Trees" unique_id=1034612634 instance=ExtResource("36_ncx0b")]
 transform = Transform3D(0.9507521, 0, 0.059917986, 0, 0.95263827, 0, -0.059917986, 0, 0.9507521, 23.279457, 2.6830583, -6.7547646)
 
 [node name="Tronco_seco7" parent="Trees" unique_id=1018528018 instance=ExtResource("31_owhxv")]
 transform = Transform3D(0.8484111, 0, -0.88798386, 0, 1.2281355, 0, 0.88798386, 0, 0.8484111, -16.403088, 0.22873154, 14.818089)
 
-[node name="Arvore9" parent="Trees" unique_id=1926873326 instance=ExtResource("33_dblu6")]
+[node name="Arvore9" parent="Trees" unique_id=1870485819 instance=ExtResource("35_koml0")]
 transform = Transform3D(-0.9302121, 0, 0.84926754, 0, 1.2595832, 0, -0.84926754, 0, -0.9302121, 29.43322, 1.1582779, 25.195564)
 
-[node name="Arvore_pequena5" parent="Trees" unique_id=138101988 instance=ExtResource("34_vl7dk")]
+[node name="Arvore_pequena5" parent="Trees" unique_id=681881161 instance=ExtResource("35_koml0")]
 transform = Transform3D(0.05153008, 0, -1.1485543, 0, 1.1497097, 0, 1.1485543, 0, 0.05153008, -33.28168, 1.627787, 30.394878)
 
-[node name="Arbusto_baixo4" parent="Trees" unique_id=1320649652 instance=ExtResource("32_8wli0")]
+[node name="Arbusto_baixo4" parent="Trees" unique_id=100300270 instance=ExtResource("33_j3m11")]
 transform = Transform3D(0.09035649, 0, 1.1295744, 0, 1.1331825, 0, -1.1295744, 0, 0.09035649, -29.69662, -0.98871005, 12.236504)
 
-[node name="Arvore10" parent="Trees" unique_id=1545672930 instance=ExtResource("33_dblu6")]
+[node name="Arvore10" parent="Trees" unique_id=1453411474 instance=ExtResource("35_koml0")]
 transform = Transform3D(-0.6385368, 0, 0.7210517, 0, 0.96314317, 0, -0.7210517, 0, -0.6385368, 15.97723, 2.4677835, 43.182297)
 
-[node name="Arbusto_baixo5" parent="Trees" unique_id=1827532051 instance=ExtResource("32_8wli0")]
+[node name="Arbusto_baixo5" parent="Trees" unique_id=1109577160 instance=ExtResource("33_j3m11")]
 transform = Transform3D(-0.26290417, 0, 1.2081482, 0, 1.2364225, 0, -1.2081482, 0, -0.26290417, -32.479725, 7.462378, -19.542562)
 
 [node name="Arbusto11" parent="Trees" unique_id=1292394636 instance=ExtResource("29_ib6io")]
 transform = Transform3D(0.54798746, 0, 0.7686736, 0, 0.9440071, 0, -0.7686736, 0, 0.54798746, 30.876167, 5.5201173, -4.1176147)
 
-[node name="Suculenta7" parent="Trees" unique_id=1118199994 instance=ExtResource("30_mq02m")]
+[node name="Suculenta7" parent="Trees" unique_id=134038966 instance=ExtResource("33_j3m11")]
 transform = Transform3D(-0.6545417, 0, -0.8724671, 0, 1.0906987, 0, 0.8724671, 0, -0.6545417, -5.480913, -0.65567935, -21.180964)

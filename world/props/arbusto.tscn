@@ -1,9 +1,9 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://assets/models/wild_rooibos_bush.glb" id="1_wild_rooibos"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Bush_Common.gltf" id="1_Bush_Common"]
 
 
 [node name="Arbusto" type="Node3D"]
 
-[node name="Model" parent="." instance=ExtResource("1_wild_rooibos")]
+[node name="Model" parent="." instance=ExtResource("1_Bush_Common")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

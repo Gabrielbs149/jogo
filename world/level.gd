@@ -53,6 +53,7 @@ func _ready() -> void:
 				body.owner = null
 				for part: Node in body.get_children():
 					part.owner = null
+	_auto_collision()
 	if editing:
 		return
 	# voltando de uma luta: no mesmo lugar do mapa, com a vida que sobrou
@@ -129,6 +130,25 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("map_editor") and not editing:
 		Game.open_editor(scene_file_path)
+
+
+## Peças do grupo "colisao_auto" (paredes, telhados, rochas e móveis dos kits) ganham colisão do formato da malha.
+## Feita a cada vez que a fase abre: não vai para o arquivo. Malha com o metadado "sem_colisao" fica de fora.
+func _auto_collision() -> void:
+	for node: Node in get_tree().get_nodes_in_group("colisao_auto"):
+		if not is_ancestor_of(node):
+			continue
+		for found: Node in node.find_children("*", "MeshInstance3D", true, false):
+			var mesh := found as MeshInstance3D
+			if mesh.get_meta("sem_colisao", false) or mesh.mesh == null:
+				continue
+			mesh.create_trimesh_collision()
+			for body: Node in mesh.get_children():
+				if body is StaticBody3D and String(body.name).ends_with("_col"):
+					(body as StaticBody3D).collision_mask = 0
+					body.owner = null
+					for part: Node in body.get_children():
+						part.owner = null
 
 
 ## Toca uma cena (Roteiro) com você parado; o painel do jogo some enquanto isso.

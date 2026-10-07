@@ -9,16 +9,12 @@ size = Vector3(1.5, 0.5, 1.5)
 top_radius = 0.52
 bottom_radius = 0.6
 height = 3.4
-radial_segments = 20
+radial_segments = 16
 
 [sub_resource type="BoxMesh" id="BoxMesh_3"]
 size = Vector3(1.4, 0.35, 1.4)
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_4"]
-radius = 0.65
-height = 4.2
-
-[node name="Pilar" type="Node3D"]
+[node name="Pilar" type="Node3D" groups=["colisao_auto"]]
 
 [node name="Base" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
@@ -34,11 +30,3 @@ material_override = ExtResource("1_arenito")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.07, 0)
 mesh = SubResource("BoxMesh_3")
 material_override = ExtResource("1_arenito")
-
-[node name="Body" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
-collision_layer = 4
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="Body"]
-shape = SubResource("CylinderShape3D_4")

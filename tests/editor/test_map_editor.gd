@@ -40,9 +40,10 @@ func test_well_is_one_piece_and_walls_carry_their_collision() -> void:
 		names.append(String(item.name))
 	assert_true(names.has("Well"), "o poço é uma peça")
 	assert_false(names.has("Ring"))
-	var wall := editor.level.get_node("Walls/North1") as Node3D
-	assert_true(names.has("North1"))
-	assert_not_null(wall.get_node_or_null("Body"), "o muro leva a colisão junto quando anda")
+	var wall := editor.level.get_node("Walls/North1_0") as Node3D
+	assert_true(names.has("North1_0"), "a muralha é feita de pedaços de muro do kit")
+	assert_true(wall.is_in_group("colisao_auto"))
+	assert_false(wall.find_children("*", "CollisionObject3D", true, false).is_empty(), "o muro ganha colisão e ela anda junto")
 
 
 func test_place_move_undo_redo() -> void:

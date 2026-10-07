@@ -1,86 +1,21 @@
 [gd_scene format=3]
 
-[ext_resource type="Material" path="res://assets/materials/tabuas.tres" id="1_tabuas"]
-[ext_resource type="PackedScene" path="res://assets/models/jug_01.glb" id="2_jug_01"]
-[ext_resource type="PackedScene" path="res://assets/models/ceramic_vase_01.glb" id="3_ceramic_vase"]
-[ext_resource type="PackedScene" path="res://assets/models/wicker_basket_01.glb" id="4_wicker_baske"]
-[ext_resource type="PackedScene" path="res://assets/models/wooden_crate_01.glb" id="5_wooden_crate"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Stall_Empty.gltf" id="1_Stall_Empty"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/FarmCrate_Apple.gltf" id="2_FarmCrate_Appl"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/FarmCrate_Carrot.gltf" id="3_FarmCrate_Carr"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Barrel_Apples.gltf" id="4_Barrel_Apples"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_1"]
-size = Vector3(2.6, 0.12, 1.2)
 
-[sub_resource type="BoxMesh" id="BoxMesh_2"]
-size = Vector3(2.6, 0.8, 0.06)
+[node name="Barraca" type="Node3D" groups=["colisao_auto"]]
 
-[sub_resource type="BoxMesh" id="BoxMesh_3"]
-size = Vector3(0.1, 2.3, 0.1)
+[node name="Stall" parent="." instance=ExtResource("1_Stall_Empty")]
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
 
-[sub_resource type="BoxMesh" id="BoxMesh_4"]
-size = Vector3(0.1, 2.6, 0.1)
+[node name="FarmCrate_Apple" parent="." instance=ExtResource("2_FarmCrate_Appl")]
+transform = Transform3D(0.9801, 0, 0.1987, 0, 1, 0, -0.1987, 0, 0.9801, -0.45, 1.02, 0.1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_5"]
-size = Vector3(3, 0.04, 1.7)
+[node name="FarmCrate_Carrot" parent="." instance=ExtResource("3_FarmCrate_Carr")]
+transform = Transform3D(0.9888, 0, -0.1494, 0, 1, 0, 0.1494, 0, 0.9888, 0.45, 1.02, 0.05)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6"]
-albedo_color = Color(0.62, 0.16, 0.1, 1)
-roughness = 0.95
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_7"]
-size = Vector3(2.6, 1, 1.2)
-
-[node name="Barraca" type="Node3D"]
-
-[node name="Table" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-mesh = SubResource("BoxMesh_1")
-material_override = ExtResource("1_tabuas")
-
-[node name="Front" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.44, -0.57)
-mesh = SubResource("BoxMesh_2")
-material_override = ExtResource("1_tabuas")
-
-[node name="Pole0" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.25, 1.15, -0.55)
-mesh = SubResource("BoxMesh_3")
-material_override = ExtResource("1_tabuas")
-
-[node name="Pole1" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 1.15, -0.55)
-mesh = SubResource("BoxMesh_3")
-material_override = ExtResource("1_tabuas")
-
-[node name="Pole2" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.25, 1.3, 0.55)
-mesh = SubResource("BoxMesh_4")
-material_override = ExtResource("1_tabuas")
-
-[node name="Pole3" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 1.3, 0.55)
-mesh = SubResource("BoxMesh_4")
-material_override = ExtResource("1_tabuas")
-
-[node name="Awning" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.9838, 0.179, 0, -0.179, 0.9838, 0, 2.45, -0.05)
-mesh = SubResource("BoxMesh_5")
-material_override = SubResource("StandardMaterial3D_6")
-
-[node name="Jug" parent="." instance=ExtResource("2_jug_01")]
-transform = Transform3D(1.0729, 0, 0.734, 0, 1.3, 0, -0.734, 0, 1.0729, -0.8, 0.96, 0.1)
-
-[node name="Vase" parent="." instance=ExtResource("3_ceramic_vase")]
-transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -0.35, 0.96, 0.2)
-
-[node name="Basket" parent="." instance=ExtResource("4_wicker_baske")]
-transform = Transform3D(1.5285, 0, 0.4728, 0, 1.6, 0, -0.4728, 0, 1.5285, 0.5, 0.96, 0)
-
-[node name="Crate" parent="." instance=ExtResource("5_wooden_crate")]
-transform = Transform3D(0.3624, 0, 0.932, 0, 1, 0, -0.932, 0, 0.3624, 1.6, 0, 0.6)
-
-[node name="Body" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
-collision_layer = 1
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="Body"]
-shape = SubResource("BoxShape3D_7")
+[node name="Barrel_Apples" parent="." instance=ExtResource("4_Barrel_Apples")]
+transform = Transform3D(0.9211, 0, 0.3894, 0, 1, 0, -0.3894, 0, 0.9211, 1.6, 0, 0.5)

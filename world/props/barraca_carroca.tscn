@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Stall_Cart_Empty.gltf" id="1_Stall_Cart_Emp"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/FarmCrate_Apple.gltf" id="2_FarmCrate_Appl"]
+
+
+[node name="Barraca_carroca" type="Node3D" groups=["colisao_auto"]]
+
+[node name="Cart" parent="." instance=ExtResource("1_Stall_Cart_Emp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="FarmCrate_Apple" parent="." instance=ExtResource("2_FarmCrate_Appl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 0.85, 0)

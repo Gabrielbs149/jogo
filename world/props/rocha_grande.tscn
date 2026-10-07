@@ -1,19 +1,9 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://assets/models/namaqualand_boulder_04.glb" id="1_namaqualand_"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Rock_Medium_1.gltf" id="1_Rock_Medium_1"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
-size = Vector3(2.6523, 2.6642, 2.6208)
 
-[node name="Rocha_grande" type="Node3D"]
+[node name="Rocha_grande" type="Node3D" groups=["colisao_auto"]]
 
-[node name="Model" parent="." instance=ExtResource("1_namaqualand_")]
-transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0, 0)
-
-[node name="Body" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3321, 0)
-collision_layer = 4
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="Body"]
-shape = SubResource("BoxShape3D_1")
+[node name="Model" parent="." instance=ExtResource("1_Rock_Medium_1")]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 0, 0, 0)

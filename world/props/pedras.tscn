@@ -1,9 +1,9 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://assets/models/namaqualand_rocks_01.glb" id="1_namaqualand_"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/RockPath_Square_Wide.gltf" id="1_RockPath_Squar"]
 
 
 [node name="Pedras" type="Node3D"]
 
-[node name="Model" parent="." instance=ExtResource("1_namaqualand_")]
-transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
+[node name="Model" parent="." instance=ExtResource("1_RockPath_Squar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

@@ -1,18 +1,18 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://assets/models/quiver_tree_01.glb" id="1_quiver_tree_"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/CommonTree_1.gltf" id="1_CommonTree_1"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
-radius = 0.383724
-height = 3.58512
+radius = 0.35
+height = 4
 
 [node name="Arvore" type="Node3D"]
 
-[node name="Model" parent="." instance=ExtResource("1_quiver_tree_")]
-transform = Transform3D(2.2, 0, 0, 0, 2.2, 0, 0, 0, 2.2, 0, 0, 0)
+[node name="Model" parent="." instance=ExtResource("1_CommonTree_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="Body" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7926, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 collision_layer = 1
 collision_mask = 0
 

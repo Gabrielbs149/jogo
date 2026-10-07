@@ -1,20 +1,9 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://assets/models/wine_barrel_01.glb" id="1_wine_barrel_"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Barrel_Apples.gltf" id="1_Barrel_Apples"]
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
-radius = 0.3024
-height = 0.871
 
-[node name="Barril_vinho" type="Node3D"]
+[node name="Barril_vinho" type="Node3D" groups=["colisao_auto"]]
 
-[node name="Model" parent="." instance=ExtResource("1_wine_barrel_")]
+[node name="Model" parent="." instance=ExtResource("1_Barrel_Apples")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-
-[node name="Body" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4355, 0)
-collision_layer = 4
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="Body"]
-shape = SubResource("CylinderShape3D_1")

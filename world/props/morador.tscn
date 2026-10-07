@@ -1,17 +1,18 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://actors/shared/robed_figure.tscn" id="1_robed_figure"]
+[ext_resource type="Script" path="res://world/figurante.gd" id="1_figurante"]
 [ext_resource type="Script" path="res://world/interactable.gd" id="2_interactable"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
-radius = 0.45
+radius = 0.4
 height = 1.8
 
 [node name="Morador" type="Node3D"]
 
-[node name="Figure" parent="." instance=ExtResource("1_robed_figure")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-cloth_color = Color(0.55, 0.45, 0.3, 1)
+[node name="Figure" type="Node3D" parent="."]
+script = ExtResource("1_figurante")
+personagem = "Rogue_Hooded"
+transform = Transform3D(0.62, 0, 0, 0, 0.62, 0, 0, 0, 0.62, 0, 0, 0)
 
 [node name="Collision" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)

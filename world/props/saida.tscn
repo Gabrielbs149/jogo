@@ -1,54 +1,30 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://world/interactable.gd" id="1_interactable"]
-[ext_resource type="Material" path="res://assets/materials/arenito.tres" id="2_arenito"]
-[ext_resource type="PackedScene" path="res://assets/models/namaqualand_stones_01.glb" id="3_namaqualand_"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Wall_Arch.gltf" id="2_Wall_Arch"]
+[ext_resource type="Material" path="res://assets/materials/arenito.tres" id="3_arenito"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_1"]
-size = Vector3(0.8, 4, 0.8)
+size = Vector3(0.4, 3.2, 0.5)
 
-[sub_resource type="BoxMesh" id="BoxMesh_2"]
-size = Vector3(4.6, 0.7, 0.95)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_3"]
-size = Vector3(0.8, 4, 0.8)
-
-[node name="Saida" type="Node3D"]
+[node name="Saida" type="Node3D" groups=["colisao_auto"]]
 script = ExtResource("1_interactable")
 action = 3
 prompt_text = "Seguir viagem"
 target_scene = "res://levels/ethera/ethera.tscn"
 
-[node name="Pillar0" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 2, 0)
+[node name="Arch" parent="." instance=ExtResource("2_Wall_Arch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="ArchBack" parent="." instance=ExtResource("2_Wall_Arch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.3)
+
+[node name="Pillar" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.15, 1.6, -0.15)
 mesh = SubResource("BoxMesh_1")
-material_override = ExtResource("2_arenito")
+material_override = ExtResource("3_arenito")
 
 [node name="Pillar2" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.15, 1.6, -0.15)
 mesh = SubResource("BoxMesh_1")
-material_override = ExtResource("2_arenito")
-
-[node name="Top" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.35, 0)
-mesh = SubResource("BoxMesh_2")
-material_override = ExtResource("2_arenito")
-
-[node name="Stones" parent="." instance=ExtResource("3_namaqualand_")]
-transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0, 0.6)
-
-[node name="Body0" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 2, 0)
-collision_layer = 1
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="Body0"]
-shape = SubResource("BoxShape3D_3")
-
-[node name="Body2" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 2, 0)
-collision_layer = 1
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="Body2"]
-shape = SubResource("BoxShape3D_3")
+material_override = ExtResource("3_arenito")

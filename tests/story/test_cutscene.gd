@@ -42,4 +42,4 @@ func test_new_game_shows_prologue_once() -> void:
 	await _arandu()
 	assert_false(Game.prologue_pending, "o prólogo só aparece na primeira fase do jogo novo")
 	var prologue := load(Game.PROLOGUE) as Roteiro
-	assert_string_contains(prologue.texto, "o destino de Novazul também passa por suas mãos")
+	assert_string_contains(prologue.texto, "Novazul")

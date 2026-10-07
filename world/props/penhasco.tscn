@@ -1,19 +1,9 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://assets/models/namaqualand_cliff_01.glb" id="1_namaqualand_"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Rock_Medium_3.gltf" id="1_Rock_Medium_3"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
-size = Vector3(6.6232, 4.96, 3.5096)
 
-[node name="Penhasco" type="Node3D"]
+[node name="Penhasco" type="Node3D" groups=["colisao_auto"]]
 
-[node name="Model" parent="." instance=ExtResource("1_namaqualand_")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-
-[node name="Body" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.48, 0)
-collision_layer = 1
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="Body"]
-shape = SubResource("BoxShape3D_1")
+[node name="Model" parent="." instance=ExtResource("1_Rock_Medium_3")]
+transform = Transform3D(3.2, 0, 0, 0, 3.2, 0, 0, 0, 3.2, 0, 0, 0)

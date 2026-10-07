@@ -1,16 +1,16 @@
 [gd_resource type="ORMMaterial3D" format=3]
 
-[ext_resource type="Texture2D" path="res://assets/textures/clay_plaster/clay_plaster_diffuse.jpg" id="1_alb"]
-[ext_resource type="Texture2D" path="res://assets/textures/clay_plaster/clay_plaster_arm.jpg" id="2_orm"]
-[ext_resource type="Texture2D" path="res://assets/textures/clay_plaster/clay_plaster_nor_gl.jpg" id="3_nor"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/vila/T_Plaster_BaseColor.png" id="1_albedo"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/vila/T_Plaster_Normal.png" id="2_normal"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/vila/T_Plaster_ORM.png" id="3_orm"]
 
 [resource]
 resource_name = "reboco_barro"
-albedo_color = Color(1, 1, 1, 1)
-albedo_texture = ExtResource("1_alb")
-orm_texture = ExtResource("2_orm")
+albedo_color = Color(1, 0.82, 0.62, 1)
+albedo_texture = ExtResource("1_albedo")
+orm_texture = ExtResource("3_orm")
 normal_enabled = true
-normal_texture = ExtResource("3_nor")
+normal_texture = ExtResource("2_normal")
 uv1_scale = Vector3(0.4, 0.4, 0.4)
 uv1_triplanar = true
 uv1_world_triplanar = true

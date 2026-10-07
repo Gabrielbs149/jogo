@@ -1,17 +1,13 @@
-[gd_resource type="ORMMaterial3D" format=3]
+[gd_resource type="StandardMaterial3D" format=3]
 
-[ext_resource type="Texture2D" path="res://assets/textures/aerial_sand/aerial_sand_diffuse.jpg" id="1_alb"]
-[ext_resource type="Texture2D" path="res://assets/textures/aerial_sand/aerial_sand_arm.jpg" id="2_orm"]
-[ext_resource type="Texture2D" path="res://assets/textures/aerial_sand/aerial_sand_nor_gl.jpg" id="3_nor"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/vila/T_Noise_Terrain_suave.png" id="1_noise"]
 
 [resource]
 resource_name = "areia"
-albedo_color = Color(1, 1, 1, 1)
-albedo_texture = ExtResource("1_alb")
-orm_texture = ExtResource("2_orm")
-normal_enabled = true
-normal_texture = ExtResource("3_nor")
-uv1_scale = Vector3(0.166667, 0.166667, 0.166667)
+albedo_color = Color(0.86, 0.72, 0.52, 1)
+albedo_texture = ExtResource("1_noise")
+roughness = 1.0
+uv1_scale = Vector3(0.0833333, 0.0833333, 0.0833333)
 uv1_triplanar = true
 uv1_world_triplanar = true
 texture_filter = 5

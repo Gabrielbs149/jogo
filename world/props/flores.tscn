@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Flower_3_Group.gltf" id="1_Flower_3_Group"]
+
+
+[node name="Flores" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_Flower_3_Group")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)

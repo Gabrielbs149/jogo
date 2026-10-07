@@ -1,9 +1,9 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://assets/models/jug_01.glb" id="1_jug_01"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Pot_1.gltf" id="1_Pot_1"]
 
 
 [node name="Jarro" type="Node3D"]
 
-[node name="Model" parent="." instance=ExtResource("1_jug_01")]
-transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 0, 0, 0)
+[node name="Model" parent="." instance=ExtResource("1_Pot_1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

@@ -1,19 +1,9 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://assets/models/wooden_crate_01.glb" id="1_wooden_crate"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Crate_Wooden.gltf" id="1_Crate_Wooden"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
-size = Vector3(0.66, 0.35, 0.3272)
 
-[node name="Caixote" type="Node3D"]
+[node name="Caixote" type="Node3D" groups=["colisao_auto"]]
 
-[node name="Model" parent="." instance=ExtResource("1_wooden_crate")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-
-[node name="Body" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0)
-collision_layer = 4
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="Body"]
-shape = SubResource("BoxShape3D_1")
+[node name="Model" parent="." instance=ExtResource("1_Crate_Wooden")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
