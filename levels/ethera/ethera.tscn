@@ -162,6 +162,9 @@ victory_text = "O Último Guardião descansa. Ethera pode descansar também.
 Caiaque, Umu e Juca vão querer ouvir essa história."
 defeat_text = "O vento cobre os passos de vocês.
 Esta noite, as estrelas brilham um pouco mais."
+musica = "ethera"
+ambiente = "vento"
+piso = "areia"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=416783569]
 environment = ExtResource("2_r")

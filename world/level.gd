@@ -15,6 +15,13 @@ extends Node3D
 @export_multiline var defeat_text: String = ""
 ## Cena que abre a fase na primeira vez (story/*.tres, ver story/roteiro.gd). Se tiver, substitui a abertura acima.
 @export var cena_de_abertura: Roteiro
+## Som da fase (D034): música (assets/audio/musica) e ambiente em laço (assets/audio/ambiente), sem extensão.
+@export var musica: String = ""
+@export var ambiente: String = ""
+## Chão dos passos: grama, pedra, terra ou areia. Com mapa (a máscara do chão pintado), o verde é pedra e o vermelho terra.
+@export var piso: String = "grama"
+@export var mapa_do_piso: Texture2D
+@export var area_do_mapa: float = 220.0
 ## Pula a abertura (testes rodam sem janela e também pulam).
 @export var skip_intro: bool = false
 ## Sem inimigo brigando por tantos segundos, quem caiu se levanta com 1 PV (estabilizado).
@@ -34,6 +41,7 @@ var ready_to_play: bool = false
 ## Grupos de inimigos do mapa que ainda não foram vencidos.
 var encounters: Array[Encounter] = []
 var _calm_time: float = 0.0
+var _floor_image: Image
 var _finished: bool = false
 
 @onready var _navigation: NavigationRegion3D = $Navigation
@@ -62,6 +70,11 @@ func _ready() -> void:
 		start = Game.return_transform
 	Game.returning = false
 	player = _spawn_hero(Game.chosen, start)
+	var steps := Footsteps.new()
+	steps.name = "Footsteps"
+	player.add_child(steps)
+	Audio.play_music(musica)
+	Audio.play_ambient(ambiente)
 	if Game.hero_hp >= 0:
 		player.hp = clampi(Game.hero_hp, 1, player.max_hp)
 	controller = PlayerController.new()
@@ -235,7 +248,26 @@ func _join(hero: Combatant) -> void:
 	_hud.add_party_member(hero)
 
 
+## Tipo de chão neste ponto, para os passos.
+func surface_at(point: Vector3) -> String:
+	if mapa_do_piso == null:
+		return piso
+	if _floor_image == null:
+		_floor_image = mapa_do_piso.get_image()
+	var size := _floor_image.get_size()
+	var px := clampi(int((point.x / area_do_mapa + 0.5) * size.x), 0, size.x - 1)
+	var pz := clampi(int((point.z / area_do_mapa + 0.5) * size.y), 0, size.y - 1)
+	var c := _floor_image.get_pixel(px, pz)
+	if c.g > 0.5:
+		return "pedra"
+	if c.r > 0.5:
+		return "terra"
+	return piso
+
+
 func _on_used(_by: Combatant, what: Interactable) -> void:
+	var sound: String = ["ler", "descansar", "conversar", "viajar"][what.action]
+	Audio.play(sound, -4.0)
 	match what.action:
 		Interactable.Action.READ:
 			_hud.show_story(what.text)

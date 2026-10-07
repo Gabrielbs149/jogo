@@ -429,6 +429,8 @@ chapter_title = "Arandu"
 intro_lines = PackedStringArray()
 start_story = "WASD anda e o mouse olha em volta. Chegue perto das pessoas e das coisas e aperte F."
 cena_de_abertura = ExtResource("2_xyn7r")
+musica = "arandu"
+mapa_do_piso = ExtResource("7_fk7c7")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=644594426]
 environment = SubResource("Environment_23")
@@ -4055,7 +4057,7 @@ transform = Transform3D(0.38890865, 0, -0.3889088, 0, 0.55, 0, 0.3889088, 0, 0.3
 [node name="Fogo" parent="CenaTico/Fogueirinha" unique_id=1736555795 instance=ExtResource("288_3bqkj")]
 transform = Transform3D(0.32, 0, 0, 0, 0.32, 0, 0, 0, 0.32, 0, 0.03, 0)
 
-[node name="Light" parent="CenaTico/Fogueirinha/Fogo" index="3"]
+[node name="Light" parent="CenaTico/Fogueirinha/Fogo" index="3" unique_id=702279728]
 light_energy = 0.9
 omni_range = 3.0
 base_energy = 0.9
