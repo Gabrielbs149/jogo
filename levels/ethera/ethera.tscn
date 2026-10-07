@@ -2,10 +2,14 @@
 
 [ext_resource type="Script" path="res://world/level.gd" id="1_r"]
 [ext_resource type="Environment" path="res://assets/environment/fire_sky.tres" id="2_r"]
-[ext_resource type="Material" path="res://assets/materials/areia_ethera.tres" id="3_4e4y1"]
+[ext_resource type="Texture2D" path="res://levels/ethera/art/chao_mascara.res" id="2_ywjao"]
 [ext_resource type="ArrayMesh" path="res://levels/ethera/art/dunes.obj" id="3_r"]
+[ext_resource type="Shader" path="res://assets/shaders/chao_pintado.gdshader" id="4_n8s87"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/vila/T_UnevenBrick_BaseColor.png" id="5_unbml"]
 [ext_resource type="Material" path="res://assets/materials/tabuas.tres" id="5_xbrnh"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/vila/T_UnevenBrick_Normal.png" id="6_f5ahe"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fogo.tscn" id="6_oox7e"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/vila/T_Noise_Terrain.png" id="7_8tq8i"]
 [ext_resource type="Script" path="res://combat/combat_fx.gd" id="7_r"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Pebble_Round_1.gltf" id="8_oox7e"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Pebble_Round_2.gltf" id="9_6n1ac"]
@@ -22,11 +26,70 @@
 [ext_resource type="Material" path="res://assets/materials/arenito.tres" id="19_4e4y1"]
 [ext_resource type="Material" path="res://assets/materials/pedra_poco.tres" id="19_nonur"]
 [ext_resource type="FontFile" path="res://assets/fonts/cinzel.ttf" id="26_r"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Wall_UnevenBrick_Straight.gltf" id="28_numo2"]
 [ext_resource type="PackedScene" path="res://world/props/arbusto.tscn" id="29_ib6io"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Prop_Brick4.gltf" id="29_ve3n3"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Prop_Brick3.gltf" id="30_xqdmj"]
 [ext_resource type="PackedScene" path="res://world/props/tronco_seco.tscn" id="31_owhxv"]
-[ext_resource type="PackedScene" path="res://world/props/grama.tscn" id="33_j3m11"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Prop_Brick1.gltf" id="31_wmkbb"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Prop_Brick2.gltf" id="32_85qr0"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Wall_UnevenBrick_Window_Wide_Round.gltf" id="33_pmnfo"]
+[ext_resource type="PackedScene" path="res://world/props/pilar.tscn" id="35_iblxb"]
 [ext_resource type="PackedScene" path="res://world/props/arvore_torta.tscn" id="35_koml0"]
 [ext_resource type="PackedScene" path="res://world/props/arvore_morta.tscn" id="36_ncx0b"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Vase_Rubble_Medium.gltf" id="36_sdbrm"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Vase_2.gltf" id="37_fkdfv"]
+[ext_resource type="PackedScene" path="res://world/props/estandarte.tscn" id="41_nf8af"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/natureza/PathRocks_Diffuse.png" id="45_sac7b"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/natureza/Rocks_Diffuse.png" id="47_xtdsf"]
+[ext_resource type="Texture2D" path="res://assets/kits/quaternius/natureza/Grass.png" id="49_hfjio"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g000.res" id="50_bt2kc"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g001.res" id="51_ua1vy"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g002.res" id="52_oc3co"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g003.res" id="53_haxd4"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g004.res" id="54_28ekh"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g005.res" id="55_fqs60"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g006.res" id="56_gued5"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g007.res" id="57_00lfu"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g008.res" id="58_3sw3e"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g009.res" id="59_md6of"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g010.res" id="60_wegos"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g011.res" id="61_wf3ws"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g012.res" id="62_iks3m"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g013.res" id="63_8s2f6"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g014.res" id="64_nojhy"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g015.res" id="65_6aqhg"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g016.res" id="66_qcvwn"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g017.res" id="67_4wase"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g018.res" id="68_ce1wa"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g019.res" id="69_gtrtn"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g020.res" id="70_0xfb6"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g021.res" id="71_yu5ax"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g022.res" id="72_wbhs1"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g023.res" id="73_a1x8t"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g024.res" id="74_rgv3e"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g025.res" id="75_2mdmk"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g026.res" id="76_a2378"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g027.res" id="77_t5ukw"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g028.res" id="78_dfwc8"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g029.res" id="79_5jrd0"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g030.res" id="80_xg1hj"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g031.res" id="81_sfsrp"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g032.res" id="82_0o6n2"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g033.res" id="83_278xn"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g034.res" id="84_d5gfg"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g035.res" id="85_ujx6x"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g036.res" id="86_dwenc"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g037.res" id="87_5tne8"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g038.res" id="88_vhdir"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g039.res" id="89_loqws"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g040.res" id="90_ul5kv"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g041.res" id="91_mk4c4"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g042.res" id="92_6l0y3"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g043.res" id="93_pa3yy"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g044.res" id="94_0a14y"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g045.res" id="95_h8ud6"]
+[ext_resource type="MultiMesh" path="res://levels/ethera/art/grama/g046.res" id="96_wmngo"]
 [ext_resource type="Script" path="res://systems/camera/third_person_camera.gd" id="cam"]
 [ext_resource type="Script" path="res://world/encounter.gd" id="encounter"]
 [ext_resource type="PackedScene" path="res://actors/enemies/escaravelho_de_cinza.tscn" id="en_escaravelho_de_cinza"]
@@ -43,6 +106,24 @@ geometry_source_group_name = &"nav_source"
 agent_max_climb = 0.5
 agent_max_slope = 40.0
 filter_baking_aabb = AABB(-36, -10, -28, 72, 40, 78)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3m81l"]
+render_priority = 0
+shader = ExtResource("4_n8s87")
+shader_parameter/mask = ExtResource("2_ywjao")
+shader_parameter/area_center = Vector2(0, 0)
+shader_parameter/area_size = Vector2(200, 200)
+shader_parameter/noise = ExtResource("7_8tq8i")
+shader_parameter/cobble_albedo = ExtResource("5_unbml")
+shader_parameter/cobble_normal = ExtResource("6_f5ahe")
+shader_parameter/cobble_meters = 2.6
+shader_parameter/grass_light = Color(0.86, 0.6, 0.42, 1)
+shader_parameter/grass_dark = Color(0.7, 0.44, 0.3, 1)
+shader_parameter/grass_dry = Color(0.9, 0.7, 0.5, 1)
+shader_parameter/dirt_light = Color(0.62, 0.38, 0.26, 1)
+shader_parameter/dirt_dark = Color(0.45, 0.26, 0.18, 1)
+shader_parameter/pebble_color = Color(0.75, 0.6, 0.5, 1)
+shader_parameter/cobble_tint = Color(1, 0.82, 0.66, 1)
 
 [sub_resource type="Gradient" id="Gradient_14"]
 colors = PackedColorArray(1, 0.8, 0.4, 1, 1, 0.35, 0.1, 0)
@@ -155,6 +236,54 @@ size = Vector3(1.6, 0.12, 0.03)
 [sub_resource type="BoxShape3D" id="BoxShape3D_55"]
 size = Vector3(2.9, 2.2, 2.6)
 
+[sub_resource type="BoxMesh" id="BoxMesh_qf3wf"]
+size = Vector3(6.6, 0.7, 1.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ypird"]
+size = Vector3(5.5, 0.7, 1.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ifook"]
+resource_name = "PathRocks"
+cull_mode = 2
+albedo_color = Color(1, 0.72, 0.56, 1)
+albedo_texture = ExtResource("45_sac7b")
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cegcp"]
+resource_name = "Rocks"
+cull_mode = 2
+albedo_color = Color(1, 0.72, 0.56, 1)
+albedo_texture = ExtResource("47_xtdsf")
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ywjao"]
+resource_name = "PathRocks"
+cull_mode = 2
+albedo_color = Color(1, 0.72, 0.56, 1)
+albedo_texture = ExtResource("45_sac7b")
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n8s87"]
+resource_name = "Rocks"
+cull_mode = 2
+albedo_color = Color(1, 0.72, 0.56, 1)
+albedo_texture = ExtResource("47_xtdsf")
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_unbml"]
+resource_name = "Rocks"
+cull_mode = 2
+albedo_color = Color(1, 0.72, 0.56, 1)
+albedo_texture = ExtResource("47_xtdsf")
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f5ahe"]
+resource_name = "Grass"
+cull_mode = 2
+albedo_color = Color(1, 0.78, 0.5, 1)
+albedo_texture = ExtResource("49_hfjio")
+metadata/_gltf_primary_texture_coord = 0
+
 [node name="Ethera" type="Node3D" unique_id=1590521460]
 script = ExtResource("1_r")
 intro_lines = PackedStringArray("Há seis meses, cinco desconhecidos perderam suas sombras no mesmo dia.", "Recuperaram. E descobriram que eram os heróis de uma profecia antiga.", "No Plano do Fogo, as estrelas se voltaram contra eles. Agora o grupo caça os Astros, um por um.", "Caiaque, Umu e Juca esperam do outro lado das dunas.", "Mas antes há Ethera, onde um guardião ainda protege um selo que já não existe.")
@@ -165,6 +294,8 @@ Esta noite, as estrelas brilham um pouco mais."
 musica = "ethera"
 ambiente = "vento"
 piso = "areia"
+mapa_do_piso = ExtResource("2_ywjao")
+area_do_mapa = 200.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=416783569]
 environment = ExtResource("2_r")
@@ -181,7 +312,7 @@ directional_shadow_max_distance = 80.0
 navigation_mesh = SubResource("NavigationMesh_18")
 
 [node name="Terrain" type="MeshInstance3D" parent="." unique_id=726893765 groups=["nav_source"]]
-material_override = ExtResource("3_4e4y1")
+material_override = SubResource("ShaderMaterial_3m81l")
 mesh = ExtResource("3_r")
 
 [node name="Embers" type="GPUParticles3D" parent="." unique_id=2066376540]
@@ -273,80 +404,6 @@ transform = Transform3D(0.6646642, 0, -1.4554112, 0, 1.6, 0, 1.4554112, 0, 0.664
 
 [node name="Pebble_Round_14" parent="Camp/Pit" unique_id=2098556162 instance=ExtResource("8_oox7e")]
 transform = Transform3D(1.5563189, 0, -1.0001856, 0, 1.85, 0, 1.0001856, 0, 1.5563189, 0.7991909, 0, -0.51360875)
-
-[node name="Rocks" type="Node3D" parent="." unique_id=21005073 groups=["nav_source"]]
-
-[node name="Rock0" parent="Rocks" unique_id=170596023 instance=ExtResource("10_jm22j")]
-transform = Transform3D(-0.3549674, 0, 0.7702768, 0, 0.84813213, 0, -0.7702768, 0, -0.3549674, -8, 0.0030029297, 18)
-
-[node name="Rock1" parent="Rocks" unique_id=1193260471 instance=ExtResource("11_vbsq4")]
-transform = Transform3D(-1.4051883, 0, 0.21611078, 0, 1.4217095, 0, -0.21611078, 0, -1.4051883, 9, -0.057002258, 21)
-
-[node name="Rock2" parent="Rocks" unique_id=838699052 instance=ExtResource("10_jm22j")]
-transform = Transform3D(-0.2913674, 0, 0.7895286, 0, 0.84157616, 0, -0.7895286, 0, -0.2913674, -7, -0.062003326, 27)
-
-[node name="Rock3" parent="Rocks" unique_id=835953996 instance=ExtResource("10_jm22j")]
-transform = Transform3D(-0.7606076, 0, 0.5815978, 0, 0.9574863, 0, -0.5815978, 0, -0.7606076, 8.5, -0.16049881, 30)
-
-[node name="Rock4" parent="Rocks" unique_id=264170583 instance=ExtResource("11_vbsq4")]
-transform = Transform3D(0.80294454, 0, -1.0977521, 0, 1.360066, 0, 1.0977521, 0, 0.80294454, -5.5, -0.18899842, 40)
-
-[node name="Rock5" parent="Rocks" unique_id=22654935 instance=ExtResource("10_jm22j")]
-transform = Transform3D(-0.857897, 0, 0.70282805, 0, 1.1090331, 0, -0.70282805, 0, -0.857897, 10, -0.17300339, 39)
-
-[node name="Rock6" parent="Rocks" unique_id=1325693025 instance=ExtResource("11_vbsq4")]
-transform = Transform3D(0.1316903, 0, 1.162124, 0, 1.1695617, 0, -1.162124, 0, 0.1316903, -17, -0.15100403, 6)
-
-[node name="Rock7" parent="Rocks" unique_id=90232396 instance=ExtResource("11_vbsq4")]
-transform = Transform3D(-0.8055845, 0, -1.219665, 0, 1.4616939, 0, 1.219665, 0, -0.8055845, 17, -0.13399811, -2)
-
-[node name="Rock8" parent="Rocks" unique_id=56642704 instance=ExtResource("10_jm22j")]
-transform = Transform3D(-0.8095489, 0, -0.8197846, 0, 1.1521355, 0, 0.8197846, 0, -0.8095489, -15, -0.31499785, -10)
-
-[node name="Rock9" parent="Rocks" unique_id=1285584718 instance=ExtResource("11_vbsq4")]
-transform = Transform3D(1.3968658, 0, -0.5035242, 0, 1.4848471, 0, 0.5035242, 0, 1.3968658, 16, -0.04300232, -12)
-
-[node name="Rock10" parent="Rocks" unique_id=2085838296 instance=ExtResource("10_jm22j")]
-transform = Transform3D(-0.25513524, 0, 0.9285185, 0, 0.9629333, 0, -0.9285185, 0, -0.25513524, -4, 0.08299713, 15.5)
-
-[node name="Rock11" parent="Rocks" unique_id=1360686332 instance=ExtResource("10_jm22j")]
-transform = Transform3D(0.8018641, 0, 0.0026258284, 0, 0.8018684, 0, -0.0026258284, 0, 0.8018641, 5, -0.25950545, 14.5)
-
-[node name="Pedrinhas" parent="Rocks" unique_id=1520833109 instance=ExtResource("12_l8iap")]
-transform = Transform3D(-0.3069996, 0, 1.0143738, 0, 1.0598127, 0, -1.0143738, 0, -0.3069996, -27.348213, 1.0197929, 27.323532)
-
-[node name="Pedregulhos" parent="Rocks" unique_id=608393690 instance=ExtResource("13_uvjll")]
-transform = Transform3D(0.0554009, 0, 1.5096998, 0, 1.510716, 0, -1.5096998, 0, 0.0554009, -16.566679, 3.6228547, 47.71093)
-
-[node name="Rocha" parent="Rocks" unique_id=1739775143 instance=ExtResource("10_jm22j")]
-transform = Transform3D(0.045395665, 0, -1.0631185, 0, 1.0640872, 0, 1.0631185, 0, 0.045395665, -30.14562, 3.6864724, 17.41988)
-
-[node name="Penhasco" parent="Rocks" unique_id=695796976 instance=ExtResource("14_j3m11")]
-transform = Transform3D(0.41550654, 0, -0.7905971, 0, 0.8931346, 0, 0.7905971, 0, 0.41550654, 29.637226, 3.6309557, 0.848011)
-
-[node name="Penhasco2" parent="Rocks" unique_id=713287226 instance=ExtResource("14_j3m11")]
-transform = Transform3D(-0.33860898, 0, -0.77185607, 0, 0.8428629, 0, 0.77185607, 0, -0.33860898, -33.665413, 2.5218363, -11.712242)
-
-[node name="Pedregulhos2" parent="Rocks" unique_id=1769069738 instance=ExtResource("13_uvjll")]
-transform = Transform3D(-0.35910305, 0, 1.0239205, 0, 1.085066, 0, -1.0239205, 0, -0.35910305, -28.997404, 5.5362954, -24.668596)
-
-[node name="Penhasco3" parent="Rocks" unique_id=776288222 instance=ExtResource("14_j3m11")]
-transform = Transform3D(0.32655177, 0, -1.0217215, 0, 1.0726373, 0, 1.0217215, 0, 0.32655177, 25.933052, 4.876191, -22.195526)
-
-[node name="Penhasco4" parent="Rocks" unique_id=161873488 instance=ExtResource("14_j3m11")]
-transform = Transform3D(-0.57365286, 0, -0.896204, 0, 1.0640767, 0, 0.896204, 0, -0.57365286, 32.10676, -0.4804642, 17.82354)
-
-[node name="Pedras" parent="Rocks" unique_id=1592608968 instance=ExtResource("15_koml0")]
-transform = Transform3D(-0.3301484, 0, 1.5903136, 0, 1.6242213, 0, -1.5903136, 0, -0.3301484, -0.9990883, 0.2958435, 44.697)
-
-[node name="Pedras2" parent="Rocks" unique_id=333937276 instance=ExtResource("15_koml0")]
-transform = Transform3D(-1.3014069, 0, 0.0025854493, 0, 1.3014094, 0, -0.0025854493, 0, -1.3014069, -28.482735, -1.1446701, -3.0070019)
-
-[node name="Rocha2" parent="Rocks" unique_id=239642146 instance=ExtResource("10_jm22j")]
-transform = Transform3D(0.8782249, 0, -0.5075435, 0, 1.014337, 0, 0.5075435, 0, 0.8782249, 20.88818, 0.73181, -24.54611)
-
-[node name="Penhasco5" parent="Rocks" unique_id=811441254 instance=ExtResource("14_j3m11")]
-transform = Transform3D(0.5811254, 0, -0.49648672, 0, 0.76433355, 0, 0.49648672, 0, 0.5811254, -21.58445, 5.305066, 44.358612)
 
 [node name="Ruins" type="Node3D" parent="." unique_id=99672598 groups=["nav_source"]]
 
@@ -616,139 +673,1189 @@ far = 400.0
 
 [node name="HUD" parent="." unique_id=858396023 instance=ExtResource("hud")]
 
-[node name="Trees" type="Node3D" parent="." unique_id=1847595656 groups=["nav_source"]]
+[node name="Ruinas" type="Node3D" parent="." unique_id=522885770 groups=["nav_source"]]
 
-[node name="Arbusto" parent="Trees" unique_id=863066708 instance=ExtResource("29_ib6io")]
-transform = Transform3D(0.24841772, 0, -1.0723234, 0, 1.100722, 0, 1.0723234, 0, 0.24841772, -13.722464, 0.062063597, -2.61594)
+[node name="Wall_UnevenBrick_Straight2" parent="Ruinas" unique_id=183393498 groups=["colisao_auto"] instance=ExtResource("28_numo2")]
+transform = Transform3D(-0.06569162, 0, 0.99784, 0, 0.65123874, 0, -0.99784, 0, -0.06569162, 13.47192, -0.19673309, -0.8539914)
 
-[node name="Suculenta" parent="Trees" unique_id=780405375 instance=ExtResource("33_j3m11")]
-transform = Transform3D(0.8651767, 0, -0.08916282, 0, 0.86975896, 0, 0.08916282, 0, 0.8651767, -24.989847, -0.6442658, 2.6467857)
+[node name="Prop_Brick42" parent="Ruinas" unique_id=1542029507 instance=ExtResource("29_ve3n3")]
+transform = Transform3D(0.66503805, 0, -0.7468095, -0.052253228, 0.9975492, -0.046531793, 0.7449792, 0.06996862, 0.66340816, 14.64719, -0.14278488, -0.045308113)
 
-[node name="Suculenta2" parent="Trees" unique_id=1812211695 instance=ExtResource("33_j3m11")]
-transform = Transform3D(-0.957562, 0, -0.13002948, 0, 0.9663502, 0, 0.13002948, 0, -0.957562, 30.910858, 0.29346314, 44.55139)
+[node name="Wall_UnevenBrick_Straight3" parent="Ruinas" unique_id=1489618147 groups=["colisao_auto"] instance=ExtResource("28_numo2")]
+transform = Transform3D(0.44752166, 0, 0.8942731, 0, 0.48209563, 0, -0.8942731, 0, 0.44752166, 12.12555, -0.021134948, 5.817782)
 
-[node name="Tronco_seco" parent="Trees" unique_id=189264477 instance=ExtResource("31_owhxv")]
-transform = Transform3D(0.7250261, 0, 0.59595454, 0, 0.9385226, 0, -0.59595454, 0, 0.7250261, 14.812683, 2.2564912, 28.819187)
+[node name="Prop_Brick32" parent="Ruinas" unique_id=1644469414 instance=ExtResource("30_xqdmj")]
+transform = Transform3D(0.91452175, 0, -0.40453678, -0.08522051, 0.977559, -0.19265494, 0.39545855, 0.21066195, 0.8939989, 11.587076, 0.040866088, 6.349766)
 
-[node name="Tronco_seco2" parent="Trees" unique_id=1925589979 instance=ExtResource("31_owhxv")]
-transform = Transform3D(0.99770594, 0, 0.19073907, 0, 1.0157748, 0, -0.19073907, 0, 0.99770594, 11.302643, 2.3046212, -19.991606)
+[node name="Prop_Brick43" parent="Ruinas" unique_id=1537093101 instance=ExtResource("29_ve3n3")]
+transform = Transform3D(-0.5714417, 0, -0.82064265, 0.12752593, 0.987852, -0.08880069, 0.8106735, -0.15539764, -0.5644998, 11.7108135, 0.050688934, 6.593489)
 
-[node name="Tronco_seco3" parent="Trees" unique_id=237550589 instance=ExtResource("31_owhxv")]
-transform = Transform3D(0.006430036, 0, 0.8432869, 0, 0.8433114, 0, -0.8432869, 0, 0.006430036, -23.209152, 0.9560913, 20.544098)
+[node name="Wall_UnevenBrick_Straight4" parent="Ruinas" unique_id=580826808 groups=["colisao_auto"] instance=ExtResource("28_numo2")]
+transform = Transform3D(0.8087738, 0, 0.5881198, 0, 0.60078585, 0, -0.5881198, 0, 0.8087738, 8.145557, -0.08920441, 10.51406)
 
-[node name="Suculenta3" parent="Trees" unique_id=1625719621 instance=ExtResource("33_j3m11")]
-transform = Transform3D(1.1794689, 0, 0.7313801, 0, 1.3878269, 0, -0.7313801, 0, 1.1794689, -28.898724, 6.667956, -13.732727)
+[node name="Prop_Brick12" parent="Ruinas" unique_id=301146404 instance=ExtResource("31_wmkbb")]
+transform = Transform3D(-0.40295553, 0, -0.91521955, -0.2813422, 0.9515791, 0.12387017, 0.8709038, 0.30740407, -0.38344407, 6.92706, -0.111134335, 11.000185)
 
-[node name="Arbusto_baixo" parent="Trees" unique_id=832627744 instance=ExtResource("33_j3m11")]
-transform = Transform3D(-0.73921907, 0, -0.6944747, 0, 1.0142682, 0, 0.6944747, 0, -0.73921907, 20.861755, -1.3145653, 33.90443)
+[node name="Prop_Brick22" parent="Ruinas" unique_id=1732237999 instance=ExtResource("32_85qr0")]
+transform = Transform3D(0.18867306, 0, -0.9820399, 0.07707503, 0.99691534, 0.014807933, 0.97901064, -0.07848462, 0.18809107, 6.789302, -0.11549072, 11.890926)
 
-[node name="Arvore" parent="Trees" unique_id=154346128 instance=ExtResource("35_koml0")]
-transform = Transform3D(0.055539496, 0, -1.0352597, 0, 1.0367484, 0, 1.0352597, 0, 0.055539496, 17.251469, -0.016107177, 9.814663)
+[node name="Wall_UnevenBrick_Window_Wide_Round2" parent="Ruinas" unique_id=217605224 groups=["colisao_auto"] instance=ExtResource("33_pmnfo")]
+transform = Transform3D(0.7647397, 0, -0.6443393, 0, 0.7639297, 0, 0.6443393, 0, 0.7647397, -7.8764114, -0.014459992, 9.941616)
 
-[node name="Arbusto_baixo2" parent="Trees" unique_id=1111519507 instance=ExtResource("33_j3m11")]
-transform = Transform3D(-0.025100239, 0, 1.0267712, 0, 1.0270779, 0, -1.0267712, 0, -0.025100239, -18.178246, 4.1514077, 28.828934)
+[node name="Prop_Brick44" parent="Ruinas" unique_id=1946459485 instance=ExtResource("29_ve3n3")]
+transform = Transform3D(-0.8064954, 0, 0.59124035, 0.16743569, 0.95906264, 0.22839463, -0.5670365, 0.28319395, -0.77347964, -6.922213, 0.13355179, 10.226006)
 
-[node name="Arbusto2" parent="Trees" unique_id=169854101 instance=ExtResource("29_ib6io")]
-transform = Transform3D(-0.5038404, 0, -0.9128656, 0, 1.0426786, 0, 0.9128656, 0, -0.5038404, -19.413744, 0.14800492, -20.651016)
+[node name="Wall_UnevenBrick_Window_Wide_Round3" parent="Ruinas" unique_id=109017551 groups=["colisao_auto"] instance=ExtResource("33_pmnfo")]
+transform = Transform3D(0.42263836, 0, -0.9062984, 0, 0.93285036, 0, 0.9062984, 0, 0.42263836, -11.281879, -0.0725502, 5.494299)
 
-[node name="Arvore_pequena" parent="Trees" unique_id=1894248065 instance=ExtResource("36_ncx0b")]
-transform = Transform3D(-1.0828513, 0, -0.04169168, 0, 1.0836536, 0, 0.04169168, 0, -1.0828513, -21.257908, 1.8073448, -4.8152847)
+[node name="Prop_Brick33" parent="Ruinas" unique_id=1933144045 instance=ExtResource("30_xqdmj")]
+transform = Transform3D(-0.9917255, 0, -0.12837656, -0.025382003, 0.9802595, 0.19607925, 0.12584233, 0.19771525, -0.9721483, -12.578836, -0.04822235, 6.9355965)
 
-[node name="Tronco_seco4" parent="Trees" unique_id=38057663 instance=ExtResource("31_owhxv")]
-transform = Transform3D(0.6521267, 0, 1.0542591, 0, 1.2396498, 0, -1.0542591, 0, 0.6521267, -11.580982, -0.075688936, 42.293243)
+[node name="Prop_Brick45" parent="Ruinas" unique_id=1784959381 instance=ExtResource("29_ve3n3")]
+transform = Transform3D(-0.89231306, 0, -0.45141715, -0.08778932, 0.9809075, 0.17353253, 0.44279847, 0.19447494, -0.87527657, -11.627918, -0.041161347, 7.0155134)
 
-[node name="Tronco_seco5" parent="Trees" unique_id=1382077122 instance=ExtResource("31_owhxv")]
-transform = Transform3D(-1.0815823, 0, 0.52420104, 0, 1.2019181, 0, -0.52420104, 0, -1.0815823, 25.514973, 4.8504395, 8.401302)
+[node name="Prop_Brick23" parent="Ruinas" unique_id=1597250760 instance=ExtResource("32_85qr0")]
+transform = Transform3D(-0.9059906, 0, 0.42329776, -0.034721352, 0.9966302, -0.07431463, -0.42187133, -0.08202583, -0.9029376, -12.34944, -0.0010726929, 6.095131)
 
-[node name="Arvore2" parent="Trees" unique_id=4222636 instance=ExtResource("35_koml0")]
-transform = Transform3D(-0.18345448, 0, -1.1192474, 0, 1.1341827, 0, 1.1192474, 0, -0.18345448, -24.102215, -0.8948647, 37.731358)
+[node name="Wall_UnevenBrick_Straight5" parent="Ruinas" unique_id=1534778695 groups=["colisao_auto"] instance=ExtResource("28_numo2")]
+transform = Transform3D(-0.04220166, 0, -0.9991091, 0, 0.64772826, 0, 0.9991091, 0, -0.04220166, -12.488419, 0.10003891, -0.5486219)
 
-[node name="Arbusto3" parent="Trees" unique_id=740492411 instance=ExtResource("29_ib6io")]
-transform = Transform3D(-0.9856842, 0, -0.5762044, 0, 1.1417464, 0, 0.5762044, 0, -0.9856842, 23.37212, 3.062716, 19.290535)
+[node name="Prop_Brick46" parent="Ruinas" unique_id=1747489627 instance=ExtResource("29_ve3n3")]
+transform = Transform3D(0.411006, 0, -0.91163266, -0.1721651, 0.98200524, -0.07761996, 0.895228, 0.18885359, 0.40361005, -13.061514, 0.15878601, -1.0554544)
 
-[node name="Arvore3" parent="Trees" unique_id=1088456258 instance=ExtResource("36_ncx0b")]
-transform = Transform3D(1.121059, 0, 0.26723048, 0, 1.1524692, 0, -0.26723048, 0, 1.121059, 2.8778534, -0.45284042, -22.057472)
+[node name="Prop_Brick34" parent="Ruinas" unique_id=1832354773 instance=ExtResource("30_xqdmj")]
+transform = Transform3D(-0.9094997, 0, 0.41570452, -0.079964966, 0.98132443, -0.17495146, -0.407941, -0.1923601, -0.8925143, -13.70555, 0.1659195, -0.3479787)
 
-[node name="Arbusto4" parent="Trees" unique_id=2016140238 instance=ExtResource("29_ib6io")]
-transform = Transform3D(-0.6518622, 0, -0.6211234, 0, 0.9003991, 0, 0.6211234, 0, -0.6518622, 21.705711, 2.1884217, -17.214302)
+[node name="Prop_Brick24" parent="Ruinas" unique_id=1643732992 instance=ExtResource("32_85qr0")]
+transform = Transform3D(0.75173074, 0, 0.65947014, 0.0611239, 0.99569535, -0.0696752, -0.65663135, 0.09268638, 0.7484948, -12.523635, 0.13798828, -1.6462653)
 
-[node name="Arbusto_baixo3" parent="Trees" unique_id=1057217870 instance=ExtResource("33_j3m11")]
-transform = Transform3D(-1.0112951, 0, 0.7771933, 0, 1.27544, 0, -0.7771933, 0, -1.0112951, 29.257523, -1.6426636, -11.972757)
+[node name="Wall_UnevenBrick_Straight6" parent="Ruinas" unique_id=147329749 groups=["colisao_auto"] instance=ExtResource("28_numo2")]
+transform = Transform3D(-0.4863125, 0, -0.87378496, 0, 0.86381274, 0, 0.87378496, 0, -0.4863125, -10.859205, -0.07264862, -6.322062)
 
-[node name="Arbusto5" parent="Trees" unique_id=1540406287 instance=ExtResource("29_ib6io")]
-transform = Transform3D(0.26644427, 0, 1.1707582, 0, 1.2006946, 0, -1.1707582, 0, 0.26644427, 31.57035, 5.688475, 38.13562)
+[node name="Prop_Brick13" parent="Ruinas" unique_id=1600634706 instance=ExtResource("31_wmkbb")]
+transform = Transform3D(-0.9989292, 0, -0.046265382, 0.015986836, 0.9384017, -0.34517637, 0.043415513, -0.34554636, -0.9373969, -11.731707, -0.04087143, -6.6562862)
 
-[node name="Suculenta4" parent="Trees" unique_id=880140368 instance=ExtResource("33_j3m11")]
-transform = Transform3D(1.0075436, 0, 0.78947484, 0, 1.2800057, 0, -0.78947484, 0, 1.0075436, 31.826042, -1.8090912, -20.532534)
+[node name="Prop_Brick14" parent="Ruinas" unique_id=656883592 instance=ExtResource("31_wmkbb")]
+transform = Transform3D(-0.65254116, 0, -0.75775325, -0.19593668, 0.96599096, 0.16873138, 0.73198277, 0.25857583, -0.63034886, -11.535253, -0.014580536, -5.820748)
 
-[node name="Arbusto6" parent="Trees" unique_id=1509246891 instance=ExtResource("29_ib6io")]
-transform = Transform3D(1.0634272, 0, 0.8470265, 0, 1.3595335, 0, -0.8470265, 0, 1.0634272, 32.032776, -1.646299, -25.723825)
+[node name="Prop_Brick35" parent="Ruinas" unique_id=796630060 instance=ExtResource("30_xqdmj")]
+transform = Transform3D(0.7615397, 0, -0.64811826, -0.13942549, 0.9765869, -0.1638251, 0.6329438, 0.21512352, 0.7437097, -11.0787945, -0.034375, -6.7608175)
 
-[node name="Arvore_pequena2" parent="Trees" unique_id=1993022375 instance=ExtResource("36_ncx0b")]
-transform = Transform3D(1.0667274, 0, 0.0007243416, 0, 1.0667276, 0, -0.0007243416, 0, 1.0667274, 11.365608, -0.018548584, -6.5370083)
+[node name="Wall_UnevenBrick_Straight7" parent="Ruinas" unique_id=1155963514 groups=["colisao_auto"] instance=ExtResource("28_numo2")]
+transform = Transform3D(-0.8004905, -0.59207743, -0.09305544, 0, 0.15526178, -0.9878734, 0.59934545, -0.7907832, -0.124285586, -7.291491, -0.09988403, -10.406376)
 
-[node name="Arbusto7" parent="Trees" unique_id=887945327 instance=ExtResource("29_ib6io")]
-transform = Transform3D(1.3736241, 0, 0.14178842, 0, 1.3809226, 0, -0.14178842, 0, 1.3736241, -27.22438, -0.84928286, 41.731964)
+[node name="Prop_Brick36" parent="Ruinas" unique_id=1052483212 instance=ExtResource("30_xqdmj")]
+transform = Transform3D(0.29356644, 0, -0.9559387, -0.3233479, 0.94105566, -0.09929935, 0.8995915, 0.3382517, 0.27626234, -7.827897, 0.067839816, -10.033549)
 
-[node name="Arvore_pequena3" parent="Trees" unique_id=607674568 instance=ExtResource("36_ncx0b")]
-transform = Transform3D(-0.7149069, 0, -0.47730255, 0, 0.85959846, 0, 0.47730255, 0, -0.7149069, -31.756474, 7.257582, 38.70894)
+[node name="Prop_Brick47" parent="Ruinas" unique_id=1948871137 instance=ExtResource("29_ve3n3")]
+transform = Transform3D(0.9862852, 0, -0.1650498, 0.0074278084, 0.99898684, 0.044386223, 0.16488259, -0.045003437, 0.98528594, -5.805995, 0.153331, -9.561838)
 
-[node name="Arbusto8" parent="Trees" unique_id=1961565157 instance=ExtResource("29_ib6io")]
-transform = Transform3D(-0.1091298, 0, -1.3414651, 0, 1.3458967, 0, 1.3414651, 0, -0.1091298, 25.401245, 0.024378205, 42.92141)
+[node name="Wall_UnevenBrick_Straight8" parent="Ruinas" unique_id=1123885145 groups=["colisao_auto"] instance=ExtResource("28_numo2")]
+transform = Transform3D(-0.9818746, 0.18863066, 0.018458623, 0, 0.097390726, -0.99524623, -0.18953164, -0.977207, -0.09562548, 2.9639122, -0.33955002, -12.76437)
 
-[node name="Arvore4" parent="Trees" unique_id=1219944503 instance=ExtResource("36_ncx0b")]
-transform = Transform3D(0.6569368, 0, -0.82672477, 0, 1.0559545, 0, 0.82672477, 0, 0.6569368, -9.232162, 0.3092865, -16.644459)
+[node name="Prop_Brick15" parent="Ruinas" unique_id=1501414509 instance=ExtResource("31_wmkbb")]
+transform = Transform3D(-0.070668556, 0, 0.9974998, -0.10669856, 0.9942627, -0.007559132, -0.9917769, -0.10696599, -0.07026311, 4.27212, -0.17144851, -12.520757)
 
-[node name="Tronco_seco6" parent="Trees" unique_id=619110101 instance=ExtResource("31_owhxv")]
-transform = Transform3D(-0.8244972, 0, -0.2706216, 0, 0.867774, 0, 0.2706216, 0, -0.8244972, 9.020805, 2.2569566, -25.857058)
+[node name="Prop_Brick48" parent="Ruinas" unique_id=963120599 instance=ExtResource("29_ve3n3")]
+transform = Transform3D(0.14296228, 0, 0.98972815, -0.18499361, 0.98237634, 0.026721587, -0.9722855, -0.18691355, 0.14044276, 3.2797108, -0.16080932, -11.982949)
 
-[node name="Arvore5" parent="Trees" unique_id=2030539992 instance=ExtResource("35_koml0")]
-transform = Transform3D(0.26762736, 0, -1.2680476, 0, 1.2959819, 0, 1.2680476, 0, 0.26762736, -13.829653, 4.642691, -21.317865)
+[node name="Prop_Brick49" parent="Ruinas" unique_id=1005463872 instance=ExtResource("29_ve3n3")]
+transform = Transform3D(-0.9640366, 0, 0.26576957, -0.01681468, 0.99799657, -0.060992565, -0.26523712, -0.063267894, -0.9621052, 3.6655726, -0.17640762, -11.3104)
 
-[node name="Arbusto9" parent="Trees" unique_id=1498191171 instance=ExtResource("29_ib6io")]
-transform = Transform3D(-0.6339533, 0, 0.8471208, 0, 1.0580692, 0, -0.8471208, 0, -0.6339533, 30.18731, 4.1372705, 12.156017)
+[node name="Wall_UnevenBrick_Straight9" parent="Ruinas" unique_id=294387702 groups=["colisao_auto"] instance=ExtResource("28_numo2")]
+transform = Transform3D(-0.8087404, 0, 0.5881658, 0, 0.63739455, 0, -0.5881658, 0, -0.8087404, 8.146156, -0.11407242, -10.513624)
 
-[node name="Arvore6" parent="Trees" unique_id=2135335594 instance=ExtResource("36_ncx0b")]
-transform = Transform3D(-0.04004092, 0, -1.2416477, 0, 1.2422932, 0, 1.2416477, 0, -0.04004092, 10.720638, 3.8618836, 45.874855)
+[node name="Prop_Brick37" parent="Ruinas" unique_id=1567296708 instance=ExtResource("30_xqdmj")]
+transform = Transform3D(0.96859765, 0, 0.24863335, -0.0154329585, 0.99807173, 0.060121972, -0.24815392, -0.062071152, 0.96672994, 9.546842, 0.00954361, -10.649514)
 
-[node name="Suculenta5" parent="Trees" unique_id=1187752109 instance=ExtResource("33_j3m11")]
-transform = Transform3D(-1.1754342, 0, -0.21674095, 0, 1.1952499, 0, 0.21674095, 0, -1.1754342, -8.68511, 3.8830209, 46.409218)
+[node name="Prop_Brick38" parent="Ruinas" unique_id=1089577652 instance=ExtResource("30_xqdmj")]
+transform = Transform3D(0.8951798, 0, 0.44570515, -0.15634008, 0.93646157, 0.31400236, -0.41738573, -0.35077018, 0.8383015, 9.638412, 0.014682007, -11.40453)
 
-[node name="Arbusto10" parent="Trees" unique_id=727944618 instance=ExtResource("29_ib6io")]
-transform = Transform3D(1.1010427, 0, 0.8495368, 0, 1.390686, 0, -0.8495368, 0, 1.1010427, 15.86031, 0.15872422, -22.62746)
+[node name="Prop_Brick50" parent="Ruinas" unique_id=1711422893 instance=ExtResource("29_ve3n3")]
+transform = Transform3D(-0.9411415, 0, -0.33801278, 0.010166643, 0.99954754, -0.02830736, 0.33785984, -0.030077688, -0.9407157, 9.111818, -0.017906953, -9.654203)
 
-[node name="Arvore_pequena4" parent="Trees" unique_id=749009613 instance=ExtResource("36_ncx0b")]
-transform = Transform3D(-0.23289475, 0, -0.88258505, 0, 0.9127959, 0, 0.88258505, 0, -0.23289475, -22.785429, 0.9250244, -24.495306)
+[node name="Wall_UnevenBrick_Straight10" parent="Ruinas" unique_id=410279263 groups=["colisao_auto"] instance=ExtResource("28_numo2")]
+transform = Transform3D(-0.49919277, 0.85446954, 0.14383462, 0, 0.16599669, -0.9861263, -0.86649096, -0.49226713, -0.082864344, 11.764384, -0.16753006, -6.4895034)
 
-[node name="Suculenta6" parent="Trees" unique_id=152847912 instance=ExtResource("33_j3m11")]
-transform = Transform3D(1.297526, 0, -0.50274754, 0, 1.3915203, 0, 0.50274754, 0, 1.297526, -16.800776, 4.2079415, 36.331955)
+[node name="Prop_Brick16" parent="Ruinas" unique_id=407609589 instance=ExtResource("31_wmkbb")]
+transform = Transform3D(-0.9926932, 0, 0.12066587, -0.015160914, 0.99207544, -0.12472571, -0.11970965, -0.12564376, -0.9848265, 10.770984, 0.03666992, -6.948452)
 
-[node name="Arvore7" parent="Trees" unique_id=1014159692 instance=ExtResource("36_ncx0b")]
-transform = Transform3D(-0.20280679, 0, -0.97203875, 0, 0.9929702, 0, 0.97203875, 0, -0.20280679, 8.286205, -0.084466554, -13.274706)
+[node name="Pilar" parent="Ruinas" unique_id=1392067017 instance=ExtResource("35_iblxb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1, 0.16829681, 13.2)
 
-[node name="Arvore8" parent="Trees" unique_id=1034612634 instance=ExtResource("36_ncx0b")]
-transform = Transform3D(0.9507521, 0, 0.059917986, 0, 0.95263827, 0, -0.059917986, 0, 0.9507521, 23.279457, 2.6830583, -6.7547646)
+[node name="Pilar2" parent="Ruinas" unique_id=1268711869 instance=ExtResource("35_iblxb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1, -0.078704834, 13.2)
 
-[node name="Tronco_seco7" parent="Trees" unique_id=1018528018 instance=ExtResource("31_owhxv")]
-transform = Transform3D(0.8484111, 0, -0.88798386, 0, 1.2281355, 0, 0.88798386, 0, 0.8484111, -16.403088, 0.22873154, 14.818089)
+[node name="Verga" type="MeshInstance3D" parent="Ruinas" unique_id=1858069863 groups=["colisao_auto"]]
+transform = Transform3D(0.9975641, -0.06975647, 0, 0.06975647, 0.9975641, 0, 0, 0, 1, 0.5, 4.5, 13.2)
+material_override = ExtResource("19_4e4y1")
+mesh = SubResource("BoxMesh_qf3wf")
 
-[node name="Arvore9" parent="Trees" unique_id=1870485819 instance=ExtResource("35_koml0")]
-transform = Transform3D(-0.9302121, 0, 0.84926754, 0, 1.2595832, 0, -0.84926754, 0, -0.9302121, 29.43322, 1.1582779, 25.195564)
+[node name="Verga2" type="MeshInstance3D" parent="Ruinas" unique_id=1638757992 groups=["colisao_auto"]]
+transform = Transform3D(0.869042, -0.122135885, 0.47942555, 0.1391731, 0.99026805, 0, -0.47475982, 0.066723146, 0.87758255, -2.5, 0.38300064, -14.5)
+material_override = ExtResource("19_4e4y1")
+mesh = SubResource("BoxMesh_ypird")
 
-[node name="Arvore_pequena5" parent="Trees" unique_id=681881161 instance=ExtResource("35_koml0")]
-transform = Transform3D(0.05153008, 0, -1.1485543, 0, 1.1497097, 0, 1.1485543, 0, 0.05153008, -33.28168, 1.627787, 30.394878)
+[node name="Pilar3" parent="Ruinas" unique_id=489844812 instance=ExtResource("35_iblxb")]
+transform = Transform3D(0.90269005, 0, 0.4302914, 0, 1, 0, -0.4302914, 0, 0.90269005, -8, 0.026000977, -4)
 
-[node name="Arbusto_baixo4" parent="Trees" unique_id=100300270 instance=ExtResource("33_j3m11")]
-transform = Transform3D(0.09035649, 0, 1.1295744, 0, 1.1331825, 0, -1.1295744, 0, 0.09035649, -29.69662, -0.98871005, 12.236504)
+[node name="Pilar4" parent="Ruinas" unique_id=198394428 instance=ExtResource("35_iblxb")]
+transform = Transform3D(0.61817783, 0, -0.7860383, 0, 0.55, 0, 0.7860383, 0, 0.61817783, 8.5, 0.06949997, -3)
 
-[node name="Arvore10" parent="Trees" unique_id=1453411474 instance=ExtResource("35_koml0")]
-transform = Transform3D(-0.6385368, 0, 0.7210517, 0, 0.96314317, 0, -0.7210517, 0, -0.6385368, 15.97723, 2.4677835, 43.182297)
+[node name="Pilar5" parent="Ruinas" unique_id=2076351771 instance=ExtResource("35_iblxb")]
+transform = Transform3D(0.85349965, 0, 0.5210934, 0, 0.7, 0, -0.5210934, 0, 0.85349965, -6, 0.18500137, -9)
 
-[node name="Arbusto_baixo5" parent="Trees" unique_id=1109577160 instance=ExtResource("33_j3m11")]
-transform = Transform3D(-0.26290417, 0, 1.2081482, 0, 1.2364225, 0, -1.2081482, 0, -0.26290417, -32.479725, 7.462378, -19.542562)
+[node name="Pilar6" parent="Ruinas" unique_id=436533270 instance=ExtResource("35_iblxb")]
+transform = Transform3D(0.052305095, 0.74799734, 0.6616375, -0.9975641, 0.06975651, 0, -0.04615352, -0.6600258, 0.74982387, 9, 0.56900024, 6.5)
 
-[node name="Arbusto11" parent="Trees" unique_id=1292394636 instance=ExtResource("29_ib6io")]
-transform = Transform3D(0.54798746, 0, 0.7686736, 0, 0.9440071, 0, -0.7686736, 0, 0.54798746, 30.876167, 5.5201173, -4.1176147)
+[node name="Pilar7" parent="Ruinas" unique_id=1763179616 instance=ExtResource("35_iblxb")]
+transform = Transform3D(-0.57327783, 0, -0.81936103, 0, 0.4, 0, 0.81936103, 0, -0.57327783, -9.5, 0.08049774, 3.5)
 
-[node name="Suculenta7" parent="Trees" unique_id=134038966 instance=ExtResource("33_j3m11")]
-transform = Transform3D(-0.6545417, 0, -0.8724671, 0, 1.0906987, 0, 0.8724671, 0, -0.6545417, -5.480913, -0.65567935, -21.180964)
+[node name="Vase_Rubble_Medium2" parent="Ruinas" unique_id=971859130 instance=ExtResource("36_sdbrm")]
+transform = Transform3D(-0.9906847, 0, 0.13617575, 0, 1, 0, -0.13617575, 0, -0.9906847, 7.342968, 0.0410347, 5.8853855)
+
+[node name="Prop_Brick39" parent="Ruinas" unique_id=1865000617 instance=ExtResource("30_xqdmj")]
+transform = Transform3D(0.36561373, 0, 0.9307667, 0, 1, 0, -0.9307667, 0, 0.36561373, -5.1848717, 0.18767853, 12.454508)
+
+[node name="Vase_22" parent="Ruinas" unique_id=1447482535 instance=ExtResource("37_fkdfv")]
+transform = Transform3D(-0.054019377, 0.98544973, -0.1611544, 0.31319803, 0.16996716, 0.9343544, 0.9481503, 0, -0.31782243, -9.653805, -0.02961502, -0.35961294)
+
+[node name="Vase_Rubble_Medium3" parent="Ruinas" unique_id=62482040 instance=ExtResource("36_sdbrm")]
+transform = Transform3D(-0.1570783, 0, -0.98758614, 0, 1, 0, 0.98758614, 0, -0.1570783, 1.1631379, 0.016838074, 7.5988955)
+
+[node name="Prop_Brick40" parent="Ruinas" unique_id=1711813225 instance=ExtResource("30_xqdmj")]
+transform = Transform3D(-0.25551504, 0, -0.9668051, 0, 1, 0, 0.9668051, 0, -0.25551504, -4.266817, 0.1858284, 9.725303)
+
+[node name="Pedras" parent="Ruinas" unique_id=731723002 instance=ExtResource("15_koml0")]
+transform = Transform3D(-0.0023926012, 0, 1.186178, 0, 1.1861804, 0, -1.186178, 0, -0.0023926012, 11.053659, -0.02091217, -3.5368643)
+
+[node name="Pedregulhos" parent="Ruinas" unique_id=1925846361 instance=ExtResource("13_uvjll")]
+transform = Transform3D(0.2554768, 0, -0.8552229, 0, 0.89256626, 0, 0.8552229, 0, 0.2554768, 3.2292204, -0.11248398, 10.531896)
+
+[node name="Pedrinhas" parent="Ruinas" unique_id=833427113 instance=ExtResource("12_l8iap")]
+transform = Transform3D(-1.2681693, 0, -0.27902246, 0, 1.2985017, 0, 0.27902246, 0, -1.2681693, -11.140046, 0.15274048, 2.2741175)
+
+[node name="Pedras2" parent="Ruinas" unique_id=618373068 instance=ExtResource("15_koml0")]
+transform = Transform3D(-0.7350546, 0, 0.994584, 0, 1.2367307, 0, -0.994584, 0, -0.7350546, -4.0852714, 0.2142601, -13.070034)
+
+[node name="Estandarte" parent="Ruinas" unique_id=1050860673 instance=ExtResource("41_nf8af")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 0.20330048, 12.5)
+
+[node name="Estandarte2" parent="Ruinas" unique_id=353855209 instance=ExtResource("41_nf8af")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9, -0.11020279, 12.5)
+
+[node name="Trees" type="Node3D" parent="." unique_id=1500174321 groups=["nav_source"]]
+
+[node name="Arvore_torta" parent="Trees" unique_id=794430623 instance=ExtResource("35_koml0")]
+transform = Transform3D(0.8056682, 0, -0.60948914, 0, 1.0102367, 0, 0.60948914, 0, 0.8056682, -7.2216187, -0.18058166, -17.726364)
+
+[node name="Arbusto" parent="Trees" unique_id=214695173 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.65340483, 0, -0.3025368, 0, 0.7200461, 0, 0.3025368, 0, 0.65340483, -36.684772, 4.1576195, 26.493011)
+
+[node name="Arbusto2" parent="Trees" unique_id=1869494109 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.5291291, 0, 0.41557726, 0, 0.6728165, 0, -0.41557726, 0, 0.5291291, -39.516666, -0.51290894, -16.150694)
+
+[node name="Arbusto3" parent="Trees" unique_id=707039532 instance=ExtResource("29_ib6io")]
+transform = Transform3D(-0.6455689, 0, 0.64418024, 0, 0.9119909, 0, -0.64418024, 0, -0.6455689, -27.265686, 3.7254906, -26.003124)
+
+[node name="Arbusto4" parent="Trees" unique_id=2079603001 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.6116667, 0, 0.721351, 0, 0.94577134, 0, -0.721351, 0, 0.6116667, -26.195501, 3.2139435, 5.3547897)
+
+[node name="Arbusto5" parent="Trees" unique_id=116457053 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.22270483, 0, 0.87618303, 0, 0.90404326, 0, -0.87618303, 0, 0.22270483, -18.09668, 0.15490723, -22.410488)
+
+[node name="Arvore_torta2" parent="Trees" unique_id=681184516 instance=ExtResource("35_koml0")]
+transform = Transform3D(-0.38339064, 0, -0.6624027, 0, 0.7653533, 0, 0.6624027, 0, -0.38339064, -19.879648, 1.7868675, 21.34803)
+
+[node name="Arbusto6" parent="Trees" unique_id=1222553386 instance=ExtResource("29_ib6io")]
+transform = Transform3D(-0.7064798, 0, -0.1935509, 0, 0.73251325, 0, 0.1935509, 0, -0.7064798, 30.877472, 7.222748, 13.962681)
+
+[node name="Arbusto7" parent="Trees" unique_id=1142710985 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.40459973, 0, 0.73143643, 0, 0.8358829, 0, -0.73143643, 0, 0.40459973, 28.314774, 7.2246246, 30.02586)
+
+[node name="Arbusto8" parent="Trees" unique_id=437266173 instance=ExtResource("29_ib6io")]
+transform = Transform3D(-0.7353756, 0, 0.27786893, 0, 0.7861224, 0, -0.27786893, 0, -0.7353756, 32.18953, -0.017780304, -0.23022652)
+
+[node name="Arbusto9" parent="Trees" unique_id=720758999 instance=ExtResource("29_ib6io")]
+transform = Transform3D(-0.7188657, 0, 0.057505358, 0, 0.7211621, 0, -0.057505358, 0, -0.7188657, -32.122585, 0.59093094, 26.627369)
+
+[node name="Arbusto10" parent="Trees" unique_id=273264574 instance=ExtResource("29_ib6io")]
+transform = Transform3D(-0.7137991, 0, -0.0063880514, 0, 0.7138277, 0, 0.0063880514, 0, -0.7137991, -14.068329, -0.17952347, 33.65055)
+
+[node name="Tronco_seco" parent="Trees" unique_id=475389457 instance=ExtResource("31_owhxv")]
+transform = Transform3D(0.65416294, 0, -0.50019336, 0, 0.823482, 0, 0.50019336, 0, 0.65416294, -18.836674, 0.6957878, 15.02565)
+
+[node name="Arbusto11" parent="Trees" unique_id=518171282 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.7577672, 0, 0.49681407, 0, 0.90611005, 0, -0.49681407, 0, 0.7577672, -19.070013, 7.7369957, -31.462355)
+
+[node name="Arvore_torta3" parent="Trees" unique_id=530945622 instance=ExtResource("35_koml0")]
+transform = Transform3D(0.8195203, 0, 0.21452957, 0, 0.84713423, 0, -0.21452957, 0, 0.8195203, 21.179817, -0.44653854, 3.9682236)
+
+[node name="Arbusto12" parent="Trees" unique_id=621901408 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.62261647, 0, -0.06706739, 0, 0.62621826, 0, 0.06706739, 0, 0.62261647, 27.36702, -0.10041809, 23.111671)
+
+[node name="Arbusto13" parent="Trees" unique_id=722457408 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.9392734, 0, -0.026609708, 0, 0.9396503, 0, 0.026609708, 0, 0.9392734, 36.811348, 8.152813, 4.8768387)
+
+[node name="Arbusto14" parent="Trees" unique_id=54232663 instance=ExtResource("29_ib6io")]
+transform = Transform3D(-0.4958063, 0, -0.7436018, 0, 0.8937379, 0, 0.7436018, 0, -0.4958063, -24.36161, -0.7303314, 1.7554626)
+
+[node name="Arbusto15" parent="Trees" unique_id=1751589928 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.16113393, 0, 0.94019604, 0, 0.953904, 0, -0.94019604, 0, 0.16113393, 30.69757, 3.5858421, 42.228813)
+
+[node name="Arbusto16" parent="Trees" unique_id=457133481 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.87169164, 0, 0.22160849, 0, 0.89942014, 0, -0.22160849, 0, 0.87169164, -8.342535, 0.1316948, 25.83677)
+
+[node name="Arbusto17" parent="Trees" unique_id=1357372962 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.49871686, 0, -0.82818764, 0, 0.96675396, 0, 0.82818764, 0, 0.49871686, -11.541109, 1.2380028, 28.418915)
+
+[node name="Arbusto18" parent="Trees" unique_id=870991399 instance=ExtResource("29_ib6io")]
+transform = Transform3D(-0.7499652, 0, -0.5330091, 0, 0.9200796, 0, 0.5330091, 0, -0.7499652, 8.870693, 2.2256508, -26.03265)
+
+[node name="Arbusto19" parent="Trees" unique_id=383067729 instance=ExtResource("29_ib6io")]
+transform = Transform3D(-0.42399967, 0, 0.69876146, 0, 0.8173392, 0, -0.69876146, 0, -0.42399967, 16.813984, -0.025253296, 18.610111)
+
+[node name="Tronco_seco2" parent="Trees" unique_id=1793651485 instance=ExtResource("31_owhxv")]
+transform = Transform3D(0.6837521, 0, 0.76639503, 0, 1.0270727, 0, -0.76639503, 0, 0.6837521, 16.56054, -0.6250969, 33.1847)
+
+[node name="Arvore_torta4" parent="Trees" unique_id=1723831042 instance=ExtResource("35_koml0")]
+transform = Transform3D(-0.519334, 0, -0.7899376, 0, 0.945362, 0, 0.7899376, 0, -0.519334, 11.544895, 0.41726914, 27.27275)
+
+[node name="Arbusto20" parent="Trees" unique_id=503823202 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.590101, 0, -0.5004481, 0, 0.77373606, 0, 0.5004481, 0, 0.590101, 12.813396, 1.7383537, 21.751427)
+
+[node name="Arbusto21" parent="Trees" unique_id=284206637 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.6846738, 0, -0.5907477, 0, 0.9043014, 0, 0.5907477, 0, 0.6846738, -29.650433, 0.9356499, -7.61969)
+
+[node name="Arbusto22" parent="Trees" unique_id=34380132 instance=ExtResource("29_ib6io")]
+transform = Transform3D(-0.5926134, 0, -0.4192352, 0, 0.7259124, 0, 0.4192352, 0, -0.5926134, -38.962643, 8.146893, 13.849274)
+
+[node name="Arbusto23" parent="Trees" unique_id=1387797113 instance=ExtResource("29_ib6io")]
+transform = Transform3D(-0.69606626, 0, -0.09438315, 0, 0.70243603, 0, 0.09438315, 0, -0.69606626, -4.146694, 0.21932602, -12.817663)
+
+[node name="Arvore_morta" parent="Trees" unique_id=594839198 instance=ExtResource("36_ncx0b")]
+transform = Transform3D(0.78681725, 0, -0.14382777, 0, 0.7998549, 0, 0.14382777, 0, 0.78681725, 22.381626, 0.21380082, 17.657711)
+
+[node name="Arbusto24" parent="Trees" unique_id=271225587 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.65327394, 0, 0.6662672, 0, 0.9331018, 0, -0.6662672, 0, 0.65327394, -13.863838, 0.30713272, 16.219086)
+
+[node name="Arbusto25" parent="Trees" unique_id=890210469 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.5453127, 0, -0.2521181, 0, 0.60077405, 0, 0.2521181, 0, 0.5453127, 0.4298973, 0.55735016, 49.199135)
+
+[node name="Arvore_morta2" parent="Trees" unique_id=294893339 instance=ExtResource("36_ncx0b")]
+transform = Transform3D(-0.026251871, 0, 0.7272586, 0, 0.7277323, 0, -0.7272586, 0, -0.026251871, 9.93882, 0.40984955, 43.134674)
+
+[node name="Arvore_morta3" parent="Trees" unique_id=645074931 instance=ExtResource("36_ncx0b")]
+transform = Transform3D(-0.47853267, 0, -0.67296946, 0, 0.82576114, 0, 0.67296946, 0, -0.47853267, -9.672823, 3.5529618, 21.3749)
+
+[node name="Arvore_morta4" parent="Trees" unique_id=1723291179 instance=ExtResource("36_ncx0b")]
+transform = Transform3D(0.5834776, 0, 0.6580346, 0, 0.8794633, 0, -0.6580346, 0, 0.5834776, 6.7420387, -0.10748062, 30.118725)
+
+[node name="Arbusto26" parent="Trees" unique_id=229084800 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.6102949, 0, -0.32093725, 0, 0.68953645, 0, 0.32093725, 0, 0.6102949, -11.830673, -0.08050537, 12.26849)
+
+[node name="Arvore_torta5" parent="Trees" unique_id=1502652863 instance=ExtResource("35_koml0")]
+transform = Transform3D(-0.7522322, 0, 0.48450947, 0, 0.894764, 0, -0.48450947, 0, -0.7522322, 13.08128, 0.040102385, 33.27735)
+
+[node name="Arbusto27" parent="Trees" unique_id=847043715 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.61061084, 0, 0.021075537, 0, 0.6109745, 0, -0.021075537, 0, 0.61061084, 28.930443, 0.31516266, 10.106304)
+
+[node name="Arbusto28" parent="Trees" unique_id=1587171953 instance=ExtResource("29_ib6io")]
+transform = Transform3D(-0.40287012, 0, -0.5315988, 0, 0.6670095, 0, 0.5315988, 0, -0.40287012, -25.959835, 4.4187355, 30.542114)
+
+[node name="Arbusto29" parent="Trees" unique_id=110238882 instance=ExtResource("29_ib6io")]
+transform = Transform3D(-0.8850177, 0, 0.12666629, 0, 0.8940362, 0, -0.12666629, 0, -0.8850177, 17.563786, 3.7366905, 37.560585)
+
+[node name="Arbusto30" parent="Trees" unique_id=740834173 instance=ExtResource("29_ib6io")]
+transform = Transform3D(-0.7974827, 0, 0.17503119, 0, 0.81646466, 0, -0.17503119, 0, -0.7974827, -39.269844, 9.789883, 38.48664)
+
+[node name="Arbusto31" parent="Trees" unique_id=25868892 instance=ExtResource("29_ib6io")]
+transform = Transform3D(-0.2345326, 0, -0.64730555, 0, 0.68848383, 0, 0.64730555, 0, -0.2345326, -30.67073, 5.716751, 18.471298)
+
+[node name="Arbusto32" parent="Trees" unique_id=1407755913 instance=ExtResource("29_ib6io")]
+transform = Transform3D(0.19694409, 0, 0.8966122, 0, 0.9179872, 0, -0.8966122, 0, 0.19694409, -29.276768, -1.3727417, 10.630074)
+
+[node name="Rocks" type="Node3D" parent="." unique_id=73200238 groups=["nav_source"]]
+
+[node name="Pedras" parent="Rocks" unique_id=609576516 instance=ExtResource("15_koml0")]
+transform = Transform3D(-0.46466804, 0, -0.60303867, 0, 0.7612963, 0, 0.60303867, 0, -0.46466804, 4.095352, 0.035092928, 19.899666)
+
+[node name="RockPath_Square_Wide" parent="Rocks/Pedras/Model" index="0" unique_id=524355239]
+material_override = SubResource("StandardMaterial3D_ifook")
+
+[node name="Rocha" parent="Rocks" unique_id=1840932203 instance=ExtResource("10_jm22j")]
+transform = Transform3D(-0.5211951, 0, 0.88711095, 0, 1.0288879, 0, -0.88711095, 0, -0.5211951, 21.815857, 1.9464127, -23.956432)
+
+[node name="Rock_Medium_2" parent="Rocks/Rocha/Model" index="0" unique_id=364193856]
+material_override = SubResource("StandardMaterial3D_cegcp")
+
+[node name="Pedregulhos" parent="Rocks" unique_id=2104072274 instance=ExtResource("13_uvjll")]
+transform = Transform3D(0.5086732, 0, -0.7131783, 0, 0.87599754, 0, 0.7131783, 0, 0.5086732, -8.543774, -0.07234039, 32.609467)
+
+[node name="RockPath_Round_Wide" parent="Rocks/Pedregulhos/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_ywjao")
+
+[node name="Pedregulhos2" parent="Rocks" unique_id=998908647 instance=ExtResource("13_uvjll")]
+transform = Transform3D(0.75572383, 0, -0.6235467, 0, 0.9797597, 0, 0.6235467, 0, 0.75572383, 9.170883, 1.8520905, 50.75702)
+
+[node name="RockPath_Round_Wide" parent="Rocks/Pedregulhos2/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_ywjao")
+
+[node name="Penhasco" parent="Rocks" unique_id=911667052 instance=ExtResource("14_j3m11")]
+transform = Transform3D(-0.33579507, 0, 1.2680142, 0, 1.3117235, 0, -1.2680142, 0, -0.33579507, 25.642303, 5.43595, -22.765656)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Penhasco2" parent="Rocks" unique_id=490536687 instance=ExtResource("14_j3m11")]
+transform = Transform3D(0.82463646, 0, -0.3130924, 0, 0.8820726, 0, 0.3130924, 0, 0.82463646, -35.5986, -1.2022225, 42.743454)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco2/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Rocha2" parent="Rocks" unique_id=1348638387 instance=ExtResource("10_jm22j")]
+transform = Transform3D(1.1501411, 0, -0.43074316, 0, 1.2281549, 0, 0.43074316, 0, 1.1501411, -14.62532, 7.772695, 50.388718)
+
+[node name="Rock_Medium_2" parent="Rocks/Rocha2/Model" index="0" unique_id=364193856]
+material_override = SubResource("StandardMaterial3D_cegcp")
+
+[node name="Pedregulhos3" parent="Rocks" unique_id=958515785 instance=ExtResource("13_uvjll")]
+transform = Transform3D(-0.5436305, 0, -0.51981026, 0, 0.75215477, 0, 0.51981026, 0, -0.5436305, -32.185413, 7.4563766, -20.589836)
+
+[node name="RockPath_Round_Wide" parent="Rocks/Pedregulhos3/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_ywjao")
+
+[node name="Pedras2" parent="Rocks" unique_id=277056889 instance=ExtResource("15_koml0")]
+transform = Transform3D(1.1935933, 0, -0.25855237, 0, 1.2212756, 0, 0.25855237, 0, 1.1935933, -28.919626, -0.49361268, 1.901226)
+
+[node name="RockPath_Square_Wide" parent="Rocks/Pedras2/Model" index="0" unique_id=524355239]
+material_override = SubResource("StandardMaterial3D_ifook")
+
+[node name="Penhasco3" parent="Rocks" unique_id=645004620 instance=ExtResource("14_j3m11")]
+transform = Transform3D(1.2218968, 0, 0.6587063, 0, 1.3881376, 0, -0.6587063, 0, 1.2218968, 10.972305, 4.287253, -31.611134)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco3/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Pedregulhos4" parent="Rocks" unique_id=784772722 instance=ExtResource("13_uvjll")]
+transform = Transform3D(1.0576769, 0, 0.5056135, 0, 1.1723162, 0, -0.5056135, 0, 1.0576769, 16.111103, -0.022730255, 7.9695053)
+
+[node name="RockPath_Round_Wide" parent="Rocks/Pedregulhos4/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_ywjao")
+
+[node name="Pedras3" parent="Rocks" unique_id=1382649096 instance=ExtResource("15_koml0")]
+transform = Transform3D(0.49658883, 0, 1.01138, 0, 1.1267164, 0, -1.01138, 0, 0.49658883, 9.285091, 0.2822624, -18.35031)
+
+[node name="RockPath_Square_Wide" parent="Rocks/Pedras3/Model" index="0" unique_id=524355239]
+material_override = SubResource("StandardMaterial3D_ifook")
+
+[node name="Pedras4" parent="Rocks" unique_id=1567403754 instance=ExtResource("15_koml0")]
+transform = Transform3D(-1.1259365, 0, -0.34028953, 0, 1.1762356, 0, 0.34028953, 0, -1.1259365, 20.730091, 0.24430999, 31.670624)
+
+[node name="RockPath_Square_Wide" parent="Rocks/Pedras4/Model" index="0" unique_id=524355239]
+material_override = SubResource("StandardMaterial3D_ifook")
+
+[node name="Pedras5" parent="Rocks" unique_id=2018076507 instance=ExtResource("15_koml0")]
+transform = Transform3D(0.86221796, 0, 0.4471664, 0, 0.9712763, 0, -0.4471664, 0, 0.86221796, -22.029154, 8.988398, 43.78495)
+
+[node name="RockPath_Square_Wide" parent="Rocks/Pedras5/Model" index="0" unique_id=524355239]
+material_override = SubResource("StandardMaterial3D_ifook")
+
+[node name="Penhasco4" parent="Rocks" unique_id=1527090752 instance=ExtResource("14_j3m11")]
+transform = Transform3D(-1.0240586, 0, 0.01703346, 0, 1.0242002, 0, -0.01703346, 0, -1.0240586, -0.32508087, 2.7147813, -25.163729)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco4/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Pedregulhos5" parent="Rocks" unique_id=611459211 instance=ExtResource("13_uvjll")]
+transform = Transform3D(0.21157137, 0, -0.8186783, 0, 0.84557474, 0, 0.8186783, 0, 0.21157137, -7.369377, -0.21435395, -30.119661)
+
+[node name="RockPath_Round_Wide" parent="Rocks/Pedregulhos5/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_ywjao")
+
+[node name="Pedregulhos6" parent="Rocks" unique_id=2015682666 instance=ExtResource("13_uvjll")]
+transform = Transform3D(1.0999908, 0, -0.22367945, 0, 1.1225027, 0, 0.22367945, 0, 1.0999908, -6.340336, 0.6071526, 50.45063)
+
+[node name="RockPath_Round_Wide" parent="Rocks/Pedregulhos6/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_ywjao")
+
+[node name="Rocha3" parent="Rocks" unique_id=787892037 instance=ExtResource("10_jm22j")]
+transform = Transform3D(0.9740684, 0, 0.23238635, 0, 1.0014054, 0, -0.23238635, 0, 0.9740684, -12.496632, 3.5856223, 23.399769)
+
+[node name="Rock_Medium_2" parent="Rocks/Rocha3/Model" index="0" unique_id=364193856]
+material_override = SubResource("StandardMaterial3D_cegcp")
+
+[node name="Pedras6" parent="Rocks" unique_id=1784518601 instance=ExtResource("15_koml0")]
+transform = Transform3D(-0.46475944, 0, 0.7259514, 0, 0.8619784, 0, -0.7259514, 0, -0.46475944, -10.584795, 0.6193634, -16.495052)
+
+[node name="RockPath_Square_Wide" parent="Rocks/Pedras6/Model" index="0" unique_id=524355239]
+material_override = SubResource("StandardMaterial3D_ifook")
+
+[node name="Rocha_grande" parent="Rocks" unique_id=75263487 instance=ExtResource("11_vbsq4")]
+transform = Transform3D(1.2303745, 0, 0.65344983, 0, 1.3931324, 0, -0.65344983, 0, 1.2303745, 26.77523, 5.0147004, 17.732292)
+
+[node name="Rock_Medium_1" parent="Rocks/Rocha_grande/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_unbml")
+
+[node name="Penhasco5" parent="Rocks" unique_id=747439010 instance=ExtResource("14_j3m11")]
+transform = Transform3D(0.6061157, 0, 0.7451871, 0, 0.9605624, 0, -0.7451871, 0, 0.6061157, -35.57379, 1.4854873, -27.054388)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco5/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Penhasco6" parent="Rocks" unique_id=375864690 instance=ExtResource("14_j3m11")]
+transform = Transform3D(-0.13127415, 0, 1.1485215, 0, 1.1559994, 0, -1.1485215, 0, -0.13127415, -38.459084, 0.46347275, 50.7415)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco6/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Rocha4" parent="Rocks" unique_id=85650957 instance=ExtResource("10_jm22j")]
+transform = Transform3D(-0.108982116, 0, 0.93950343, 0, 0.9458033, 0, -0.93950343, 0, -0.108982116, 19.90049, 3.9465957, 21.243168)
+
+[node name="Rock_Medium_2" parent="Rocks/Rocha4/Model" index="0" unique_id=364193856]
+material_override = SubResource("StandardMaterial3D_cegcp")
+
+[node name="Rocha5" parent="Rocks" unique_id=2053444536 instance=ExtResource("10_jm22j")]
+transform = Transform3D(-0.5229159, 0, 0.8038807, 0, 0.95899177, 0, -0.8038807, 0, -0.5229159, -18.39407, -0.1441063, 4.8375587)
+
+[node name="Rock_Medium_2" parent="Rocks/Rocha5/Model" index="0" unique_id=364193856]
+material_override = SubResource("StandardMaterial3D_cegcp")
+
+[node name="Pedregulhos7" parent="Rocks" unique_id=581404832 instance=ExtResource("13_uvjll")]
+transform = Transform3D(0.99746984, 0, -0.017134205, 0, 0.997617, 0, 0.017134205, 0, 0.99746984, 10.378914, -0.16128388, 39.69642)
+
+[node name="RockPath_Round_Wide" parent="Rocks/Pedregulhos7/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_ywjao")
+
+[node name="Penhasco7" parent="Rocks" unique_id=773511928 instance=ExtResource("14_j3m11")]
+transform = Transform3D(0.7400477, 0, -1.1628172, 0, 1.3783376, 0, 1.1628172, 0, 0.7400477, 31.1128, 7.587355, 48.522667)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco7/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Rocha_grande2" parent="Rocks" unique_id=1718841433 instance=ExtResource("11_vbsq4")]
+transform = Transform3D(0.6774473, 0, -0.74979025, 0, 1.010505, 0, 0.74979025, 0, 0.6774473, 36.59556, 2.5205827, -31.041481)
+
+[node name="Rock_Medium_1" parent="Rocks/Rocha_grande2/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_unbml")
+
+[node name="Pedras7" parent="Rocks" unique_id=1448338165 instance=ExtResource("15_koml0")]
+transform = Transform3D(-0.9848882, 0, -0.10772159, 0, 0.99076164, 0, 0.10772159, 0, -0.9848882, -22.201214, 2.519075, -6.617937)
+
+[node name="RockPath_Square_Wide" parent="Rocks/Pedras7/Model" index="0" unique_id=524355239]
+material_override = SubResource("StandardMaterial3D_ifook")
+
+[node name="Pedregulhos8" parent="Rocks" unique_id=145869161 instance=ExtResource("13_uvjll")]
+transform = Transform3D(-0.6347717, 0, 0.6278003, 0, 0.8927868, 0, -0.6278003, 0, -0.6347717, 23.902164, 3.3811889, -5.9862156)
+
+[node name="RockPath_Round_Wide" parent="Rocks/Pedregulhos8/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_ywjao")
+
+[node name="Pedregulhos9" parent="Rocks" unique_id=439978976 instance=ExtResource("13_uvjll")]
+transform = Transform3D(0.00045583784, 0, 1.0500356, 0, 1.0500357, 0, -1.0500356, 0, 0.00045583784, 20.426651, 0.9919487, 26.457481)
+
+[node name="RockPath_Round_Wide" parent="Rocks/Pedregulhos9/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_ywjao")
+
+[node name="Penhasco8" parent="Rocks" unique_id=89715513 instance=ExtResource("14_j3m11")]
+transform = Transform3D(-1.2141554, 0, 0.029432172, 0, 1.2145121, 0, -0.029432172, 0, -1.2141554, -23.310764, 1.1323303, 50.460297)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco8/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Penhasco9" parent="Rocks" unique_id=209969255 instance=ExtResource("14_j3m11")]
+transform = Transform3D(0.31706685, 0, -1.2597156, 0, 1.2990053, 0, 1.2597156, 0, 0.31706685, -38.042194, 4.051287, 33.24089)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco9/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Pedras8" parent="Rocks" unique_id=319991233 instance=ExtResource("15_koml0")]
+transform = Transform3D(-0.63067144, 0, -0.5026671, 0, 0.8064866, 0, 0.5026671, 0, -0.63067144, -23.449818, 3.9348044, 34.55037)
+
+[node name="RockPath_Square_Wide" parent="Rocks/Pedras8/Model" index="0" unique_id=524355239]
+material_override = SubResource("StandardMaterial3D_ifook")
+
+[node name="Rocha_grande3" parent="Rocks" unique_id=1052313082 instance=ExtResource("11_vbsq4")]
+transform = Transform3D(-0.56807166, 0, 0.85577226, 0, 1.0271571, 0, -0.85577226, 0, -0.56807166, -38.609444, -1.3346115, -12.526304)
+
+[node name="Rock_Medium_1" parent="Rocks/Rocha_grande3/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_unbml")
+
+[node name="Rocha_grande4" parent="Rocks" unique_id=1461840645 instance=ExtResource("11_vbsq4")]
+transform = Transform3D(-0.87666625, 0, -0.5487175, 0, 1.0342314, 0, 0.5487175, 0, -0.87666625, 31.857368, -0.69105685, 19.110386)
+
+[node name="Rock_Medium_1" parent="Rocks/Rocha_grande4/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_unbml")
+
+[node name="Penhasco10" parent="Rocks" unique_id=1117278595 instance=ExtResource("14_j3m11")]
+transform = Transform3D(0.8517158, 0, -0.5605291, 0, 1.019614, 0, 0.5605291, 0, 0.8517158, -28.758661, 8.767897, 36.527077)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco10/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Penhasco11" parent="Rocks" unique_id=1837076820 instance=ExtResource("14_j3m11")]
+transform = Transform3D(1.2533475, 0, 0.616728, 0, 1.3968656, 0, -0.616728, 0, 1.2533475, -33.5634, 3.1526437, 4.2309)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco11/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Rocha_grande5" parent="Rocks" unique_id=1752851818 instance=ExtResource("11_vbsq4")]
+transform = Transform3D(0.7668755, 0, -0.7611539, 0, 1.0804875, 0, 0.7611539, 0, 0.7668755, -30.60446, 0.678038, 14.3144)
+
+[node name="Rock_Medium_1" parent="Rocks/Rocha_grande5/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_unbml")
+
+[node name="Rocha_grande6" parent="Rocks" unique_id=200040261 instance=ExtResource("11_vbsq4")]
+transform = Transform3D(-1.1088023, 0, -0.3128601, 0, 1.1520954, 0, 0.3128601, 0, -1.1088023, 26.401146, 3.5328202, 40.559303)
+
+[node name="Rock_Medium_1" parent="Rocks/Rocha_grande6/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_unbml")
+
+[node name="Rocha6" parent="Rocks" unique_id=1126517019 instance=ExtResource("10_jm22j")]
+transform = Transform3D(-0.035904434, 0, 1.0648847, 0, 1.0654898, 0, -1.0648847, 0, -0.035904434, 3.4203682, -0.5879463, -21.977165)
+
+[node name="Rock_Medium_2" parent="Rocks/Rocha6/Model" index="0" unique_id=364193856]
+material_override = SubResource("StandardMaterial3D_cegcp")
+
+[node name="Penhasco12" parent="Rocks" unique_id=305725821 instance=ExtResource("14_j3m11")]
+transform = Transform3D(-0.6148447, 0, 0.5283874, 0, 0.8106955, 0, -0.5283874, 0, -0.6148447, 28.961807, -1.4527298, 34.302917)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco12/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Rocha_grande7" parent="Rocks" unique_id=105786793 instance=ExtResource("11_vbsq4")]
+transform = Transform3D(0.25854343, 0, -0.9820006, 0, 1.0154654, 0, 0.9820006, 0, 0.25854343, -10.179115, 0.050207518, -31.658049)
+
+[node name="Rock_Medium_1" parent="Rocks/Rocha_grande7/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_unbml")
+
+[node name="Pedras9" parent="Rocks" unique_id=1172225147 instance=ExtResource("15_koml0")]
+transform = Transform3D(-0.966088, 0, 0.6524756, 0, 1.1657832, 0, -0.6524756, 0, -0.966088, 30.786072, -2.0613656, -15.737282)
+
+[node name="RockPath_Square_Wide" parent="Rocks/Pedras9/Model" index="0" unique_id=524355239]
+material_override = SubResource("StandardMaterial3D_ifook")
+
+[node name="Pedregulhos10" parent="Rocks" unique_id=1984712367 instance=ExtResource("13_uvjll")]
+transform = Transform3D(0.7235427, 0, 0.56318724, 0, 0.9168936, 0, -0.56318724, 0, 0.7235427, 35.30477, 3.6646209, 44.715324)
+
+[node name="RockPath_Round_Wide" parent="Rocks/Pedregulhos10/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_ywjao")
+
+[node name="Penhasco13" parent="Rocks" unique_id=1767460289 instance=ExtResource("14_j3m11")]
+transform = Transform3D(0.43066603, 0, -1.2144351, 0, 1.2885363, 0, 1.2144351, 0, 0.43066603, 20.975128, 4.5687127, 45.213783)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco13/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Penhasco14" parent="Rocks" unique_id=1501019443 instance=ExtResource("14_j3m11")]
+transform = Transform3D(0.37534866, 0, -0.91585654, 0, 0.98978776, 0, 0.91585654, 0, 0.37534866, 35.989143, 1.5856918, -2.0476437)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco14/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Penhasco15" parent="Rocks" unique_id=1736142339 instance=ExtResource("14_j3m11")]
+transform = Transform3D(1.0303127, 0, 0.12979424, 0, 1.038456, 0, -0.12979424, 0, 1.0303127, 29.2416, 4.042563, 1.8838272)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco15/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Penhasco16" parent="Rocks" unique_id=295934946 instance=ExtResource("14_j3m11")]
+transform = Transform3D(0.7439659, 0, 1.0953677, 0, 1.3241283, 0, -1.0953677, 0, 0.7439659, 36.422974, 3.8800988, -8.605402)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco16/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Penhasco17" parent="Rocks" unique_id=1492278756 instance=ExtResource("14_j3m11")]
+transform = Transform3D(0.5906484, 0, 0.9789828, 0, 1.1433604, 0, -0.9789828, 0, 0.5906484, -24.501366, 2.229445, -23.133915)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco17/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Rocha_grande8" parent="Rocks" unique_id=844734774 instance=ExtResource("11_vbsq4")]
+transform = Transform3D(-1.0142419, 0, 0.03551321, 0, 1.0148635, 0, -0.03551321, 0, -1.0142419, -31.180304, -1.1455399, 42.881233)
+
+[node name="Rock_Medium_1" parent="Rocks/Rocha_grande8/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_unbml")
+
+[node name="Rocha_grande9" parent="Rocks" unique_id=506143798 instance=ExtResource("11_vbsq4")]
+transform = Transform3D(1.3251698, 0, -0.11870989, 0, 1.3304763, 0, 0.11870989, 0, 1.3251698, 36.51217, -0.2951866, 11.2022705)
+
+[node name="Rock_Medium_1" parent="Rocks/Rocha_grande9/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_unbml")
+
+[node name="Rocha_grande10" parent="Rocks" unique_id=884589380 instance=ExtResource("11_vbsq4")]
+transform = Transform3D(-0.26631936, 0, 0.9312416, 0, 0.96857464, 0, -0.9312416, 0, -0.26631936, 38.318283, 7.279753, -25.19106)
+
+[node name="Rock_Medium_1" parent="Rocks/Rocha_grande10/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_unbml")
+
+[node name="Penhasco18" parent="Rocks" unique_id=1098837940 instance=ExtResource("14_j3m11")]
+transform = Transform3D(0.41047344, 0, 1.0745877, 0, 1.1503161, 0, -1.0745877, 0, 0.41047344, 6.501423, 1.4218849, -30.545185)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco18/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Rocha_grande11" parent="Rocks" unique_id=1417969986 instance=ExtResource("11_vbsq4")]
+transform = Transform3D(0.83890593, 0, -0.027757067, 0, 0.839365, 0, 0.027757067, 0, 0.83890593, 30.041878, 1.2741379, -5.154585)
+
+[node name="Rock_Medium_1" parent="Rocks/Rocha_grande11/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_unbml")
+
+[node name="Rocha7" parent="Rocks" unique_id=200606300 instance=ExtResource("10_jm22j")]
+transform = Transform3D(-0.44164345, 0, 0.9536516, 0, 1.0509521, 0, -0.9536516, 0, -0.44164345, 28.91542, 6.350244, -27.696232)
+
+[node name="Rock_Medium_2" parent="Rocks/Rocha7/Model" index="0" unique_id=364193856]
+material_override = SubResource("StandardMaterial3D_cegcp")
+
+[node name="Penhasco19" parent="Rocks" unique_id=291308207 instance=ExtResource("14_j3m11")]
+transform = Transform3D(-0.93938434, 0, -0.385285, 0, 1.0153263, 0, 0.385285, 0, -0.93938434, -38.991703, 8.604845, 43.477715)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco19/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Penhasco20" parent="Rocks" unique_id=1979676479 instance=ExtResource("14_j3m11")]
+transform = Transform3D(0.9186953, 0, 0.9938139, 0, 1.3533909, 0, -0.9938139, 0, 0.9186953, -35.024353, 2.1897264, -14.646069)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco20/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Penhasco21" parent="Rocks" unique_id=1307059600 instance=ExtResource("14_j3m11")]
+transform = Transform3D(0.59409976, 0, 0.8614083, 0, 1.0464123, 0, -0.8614083, 0, 0.59409976, 5.1874847, 0.46511307, 49.766373)
+
+[node name="Rock_Medium_3" parent="Rocks/Penhasco21/Model" index="0" unique_id=2006433497]
+material_override = SubResource("StandardMaterial3D_n8s87")
+
+[node name="Rocha8" parent="Rocks" unique_id=405516267 instance=ExtResource("10_jm22j")]
+transform = Transform3D(-0.7889713, 0, 0.5778592, 0, 0.97795546, 0, -0.5778592, 0, -0.7889713, 18.566128, 10.8838215, 47.612846)
+
+[node name="Rock_Medium_2" parent="Rocks/Rocha8/Model" index="0" unique_id=364193856]
+material_override = SubResource("StandardMaterial3D_cegcp")
+
+[node name="Rocha_grande12" parent="Rocks" unique_id=164840550 instance=ExtResource("11_vbsq4")]
+transform = Transform3D(-1.2060951, 0, 0.42714968, 0, 1.2795007, 0, -0.42714968, 0, -1.2060951, -31.940062, -1.4191376, 8.55423)
+
+[node name="Rock_Medium_1" parent="Rocks/Rocha_grande12/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_unbml")
+
+[node name="Pedregulhos11" parent="Rocks" unique_id=1304480721 instance=ExtResource("13_uvjll")]
+transform = Transform3D(0.3186097, 0, 1.0295773, 0, 1.0777483, 0, -1.0295773, 0, 0.3186097, -15.344994, 0.705732, 43.221413)
+
+[node name="RockPath_Round_Wide" parent="Rocks/Pedregulhos11/Model" index="0" unique_id=1761777271]
+material_override = SubResource("StandardMaterial3D_ywjao")
+
+[node name="Rocha_grande13" parent="Rocks" unique_id=661568449 instance=ExtResource("11_vbsq4")]
+transform = Transform3D(-1.0374835, 0, 0.7118088, 0, 1.2581906, 0, -0.7118088, 0, -1.0374835, -25.987291, 0.19785157, 44.358414)
+
+[node name="Rock_Medium_1" parent="Rocks/Rocha_grande13/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_unbml")
+
+[node name="Rocha_grande14" parent="Rocks" unique_id=1130184380 instance=ExtResource("11_vbsq4")]
+transform = Transform3D(-0.15456694, 0, -1.1201116, 0, 1.1307259, 0, 1.1201116, 0, -0.15456694, 32.153366, 3.4484391, 26.837894)
+
+[node name="Rock_Medium_1" parent="Rocks/Rocha_grande14/Model" index="0" unique_id=298928938]
+material_override = SubResource("StandardMaterial3D_unbml")
+
+[node name="Grama" type="Node3D" parent="." unique_id=374951551]
+
+[node name="G000" type="MultiMeshInstance3D" parent="Grama" unique_id=1236614085]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("50_bt2kc")
+
+[node name="G001" type="MultiMeshInstance3D" parent="Grama" unique_id=186577076]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("51_ua1vy")
+
+[node name="G002" type="MultiMeshInstance3D" parent="Grama" unique_id=64376880]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("52_oc3co")
+
+[node name="G003" type="MultiMeshInstance3D" parent="Grama" unique_id=14531484]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("53_haxd4")
+
+[node name="G004" type="MultiMeshInstance3D" parent="Grama" unique_id=771399686]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("54_28ekh")
+
+[node name="G005" type="MultiMeshInstance3D" parent="Grama" unique_id=580236356]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("55_fqs60")
+
+[node name="G006" type="MultiMeshInstance3D" parent="Grama" unique_id=1863519978]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("56_gued5")
+
+[node name="G007" type="MultiMeshInstance3D" parent="Grama" unique_id=6541205]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("57_00lfu")
+
+[node name="G008" type="MultiMeshInstance3D" parent="Grama" unique_id=555804153]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("58_3sw3e")
+
+[node name="G009" type="MultiMeshInstance3D" parent="Grama" unique_id=700206604]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("59_md6of")
+
+[node name="G010" type="MultiMeshInstance3D" parent="Grama" unique_id=523273552]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("60_wegos")
+
+[node name="G011" type="MultiMeshInstance3D" parent="Grama" unique_id=555894756]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("61_wf3ws")
+
+[node name="G012" type="MultiMeshInstance3D" parent="Grama" unique_id=1291090989]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("62_iks3m")
+
+[node name="G013" type="MultiMeshInstance3D" parent="Grama" unique_id=929748815]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("63_8s2f6")
+
+[node name="G014" type="MultiMeshInstance3D" parent="Grama" unique_id=501088207]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("64_nojhy")
+
+[node name="G015" type="MultiMeshInstance3D" parent="Grama" unique_id=206585534]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("65_6aqhg")
+
+[node name="G016" type="MultiMeshInstance3D" parent="Grama" unique_id=1467497939]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("66_qcvwn")
+
+[node name="G017" type="MultiMeshInstance3D" parent="Grama" unique_id=879728352]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("67_4wase")
+
+[node name="G018" type="MultiMeshInstance3D" parent="Grama" unique_id=1021454226]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("68_ce1wa")
+
+[node name="G019" type="MultiMeshInstance3D" parent="Grama" unique_id=369478809]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("69_gtrtn")
+
+[node name="G020" type="MultiMeshInstance3D" parent="Grama" unique_id=281637800]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("70_0xfb6")
+
+[node name="G021" type="MultiMeshInstance3D" parent="Grama" unique_id=971848910]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("71_yu5ax")
+
+[node name="G022" type="MultiMeshInstance3D" parent="Grama" unique_id=236235993]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("72_wbhs1")
+
+[node name="G023" type="MultiMeshInstance3D" parent="Grama" unique_id=1785314359]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("73_a1x8t")
+
+[node name="G024" type="MultiMeshInstance3D" parent="Grama" unique_id=753602999]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("74_rgv3e")
+
+[node name="G025" type="MultiMeshInstance3D" parent="Grama" unique_id=1158891387]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("75_2mdmk")
+
+[node name="G026" type="MultiMeshInstance3D" parent="Grama" unique_id=867624791]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("76_a2378")
+
+[node name="G027" type="MultiMeshInstance3D" parent="Grama" unique_id=1774387465]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("77_t5ukw")
+
+[node name="G028" type="MultiMeshInstance3D" parent="Grama" unique_id=1764733617]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("78_dfwc8")
+
+[node name="G029" type="MultiMeshInstance3D" parent="Grama" unique_id=657340756]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("79_5jrd0")
+
+[node name="G030" type="MultiMeshInstance3D" parent="Grama" unique_id=569430157]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("80_xg1hj")
+
+[node name="G031" type="MultiMeshInstance3D" parent="Grama" unique_id=2018731428]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("81_sfsrp")
+
+[node name="G032" type="MultiMeshInstance3D" parent="Grama" unique_id=428126404]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("82_0o6n2")
+
+[node name="G033" type="MultiMeshInstance3D" parent="Grama" unique_id=658315031]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("83_278xn")
+
+[node name="G034" type="MultiMeshInstance3D" parent="Grama" unique_id=1121401099]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("84_d5gfg")
+
+[node name="G035" type="MultiMeshInstance3D" parent="Grama" unique_id=775128059]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("85_ujx6x")
+
+[node name="G036" type="MultiMeshInstance3D" parent="Grama" unique_id=402432396]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("86_dwenc")
+
+[node name="G037" type="MultiMeshInstance3D" parent="Grama" unique_id=1675924309]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("87_5tne8")
+
+[node name="G038" type="MultiMeshInstance3D" parent="Grama" unique_id=611378985]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("88_vhdir")
+
+[node name="G039" type="MultiMeshInstance3D" parent="Grama" unique_id=221704492]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("89_loqws")
+
+[node name="G040" type="MultiMeshInstance3D" parent="Grama" unique_id=1472352759]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("90_ul5kv")
+
+[node name="G041" type="MultiMeshInstance3D" parent="Grama" unique_id=915358197]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("91_mk4c4")
+
+[node name="G042" type="MultiMeshInstance3D" parent="Grama" unique_id=1330580288]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("92_6l0y3")
+
+[node name="G043" type="MultiMeshInstance3D" parent="Grama" unique_id=491290807]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("93_pa3yy")
+
+[node name="G044" type="MultiMeshInstance3D" parent="Grama" unique_id=1418716020]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("94_0a14y")
+
+[node name="G045" type="MultiMeshInstance3D" parent="Grama" unique_id=1128662266]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("95_h8ud6")
+
+[node name="G046" type="MultiMeshInstance3D" parent="Grama" unique_id=1155607045]
+material_override = SubResource("StandardMaterial3D_f5ahe")
+cast_shadow = 0
+visibility_range_end = 70.0
+visibility_range_end_margin = 10.0
+visibility_range_fade_mode = 1
+multimesh = ExtResource("96_wmngo")
+
+[editable path="Rocks/Pedras"]
+[editable path="Rocks/Pedras/Model"]
+[editable path="Rocks/Rocha"]
+[editable path="Rocks/Rocha/Model"]
+[editable path="Rocks/Pedregulhos"]
+[editable path="Rocks/Pedregulhos/Model"]
+[editable path="Rocks/Pedregulhos2"]
+[editable path="Rocks/Pedregulhos2/Model"]
+[editable path="Rocks/Penhasco"]
+[editable path="Rocks/Penhasco/Model"]
+[editable path="Rocks/Penhasco2"]
+[editable path="Rocks/Penhasco2/Model"]
+[editable path="Rocks/Rocha2"]
+[editable path="Rocks/Rocha2/Model"]
+[editable path="Rocks/Pedregulhos3"]
+[editable path="Rocks/Pedregulhos3/Model"]
+[editable path="Rocks/Pedras2"]
+[editable path="Rocks/Pedras2/Model"]
+[editable path="Rocks/Penhasco3"]
+[editable path="Rocks/Penhasco3/Model"]
+[editable path="Rocks/Pedregulhos4"]
+[editable path="Rocks/Pedregulhos4/Model"]
+[editable path="Rocks/Pedras3"]
+[editable path="Rocks/Pedras3/Model"]
+[editable path="Rocks/Pedras4"]
+[editable path="Rocks/Pedras4/Model"]
+[editable path="Rocks/Pedras5"]
+[editable path="Rocks/Pedras5/Model"]
+[editable path="Rocks/Penhasco4"]
+[editable path="Rocks/Penhasco4/Model"]
+[editable path="Rocks/Pedregulhos5"]
+[editable path="Rocks/Pedregulhos5/Model"]
+[editable path="Rocks/Pedregulhos6"]
+[editable path="Rocks/Pedregulhos6/Model"]
+[editable path="Rocks/Rocha3"]
+[editable path="Rocks/Rocha3/Model"]
+[editable path="Rocks/Pedras6"]
+[editable path="Rocks/Pedras6/Model"]
+[editable path="Rocks/Rocha_grande"]
+[editable path="Rocks/Rocha_grande/Model"]
+[editable path="Rocks/Penhasco5"]
+[editable path="Rocks/Penhasco5/Model"]
+[editable path="Rocks/Penhasco6"]
+[editable path="Rocks/Penhasco6/Model"]
+[editable path="Rocks/Rocha4"]
+[editable path="Rocks/Rocha4/Model"]
+[editable path="Rocks/Rocha5"]
+[editable path="Rocks/Rocha5/Model"]
+[editable path="Rocks/Pedregulhos7"]
+[editable path="Rocks/Pedregulhos7/Model"]
+[editable path="Rocks/Penhasco7"]
+[editable path="Rocks/Penhasco7/Model"]
+[editable path="Rocks/Rocha_grande2"]
+[editable path="Rocks/Rocha_grande2/Model"]
+[editable path="Rocks/Pedras7"]
+[editable path="Rocks/Pedras7/Model"]
+[editable path="Rocks/Pedregulhos8"]
+[editable path="Rocks/Pedregulhos8/Model"]
+[editable path="Rocks/Pedregulhos9"]
+[editable path="Rocks/Pedregulhos9/Model"]
+[editable path="Rocks/Penhasco8"]
+[editable path="Rocks/Penhasco8/Model"]
+[editable path="Rocks/Penhasco9"]
+[editable path="Rocks/Penhasco9/Model"]
+[editable path="Rocks/Pedras8"]
+[editable path="Rocks/Pedras8/Model"]
+[editable path="Rocks/Rocha_grande3"]
+[editable path="Rocks/Rocha_grande3/Model"]
+[editable path="Rocks/Rocha_grande4"]
+[editable path="Rocks/Rocha_grande4/Model"]
+[editable path="Rocks/Penhasco10"]
+[editable path="Rocks/Penhasco10/Model"]
+[editable path="Rocks/Penhasco11"]
+[editable path="Rocks/Penhasco11/Model"]
+[editable path="Rocks/Rocha_grande5"]
+[editable path="Rocks/Rocha_grande5/Model"]
+[editable path="Rocks/Rocha_grande6"]
+[editable path="Rocks/Rocha_grande6/Model"]
+[editable path="Rocks/Rocha6"]
+[editable path="Rocks/Rocha6/Model"]
+[editable path="Rocks/Penhasco12"]
+[editable path="Rocks/Penhasco12/Model"]
+[editable path="Rocks/Rocha_grande7"]
+[editable path="Rocks/Rocha_grande7/Model"]
+[editable path="Rocks/Pedras9"]
+[editable path="Rocks/Pedras9/Model"]
+[editable path="Rocks/Pedregulhos10"]
+[editable path="Rocks/Pedregulhos10/Model"]
+[editable path="Rocks/Penhasco13"]
+[editable path="Rocks/Penhasco13/Model"]
+[editable path="Rocks/Penhasco14"]
+[editable path="Rocks/Penhasco14/Model"]
+[editable path="Rocks/Penhasco15"]
+[editable path="Rocks/Penhasco15/Model"]
+[editable path="Rocks/Penhasco16"]
+[editable path="Rocks/Penhasco16/Model"]
+[editable path="Rocks/Penhasco17"]
+[editable path="Rocks/Penhasco17/Model"]
+[editable path="Rocks/Rocha_grande8"]
+[editable path="Rocks/Rocha_grande8/Model"]
+[editable path="Rocks/Rocha_grande9"]
+[editable path="Rocks/Rocha_grande9/Model"]
+[editable path="Rocks/Rocha_grande10"]
+[editable path="Rocks/Rocha_grande10/Model"]
+[editable path="Rocks/Penhasco18"]
+[editable path="Rocks/Penhasco18/Model"]
+[editable path="Rocks/Rocha_grande11"]
+[editable path="Rocks/Rocha_grande11/Model"]
+[editable path="Rocks/Rocha7"]
+[editable path="Rocks/Rocha7/Model"]
+[editable path="Rocks/Penhasco19"]
+[editable path="Rocks/Penhasco19/Model"]
+[editable path="Rocks/Penhasco20"]
+[editable path="Rocks/Penhasco20/Model"]
+[editable path="Rocks/Penhasco21"]
+[editable path="Rocks/Penhasco21/Model"]
+[editable path="Rocks/Rocha8"]
+[editable path="Rocks/Rocha8/Model"]
+[editable path="Rocks/Rocha_grande12"]
+[editable path="Rocks/Rocha_grande12/Model"]
+[editable path="Rocks/Pedregulhos11"]
+[editable path="Rocks/Pedregulhos11/Model"]
+[editable path="Rocks/Rocha_grande13"]
+[editable path="Rocks/Rocha_grande13/Model"]
+[editable path="Rocks/Rocha_grande14"]
+[editable path="Rocks/Rocha_grande14/Model"]

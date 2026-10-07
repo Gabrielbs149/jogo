@@ -14,7 +14,6 @@
 
 ## Em aberto
 - [A DEFINIR] **Paleta oficial:** quais cores definem o jogo? (hoje: Arandu = tarde quente com telhados laranja e grama verde; Ethera = deserto avermelhado ao entardecer). Cada região tem paleta própria?
-- [A DEFINIR] **Ethera** ainda não passou pelo replanejamento que Arandu teve. Mesmo cuidado?
 - [A DEFINIR] **Modelos de Chumasso, José Maria e Bahamut:** faltam os desenhos/modelos.
 - [A DEFINIR] **Tika no esqueleto novo** (o modelo tem o braço colado no corpo; pode precisar de ajuste ou modelo novo em pose T).
 - [A DEFINIR] **Inimigos:** estilo e modelos (hoje provisórios). KayKit Skeletons foi citado como opção.

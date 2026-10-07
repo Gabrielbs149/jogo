@@ -34,7 +34,7 @@
 - [x] Tico com modelo final, esqueleto e animações
 - [x] Namfoodle com modelo final e animações (D032)
 - [x] Editor de mapas no jogo
-- [ ] Ethera com o mesmo cuidado visual de Arandu ([04-arte.md](04-arte.md))
+- [x] Ethera com o mesmo cuidado visual de Arandu (D035)
 - [x] Sons: música, passos, luta, interface (D034)
 - [ ] Tika no esqueleto novo; inimigos com modelo
 - [ ] Save/load
