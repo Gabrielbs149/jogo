@@ -1,6 +1,6 @@
 extends Node
 ## Estado da partida entre as cenas (autoload "Game"): qual herói você escolheu seguir e quem
-## você já chamou para o grupo no caminho.
+## você já chamou para o grupo no caminho. Também grava e carrega o jogo (D037): um arquivo só, salvo sozinho.
 
 const TITLE_SCENE := "res://ui/title/title_screen.tscn"
 const SELECT_SCENE := "res://ui/character_select/character_select.tscn"
@@ -12,6 +12,8 @@ const EDITOR_SCENE := "res://editor/map_editor.tscn"
 const PROLOGUE := "res://story/prologo.tres"
 ## Onde o editor guarda a fase para o botão Testar (sem mexer no arquivo de verdade).
 const EDITOR_DRAFT := "user://editor_rascunho.tscn"
+## Versão do arquivo de jogo salvo (sobe quando o formato mudar).
+const SAVE_VERSION := 1
 ## Onde cada herói começa a história. Quem ainda não tem começo próprio começa em Ethera.
 const START_LEVELS: Dictionary[String, String] = {
 	"tico": ARANDU,
@@ -49,6 +51,17 @@ var prologue_pending: bool = false
 ## Editor de mapas: a fase aberta (arquivo de verdade) e, voltando do Testar, o rascunho com o que não foi salvo.
 var edit_level: String = ARANDU
 var edit_draft: String = ""
+## Arquivo do jogo salvo (os testes trocam por outro).
+var save_path: String = "user://save.json"
+## Jogando uma fase pelo Testar do editor: não grava por cima do jogo de verdade.
+var testing: bool = false
+
+
+func _ready() -> void:
+	# rodando os testes (GUT): grava em outro arquivo, para não estragar o jogo salvo de verdade
+	for arg: String in OS.get_cmdline_args():
+		if arg.contains("gut_cmdln"):
+			save_path = "user://save_testes.json"
 
 
 func hero_scene(id: String) -> PackedScene:
@@ -69,7 +82,83 @@ func new_game(hero_id: String) -> void:
 	pending_story = ""
 	seen.clear()
 	prologue_pending = true
+	testing = false
 	get_tree().change_scene_to_file(start_level(hero_id))
+
+
+# --- jogo salvo (D037) ---------------------------------------------------------------------------
+
+func has_save() -> bool:
+	return not read_save().is_empty()
+
+
+## Grava a partida: herói, grupo, lutas vencidas, vida, fases já vistas e onde você está no mapa.
+func save_game(level_path: String, where: Transform3D) -> bool:
+	if testing or level_path == "" or not HEROES.has(chosen):
+		return false
+	var data := {
+		"versao": SAVE_VERSION,
+		"heroi": chosen,
+		"grupo": party,
+		"vencidos": defeated,
+		"vida": hero_hp,
+		"vistas": seen,
+		"fase": level_path,
+		"posicao": [where.origin.x, where.origin.y, where.origin.z],
+		"giro": where.basis.get_euler().y,
+		"quando": Time.get_datetime_string_from_system(),
+	}
+	var file := FileAccess.open(save_path, FileAccess.WRITE)
+	if file == null:
+		push_warning("Game: não deu para gravar em %s" % save_path)
+		return false
+	file.store_string(JSON.stringify(data, "	"))
+	return true
+
+
+## Lê o jogo salvo. Vazio se não tem, está estragado ou aponta para algo que não existe mais.
+func read_save() -> Dictionary:
+	if not FileAccess.file_exists(save_path):
+		return {}
+	var json := JSON.new()
+	if json.parse(FileAccess.get_file_as_string(save_path)) != OK or not json.data is Dictionary:
+		return {}
+	var data := json.data as Dictionary
+	for key: String in ["heroi", "fase", "posicao"]:
+		if not data.has(key):
+			return {}
+	if not HEROES.has(String(data["heroi"])) or not ResourceLoader.exists(String(data["fase"])):
+		return {}
+	if not data["posicao"] is Array or (data["posicao"] as Array).size() != 3:
+		return {}
+	return data
+
+
+## Continua o jogo salvo: volta para a fase e o lugar onde estava. false se não tem jogo salvo.
+func continue_game(change: bool = true) -> bool:
+	var data := read_save()
+	if data.is_empty():
+		return false
+	chosen = String(data["heroi"])
+	party.clear()
+	for id: Variant in data.get("grupo", []):
+		if HEROES.has(String(id)) and String(id) != chosen:
+			party.append(String(id))
+	defeated.assign((data.get("vencidos", []) as Array).map(func(v: Variant) -> String: return String(v)))
+	seen.assign((data.get("vistas", []) as Array).map(func(v: Variant) -> String: return String(v)))
+	hero_hp = int(data.get("vida", -1))
+	battle = {}
+	pending_story = ""
+	prologue_pending = false
+	testing = false
+	var p: Array = data["posicao"]
+	return_scene = String(data["fase"])
+	return_transform = Transform3D(Basis(Vector3.UP, float(data.get("giro", 0.0))), Vector3(float(p[0]), float(p[1]), float(p[2])))
+	returning = true
+	if change:
+		get_tree().paused = false
+		get_tree().change_scene_to_file(return_scene)
+	return true
 
 
 ## Vai para outra fase levando você e o grupo.
@@ -112,6 +201,9 @@ func recruit(hero_id: String) -> void:
 
 
 func go_to_title() -> void:
+	var scene := get_tree().current_scene
+	if scene and scene.has_method("save_here"):
+		scene.call("save_here", false)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	get_tree().paused = false
 	get_tree().change_scene_to_file(TITLE_SCENE)
@@ -143,5 +235,6 @@ func test_level(scene_path: String) -> void:
 	hero_hp = -1
 	returning = false
 	pending_story = ""
+	testing = true
 	seen.assign([scene_path])
 	get_tree().change_scene_to_file(scene_path)

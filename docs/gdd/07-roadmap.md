@@ -38,7 +38,7 @@
 - [x] Sons: música, passos, luta, interface (D034)
 - [x] Inimigos de Ethera com modelo e animação; arena vestida (D036)
 - [ ] Tika no esqueleto novo
-- [ ] Save/load
+- [x] Jogo salvo automático + Continuar (D037)
 - [ ] Playtest com 2–3 pessoas de fora
 - [ ] [A DEFINIR] donos de cada tarefa
 
