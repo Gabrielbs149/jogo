@@ -2,8 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Stall_Empty.gltf" id="1_Stall_Empty"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/FarmCrate_Apple.gltf" id="2_FarmCrate_Appl"]
-[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/FarmCrate_Carrot.gltf" id="3_FarmCrate_Carr"]
-[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Barrel_Apples.gltf" id="4_Barrel_Apples"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Barrel_Apples.gltf" id="3_Barrel_Apples"]
 
 
 [node name="Barraca" type="Node3D" groups=["colisao_auto"]]
@@ -14,8 +13,8 @@ transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
 [node name="FarmCrate_Apple" parent="." instance=ExtResource("2_FarmCrate_Appl")]
 transform = Transform3D(0.9801, 0, 0.1987, 0, 1, 0, -0.1987, 0, 0.9801, -0.45, 1.02, 0.1)
 
-[node name="FarmCrate_Carrot" parent="." instance=ExtResource("3_FarmCrate_Carr")]
+[node name="FarmCrate_Apple2" parent="." instance=ExtResource("2_FarmCrate_Appl")]
 transform = Transform3D(0.9888, 0, -0.1494, 0, 1, 0, 0.1494, 0, 0.9888, 0.45, 1.02, 0.05)
 
-[node name="Barrel_Apples" parent="." instance=ExtResource("4_Barrel_Apples")]
+[node name="Barrel_Apples" parent="." instance=ExtResource("3_Barrel_Apples")]
 transform = Transform3D(0.9211, 0, 0.3894, 0, 1, 0, -0.3894, 0, 0.9211, 1.6, 0, 0.5)

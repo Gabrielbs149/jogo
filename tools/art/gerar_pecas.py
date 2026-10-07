@@ -135,7 +135,7 @@ def tree(file, title, kit_path, scale, trunk_r=0.35, trunk_h=4.0):
 WALL_H = 3.12
 
 
-def house(file, title, w, d, floors, walls, roof, gable, door_cell=None):
+def house(file, title, w, d, floors, walls, roof, gable, door_cell=None, chimney=True, door=True):
     """w x d células de 2 m. walls: estilo de parede por andar ('Wall_Plaster', 'Wall_UnevenBrick', 'Wall_Plaster_WoodGrid')."""
     s = Scene(title, groups=AUTO)
     hw, hd = float(w), float(d)
@@ -153,7 +153,7 @@ def house(file, title, w, d, floors, walls, roof, gable, door_cell=None):
                 for j in range(d):
                     for k in range(w):
                         s.piece("vila/Floor_WoodDark", (-hw + 1.0 + k * 2.0, y, -hd + 1.0 + j * 2.0))
-            front_door = f == 0 and i == door_cell
+            front_door = door and f == 0 and i == door_cell
             if front_door:
                 s.piece("vila/" + base + "_Door_Round", (x, y, -hd), math.pi)
                 s.piece("vila/Door_1_Round", (x + 0.53, y, -hd + 0.1), math.pi)
@@ -181,9 +181,11 @@ def house(file, title, w, d, floors, walls, roof, gable, door_cell=None):
             s.piece("vila/Corner_Exterior_Wood", (cx, y, cz))
     top = len(walls) * WALL_H
     s.piece("vila/" + roof, (0, top, 0))
-    s.piece("vila/" + gable, (0, top, hd))
-    s.piece("vila/" + gable, (0, top, -hd), math.pi)
-    s.piece("vila/Prop_Chimney", (hw - 1.2, top + 0.6, hd - 1.6))
+    if gable:
+        s.piece("vila/" + gable, (0, top, hd))
+        s.piece("vila/" + gable, (0, top, -hd), math.pi)
+    if chimney:
+        s.piece("vila/Prop_Chimney", (hw - 1.2, top + 0.6, hd - 1.6))
     s.save(file)
 
 
@@ -191,6 +193,11 @@ house("casa", "Casa", 3, 3, 1, ["Wall_Plaster"], "Roof_RoundTiles_6x6", "Roof_Fr
 house("casa_barro", "Casa_barro", 3, 3, 1, ["Wall_UnevenBrick"], "Roof_RoundTiles_6x6", "Roof_Front_Brick6")
 house("casa_grande", "Casa_grande", 4, 4, 2, ["Wall_UnevenBrick", "Wall_Plaster"], "Roof_RoundTiles_8x8", "Roof_Front_Brick8", 1)
 house("casa_grande_barro", "Casa_grande_barro", 4, 4, 2, ["Wall_Plaster", "Wall_Plaster_WoodGrid"], "Roof_RoundTiles_8x8", "Roof_Front_Brick8", 2)
+house("casa_estreita", "Casa_estreita", 2, 3, 2, ["Wall_Plaster", "Wall_Plaster_WoodGrid"], "Roof_RoundTiles_4x6", "Roof_Front_Brick4", 0, False)
+house("casa_estreita_pedra", "Casa_estreita_pedra", 2, 3, 2, ["Wall_UnevenBrick", "Wall_Plaster"], "Roof_RoundTiles_4x6", "Roof_Front_Brick4", 1, False)
+house("casa_longa", "Casa_longa", 3, 4, 1, ["Wall_Plaster"], "Roof_RoundTiles_6x8", "Roof_Front_Brick6", 1)
+house("sobrado_longo", "Sobrado_longo", 3, 4, 2, ["Wall_UnevenBrick", "Wall_Plaster_WoodGrid"], "Roof_RoundTiles_6x8", "Roof_Front_Brick6", 1)
+house("torre", "Torre", 2, 2, 3, ["Wall_UnevenBrick", "Wall_UnevenBrick", "Wall_UnevenBrick"], "Roof_Tower_RoundTiles", None, chimney=False, door=False)
 
 s = Scene("Muro", groups=AUTO)
 for i in range(3):
@@ -215,7 +222,7 @@ s.save("marquise")
 s = Scene("Barraca", groups=AUTO)
 s.piece("objetos/Stall_Empty", scale=1.25, name="Stall")
 s.piece("objetos/FarmCrate_Apple", (-0.45, 1.02, 0.1), 0.2)
-s.piece("objetos/FarmCrate_Carrot", (0.45, 1.02, 0.05), -0.15)
+s.piece("objetos/FarmCrate_Apple", (0.45, 1.02, 0.05), -0.15)
 s.piece("objetos/Barrel_Apples", (1.6, 0, 0.5), 0.4)
 s.save("barraca")
 
@@ -298,8 +305,8 @@ def light_child(s, pos, energy=1.4, rng=5.0):
 
 s = Scene("Lanterna")
 # presa na parede: o lado +Z encosta na parede e a lanterna sai para -Z
-s.piece("objetos/Lantern_Wall", rot=math.pi, name="Model")
-light_child(s, (0, 0.5, -0.9))
+s.piece("objetos/Lantern_Wall", rot=math.pi, scale=0.55, name="Model")
+light_child(s, (0, 0.2, -0.5))
 s.save("lanterna")
 
 s = Scene("Tocha")

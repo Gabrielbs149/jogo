@@ -6,6 +6,17 @@ Formato: **Dxxx — título** · data · quem · decisão · porquê.
 
 ---
 
+**D027: Arandu replanejada como cidade de verdade** · 2026-10-07 · Gabriel ("faça o seu melhor trabalho em Arandu, pense na arquitetura da cidade"; "só ouço risada dessa cidade")
+- **Por que estava feia:** comparando com o jogo do Yoda (Unity, mesmo modelo de IA), a diferença não era o motor nem os modelos, e sim a montagem: chão de uma cor só, praça em disco duro, casas soltas no vazio, pouca vegetação e cidade sem gente.
+- **Planta:** muralha quadrada de 70 m com torres nos cantos e duas torres guardando o arco do portão norte (face de pedra para fora). Duas ruas de pedra em cruz (portão → praça → sul; oeste ↔ leste) e praça redonda com o poço, quatro barracas, bancos e árvores. Casas **coladas, de frente para a rua**, misturando estreitas de dois andares, térreas, compridas e sobrados; esquinas da praça com prédios maiores virados para o centro (Taverna, Casa do Conselho, Casa do Mercador, Capela com campanário). Ferraria com quintal, quintais com árvores e cercas, estrada de terra com cerca do portão para fora e floresta em volta.
+- **Beco do Tico:** um beco de 3 m saindo da rua do portão, fechado no fundo, com o papelão, o caneco, caixote e barril. A cena de abertura foi remontada nele (`tools/art/montar_cena_tico.gd`, câmeras sempre do lado aberto do beco).
+- **Chão pintado** (`assets/shaders/chao_pintado.gdshader`): grama em tons variados, terra e calçada misturadas por uma máscara (`levels/arandu/art/chao_mascara.png`, vermelho = terra, verde = calçada) com bordas quebradas por ruído.
+- **Grama e flores:** ~9.400 tufos em `MultiMesh` por pedaços de 30 m que somem a 75 m (`levels/arandu/art/grama/`). Precisa montar COM janela (sem janela o Godot não guarda as posições).
+- **Gente:** além dos 4 moradores com fala, figurantes de fundo (guarda no portão, compradores na feira, gente sentada nos bancos, conversa na porta da taverna, ferreiro, crianças, leitora) no grupo `Crowd`.
+- **Luz e câmera:** sol de tarde mais macio, neblina com perspectiva aérea, cor um pouco mais saturada; câmera da exploração um pouco mais alta e afastada (5,8 m).
+- **Novas peças:** casa estreita (de reboco e de pedra), casa comprida, sobrado comprido, torre. Editor de mapas: grama não é clicável.
+- **Como refazer:** `godot --path . -s tools/art/montar_arandu.gd` (com janela) e depois `godot --headless --path . -s tools/art/montar_cena_tico.gd`. Rodar de novo APAGA mudanças feitas à mão em prédios/decoração — depois de montada, Arandu se ajusta no editor de mapas.
+
 **D026: Visual com kits prontos: Quaternius (cenário) + KayKit (moradores)** · 2026-10-06 · Gabriel ("você não consegue fazer texturas realistas... procure modelos padrões já existentes e simples de montar") · substitui a D024
 - **Como foi escolhido:** montei a MESMA cena (duas casas, feira, barris, árvores, Tico e Tika) com Quaternius, KayKit e Kenney, mesma luz e céu, e o Gabriel escolheu vendo as fotos dentro do jogo: **Quaternius + KayKit**. Os do Poly Haven (D024) saíram do projeto (ficam só no histórico do Git).
 - **Kits (CC0, versões grátis):** Quaternius Medieval Village, Fantasy Props e Stylized Nature MegaKit + KayKit Adventurers, em `assets/kits/` (texturas de 4K reduzidas para 2K; .png/.bin no LFS). Instalação: `tools/art/instalar_kits.py`. Lista em `assets/CREDITOS.md`.

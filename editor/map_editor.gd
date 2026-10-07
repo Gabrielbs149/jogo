@@ -13,7 +13,7 @@ const LEVELS_DIR := "res://levels/"
 ## Fase usada de molde para "Nova fase" (fica só o chão, o sol e o que toda fase precisa).
 const TEMPLATE := "res://levels/arandu/arandu.tscn"
 ## Nós que toda fase tem e que não se clicam no mapa (aparecem na aba Cena).
-const SYSTEM: Array[String] = ["WorldEnvironment", "Sun", "Navigation", "CameraRig", "HUD", "FX", "Terrain", "Ground", "Embers"]
+const SYSTEM: Array[String] = ["WorldEnvironment", "Sun", "Navigation", "CameraRig", "HUD", "FX", "Terrain", "Ground", "Embers", "Grama"]
 ## Peças do catálogo: arquivo em world/props -> [nome no botão, categoria, grupo da fase onde entra, varia ao colocar, dica].
 ## Peça nova em world/props aparece sozinha em "Outras".
 const CATALOG: Dictionary[String, Array] = {
@@ -21,6 +21,11 @@ const CATALOG: Dictionary[String, Array] = {
 	"casa_barro": ["Casa de pedra", "Construções", "Buildings", false, "Casa de pedra com telhado de telha (6 x 6 m)"],
 	"casa_grande": ["Sobrado", "Construções", "Buildings", false, "Sobrado de dois andares, pedra embaixo e reboco em cima (8 x 8 m)"],
 	"casa_grande_barro": ["Sobrado enxaimel", "Construções", "Buildings", false, "Sobrado com o andar de cima em enxaimel (8 x 8 m)"],
+	"casa_estreita": ["Casa estreita", "Construções", "Buildings", false, "Casa de dois andares, estreita (4 x 6 m), boa para encher rua"],
+	"casa_estreita_pedra": ["Estreita de pedra", "Construções", "Buildings", false, "Casa estreita de pedra embaixo e reboco em cima (4 x 6 m)"],
+	"casa_longa": ["Casa comprida", "Construções", "Buildings", false, "Casa térrea comprida (6 x 8 m)"],
+	"sobrado_longo": ["Sobrado comprido", "Construções", "Buildings", false, "Sobrado comprido com enxaimel (6 x 8 m)"],
+	"torre": ["Torre", "Construções", "Walls", false, "Torre de muralha de três andares (4 x 4 m)"],
 	"muro": ["Muro", "Construções", "Walls", false, "Muro de pedra de 6 m"],
 	"portao": ["Portão", "Construções", "Walls", false, "Arco de passagem entre muros"],
 	"marquise": ["Marquise", "Construções", "Buildings", false, "Cobertura de madeira presa na parede (encoste o lado de trás na parede)"],
