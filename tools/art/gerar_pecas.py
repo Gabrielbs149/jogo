@@ -697,4 +697,73 @@ for name, enemies in (("grupo_escaravelhos", ["escaravelho_de_cinza", "escaravel
         s.scene("Inimigo%d" % (i + 1), "res://actors/enemies/%s.tscn" % e, (i * 2.2 - (len(enemies) - 1) * 1.1, 0.6, 0), math.pi)
     s.save(name)
 
+# --- D044: fazendas, cemitério e mais da vila (modelos do acervo do poly.pizza) ---------------------------------
+FB = "Farm-Buildings-Bundle/"
+HB = "Halloween-Bits/"
+AV = "Avulsos/"
+
+
+def pp_prop(file, title, path, scale, collide=True, rot=math.pi, y=0.0):
+    """Um modelo do poly.pizza sozinho, de frente para -Z (os pacotes do Quaternius têm a porta em +Z)."""
+    s = Scene(title, groups=AUTO if collide else [])
+    s.glb(path, (0, y * scale, 0), rot, scale, name="Modelo")
+    s.save(file)
+
+
+# fazenda
+pp_prop("celeiro", "Celeiro", FB + "Barn", 1.3)
+pp_prop("celeiro_grande", "Celeiro_grande", FB + "Big_Barn", 1.3)
+pp_prop("celeiro_pequeno", "Celeiro_pequeno", FB + "Small_Barn", 1.3)
+pp_prop("celeiro_aberto", "Celeiro_aberto", FB + "Open_Barn", 1.3)
+pp_prop("silo", "Silo", FB + "Silo", 1.15)
+pp_prop("silo_casa", "Silo_casa", FB + "Silo_House", 1.15)
+pp_prop("moinho_torre", "Moinho_torre", FB + "Tower_Windmill", 1.3)
+pp_prop("galinheiro", "Galinheiro", FB + "ChickenCoop", 1.1)
+pp_prop("cerca_fazenda", "Cerca_fazenda", FB + "Fence", 1.0, rot=0.0)
+pp_prop("cerca_fazenda2", "Cerca_fazenda2", FB + "Fence_2", 1.0, rot=0.0)
+pp_prop("carroca_quebrada", "Carroca_quebrada", AV + "Broken_Cart_NBDHe8J7f9", 0.8, y=1.4)
+pp_prop("torre_vigia", "Torre_vigia", AV + "Guard_Tower_sbaM8I229r", 2.4)
+pp_prop("estatua_cervo", "Estatua_cervo", AV + "Stag_Statue_cKloIsNcT8", 0.75)
+s = Scene("Trigo")
+for k in range(9):
+    a = k * 2.4
+    r = 0.12 + (k % 3) * 0.1
+    s.glb(AV + "Wheat_lPspzfC8Pu", (math.cos(a) * r, 0, math.sin(a) * r), (0.06 * ((k % 3) - 1), a, 0.05 * ((k % 2) * 2 - 1)), 1.1 + (k % 4) * 0.08, name="Trigo")
+s.save("trigo")
+s = Scene("Aboboral")
+for k, (model, x, z, sc) in enumerate((("Pumpkin", 0, 0, 0.55), ("Small_Pumpkin", 0.55, 0.3, 0.7), ("Yellow_pumpkin", -0.5, 0.35, 0.7),
+                                      ("Small_Pumpkin_2", 0.2, -0.55, 0.5), ("Small_Pumpkin", -0.45, -0.4, 0.6))):
+    s.glb(HB + model, (x, 0, z), k * 1.1, sc, name="Abobora")
+s.save("aboboral")
+# cemitério
+pp_prop("lapide", "Lapide", HB + "Gravestone", 0.75)
+pp_prop("lapide2", "Lapide2", HB + "Gravestone_2", 0.65)
+pp_prop("tumulo", "Tumulo", HB + "Grave", 0.7)
+pp_prop("tumulo_rachado", "Tumulo_rachado", HB + "Damaged_Grave", 0.7)
+pp_prop("cruz", "Cruz", HB + "Grave_Marker", 0.9)
+pp_prop("cruz2", "Cruz2", HB + "Gravemarker", 0.9)
+pp_prop("cripta", "Cripta", HB + "Crypt", 0.7)
+pp_prop("grade_cemiterio", "Grade_cemiterio", HB + "Iron_Fence", 0.75, rot=0.0)
+pp_prop("grade_cemiterio_quebrada", "Grade_cemiterio_quebrada", HB + "Damaged_Iron_fence", 0.75, rot=0.0)
+pp_prop("pilar_grade", "Pilar_grade", HB + "Fence_Pillar", 0.75)
+pp_prop("portao_cemiterio", "Portao_cemiterio", HB + "Arch_Gate", 0.8, rot=0.0)
+pp_prop("santuario", "Santuario", HB + "Shrine", 0.8)
+pp_prop("santuario_velas", "Santuario_velas", HB + "Shrine_2", 0.8)
+pp_prop("caixao", "Caixao", HB + "Coffin", 0.6)
+pp_prop("velas", "Velas", HB + "Candles", 0.8, False)
+pp_prop("pinheiro_outono", "Pinheiro_outono", HB + "Autumn_pine", 1.2)
+pp_prop("pinheiro_outono2", "Pinheiro_outono2", HB + "Autumn_pine_3", 1.0)
+pp_prop("arvore_seca_galhos", "Arvore_seca_galhos", HB + "Dead_tree_2", 1.1)
+pp_prop("caminho_pedras", "Caminho_pedras", HB + "Path", 1.0, False)
+s = Scene("Poste_lanterna", groups=AUTO)
+s.glb(HB + "Post_Lantern", (0, 0, 0), math.pi, 0.9, name="Modelo")
+light_child(s, (0, 2.5, -0.95), 1.2, 6.0)
+s.save("poste_lanterna")
+# mais da vila medieval
+building("casa_pedra", "Casa_pedra", "Fantasy_House")
+pp_prop("gazebo", "Gazebo", MV + "Gazebo", K_MV)
+pp_prop("feno", "Feno", MV + "Hay", K_MV * 1.4, False)
+pp_prop("sacos", "Sacos", MV + "Bags", K_MV, False)
+pp_prop("fardos", "Fardos", MV + "Package", K_MV, False)
+
 print("peças:", len([f for f in os.listdir(OUT) if f.endswith(".tscn")]))

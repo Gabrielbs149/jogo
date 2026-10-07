@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Halloween-Bits/Post_Lantern.glb" id="1_Post_Lantern"]
+
+
+[node name="Poste_lanterna" type="Node3D" groups=["colisao_auto"]]
+
+[node name="Modelo" parent="." instance=ExtResource("1_Post_Lantern")]
+transform = Transform3D(-0.9, 0, 0, 0, 0.9, 0, 0, 0, -0.9, 0, 0, 0)
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -0.95)
+light_color = Color(1, 0.7, 0.4, 1)
+light_energy = 1.2
+omni_range = 6

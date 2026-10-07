@@ -1,6 +1,8 @@
 extends SceneTree
-## Monta Arandu (D041, refaz a D027): cidade murada de 92 m com portão ao norte, duas avenidas em cruz e uma praça
-## central de verdade (chafariz numa plataforma com degraus, canteiros, bancos, postes, estátuas, feira, pelourinho).
+## Monta Arandu (D044, aumenta a D041): cidade murada de 152 m com portão ao norte, duas avenidas em cruz, uma rua em anel
+## e uma praça central de verdade (chafariz numa plataforma com degraus, canteiros, bancos, postes, estátuas, feira, pelourinho).
+## Entre o anel e a muralha: estábulo com pasto, moinho com plantação, celeiro da cidade, serraria, jardim da capela e
+## o cemitério. Fora da muralha, dos dois lados da estrada: fazendas com celeiros, silo, moinho de pás e trigais.
 ## Prédios do Medieval Village Pack (estalagem, ferreiro, estábulo, moinho, serraria, guarita, torre do sino) e das
 ## peças do kit; em cada quarteirão de dentro, um lugar com função (moinho com horta, estábulo com cercado, serraria,
 ## capela com jardim). Cada prédio é MEDIDO e encostado na rua (nada sai torto); se não couber, não entra.
@@ -15,9 +17,11 @@ const PROPS := "res://world/props/"
 const KIT := "res://assets/kits/quaternius/"
 const LEVEL := "res://levels/arandu/arandu.tscn"
 const ART := "res://levels/arandu/art/"
-const AREA := 220.0
-const MASK_PX := 1024
-const HALF := 46.0  # muralha: quadrado de 92 m
+const AREA := 300.0
+const MASK_PX := 1536
+const HALF := 76.0  # muralha: quadrado de 152 m
+const RING := 44.0  # rua do anel (linha do meio): depois do ferreiro e antes do sapateiro, que são da história
+const RING_W := 2.6  # meia largura do anel
 const AVE := 5.5  # meia largura das avenidas
 const PLAZA := 17.5  # meia largura da praça
 ## Quanto sobe quem senta no banco da praça (assento a 0,58 m; o "sentado" do KayKit na escala 0,6 senta a ~0,3 m).
@@ -39,6 +43,8 @@ var houses: Array[Dictionary] = []
 var groups := {}
 var tico_alley := Rect2()
 var spots := {}  # lugares da história e da gente: nome -> Transform3D
+var garden_at := Vector3.ZERO  # jardim da capela (a leitora fica lá)
+var cemetery_at := Vector3.ZERO
 var _smoke_mesh: QuadMesh
 var _smoke_process: ParticleProcessMaterial
 
@@ -59,8 +65,10 @@ func _run() -> void:
 	_streets()
 	_walls()
 	_plaza()
-	_town()
 	_quarters()
+	_farms()
+	_town()
+	_ring_rows()
 	_fill_quarters()
 	_street_life()
 	_story_spots()
@@ -99,7 +107,7 @@ func _group(name: String, nav: bool = true) -> Node3D:
 
 func _clear() -> void:
 	for name: String in ["Buildings", "Walls", "Market", "Trees", "Rocks", "Props", "Lights", "Places", "Well", "CenaTico", "Grama", "Gardens",
-			"Crowd", "Plaza", "Animals", "Smoke"]:
+			"Crowd", "Plaza", "Animals", "Smoke", "Cemetery"]:
 		var node := level.get_node_or_null(name)
 		if node:
 			level.remove_child(node)
@@ -225,8 +233,14 @@ func _streets() -> void:
 	_paint_rect(Rect2(-AVE, -HALF - 1, AVE * 2, HALF * 2 + 1), 1)
 	_paint_rect(Rect2(-HALF, -AVE, HALF * 2, AVE * 2), 1)
 	_paint_rect(Rect2(-PLAZA, -PLAZA, PLAZA * 2, PLAZA * 2), 1)
+	# rua do anel: as quatro ruas que ligam as avenidas no meio do caminho até a muralha (nada é construído em cima)
+	for sgn: float in [-1.0, 1.0]:
+		for r: Rect2 in [Rect2(-RING - RING_W, sgn * RING - RING_W, (RING + RING_W) * 2.0, RING_W * 2.0),
+				Rect2(sgn * RING - RING_W, -RING - RING_W, RING_W * 2.0, (RING + RING_W) * 2.0)]:
+			_paint_rect(r, 1)
+			_block_rect(r, 0.2)
 	# estrada de terra que chega ao portão
-	_paint_rect(Rect2(-3.4, -110, 6.8, 110 - HALF), 0)
+	_paint_rect(Rect2(-3.4, -AREA / 2.0, 6.8, AREA / 2.0 - HALF), 0)
 
 
 # --- muralha -------------------------------------------------------------------------------------
@@ -261,21 +275,34 @@ func _walls() -> void:
 	_block(Vector3(0, 0, -h), Vector2(10, 4), 0.2)
 	_kit("vila/Wall_Arch", _group("Walls"), Vector3(0, 0, -h))
 	_kit("vila/Wall_Arch", _group("Walls"), Vector3(0, 0, -h + 0.35), PI)
-	# a muralha do meio de cada lado tem uma torre a mais (ritmo, e não um muro reto e vazio)
-	for spot: Array in [[Vector3(-h, 0, 0), PI / 2.0], [Vector3(h, 0, 0), PI / 2.0], [Vector3(0, 0, h), 0.0]]:
-		_place("torre", _group("Walls"), spot[0], spot[1], 1.0, "TorreDoMeio")
-		_block(spot[0], Vector2(4, 4))
-	_wall_run(Vector3(-h + 2, 0, -h), Vector3(-5, 0, -h))
-	_wall_run(Vector3(5, 0, -h), Vector3(h - 2, 0, -h))
-	_wall_run(Vector3(-h + 2, 0, h), Vector3(-2, 0, h))
-	_wall_run(Vector3(2, 0, h), Vector3(h - 2, 0, h))
-	_wall_run(Vector3(-h, 0, -h + 2), Vector3(-h, 0, -2))
-	_wall_run(Vector3(-h, 0, 2), Vector3(-h, 0, h - 2))
-	_wall_run(Vector3(h, 0, -h + 2), Vector3(h, 0, -2))
-	_wall_run(Vector3(h, 0, 2), Vector3(h, 0, h - 2))
+	# uma torre a cada quarto de lado (ritmo, e não um muro reto e vazio); no meio do lado norte fica o portão
+	var marks: Array[float] = [-h, -h / 2.0, 0.0, h / 2.0, h]
+	for side: int in 4:
+		for i: int in marks.size() - 1:
+			var gate_a := side == 0 and is_zero_approx(marks[i])
+			var gate_b := side == 0 and is_zero_approx(marks[i + 1])
+			_wall_run(_side_point(side, marks[i] + (5.0 if gate_a else 2.0)), _side_point(side, marks[i + 1] - (5.0 if gate_b else 2.0)))
+		for t: float in [-h / 2.0, 0.0, h / 2.0]:
+			if side == 0 and is_zero_approx(t):
+				continue
+			var at := _side_point(side, t)
+			_place("torre", _group("Walls"), at, PI / 2.0 if side >= 2 else 0.0, 1.0, "TorreDoMeio")
+			_block(at, Vector2(4, 4))
 	for x: float in [-5.2, 5.2]:
 		_place("estandarte", _group("Walls"), Vector3(x, 0.4, -h + 2.35), 0.0, 1.0, "Estandarte")
 		_place("tocha", _group("Lights", false), Vector3(x * 0.42, 2.2, -h + 0.6), 0.0, 1.0, "TochaDoPortao")
+
+
+## Ponto da muralha: lado 0 = norte (portão), 1 = sul, 2 = oeste, 3 = leste; t = posição ao longo do lado.
+func _side_point(side: int, t: float) -> Vector3:
+	match side:
+		0:
+			return Vector3(t, 0, -HALF)
+		1:
+			return Vector3(t, 0, HALF)
+		2:
+			return Vector3(-HALF, 0, t)
+	return Vector3(HALF, 0, t)
 
 
 # --- praça: o centro da cidade -------------------------------------------------------------------------
@@ -326,6 +353,7 @@ func _plaza() -> void:
 	# placas de direção nas entradas
 	for spot: Array in [[Vector3(9.4, 0, -PLAZA + 1.0), PI], [Vector3(-9.4, 0, PLAZA - 1.0), 0.0]]:
 		_place("placa_rua1", plaza, spot[0], spot[1], 1.0, "PlacaDirecao")
+	_block_rect(Rect2(-PLAZA, -PLAZA, PLAZA * 2.0, PLAZA * 2.0), 0.0)
 
 
 # --- casas nas ruas --------------------------------------------------------------------------------------
@@ -402,6 +430,24 @@ func _town() -> void:
 		bell.free()
 	else:
 		_block_rect(_rect(bb), 0.3)
+	# 2ª passada: as mesmas fileiras seguem até a muralha (os lotes de antes batem neles mesmos e ficam de fora;
+	# o resto entra depois deles, desviando do anel e dos lugares grandes)
+	_row(Vector3(-AVE, 0, -HALF + 2.4), s, e, [["casa_estreita", ""], ["casa", ""], ["vão", 3.2], ["casa_estreita_pedra", ""], ["casa_barro", ""],
+		["vão", 1.2], ["casa_longa", ""], ["casa_estreita", ""], ["casa", ""], ["casa_enxaimel2", ""], ["vão", 1.6], ["casa_estreita_pedra", ""]])
+	_row(Vector3(AVE, 0, -HALF + 2.4), s, w, [["guarita", ""], ["casa_estreita_pedra", ""], ["casa_pedra", ""], ["vão", 1.4], ["casa", ""],
+		["casa_estreita", ""], ["sobrado_longo", ""], ["casa_barro", ""]])
+	_row(Vector3(PLAZA + 0.6, 0, -AVE), e, s, [["padaria", ""], ["ferreiro", ""], ["casa_estreita", ""], ["casa_grande", ""],
+		["casa_estreita_pedra", ""], ["casa", ""]])
+	_row(Vector3(PLAZA + 0.6, 0, AVE), e, n, [["casa_enxaimel2", ""], ["casa_barro", ""], ["casa_estreita_pedra", ""], ["casa_pedra", ""],
+		["vão", 1.4], ["casa_longa", ""], ["casa_estreita", ""], ["casa_enxaimel", ""]])
+	_row(Vector3(-PLAZA - 11.0, 0, -AVE), w, s, [["casa", ""], ["casa_estreita", ""], ["casa_grande_barro", ""], ["vão", 1.2],
+		["casa_estreita_pedra", ""], ["casa", ""], ["casa_pedra", ""]])
+	_row(Vector3(-PLAZA - 11.0, 0, AVE), w, n, [["casa_barro", ""], ["casa_enxaimel2", ""], ["casa_estreita", ""], ["sobrado_longo", ""],
+		["casa_estreita_pedra", ""]])
+	_row(Vector3(-AVE, 0, PLAZA + 11.0), s, e, [["casa", ""], ["casa_estreita", ""], ["casa_grande", ""], ["casa_estreita_pedra", ""],
+		["vão", 1.4], ["casa_barro", ""], ["casa_enxaimel", ""]])
+	_row(Vector3(AVE, 0, PLAZA + 11.0), s, w, [["casa_enxaimel2", ""], ["casa_estreita_pedra", ""], ["casa_longa", ""], ["casa_pedra", ""],
+		["casa_estreita", ""], ["casa", ""]])
 	# coisas na frente das casas: barris, caixotes, flores, lanternas e placas
 	var small: Array[String] = ["barril", "caixote", "cesto", "balde", "vaso", "caixote_macas", "banquinho", "barril_vinho"]
 	for h: Dictionary in houses:
@@ -421,7 +467,33 @@ func _town() -> void:
 			_place("flores", _group("Gardens", false), door + f * 0.6 - a * (size.x / 2.0 - 0.4), rng.randf() * TAU, 0.45)
 
 
-# --- quarteirões de dentro: cada um com uma função ---------------------------------------------------------
+## Casas dos dois lados da rua do anel, de frente para ela; cada trecho entre uma avenida e a esquina tem a sua fileira.
+func _ring_rows() -> void:
+	var kinds: Array[String] = ["casa", "casa_estreita", "casa_barro", "casa_estreita_pedra", "casa_enxaimel", "casa_enxaimel2", "casa_longa",
+		"casa_pedra", "sobrado_longo", "casa_grande"]
+	for sgn: float in [-1.0, 1.0]:
+		for half: float in [-1.0, 1.0]:
+			var along_x := Vector3(half, 0, 0)
+			var along_z := Vector3(0, 0, half)
+			# trechos norte e sul (z = ±RING): lado de fora e lado de dentro
+			_row(Vector3(half * (AVE + 0.6), 0, sgn * (RING + RING_W)), along_x, Vector3(0, 0, -sgn), _lots(kinds, 6))
+			_row(Vector3(half * (AVE + 0.6), 0, sgn * (RING - RING_W)), along_x, Vector3(0, 0, sgn), _lots(kinds, 5))
+			# trechos oeste e leste (x = ±RING)
+			_row(Vector3(sgn * (RING + RING_W), 0, half * (AVE + 0.6)), along_z, Vector3(-sgn, 0, 0), _lots(kinds, 6))
+			_row(Vector3(sgn * (RING - RING_W), 0, half * (AVE + 0.6)), along_z, Vector3(sgn, 0, 0), _lots(kinds, 5))
+
+
+## Lista de lotes sorteados (com um beco de vez em quando).
+func _lots(kinds: Array[String], count: int) -> Array:
+	var lots: Array = []
+	for k: int in count:
+		lots.append([kinds[rng.randi() % kinds.size()], ""])
+		if rng.randf() < 0.25:
+			lots.append(["vão", rng.randf_range(1.2, 2.6)])
+	return lots
+
+
+# --- lugares grandes entre o anel e a muralha ------------------------------------------------------------
 
 ## Põe um prédio grande centrado em `center`, de frente para `front`; devolve o nó (ou null se não couber).
 func _landmark(key: String, center: Vector3, front: Vector3, label: String) -> Node3D:
@@ -440,36 +512,278 @@ func _landmark(key: String, center: Vector3, front: Vector3, label: String) -> N
 	return piece
 
 
+## Caminho de terra reto (de a até b) que fica reservado: casa nenhuma nasce em cima dele.
+func _lane(a: Vector2, b: Vector2, w: float) -> void:
+	_path(a, b, w)
+	_block_rect(Rect2(minf(a.x, b.x) - w / 2.0, minf(a.y, b.y) - w / 2.0, absf(a.x - b.x) + w, absf(a.y - b.y) + w), 0.2)
+
+
 func _quarters() -> void:
-	var inner := (HALF + PLAZA) / 2.0 + 2.0  # ~33.7: meio dos quarteirões de fora
-	# nordeste: estábulo com cercado, virado para a avenida do portão
-	var stable := _landmark("estabulo", Vector3(inner, 0, -inner), Vector3.LEFT, "Estabulo")
+	var far := (HALF + RING + RING_W) / 2.0  # ~51,4: meio da faixa entre o anel e a muralha
+	var mid := (RING + AVE) / 2.0 + 1.0  # ~21,8: meio do trecho entre a avenida e o anel
+	var edge := RING + RING_W  # beira de fora do anel
+	# leste, metade norte: estábulo de frente para o anel; no canto nordeste, o pasto cercado
+	var stable := _landmark("estabulo", Vector3(far, 0, -mid), Vector3.LEFT, "Estabulo")
 	if stable:
-		_path(Vector2(AVE, -inner), Vector2(inner - 9.0, -inner), 3.4)
-	# noroeste: moinho com horta e plantação
-	var mill := _landmark("moinho", Vector3(-inner - 2.0, 0, -inner + 1.0), Vector3(1, 0, 1).normalized(), "Moinho")
+		_lane(Vector2(edge, -mid), Vector2(far - 7.0, -mid), 3.4)
+	_pasture(Vector3(far + 1.0, 0, -far - 1.0), [["cavalo", 2], ["vaca", 2], ["porco", 1]])
+	# norte, metade oeste: moinho de frente para o anel; plantação no canto noroeste
+	var mill := _landmark("moinho", Vector3(-mid, 0, -far), Vector3.BACK, "Moinho")
 	if mill:
-		_path(Vector2(-AVE, -24.0), Vector2(-inner + 4.0, -inner + 5.0), 3.0)
-		_crops(Vector3(-inner + 6.5, 0, -inner - 7.5), 5, 4)
-	# sudeste: serraria com toras, virada para a avenida do leste
-	var saw := _landmark("serraria", Vector3(inner + 1.0, 0, inner + 1.0), Vector3.FORWARD, "Serraria")
+		_lane(Vector2(-mid, -edge), Vector2(-mid, -far + 6.0), 3.0)
+	_crops(Vector3(-far - 7.0, 0, -far - 7.0), 5, 6)
+	_wheat_field(Rect2(-far - 8.0, -far + 3.0, 14.0, 7.0), "TrigoDoMoinho")
+	# norte, metade leste: celeiro da cidade (silo com depósito e galpão aberto), com feno e sacos
+	var granary := _landmark("silo_casa", Vector3(mid - 3.0, 0, -far), Vector3.BACK, "CeleiroDaCidade")
+	if granary:
+		_lane(Vector2(mid - 3.0, -edge), Vector2(mid - 3.0, -far + 3.0), 3.0)
+		var shed := _landmark("celeiro_aberto", Vector3(mid + 8.0, 0, -far - 0.5), Vector3.BACK, "Galpao")
+		if shed:
+			for k: int in 3:
+				_place(["feno", "sacos", "fardos"][k], _group("Props"), Vector3(mid + 5.0 + k * 2.6, 0, -far + 5.6), rng.randf() * TAU)
+	# leste, metade sul: serraria de frente para o anel, com toras e caixotes
+	var saw := _landmark("serraria", Vector3(far, 0, mid), Vector3.LEFT, "Serraria")
 	if saw:
-		_path(Vector2(inner, AVE), Vector2(inner, inner - 6.0), 3.2)
-		_kit("objetos/Barrel", _group("Props"), Vector3(inner - 6.0, 0, inner - 6.5), 0.0)
-		_place("caixote_alto", _group("Props"), Vector3(inner - 4.6, 0, inner - 6.8), 0.3)
-	# sudoeste: jardim da capela com estátua, gazebo de pedra e um poço com telhado
-	var garden := Vector3(-inner, 0, inner)
-	_path(Vector2(-AVE, inner), Vector2(-inner + 4.0, inner), 3.0)
-	_paint_disc(Vector2(garden.x, garden.z), 4.2, 1)
-	_place("poco_telhado", _group("Plaza"), garden, 0.4, 1.0, "PocoDoJardim")
-	_block(garden, Vector2(3.4, 3.4), 0.2)
+		_lane(Vector2(edge, mid), Vector2(far - 6.0, mid), 3.2)
+		_kit("objetos/Barrel", _group("Props"), Vector3(far - 6.5, 0, mid - 5.0), 0.0)
+		_place("caixote_alto", _group("Props"), Vector3(far - 6.8, 0, mid - 3.6), 0.3)
+	# canto sudeste: torre de vigia e uma carroça velha
+	var watch := Vector3(far + 3.0, 0, far + 3.0)
+	_place("torre_vigia", _group("Buildings"), watch, PI / 4.0, 1.0, "TorreDeVigia")
+	_block(watch, Vector2(4.4, 4.4), 0.4)
+	_place("carroca_quebrada", _group("Props"), watch + Vector3(-6.0, 0, -2.0), 0.7, 1.0, "CarrocaVelha")
+	_block(watch + Vector3(-6.0, 0, -2.0), Vector2(4, 4), 0.2)
+	# sul, metade oeste: jardim da capela (poço com telhado, canteiros, coreto e a estátua do cervo)
+	garden_at = Vector3(-mid, 0, far)
+	_lane(Vector2(-mid, edge), Vector2(-mid, far - 4.0), 3.0)
+	_paint_disc(Vector2(garden_at.x, garden_at.z), 4.2, 1)
+	_place("poco_telhado", _group("Plaza"), garden_at, 0.4, 1.0, "PocoDoJardim")
+	_block(garden_at, Vector2(3.4, 3.4), 0.2)
 	for k: int in 4:
-		var a := k * PI / 2.0
-		var at := garden + Vector3(cos(a), 0, sin(a)) * 6.2
+		var a := k * PI / 2.0 + PI / 4.0
+		var at := garden_at + Vector3(cos(a), 0, sin(a)) * 6.4
 		if _free_at(at, 1.4):
 			_place("canteiro", _group("Plaza"), at, rng.randf() * TAU, 0.9, "CanteiroJardim")
 			_block(at, Vector2(3.4, 3.4), 0.2)
-	_place("estatua", _group("Plaza"), garden + Vector3(0, 0, 9.0), PI, 1.0, "EstatuaJardim")
+	var gazebo_at := garden_at + Vector3(9.5, 0, 2.0)
+	_place("gazebo", _group("Plaza"), gazebo_at, _yaw_facing(Vector3.LEFT), 1.0, "Coreto")
+	_block(gazebo_at, Vector2(5.0, 5.0), 0.3)
+	_place("estatua_cervo", _group("Plaza"), garden_at + Vector3(0, 0, 8.0), PI, 1.0, "EstatuaDoCervo")
+	_block(garden_at + Vector3(0, 0, 8.0), Vector2(2.6, 2.0), 0.3)
+	# canto sudoeste: o cemitério, com a entrada virada para o jardim
+	cemetery_at = Vector3(-far - 1.0, 0, far + 1.0)
+	_cemetery(cemetery_at)
+
+
+## Pasto cercado (cerca de 6 m, abertura no lado oeste) com bichos soltos dentro.
+func _pasture(center: Vector3, animals: Array) -> void:
+	var half := 8.85  # 3 tábuas de 5,9 m por lado
+	for side: int in 4:
+		for k: int in 3:
+			if side == 2 and k == 1:
+				continue  # porteira
+			var t := -half + 2.95 + k * 5.9
+			var at: Vector3
+			var yaw := 0.0
+			match side:
+				0:
+					at = center + Vector3(t, 0, -half)
+				1:
+					at = center + Vector3(t, 0, half)
+				2:
+					at = center + Vector3(-half, 0, t)
+					yaw = PI / 2.0
+				_:
+					at = center + Vector3(half, 0, t)
+					yaw = PI / 2.0
+			_place("cerca_fazenda", _group("Props"), at, yaw, 1.0, "CercaDoPasto")
+	_block(center, Vector2(half * 2.0, half * 2.0), 0.4)
+	var holder := _group("Animals", false)
+	for pair: Array in animals:
+		for n: int in int(pair[1]):
+			_place(String(pair[0]), holder, center + Vector3(rng.randf_range(-half + 2.0, half - 2.0), 0, rng.randf_range(-half + 2.0, half - 2.0)),
+				rng.randf() * TAU)
+
+
+## Cemitério: grade de ferro em volta, portão no lado leste, caminho de pedras até a cripta (lado oeste),
+## fileiras de lápides, pinheiros de outono nos cantos, santuários e lanternas.
+func _cemetery(center: Vector3) -> void:
+	var holder := _group("Cemetery")
+	var half := 9.0
+	var front := Vector3.RIGHT
+	for side: int in 4:
+		for k: int in 6:
+			var t := -half + 1.5 + k * 3.0
+			if side == 3 and (k == 2 or k == 3):
+				continue  # vão do portão
+			var at: Vector3
+			var yaw := 0.0
+			match side:
+				0:
+					at = center + Vector3(t, 0, -half)
+				1:
+					at = center + Vector3(t, 0, half)
+				2:
+					at = center + Vector3(-half, 0, t)
+					yaw = PI / 2.0
+				_:
+					at = center + Vector3(half, 0, t)
+					yaw = PI / 2.0
+			var piece := "grade_cemiterio_quebrada" if rng.randf() < 0.15 else "grade_cemiterio"
+			_place(piece, holder, at, yaw, 1.0, "Grade")
+	for corner: Vector3 in [Vector3(-half, 0, -half), Vector3(half, 0, -half), Vector3(-half, 0, half), Vector3(half, 0, half)]:
+		_place("pilar_grade", holder, center + corner, 0.0, 1.0, "Pilar")
+	_place("portao_cemiterio", holder, center + Vector3(half, 0, 0), PI / 2.0, 1.0, "Portao")
+	for z: float in [-2.6, 2.6]:
+		_place("poste_lanterna", _group("Lights", false), center + Vector3(half + 1.2, 0, z), _yaw_facing(front), 1.0, "LanternaDoCemiterio")
+	# caminho de pedras do portão até a cripta
+	var crypt_at := center + Vector3(-half + 4.2, 0, 0)
+	_place("cripta", holder, crypt_at, _yaw_facing(front), 1.0, "Cripta")
+	var x := half - 1.0
+	while x > -half + 7.0:
+		_place("caminho_pedras", holder, center + Vector3(x, 0.01, rng.randf_range(-0.15, 0.15)), rng.randf() * TAU, 1.0, "Pedras")
+		x -= 1.9
+	_place("santuario_velas", holder, crypt_at + Vector3(3.8, 0, -3.0), 0.0, 1.0, "Santuario")
+	_place("santuario", holder, crypt_at + Vector3(3.8, 0, 3.0), 0.0, 1.0, "Santuario")
+	# lápides em fileiras dos dois lados do caminho, viradas para o caminho
+	var stones: Array[String] = ["lapide", "lapide", "lapide2", "tumulo", "tumulo_rachado", "cruz", "cruz2"]
+	for row_z: float in [-6.4, -3.6, 3.6, 6.4]:
+		var gx := -half + 8.6
+		while gx < half - 1.6:
+			if rng.randf() < 0.85:
+				var face := Vector3(0, 0, -signf(row_z))
+				_place(stones[rng.randi() % stones.size()], holder, center + Vector3(gx + rng.randf_range(-0.2, 0.2), 0, row_z),
+					_yaw_facing(face) + rng.randf_range(-0.12, 0.12), 1.0, "Lapide")
+			gx += 2.4
+	for corner: Vector3 in [Vector3(-half + 1.8, 0, -half + 1.8), Vector3(-half + 1.8, 0, half - 1.8)]:
+		_place(["pinheiro_outono", "pinheiro_outono2"][rng.randi() % 2], _group("Trees"), center + corner, rng.randf() * TAU, 0.9, "PinheiroDoCemiterio")
+	_place("arvore_seca_galhos", _group("Trees"), center + Vector3(half - 2.0, 0, half - 2.0), 0.8, 1.0, "ArvoreSeca")
+	_place("velas", holder, crypt_at + Vector3(3.0, 0, 0.9), 0.0, 1.0, "Velas")
+	_block(center, Vector2(half * 2.0 + 1.0, half * 2.0 + 1.0), 0.6)
+	_lane(Vector2(center.x + half + 1.0, center.z), Vector2(garden_at.x - 4.0, center.z), 2.4)
+
+
+## Trigal: uma MultiMesh só (milhares de pés de trigo com um desenho só), em fileiras com terra entre elas.
+func _wheat_field(r: Rect2, label: String) -> void:
+	var path := ART + "trigo_malha.res"
+	# a malha do modelo vem em centímetros e deitada: a escala e o giro estão nos nós do .glb (vão junto em cada pé)
+	var scene := (load("res://assets/kits/polypizza/Avulsos/Wheat_lPspzfC8Pu.glb") as PackedScene).instantiate()
+	var source := scene.find_children("*", "MeshInstance3D", true, false)[0] as MeshInstance3D
+	var base := Transform3D()
+	var node: Node = source
+	while node != scene and node is Node3D:
+		base = (node as Node3D).transform * base
+		node = node.get_parent()
+	if not ResourceLoader.exists(path):
+		DirAccess.make_dir_recursive_absolute(ART)
+		ResourceSaver.save(source.mesh, path)
+	scene.free()
+	var list: Array[Transform3D] = []
+	var z := r.position.y + 0.4
+	while z < r.end.y - 0.3:
+		_paint_rect(Rect2(r.position.x, z - 0.35, r.size.x, 0.7), 0)
+		var x := r.position.x + 0.3
+		while x < r.end.x - 0.3:
+			for k: int in 3:
+				var p := Vector3(x + rng.randf_range(-0.12, 0.12), 0, z + rng.randf_range(-0.22, 0.22))
+				var tilt := Basis(Vector3(rng.randf_range(-1, 1), 0, rng.randf_range(-1, 1)).normalized(), rng.randf_range(0.0, 0.12))
+				list.append(Transform3D(tilt * Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(1.0, 1.35)), p) * base)
+			x += 0.42
+		z += 1.0
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.mesh = load(path)
+	mm.instance_count = list.size()
+	for k: int in list.size():
+		mm.set_instance_transform(k, list[k])
+	DirAccess.make_dir_recursive_absolute(ART + "trigo")
+	var file := ART + "trigo/%s.res" % label.to_lower()
+	ResourceSaver.save(mm, file)
+	var mmi := MultiMeshInstance3D.new()
+	mmi.name = label
+	mmi.multimesh = load(file)
+	mmi.visibility_range_end = 140.0
+	_group("Gardens", false).add_child(mmi)
+	mmi.owner = level
+	_block_rect(r, 0.3)
+	print("trigo ", label, ": ", list.size(), " pés")
+
+
+# --- fazendas fora da muralha, dos dois lados da estrada --------------------------------------------------
+
+func _farms() -> void:
+	var z0 := -HALF - 10.0  # começo das roças (a 10 m da muralha)
+	# oeste: celeiro grande de frente para a estrada, moinho de pás, trigal e aboboral cercados
+	var barn := _landmark("celeiro_grande", Vector3(-17.0, 0, z0 - 12.0), Vector3.RIGHT, "CeleiroGrande")
+	if barn:
+		_lane(Vector2(-4.0, z0 - 12.0), Vector2(-11.0, z0 - 12.0), 3.0)
+		_place("feno", _group("Props"), Vector3(-11.6, 0, z0 - 6.8), 0.3)
+		_place("feno", _group("Props"), Vector3(-12.6, 0, z0 - 5.9), 1.1)
+		_place("carroca", _group("Props"), Vector3(-10.6, 0, z0 - 18.5), 0.4)
+	var mill := _landmark("moinho_torre", Vector3(-46.0, 0, z0 - 36.0), Vector3(1, 0, 1).normalized(), "MoinhoDePas")
+	if mill:
+		_lane(Vector2(-4.0, z0 - 30.0), Vector2(-40.0, z0 - 30.0), 2.6)
+	_wheat_field(Rect2(-56.0, z0 - 16.0, 28.0, 14.0), "TrigalOeste")
+	_fence_rect(Rect2(-57.0, z0 - 17.0, 30.0, 16.0))
+	_patch("aboboral", Rect2(-34.0, z0 - 26.0, 10.0, 6.0), 2.0)
+	# leste: celeiro, silo, galinheiro, horta e trigal; vacas e porcos no pasto
+	var barn2 := _landmark("celeiro", Vector3(17.0, 0, z0 - 12.0), Vector3.LEFT, "Celeiro")
+	if barn2:
+		_lane(Vector2(4.0, z0 - 12.0), Vector2(11.0, z0 - 12.0), 3.0)
+	var silo := _landmark("silo", Vector3(17.5, 0, z0 - 2.5), Vector3.LEFT, "Silo")
+	if silo == null:
+		print("silo ficou de fora")
+	var coop := _landmark("galinheiro", Vector3(11.5, 0, z0 - 24.0), Vector3.LEFT, "Galinheiro")
+	if coop:
+		for k: int in 5:
+			_place("galinha", _group("Animals", false), Vector3(rng.randf_range(7.5, 10.0), 0, z0 - 24.0 + rng.randf_range(-3, 3)), rng.randf() * TAU)
+	_wheat_field(Rect2(28.0, z0 - 15.0, 26.0, 13.0), "TrigalLeste")
+	_fence_rect(Rect2(27.0, z0 - 16.0, 28.0, 15.0))
+	_patch("horta", Rect2(28.0, z0 - 26.0, 14.0, 8.0), 1.6)
+	_patch("aboboral", Rect2(44.0, z0 - 26.0, 10.0, 8.0), 2.2)
+	_pasture(Vector3(40.0, 0, z0 - 44.0), [["vaca", 3], ["porco", 2], ["cavalo", 1]])
+	# torre de vigia de madeira na beira das roças, olhando a estrada
+	_place("torre_vigia", _group("Buildings"), Vector3(8.0, 0, z0 - 40.0), 0.3, 1.0, "TorreDaEstrada")
+	_block(Vector3(8.0, 0, z0 - 40.0), Vector2(4.4, 4.4), 0.4)
+
+
+## Cerca baixa em volta de um retângulo (tábuas de 5,9 m), com uma abertura no meio do lado da estrada.
+func _fence_rect(r: Rect2) -> void:
+	var road_side := 1 if r.get_center().x < 0.0 else 3  # 1 = leste (x máx), 3 = oeste (x mín)
+	for side: int in 4:
+		var horizontal := side == 0 or side == 2
+		var length := r.size.x if horizontal else r.size.y
+		var n := maxi(1, int(length / 5.9))
+		var step := length / n
+		for k: int in n:
+			if side == road_side and k == n / 2:
+				continue
+			var t := (k + 0.5) * step
+			var at: Vector3
+			match side:
+				0:
+					at = Vector3(r.position.x + t, 0, r.position.y)
+				2:
+					at = Vector3(r.position.x + t, 0, r.end.y)
+				1:
+					at = Vector3(r.end.x, 0, r.position.y + t)
+				_:
+					at = Vector3(r.position.x, 0, r.position.y + t)
+			_place("cerca_fazenda2", _group("Props"), at, 0.0 if horizontal else PI / 2.0, step / 5.9, "Cerca")
+	_block_rect(r, 0.4)
+
+
+## Canteiro de roça: a peça repetida em grade dentro do retângulo, com a terra pintada embaixo.
+func _patch(piece: String, r: Rect2, step: float) -> void:
+	_paint_rect(r, 0)
+	var z := r.position.y + step / 2.0
+	while z < r.end.y:
+		var x := r.position.x + step / 2.0
+		while x < r.end.x:
+			_place(piece, _group("Gardens", false), Vector3(x + rng.randf_range(-0.2, 0.2), 0, z), rng.randf() * TAU, 1.0, piece.capitalize())
+			x += step
+		z += step
+	_block_rect(r, 0.3)
 
 
 ## Miolo dos quarteirões: casas espalhadas na grama livre, cada uma virada para a rua mais perto, com um caminho de
@@ -479,7 +793,7 @@ func _fill_quarters() -> void:
 	var placed := 0
 	var tries := 0
 	var lim := HALF - 4.0
-	while placed < 22 and tries < 900:
+	while placed < 46 and tries < 4000:
 		tries += 1
 		var p := Vector3(snappedf(rng.randf_range(-lim, lim), 1.0), 0, snappedf(rng.randf_range(-lim, lim), 1.0))
 		if absf(p.x) < PLAZA + 6.0 and absf(p.z) < PLAZA + 6.0:
@@ -545,6 +859,15 @@ func _street_life() -> void:
 				_block(at, Vector2(0.5, 0.5), 0.0)
 			t += 8.0
 			k += 1
+	# rua do anel: um poste a cada 10 m na beira de dentro (menos nos cruzamentos com as avenidas)
+	for side: int in 4:
+		var t2 := -RING + 4.0
+		while t2 < RING - 3.0:
+			if absf(t2) > AVE + 2.5:
+				var inset := RING - RING_W + 0.7
+				var at: Vector3 = [Vector3(t2, 0, -inset), Vector3(t2, 0, inset), Vector3(-inset, 0, t2), Vector3(inset, 0, t2)][side]
+				_place("poste", _group("Lights", false), at, 0.0, 1.0, "PosteDoAnel")
+			t2 += 10.0
 
 
 # --- lugares da história: moradores, portão, beco do Tico ------------------------------------------
@@ -638,6 +961,7 @@ func _figurante(pos: Vector3, look: Vector3, who: String, anim: String, hand: St
 	shape.shape = capsule
 	body.add_child(shape)
 	shape.owner = level
+	_block(pos, Vector2(1.0, 1.0), 0.3)  # planta nenhuma nasce em cima de quem está parado ali
 
 
 func _crowd() -> void:
@@ -674,8 +998,17 @@ func _crowd() -> void:
 	# crianças correndo perto do chafariz, alguém lendo no jardim da capela
 	_figurante(Vector3(-6.4, 0, 6.8), Vector3(-3, 0, 4), "Rogue", "Cheer", "", 0.45, "Crianca2")
 	_figurante(Vector3(-4.6, 0, 8.4), Vector3(-6.4, 0, 6.8), "Rogue_Hooded", "Idle", "", 0.43, "Crianca3")
-	var inner := (HALF + PLAZA) / 2.0 + 2.0
-	_figurante(Vector3(-inner + 2.4, 0, inner - 2.2), Vector3(-inner, 0, inner), "Mage", "Sit_Floor_Idle", "Spellbook_open", 0.6, "Leitora")
+	_figurante(garden_at + Vector3(2.4, 0, -2.6), garden_at, "Mage", "Sit_Floor_Idle", "Spellbook_open", 0.6, "Leitora")
+	# no cemitério, alguém de capuz parado numa lápide
+	_figurante(cemetery_at + Vector3(1.0, 0, -2.2), cemetery_at + Vector3(1.0, 0, -3.6), "Rogue_Hooded", "Idle", "", 0.6, "NoCemiterio")
+	# fazendas: gente trabalhando nas roças e no celeiro da cidade
+	var z0 := -HALF - 10.0
+	_figurante(Vector3(-25.2, 0, z0 - 8.0), Vector3(-30.0, 0, z0 - 8.0), "Barbarian", "Interact", "", 0.62, "Lavrador")
+	_figurante(Vector3(30.5, 0, z0 - 22.0), Vector3(34.0, 0, z0 - 22.0), "Rogue", "PickUp", "", 0.6, "Lavradora")
+	_figurante(Vector3(8.6, 0, z0 - 15.0), Vector3(4.0, 0, z0 - 12.0), "Knight", "Idle", "", 0.62, "Fazendeiro")
+	var granary := level.get_node_or_null("Buildings/CeleiroDaCidade") as Node3D
+	if granary:
+		_figurante(granary.global_position + Vector3(4.0, 0, 6.5), granary.global_position + Vector3(4.0, 0, 9.0), "Barbarian", "Use_Item", "", 0.62, "Carregador")
 	# moleiro na porta do moinho e cavalariço no estábulo
 	var mill := level.get_node_or_null("Buildings/Moinho") as Node3D
 	if mill:
@@ -770,15 +1103,18 @@ func _smoke() -> void:
 func _outside() -> void:
 	var tries := 0
 	var placed := 0
-	while placed < 260 and tries < 8000:
+	var reach := AREA / 2.0 - 8.0
+	while placed < 560 and tries < 20000:
 		tries += 1
 		var a := rng.randf() * TAU
-		var r := rng.randf_range(HALF + 8.0, 104.0)
+		var r := rng.randf_range(HALF + 8.0, reach * 1.35)
 		var p := Vector3(cos(a) * r, 0, sin(a) * r)
 		if absf(p.x) < 7.0 and p.z < -HALF:
 			continue  # estrada livre
-		if absf(p.x) > 106 or absf(p.z) > 106 or (absf(p.x) < HALF + 6.0 and absf(p.z) < HALF + 6.0):
+		if absf(p.x) > reach or absf(p.z) > reach or (absf(p.x) < HALF + 6.0 and absf(p.z) < HALF + 6.0):
 			continue
+		if not _free_at(p, 2.0):
+			continue  # roças, celeiros e pastos
 		var roll := rng.randf()
 		if roll < 0.55:
 			_place(["pinheiro", "arvore", "pinheiro", "arvore", "arvore_pequena"][rng.randi() % 5], _group("Trees"), p, rng.randf() * TAU, rng.randf_range(0.9, 1.5))
@@ -802,7 +1138,7 @@ func _yards() -> void:
 	var inner := HALF - 2.5
 	var tries := 0
 	var placed := 0
-	while placed < 40 and tries < 4000:
+	while placed < 90 and tries < 9000:
 		tries += 1
 		var p := Vector3(rng.randf_range(-inner, inner), 0, rng.randf_range(-inner, inner))
 		var m := _mask_at(p)
@@ -881,14 +1217,15 @@ func _grass() -> void:
 	var space := level.get_world_3d().direct_space_state
 	var count := 0
 	var step := 1.25
-	var x := -100.0
-	while x < 100.0:
-		var z := -100.0
-		while z < 100.0:
+	var reach := AREA / 2.0 - 8.0
+	var x := -reach
+	while x < reach:
+		var z := -reach
+		while z < reach:
 			var p := Vector3(x + rng.randf_range(-0.55, 0.55), 0, z + rng.randf_range(-0.55, 0.55))
 			z += step
 			var m := _mask_at(p)
-			var keep := 0.85 if Vector2(p.x, p.z).length() < 120.0 else 0.0
+			var keep := 0.85 if Vector2(p.x, p.z).length() < reach * 1.3 else 0.0
 			keep *= (1.0 - clampf(m.g * 3.0, 0.0, 1.0)) * (1.0 - m.r * 0.7)
 			if rng.randf() > keep or not _free_at(p, -0.55):
 				continue

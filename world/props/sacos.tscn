@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Medieval-Village-Pack/Bags.glb" id="1_Bags"]
+
+
+[node name="Sacos" type="Node3D"]
+
+[node name="Modelo" parent="." instance=ExtResource("1_Bags")]
+transform = Transform3D(-3, 0, 0, 0, 3, 0, 0, 0, -3, 0, 0, 0)

@@ -67,6 +67,7 @@ func _ready() -> void:
 	_auto_collision()
 	if editing:
 		return
+	_hide_far_details()
 	# voltando de uma luta: no mesmo lugar do mapa, com a vida que sobrou
 	var start := _spawn.transform
 	if Game.returning and Game.return_scene == scene_file_path:
@@ -168,6 +169,31 @@ func _notification(what: int) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("map_editor") and not editing:
 		Game.open_editor(scene_file_path)
+
+
+## Coisa pequena longe não aparece mesmo: objetos, plantas, bichos, gente de fundo e lápides param de ser desenhados
+## a partir de uma distância (casas, muralha e árvores grandes ficam sempre). Só no jogo: o editor mostra tudo.
+const DETAIL_GROUPS: Array[String] = ["Props", "Gardens", "Market", "Animals", "Crowd", "Cemetery", "Lights", "Rocks", "Plaza"]
+
+
+func _hide_far_details() -> void:
+	for group: String in DETAIL_GROUPS:
+		var holder := get_node_or_null(group)
+		if holder == null:
+			continue
+		for found: Node in holder.find_children("*", "GeometryInstance3D", true, false):
+			var mesh := found as GeometryInstance3D
+			if mesh.visibility_range_end > 0.0:
+				continue
+			var size := mesh.get_aabb().size * mesh.global_transform.basis.get_scale()
+			var longest := maxf(size.x, maxf(size.y, size.z))
+			if longest < 1.5:
+				mesh.visibility_range_end = 45.0
+			elif longest < 4.0:
+				mesh.visibility_range_end = 80.0
+			else:
+				continue
+			mesh.visibility_range_end_margin = 5.0
 
 
 ## Peças do grupo "colisao_auto" (paredes, telhados, rochas e móveis dos kits) ganham colisão do formato da malha.
