@@ -22,3 +22,6 @@ desktop.ini
 # Blender: backups automáticos
 *.blend1
 *.blend2
+
+# Acervo local do editor (D043): todos os modelos do poly.pizza; só os usados vão para assets/kits/polypizza
+assets/acervo/

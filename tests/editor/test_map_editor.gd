@@ -162,3 +162,34 @@ func test_kit_piece_comes_in_the_right_size() -> void:
 	await wait_physics_frames(1)
 	assert_gt(editor._bounds(inn).size.x, 9.0, "a estalagem do pacote vem 3x maior (tamanho de prédio)")
 	assert_eq(inn.get_parent().name, &"Buildings")
+
+
+## Acervo (D043): fora do Git. Nenhuma fase do repositório pode apontar para ele (quebraria no PC dos outros).
+func test_no_level_points_to_the_local_acervo() -> void:
+	for dir: String in DirAccess.get_directories_at("res://levels/"):
+		for file: String in DirAccess.get_files_at("res://levels/" + dir):
+			if file.ends_with(".tscn"):
+				var text := FileAccess.get_file_as_string("res://levels/%s/%s" % [dir, file])
+				assert_false(text.contains("res://assets/acervo/"), "%s usa modelo do acervo sem copiar" % file)
+
+
+## Salvar copia o modelo usado do acervo para assets/kits/polypizza e troca o caminho no arquivo.
+func test_saving_promotes_acervo_models() -> void:
+	var editor := await _open(Game.ARANDU)
+	var src_dir := "res://assets/acervo/_teste/"
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(src_dir))
+	DirAccess.copy_absolute(ProjectSettings.globalize_path("res://assets/kits/polypizza/Food-Kit/Apple.glb"), ProjectSettings.globalize_path(src_dir + "Maca.glb"))
+	var scene := "user://teste_acervo.tscn"
+	var f := FileAccess.open(scene, FileAccess.WRITE)
+	f.store_string('[gd_scene format=3]\n\n[ext_resource type="PackedScene" uid="uid://abc" path="res://assets/acervo/_teste/Maca.glb" id="1_m"]\n\n[node name="X" type="Node3D"]\n\n[node name="Maca" parent="." instance=ExtResource("1_m")]\n')
+	f.close()
+	assert_eq(editor.promote_acervo(scene), 1)
+	var text := FileAccess.get_file_as_string(scene)
+	assert_false(text.contains("assets/acervo"))
+	assert_true(text.contains('path="res://assets/kits/polypizza/_teste/Maca.glb"'))
+	assert_false(text.contains("uid://abc"), "o uid antigo sai (o arquivo copiado ganha outro)")
+	assert_true(FileAccess.file_exists("res://assets/kits/polypizza/_teste/Maca.glb"))
+	for path: String in ["res://assets/kits/polypizza/_teste/Maca.glb", src_dir + "Maca.glb", scene]:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+	for dir: String in ["res://assets/kits/polypizza/_teste", src_dir]:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(dir))

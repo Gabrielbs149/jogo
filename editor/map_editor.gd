@@ -83,6 +83,7 @@ var _level_pick: OptionButton
 var _status: Label
 var _search: LineEdit
 var _chips: HFlowContainer
+var _pack_pick: OptionButton
 var _items: ItemList
 var _tree: Tree
 var _inspector: VBoxContainer
@@ -266,6 +267,14 @@ func _build_ui() -> void:
 		if c == "Prédios":
 			chip.button_pressed = true
 			_category = c
+	_pack_pick = OptionButton.new()
+	_pack_pick.add_item("Todos os pacotes")
+	for pack: String in library.acervo_packs:
+		_pack_pick.add_item(pack)
+	_pack_pick.visible = false
+	_pack_pick.tooltip_text = "Pacote do acervo (o acervo é grande: escolha um pacote ou busque)"
+	_pack_pick.item_selected.connect(func(_i: int) -> void: _fill_items())
+	lib_box.add_child(_pack_pick)
 	_items = ItemList.new()
 	_items.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_items.icon_mode = ItemList.ICON_MODE_TOP
@@ -379,6 +388,13 @@ func _fill_items() -> void:
 				list.append(library.by_key[key])
 	else:
 		list = library.entries.get(_category, [])
+	var acervo := _category == EditorLibrary.ACERVO_CATEGORY and _search.text.strip_edges() == ""
+	_pack_pick.visible = acervo
+	if acervo and _pack_pick.selected > 0:
+		var pack := _pack_pick.get_item_text(_pack_pick.selected)
+		list = list.filter(func(e: Dictionary) -> bool: return e.get("pacote", "") == pack)
+	if list.size() > 400:
+		list = list.slice(0, 400)  # o resto aparece pela busca ou pelo filtro de pacote
 	for entry: Dictionary in list:
 		var icon_path := EditorLibrary.icon_path(entry["key"])
 		var icon: Texture2D = load(icon_path) if ResourceLoader.exists(icon_path) else null
@@ -472,7 +488,8 @@ func save(path: String = "") -> Error:
 		return err
 	if path == level_path:
 		dirty = false
-		_toast_text("Salvo em %s" % path)
+		var promoted := promote_acervo(path)
+		_toast_text("Salvo em %s%s" % [path, ("  (%d modelo(s) do acervo copiados para o projeto)" % promoted) if promoted > 0 else ""])
 	_update_status()
 	return OK
 
@@ -485,6 +502,45 @@ func test_level() -> void:
 	Game.edit_level = level_path
 	Level.editing = false
 	Game.test_level(Game.EDITOR_DRAFT)
+
+
+## Modelos do acervo (fora do Git) usados na fase: copia cada um para assets/kits/polypizza/<pacote>/
+## (que vai para o Git), troca o caminho no arquivo salvo e anota o crédito do autor. Devolve quantos copiou.
+func promote_acervo(path: String) -> int:
+	var text := FileAccess.get_file_as_string(path)
+	if not text.contains(EditorLibrary.ACERVO):
+		return 0
+	var regex := RegEx.new()
+	regex.compile('\\[ext_resource type="PackedScene"( uid="[^"]*")? path="(res://assets/acervo/([^/"]+)/([^"]+))"')
+	var count := 0
+	var credits: PackedStringArray = []
+	for m: RegExMatch in regex.search_all(text):
+		var old := m.get_string(2)
+		var target := "res://assets/kits/polypizza/%s/%s" % [m.get_string(3), m.get_string(4)]
+		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(target.get_base_dir()))
+		if not FileAccess.file_exists(target):
+			DirAccess.copy_absolute(ProjectSettings.globalize_path(old), ProjectSettings.globalize_path(target))
+		text = text.replace(m.get_string(0), '[ext_resource type="PackedScene" path="%s"' % target)
+		text = text.replace('"' + old + '"', '"' + target + '"')
+		var entry: Dictionary = library.by_key.get(old, {})
+		if not entry.is_empty():
+			credits.append("- %s (%s): %s — %s" % [entry.get("autor", ""), entry.get("licenca", ""), entry.get("nome", ""), target])
+		count += 1
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	file.store_string(text)
+	file.close()
+	if not credits.is_empty():
+		var credit_path := "res://assets/kits/polypizza/CREDITOS.md"
+		var old_credits := FileAccess.get_file_as_string(credit_path) if FileAccess.file_exists(credit_path) else ""
+		var add: PackedStringArray = []
+		for line: String in credits:
+			if not old_credits.contains(line):
+				add.append(line)
+		if not add.is_empty():
+			var cf := FileAccess.open(credit_path, FileAccess.WRITE)
+			cf.store_string(old_credits.rstrip("\n") + ("\n\n## Do acervo (D043)\n" if not old_credits.contains("## Do acervo") else "\n") + "\n".join(add) + "\n")
+			cf.close()
+	return count
 
 
 func _write(path: String) -> Error:
@@ -613,6 +669,15 @@ func start_placing(key: String) -> void:
 		(body as CollisionObject3D).collision_layer = 0
 	_ghost.visible = false
 	_vary_ghost()
+	if _entry.get("acervo", false):
+		_overlay.remove_child(_ghost)
+		_world.add_child(_ghost)  # medir precisa da peça na árvore
+		var size := _bounds(_ghost).get_longest_axis_size()
+		_world.remove_child(_ghost)
+		_overlay.add_child(_ghost)
+		if size > 40.0 or size < 0.08:
+			_ghost_scale = 2.0 / maxf(size, 0.001)  # tamanho maluco: começa com uns 2 m (+/- ou Ctrl+roda ajusta)
+			_vary_ghost_keep()
 	_recent.erase(_placing)
 	_recent.push_front(_placing)
 	_recent = _recent.slice(0, 24)

@@ -7,6 +7,9 @@ extends RefCounted
 
 const PROPS := "res://world/props/"
 const ICONS := "res://editor/icones/"
+## Acervo local (D043): tudo o que foi baixado do poly.pizza, fora do Git (tools/art/montar_acervo.py).
+const ACERVO := "res://assets/acervo/"
+const ACERVO_CATEGORY := "Acervo poly.pizza"
 
 ## Peças prontas (world/props): chave -> [nome, categoria, grupo da fase, varia ao colocar, estrutura, dica]
 const PIECES: Dictionary[String, Array] = {
@@ -142,7 +145,8 @@ const KITS: Dictionary[String, Array] = {
 
 ## Ordem das categorias na tela (o que não estiver aqui vem depois).
 const ORDER: Array[String] = ["Prédios", "Muralha", "Praça e feira", "Luzes", "Natureza", "Objetos", "Animais", "Gente e história", "Inimigos",
-	"Peças de casa (kit)", "Vila medieval (peças)", "Masmorra", "Objetos do kit", "Natureza do kit", "Comida", "Itens de RPG", "Jardim", "Outras peças"]
+	"Peças de casa (kit)", "Vila medieval (peças)", "Masmorra", "Objetos do kit", "Natureza do kit", "Comida", "Itens de RPG", "Jardim", "Outras peças",
+	ACERVO_CATEGORY]
 
 ## Palavras dos nomes dos kits em português (para "Wall_Plaster_Door_Round" virar "Parede reboco porta redonda").
 const WORDS: Dictionary[String, String] = {
@@ -181,6 +185,8 @@ var categories: Array[String] = []
 ## categoria -> lista de entradas {key, nome, dica, grupo, varia, escala, estrutura, busca}
 var entries: Dictionary[String, Array] = {}
 var by_key: Dictionary[String, Dictionary] = {}
+## Pacotes do acervo (para o filtro), na ordem.
+var acervo_packs: Array[String] = []
 
 
 func _init() -> void:
@@ -211,12 +217,36 @@ func _init() -> void:
 				group = "Rocks"
 			_add(info[0], {"key": dir + file, "nome": pretty(base), "dica": base.replace("_", " "), "grupo": group,
 				"varia": dir.ends_with("natureza/"), "escala": info[2], "estrutura": structure})
+	_load_acervo()
 	for c: String in ORDER:
 		if entries.has(c):
 			categories.append(c)
 	for c: String in entries:
 		if not categories.has(c):
 			categories.append(c)
+
+
+## O acervo entra numa categoria só, com o pacote de cada modelo (o editor filtra por pacote).
+func _load_acervo() -> void:
+	var path := ACERVO + "indice.json"
+	if not FileAccess.file_exists(path):
+		return
+	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if not data is Array:
+		return
+	for item: Variant in data:
+		var m := item as Dictionary
+		var pack := String(m.get("pacote", ""))
+		if not acervo_packs.has(pack):
+			acervo_packs.append(pack)
+		var terms: PackedStringArray = []
+		for t: Variant in m.get("termos", []):
+			terms.append(String(t))
+		_add(ACERVO_CATEGORY, {"key": String(m["key"]), "nome": String(m["nome"]),
+			"dica": "%s · %s (%s)%s" % [pack, m.get("autor", ""), m.get("licenca", ""), ("\n" + ", ".join(terms)) if not terms.is_empty() else ""],
+			"grupo": "Props", "varia": false, "escala": 1.0, "estrutura": false, "pacote": pack, "acervo": true,
+			"autor": String(m.get("autor", "")), "licenca": String(m.get("licenca", ""))})
+	acervo_packs.sort()
 
 
 func _add(category: String, entry: Dictionary) -> void:
@@ -251,6 +281,8 @@ static func pretty(base: String) -> String:
 
 ## Ícone pronto da peça (gerado por tools/editor/gerar_icones.gd), ou null.
 static func icon_path(key: String) -> String:
+	if key.begins_with(ACERVO):
+		return key.get_basename() + ".webp"  # a foto que o próprio poly.pizza mostra
 	return ICONS + key.trim_prefix("res://").replace("/", "_").get_basename() + ".png"
 
 

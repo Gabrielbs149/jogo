@@ -7,6 +7,7 @@ import os
 import re
 import sys
 import time
+import urllib.error
 import urllib.request
 
 OUT = "C:/dev/_pacotes/polypizza"
@@ -14,9 +15,21 @@ UA = {"User-Agent": "Mozilla/5.0 (jogo Plano do Fogo; download de assets CC0)"}
 
 
 def get(url):
-    req = urllib.request.Request(url, headers=UA)
-    with urllib.request.urlopen(req, timeout=60) as r:
-        return r.read()
+    """Baixa com paciência: se o site pedir calma (429) ou falhar, espera cada vez mais e tenta de novo."""
+    wait = 5.0
+    for attempt in range(7):
+        try:
+            req = urllib.request.Request(url, headers=UA)
+            with urllib.request.urlopen(req, timeout=60) as r:
+                return r.read()
+        except urllib.error.HTTPError as e:
+            if e.code not in (429, 500, 502, 503, 504) or attempt == 6:
+                raise
+        except (urllib.error.URLError, TimeoutError):
+            if attempt == 6:
+                raise
+        time.sleep(wait)
+        wait = min(wait * 2.0, 120.0)
 
 
 def models_of(bundle):
@@ -36,9 +49,13 @@ def safe(name):
 def main():
     total = 0
     for bundle in sys.argv[1:]:
-        folder = OUT + "/" + bundle.rsplit("-", 1)[0]
+        folder = OUT + "/" + (bundle.rsplit("-", 1)[0] or bundle).strip("-")
+        try:
+            models = models_of(bundle)
+        except Exception as e:  # noqa: BLE001 - pacote fora do ar: segue com os outros
+            print("%-40s ERRO: %s" % (bundle, e), flush=True)
+            continue
         os.makedirs(folder, exist_ok=True)
-        models = models_of(bundle)
         names = {}
         for m in models:
             base = safe(m["titulo"])
@@ -56,7 +73,7 @@ def main():
                     m["erro"] = str(e)
         json.dump({"pacote": bundle, "modelos": models}, open(folder + "/manifesto.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         lic = sorted({m["licenca"] for m in models})
-        print("%-40s %3d modelos  licenças: %s" % (bundle.rsplit("-", 1)[0], len(models), ", ".join(lic)))
+        print("%-40s %3d modelos  licenças: %s" % (bundle.rsplit("-", 1)[0], len(models), ", ".join(lic)), flush=True)
     print("baixado: %.1f MB" % (total / 1e6))
 
 
