@@ -33,7 +33,7 @@
 - [x] Ethera com encontros, arena por turnos com QTE e chefe
 - [x] Tico com modelo final, esqueleto e animações
 - [x] Namfoodle com modelo final e animações (D032)
-- [x] Editor de mapas no jogo
+- [x] Editor de mapas no jogo (refeito com biblioteca e grade, D042)
 - [x] Ethera com o mesmo cuidado visual de Arandu (D035)
 - [x] Sons: música, passos, luta, interface (D034)
 - [x] Inimigos de Ethera com modelo e animação; arena vestida (D036)

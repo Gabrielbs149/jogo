@@ -1,206 +1,147 @@
 class_name MapEditor
 extends Node3D
-## Editor de mapas dentro do jogo (F2 numa fase, ou "Editor de mapas" na tela inicial).
-## A fase abre parada e vista de cima. Dá para colocar peças prontas (world/props), clicar e arrastar,
-## girar, mudar tamanho e altura, apagar, duplicar, desfazer e editar tudo o que a peça tem no painel da
-## direita (textos, falas, para onde a saída leva, cores, luz...). Salvar grava a própria .tscn da fase,
-## o mesmo arquivo que o Godot abre. Testar joga a fase como está, sem salvar; F2 lá volta para cá.
+## Editor de mapas dentro do jogo (D023, refeito na D042). F2 numa fase, ou "Editor de mapas" na tela inicial.
+## Esquerda: a Biblioteca (todas as peças, com foto, por categoria e com busca) e a lista do que está na fase.
+## Meio: o mapa, com a GRADE ligada: prédios e muros encaixam pela pegada (a borda cai na linha da grade e o
+## centro fica no meio das células), a pegada aparece no chão (verde = livre, vermelho = batendo em outra coisa).
+## Direita: tudo o que dá para mudar na peça escolhida. Embaixo: as teclas do que dá para fazer agora.
+## Salvar grava a própria .tscn da fase. Testar joga a fase como está (sem salvar); F2 lá volta para cá.
 
 signal selection_changed
 
-const PROPS_DIR := "res://world/props/"
 const LEVELS_DIR := "res://levels/"
 ## Fase usada de molde para "Nova fase" (fica só o chão, o sol e o que toda fase precisa).
 const TEMPLATE := "res://levels/arandu/arandu.tscn"
-## Nós que toda fase tem e que não se clicam no mapa (aparecem na aba Cena).
-const SYSTEM: Array[String] = ["WorldEnvironment", "Sun", "Navigation", "CameraRig", "HUD", "FX", "Terrain", "Ground", "Embers", "Grama"]
-## Peças do catálogo: arquivo em world/props -> [nome no botão, categoria, grupo da fase onde entra, varia ao colocar, dica].
-## Peça nova em world/props aparece sozinha em "Outras".
-const CATALOG: Dictionary[String, Array] = {
-	"casa": ["Casa", "Construções", "Buildings", false, "Casa de reboco com telhado de telha (6 x 6 m)"],
-	"casa_barro": ["Casa de pedra", "Construções", "Buildings", false, "Casa de pedra com telhado de telha (6 x 6 m)"],
-	"casa_grande": ["Sobrado", "Construções", "Buildings", false, "Sobrado de dois andares, pedra embaixo e reboco em cima (8 x 8 m)"],
-	"casa_grande_barro": ["Sobrado enxaimel", "Construções", "Buildings", false, "Sobrado com o andar de cima em enxaimel (8 x 8 m)"],
-	"casa_estreita": ["Casa estreita", "Construções", "Buildings", false, "Casa de dois andares, estreita (4 x 6 m), boa para encher rua"],
-	"casa_estreita_pedra": ["Estreita de pedra", "Construções", "Buildings", false, "Casa estreita de pedra embaixo e reboco em cima (4 x 6 m)"],
-	"casa_longa": ["Casa comprida", "Construções", "Buildings", false, "Casa térrea comprida (6 x 8 m)"],
-	"sobrado_longo": ["Sobrado comprido", "Construções", "Buildings", false, "Sobrado comprido com enxaimel (6 x 8 m)"],
-	"torre": ["Torre", "Construções", "Walls", false, "Torre de muralha de três andares (4 x 4 m)"],
-	"muro": ["Muro", "Construções", "Walls", false, "Muro de pedra de 6 m"],
-	"portao": ["Portão", "Construções", "Walls", false, "Arco de passagem entre muros"],
-	"marquise": ["Marquise", "Construções", "Buildings", false, "Cobertura de madeira presa na parede (encoste o lado de trás na parede)"],
-	"barraca": ["Barraca", "Construções", "Market", false, "Barraca de feira com frutas"],
-	"barraca_carroca": ["Carrinho de feira", "Construções", "Market", false, "Carrinho de vendedor"],
-	"poco": ["Poço", "Construções", "Buildings", false, "Poço de pedra com telhadinho"],
-	"pilar": ["Pilar", "Construções", "Ruins", false, "Pilar de arenito (ruínas)"],
-	"arvore": ["Árvore", "Natureza", "Trees", true, "Árvore comum (cada uma sai um pouco diferente)"],
-	"arvore_pequena": ["Árvore pequena", "Natureza", "Trees", true, "Árvore pequena"],
-	"pinheiro": ["Pinheiro", "Natureza", "Trees", true, "Pinheiro"],
-	"arvore_torta": ["Árvore torta", "Natureza", "Trees", true, "Árvore grande e retorcida"],
-	"arvore_morta": ["Árvore morta", "Natureza", "Trees", true, "Árvore seca, sem folhas"],
-	"tronco_seco": ["Tronco seco", "Natureza", "Trees", true, "Tronco morto alto"],
-	"toco": ["Toco", "Natureza", "Trees", true, "Toco de árvore"],
-	"arbusto": ["Arbusto", "Natureza", "Trees", true, "Arbusto, sem colisão"],
-	"arbusto_baixo": ["Arbusto florido", "Natureza", "Trees", true, "Arbusto com flores, sem colisão"],
-	"suculenta": ["Planta", "Natureza", "Trees", true, "Planta de folhas grandes, sem colisão"],
-	"samambaia": ["Samambaia", "Natureza", "Trees", true, "Samambaia, sem colisão"],
-	"grama": ["Grama", "Natureza", "Trees", true, "Tufo de grama alta, sem colisão"],
-	"flores": ["Flores", "Natureza", "Trees", true, "Flores, sem colisão"],
-	"rocha": ["Rocha", "Natureza", "Rocks", true, "Rocha média"],
-	"rocha_grande": ["Rocha grande", "Natureza", "Rocks", true, "Rocha grande"],
-	"penhasco": ["Penhasco", "Natureza", "Rocks", true, "Rochedo enorme"],
-	"pedregulhos": ["Caminho de pedras", "Natureza", "Rocks", true, "Pedras redondas no chão, sem colisão"],
-	"pedras": ["Pedras no chão", "Natureza", "Rocks", true, "Pedras chatas no chão, sem colisão"],
-	"pedrinhas": ["Pedrinha", "Natureza", "Rocks", true, "Pedrinha solta, sem colisão"],
-	"caixote": ["Caixote", "Objetos", "Props", false, "Caixote de madeira"],
-	"caixote_alto": ["Caixote grande", "Objetos", "Props", false, "Caixote grande"],
-	"caixote_macas": ["Caixa de maçãs", "Objetos", "Props", false, "Caixinha com maçãs"],
-	"barril": ["Barril", "Objetos", "Props", false, "Barril"],
-	"barril_vinho": ["Barril de maçãs", "Objetos", "Props", false, "Barril cheio de maçãs"],
-	"barris": ["Suporte de barris", "Objetos", "Props", false, "Barris deitados num suporte"],
-	"balde": ["Balde", "Objetos", "Props", false, "Balde de madeira"],
-	"cesto": ["Saco", "Objetos", "Props", false, "Saco de pano"],
-	"jarro": ["Panela", "Objetos", "Props", false, "Panela de barro"],
-	"vaso": ["Vaso", "Objetos", "Props", false, "Vaso de cerâmica"],
-	"banquinho": ["Banquinho", "Objetos", "Props", false, "Banquinho"],
-	"cadeira": ["Cadeira", "Objetos", "Props", false, "Cadeira"],
-	"banco": ["Banco", "Objetos", "Props", false, "Banco de madeira"],
-	"mesa": ["Mesa", "Objetos", "Props", false, "Mesa grande"],
-	"bau": ["Baú", "Objetos", "Props", false, "Baú de madeira"],
-	"bigorna": ["Bigorna", "Objetos", "Props", false, "Bigorna de ferreiro"],
-	"bancada": ["Bancada", "Objetos", "Props", false, "Bancada de trabalho"],
-	"caldeirao": ["Caldeirão", "Objetos", "Props", false, "Caldeirão"],
-	"boneco_treino": ["Boneco de treino", "Objetos", "Props", false, "Boneco de palha para treinar"],
-	"carroca": ["Carroça", "Objetos", "Props", false, "Carroça de madeira"],
-	"cerca": ["Cerca", "Objetos", "Props", false, "Cerca de madeira de 2 m"],
-	"grade_ferro": ["Grade de ferro", "Objetos", "Props", false, "Grade de ferro de 2 m"],
-	"estandarte": ["Estandarte", "Objetos", "Props", false, "Estandarte de pano"],
-	"pao": ["Pão", "Objetos", "Props", false, "Pão (com a metade escondida, para cenas)"],
-	"meio_pao": ["Meio pão", "Objetos", "Props", false, "Metade de um pão"],
-	"lanterna": ["Lanterna", "Objetos", "Lights", false, "Lanterna de parede acesa"],
-	"tocha": ["Tocha", "Objetos", "Lights", false, "Tocha acesa"],
-	"luz": ["Luz", "Objetos", "Lights", false, "Luz sozinha, que ilumina em volta"],
-	"morador": ["Morador", "Gente e história", "People", false, "Pessoa da cidade: F mostra a fala. Escolha o personagem e a animação no painel"],
-	"inscricao": ["Inscrição", "Gente e história", "Ruins", false, "Pedra com inscrição: F mostra o texto"],
-	"fogueira": ["Fogueira", "Gente e história", "Places", false, "Fogueira: F descansa e enche a vida"],
-	"saida": ["Saída", "Gente e história", "Places", false, "Arco: F leva para outra fase (escolha qual no painel)"],
-	"lugar_heroi": ["Herói", "Gente e história", "HeroSpots", false, "Onde um herói espera para entrar no grupo (escolha qual no painel)"],
-	"grupo_escaravelhos": ["Escaravelhos", "Inimigos", "Encounters", false, "Grupo com 2 Escaravelhos de Cinza: encostar leva para a luta"],
-	"grupo_sentinela": ["Sentinela", "Inimigos", "Encounters", false, "Sentinela Estelar: encostar leva para a luta"],
-	"grupo_guardiao": ["Guardião", "Inimigos", "Encounters", false, "O Último Guardião, chefe de Ethera"],
-}
-## Peças soltas dos kits (D026): aparecem no catálogo com busca. Pasta -> [categoria, grupo da fase].
-const KITS: Dictionary[String, Array] = {
-	"res://assets/kits/quaternius/vila/": ["Kit: peças de casa", "Buildings"],
-	"res://assets/kits/quaternius/objetos/": ["Kit: objetos", "Props"],
-	"res://assets/kits/quaternius/natureza/": ["Kit: natureza", "Trees"],
-}
+## Nós que toda fase tem e que não se clicam no mapa (aparecem em "Na fase").
+const SYSTEM: Array[String] = ["WorldEnvironment", "Sun", "Navigation", "CameraRig", "HUD", "FX", "Terrain", "Ground", "Embers", "Grama", "Smoke",
+	"Missoes"]
+## Grupos que entram no mapa de navegação (os aliados e inimigos desviam deles).
+const NAV_GROUPS: Array[String] = ["Buildings", "Walls", "Market", "Ruins", "Trees", "Rocks", "Props", "Places", "Plaza", "Dungeon"]
+const ACTION_NAMES: Array[String] = ["Mostrar texto", "Descansar", "Chamar herói", "Viajar", "Missão"]
+## Tamanhos de grade (G liga/desliga; [ e ] trocam).
+const GRIDS: Array[float] = [0.5, 1.0, 2.0, 4.0]
 ## Peças pequenas dos kits (menos que isso, em metros) não ganham colisão.
 const KIT_MIN_COLLISION := 0.6
-## Grupos que entram no mapa de navegação (os aliados e inimigos desviam deles).
-const NAV_GROUPS: Array[String] = ["Buildings", "Walls", "Market", "Ruins", "Trees", "Rocks", "Props", "Places"]
-const ACTION_NAMES: Array[String] = ["Mostrar texto", "Descansar", "Chamar herói", "Viajar"]
 ## Nomes dos campos no painel (o que não estiver aqui aparece com o nome do código).
 const FIELD_NAMES: Dictionary[String, String] = {
 	"chapter_title": "Nome da fase", "intro_lines": "Abertura", "start_story": "Texto do começo",
 	"victory_text": "Texto de vitória", "defeat_text": "Texto de derrota", "skip_intro": "Pular abertura",
 	"stabilize_after": "Levanta após (s)", "action": "F faz", "prompt_text": "Aviso na tela", "text": "Texto",
 	"target_scene": "Leva para", "hero_id": "Herói", "encounter_id": "Nome da luta", "arena_scene": "Arena",
-	"trigger_radius": "Começa a (m)", "after_text": "Texto ao vencer", "cloth_color": "Roupa", "trim_color": "Detalhe",
-	"eye_color": "Olhos", "face_color": "Rosto", "body_scale": "Corpo", "robe_width": "Largura do manto",
-	"leg_height": "Pernas", "peg_leg": "Perna de pau", "light_color": "Cor", "light_energy": "Força",
+	"trigger_radius": "Começa a (m)", "after_text": "Texto ao vencer", "light_color": "Cor", "light_energy": "Força",
 	"omni_range": "Alcance", "spot_range": "Alcance", "spot_angle": "Abertura", "shadow_enabled": "Sombras",
 	"background_color": "Cor do fundo", "ambient_light_color": "Luz ambiente", "ambient_light_energy": "Força ambiente",
 	"tonemap_exposure": "Exposição", "fog_enabled": "Neblina", "fog_light_color": "Cor da neblina",
 	"fog_density": "Densidade", "glow_enabled": "Brilho", "display_name": "Nome", "max_hp": "Vida máx.",
 	"hp": "Vida", "armor_class": "CA", "speed": "Velocidade", "personagem": "Personagem", "animacao": "Animação",
-	"na_mao": "Na mão", "deslocamento": "Começa em (s)",
+	"na_mao": "Na mão", "deslocamento": "Começa em (s)", "musica": "Música", "ambiente": "Som de fundo", "piso": "Chão (passos)",
 }
-const HELP := "Clique: escolhe   Arrastar: move   Shift+clique: junta   Arrastar no vazio: seleciona área   Alt+clique: parte de dentro\n" \
-	+ "Q/E: gira (Shift = 5°; com a grade ligada, 90°)   PgUp/PgDn: altura   +/- ou Ctrl+roda: tamanho   R: zera giro/tamanho   Del: apaga   Ctrl+D: duplica\n" \
-	+ "Ctrl+Z/Ctrl+Y: desfaz/refaz   Ctrl+S: salva   G: grade   F: foca   T: de cima   WASD: anda   Botão dir.: gira   Meio: arrasta   Esc: solta"
 
 ## A fase aberta (raiz da cena) e o arquivo dela.
 var level: Node3D
 var level_path: String = ""
 var selection: Array[Node3D] = []
 var dirty: bool = false
-var snap: bool = false
-var grid: float = 0.5
+## Grade: ligada por padrão; prédios encaixam pela pegada.
+var snap: bool = true
+var grid: float = 1.0
+var library: EditorLibrary
 
 var _undo: Array[Dictionary] = []
 var _redo: Array[Dictionary] = []
 var _placing: String = ""
+var _entry: Dictionary = {}
 var _ghost: Node3D
 var _ghost_yaw: float = 0.0
 var _ghost_scale: float = 1.0
+var _ghost_ok: bool = true
 var _press_pos: Vector2
 var _pressing: bool = false
 var _dragging: bool = false
 var _boxing: bool = false
 var _drag_hit: Vector3
 var _drag_from: Array[Transform3D] = []
+var _drag_center: Vector3
 var _labels: Array[Dictionary] = []
 var _syncing_tree: bool = false
 var _hud_was_visible: bool = true
 var _levels: PackedStringArray = []
 var _after_confirm: Callable
 var _section_box: VBoxContainer
+var _recent: Array[String] = []
+var _category: String = ""
+var _mouse: Vector2
+var _size_label: Label3D
+## Câmeras da fase que estavam "atuais" no arquivo (a do jogo): o editor usa a dele e devolve isso ao salvar.
+var _level_cameras: Array[Camera3D] = []
+## A pegada pintada no chão (verde = livre, vermelho = batendo, amarelo = escolhida).
+var _footprint_fill: MeshInstance3D
+
+# interface (montada em _build_ui)
+var _ui: Control
+var _level_pick: OptionButton
+var _status: Label
+var _search: LineEdit
+var _chips: HFlowContainer
+var _pack_pick: OptionButton
+var _items: ItemList
+var _tree: Tree
+var _inspector: VBoxContainer
+var _box: Panel
+var _toast: Label
+var _hints: HBoxContainer
+var _snap_button: CheckButton
+var _grid_pick: OptionButton
+var _new_dialog: ConfirmationDialog
+var _new_name: LineEdit
+var _confirm: ConfirmationDialog
 
 @onready var _world: Node3D = $World
 @onready var _camera: EditorCamera = $Camera
 @onready var _overlay: Node3D = $Overlay
 @onready var _lines: MeshInstance3D = $Overlay/Lines
-@onready var _level_pick: OptionButton = %LevelPick
-@onready var _status: Label = %Status
-@onready var _catalog: VBoxContainer = %Catalog
-@onready var _tree: Tree = $UI/Root/Left/Tabs/Cena
-@onready var _inspector: VBoxContainer = %Inspector
-@onready var _box: Panel = %Box
-@onready var _toast: Label = %Toast
-@onready var _help: Label = %Help
-@onready var _snap_button: CheckButton = %Snap
-@onready var _new_dialog: ConfirmationDialog = %NewDialog
-@onready var _new_name: LineEdit = %NewName
-@onready var _confirm: ConfirmationDialog = %Confirm
+@onready var _grid_mesh: MeshInstance3D = $Overlay/Grade
 
 
 func _ready() -> void:
 	Level.editing = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	_help.text = HELP
+	library = EditorLibrary.new()
 	_lines.mesh = ImmediateMesh.new()
 	var line_mat := StandardMaterial3D.new()
 	line_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	line_mat.no_depth_test = true
 	line_mat.vertex_color_use_as_albedo = true
+	line_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_lines.material_override = line_mat
-	_build_catalog()
-	%Save.pressed.connect(save)
-	%Undo.pressed.connect(undo)
-	%Redo.pressed.connect(redo)
-	%LevelProps.pressed.connect(func() -> void: select_nodes([level]))
-	%TopView.pressed.connect(_camera.toggle_top_view)
-	%Test.pressed.connect(test_level)
-	%NewLevel.pressed.connect(_ask_new_level)
-	%Exit.pressed.connect(func() -> void: _leave(Game.go_to_title))
-	_snap_button.toggled.connect(func(on: bool) -> void: snap = on)
-	var grid_spin := SpinBox.new()
-	grid_spin.min_value = 0.25
-	grid_spin.max_value = 8.0
-	grid_spin.step = 0.25
-	grid_spin.value = grid
-	grid_spin.suffix = "m"
-	grid_spin.tooltip_text = "Tamanho da grade (as peças de casa dos kits encaixam em 2 m)"
-	grid_spin.value_changed.connect(func(v: float) -> void: grid = v)
-	_snap_button.get_parent().add_child(grid_spin)
-	_snap_button.get_parent().move_child(grid_spin, _snap_button.get_index() + 1)
-	_level_pick.item_selected.connect(_on_level_picked)
-	_tree.item_selected.connect(_on_tree_selected)
-	_new_dialog.confirmed.connect(_create_level)
-	_confirm.confirmed.connect(func() -> void: _after_confirm.call())
-	for button: Node in find_children("*", "BaseButton", true, false):
-		(button as BaseButton).focus_mode = Control.FOCUS_NONE
+	var plane := PlaneMesh.new()
+	plane.size = Vector2(60, 60)
+	_grid_mesh.mesh = plane
+	var grid_mat := ShaderMaterial.new()
+	grid_mat.shader = load("res://editor/grade.gdshader")
+	_grid_mesh.material_override = grid_mat
+	_size_label = Label3D.new()
+	_size_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	_size_label.no_depth_test = true
+	_size_label.fixed_size = true
+	_size_label.pixel_size = 0.001
+	_size_label.font_size = 26
+	_size_label.outline_size = 8
+	_size_label.modulate = Color(1, 0.92, 0.6)
+	_overlay.add_child(_size_label)
+	_footprint_fill = MeshInstance3D.new()
+	var quad := PlaneMesh.new()
+	quad.size = Vector2.ONE
+	_footprint_fill.mesh = quad
+	var fill_mat := StandardMaterial3D.new()
+	fill_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	fill_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	fill_mat.no_depth_test = true
+	fill_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_footprint_fill.material_override = fill_mat
+	_footprint_fill.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_overlay.add_child(_footprint_fill)
+	_build_ui()
 	var path := Game.edit_level if Game.edit_level != "" else Game.ARANDU
 	if Game.edit_draft != "" and FileAccess.file_exists(Game.edit_draft):
 		open_level(path, Game.edit_draft)
@@ -209,12 +150,295 @@ func _ready() -> void:
 	else:
 		open_level(path)
 	Game.edit_draft = ""
+	_build_inspector()
 	_update_status()
+	_update_hints()
 
 
 func _exit_tree() -> void:
 	Level.editing = false
 	_free_orphans()
+
+
+# --- interface ------------------------------------------------------------------------------
+
+func _build_ui() -> void:
+	var layer := $UI as CanvasLayer
+	_ui = Control.new()
+	_ui.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_ui.theme = load("res://ui/theme/journey_theme.tres")
+	layer.add_child(_ui)
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.09, 0.07, 0.06, 0.94)
+	panel_style.border_color = Color(0.55, 0.36, 0.2, 0.8)
+	panel_style.set_border_width_all(1)
+	panel_style.set_corner_radius_all(6)
+	panel_style.set_content_margin_all(8)
+
+	# barra de cima
+	var top := PanelContainer.new()
+	top.add_theme_stylebox_override("panel", panel_style)
+	top.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	top.offset_left = 8
+	top.offset_top = 8
+	top.offset_right = -8
+	top.offset_bottom = 56
+	_ui.add_child(top)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	top.add_child(row)
+	_level_pick = OptionButton.new()
+	_level_pick.custom_minimum_size.x = 160
+	_level_pick.tooltip_text = "Fase aberta"
+	_level_pick.item_selected.connect(_on_level_picked)
+	row.add_child(_level_pick)
+	_tool_button(row, "Nova fase", "Começa uma fase nova, só com chão e sol", _ask_new_level)
+	row.add_child(VSeparator.new())
+	_tool_button(row, "Salvar", "Grava a fase (Ctrl+S)", func() -> void: save())
+	_tool_button(row, "↶ Desfazer", "Ctrl+Z", undo)
+	_tool_button(row, "↷ Refazer", "Ctrl+Y", redo)
+	row.add_child(VSeparator.new())
+	_snap_button = CheckButton.new()
+	_snap_button.text = "Grade"
+	_snap_button.button_pressed = snap
+	_snap_button.tooltip_text = "Encaixar na grade (G). Prédios encaixam pela pegada: a borda na linha, o centro no meio das células."
+	_snap_button.toggled.connect(func(on: bool) -> void:
+		snap = on
+		_update_hints())
+	row.add_child(_snap_button)
+	_grid_pick = OptionButton.new()
+	for g: float in GRIDS:
+		_grid_pick.add_item(("%s m" % str(g)).replace(".", ","))
+	_grid_pick.select(GRIDS.find(grid))
+	_grid_pick.tooltip_text = "Tamanho da célula ([ e ] trocam). As peças de casa dos kits encaixam em 2 m."
+	_grid_pick.item_selected.connect(func(i: int) -> void: set_grid(GRIDS[i]))
+	row.add_child(_grid_pick)
+	_tool_button(row, "Vista de cima", "T", func() -> void: _camera.toggle_top_view())
+	_tool_button(row, "Propriedades da fase", "Nome, música, sol e céu da fase", func() -> void: select_nodes([level]))
+	row.add_child(VSeparator.new())
+	_tool_button(row, "▶ Testar", "Joga a fase como está agora, sem salvar (F2 lá volta para cá)", test_level)
+	_tool_button(row, "Sair", "Volta para a tela inicial", func() -> void: _leave(Game.go_to_title))
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(spacer)
+	_status = Label.new()
+	_status.add_theme_font_size_override("font_size", 14)
+	_status.add_theme_color_override("font_color", Color(1, 0.9, 0.75, 0.8))
+	row.add_child(_status)
+
+	# esquerda: biblioteca e lista da fase
+	var left := PanelContainer.new()
+	left.add_theme_stylebox_override("panel", panel_style)
+	left.set_anchors_preset(Control.PRESET_LEFT_WIDE)
+	left.offset_left = 8
+	left.offset_top = 64
+	left.offset_right = 392
+	left.offset_bottom = -58
+	_ui.add_child(left)
+	var tabs := TabContainer.new()
+	left.add_child(tabs)
+	var lib_box := VBoxContainer.new()
+	lib_box.name = "Biblioteca"
+	lib_box.add_theme_constant_override("separation", 6)
+	tabs.add_child(lib_box)
+	_search = LineEdit.new()
+	_search.placeholder_text = "Buscar (ex.: porta, barril, árvore, telhado)"
+	_search.clear_button_enabled = true
+	_search.text_changed.connect(func(_t: String) -> void: _fill_items())
+	lib_box.add_child(_search)
+	_chips = HFlowContainer.new()
+	_chips.add_theme_constant_override("h_separation", 4)
+	_chips.add_theme_constant_override("v_separation", 4)
+	lib_box.add_child(_chips)
+	var chip_group := ButtonGroup.new()
+	for c: String in ["Recentes"] + library.categories:
+		var chip := Button.new()
+		chip.text = c
+		chip.toggle_mode = true
+		chip.button_group = chip_group
+		chip.focus_mode = Control.FOCUS_NONE
+		chip.add_theme_font_size_override("font_size", 13)
+		chip.pressed.connect(func() -> void:
+			_category = c
+			_search.text = ""
+			_fill_items())
+		_chips.add_child(chip)
+		if c == "Prédios":
+			chip.button_pressed = true
+			_category = c
+	_pack_pick = OptionButton.new()
+	_pack_pick.add_item("Todos os pacotes")
+	for pack: String in library.acervo_packs:
+		_pack_pick.add_item(pack)
+	_pack_pick.visible = false
+	_pack_pick.tooltip_text = "Pacote do acervo (o acervo é grande: escolha um pacote ou busque)"
+	_pack_pick.item_selected.connect(func(_i: int) -> void: _fill_items())
+	lib_box.add_child(_pack_pick)
+	_items = ItemList.new()
+	_items.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_items.icon_mode = ItemList.ICON_MODE_TOP
+	_items.fixed_icon_size = Vector2i(96, 96)
+	_items.max_columns = 0
+	_items.fixed_column_width = 108
+	_items.same_column_width = true
+	_items.max_text_lines = 2
+	_items.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	_items.add_theme_font_size_override("font_size", 13)
+	_items.focus_mode = Control.FOCUS_NONE
+	_items.item_selected.connect(func(i: int) -> void:
+		var key := String(_items.get_item_metadata(i))
+		start_placing(key if key != _placing else ""))
+	lib_box.add_child(_items)
+	_tree = Tree.new()
+	_tree.name = "Na fase"
+	_tree.item_selected.connect(_on_tree_selected)
+	tabs.add_child(_tree)
+
+	# direita: propriedades
+	var right := PanelContainer.new()
+	right.add_theme_stylebox_override("panel", panel_style)
+	right.set_anchors_preset(Control.PRESET_RIGHT_WIDE)
+	right.offset_left = -392
+	right.offset_top = 64
+	right.offset_right = -8
+	right.offset_bottom = -58
+	_ui.add_child(right)
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	right.add_child(scroll)
+	_inspector = VBoxContainer.new()
+	_inspector.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_inspector.add_theme_constant_override("separation", 4)
+	scroll.add_child(_inspector)
+
+	# embaixo: teclas do que dá para fazer agora
+	var bottom := PanelContainer.new()
+	bottom.add_theme_stylebox_override("panel", panel_style)
+	bottom.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	bottom.offset_left = 8
+	bottom.offset_top = -50
+	bottom.offset_right = -8
+	bottom.offset_bottom = -8
+	bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_ui.add_child(bottom)
+	_hints = HBoxContainer.new()
+	_hints.add_theme_constant_override("separation", 18)
+	_hints.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bottom.add_child(_hints)
+
+	_box = Panel.new()
+	var box_style := StyleBoxFlat.new()
+	box_style.bg_color = Color(1, 0.82, 0.3, 0.12)
+	box_style.border_color = Color(1, 0.82, 0.3, 0.9)
+	box_style.set_border_width_all(1)
+	_box.add_theme_stylebox_override("panel", box_style)
+	_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_box.visible = false
+	_ui.add_child(_box)
+	_toast = Label.new()
+	_toast.theme_type_variation = &"ToastLabel"
+	_toast.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_toast.offset_top = 72
+	_toast.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_toast.modulate.a = 0.0
+	_toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_ui.add_child(_toast)
+
+	_new_dialog = ConfirmationDialog.new()
+	_new_dialog.title = "Nova fase"
+	var form := VBoxContainer.new()
+	var hint := Label.new()
+	hint.text = "Nome da fase (vira a pasta levels/<nome>/):"
+	form.add_child(hint)
+	_new_name = LineEdit.new()
+	_new_name.placeholder_text = "Floresta de Novazul"
+	form.add_child(_new_name)
+	_new_dialog.add_child(form)
+	_new_dialog.confirmed.connect(_create_level)
+	layer.add_child(_new_dialog)
+	_confirm = ConfirmationDialog.new()
+	_confirm.title = "Sair sem salvar?"
+	_confirm.confirmed.connect(func() -> void: _after_confirm.call())
+	layer.add_child(_confirm)
+	_fill_items()
+
+
+func _tool_button(parent: Control, text: String, tip: String, action: Callable) -> Button:
+	var button := Button.new()
+	button.text = text
+	button.tooltip_text = tip
+	button.focus_mode = Control.FOCUS_NONE
+	button.pressed.connect(action)
+	parent.add_child(button)
+	return button
+
+
+## Mostra as peças da categoria escolhida (ou o resultado da busca, em todas as categorias).
+func _fill_items() -> void:
+	if _items == null:
+		return
+	_items.clear()
+	var list: Array = []
+	if _search.text.strip_edges() != "":
+		list = library.search(_search.text)
+	elif _category == "Recentes":
+		for key: String in _recent:
+			if library.by_key.has(key):
+				list.append(library.by_key[key])
+	else:
+		list = library.entries.get(_category, [])
+	var acervo := _category == EditorLibrary.ACERVO_CATEGORY and _search.text.strip_edges() == ""
+	_pack_pick.visible = acervo
+	if acervo and _pack_pick.selected > 0:
+		var pack := _pack_pick.get_item_text(_pack_pick.selected)
+		list = list.filter(func(e: Dictionary) -> bool: return e.get("pacote", "") == pack)
+	if list.size() > 400:
+		list = list.slice(0, 400)  # o resto aparece pela busca ou pelo filtro de pacote
+	for entry: Dictionary in list:
+		var icon_path := EditorLibrary.icon_path(entry["key"])
+		var icon: Texture2D = load(icon_path) if ResourceLoader.exists(icon_path) else null
+		var i := _items.add_item(String(entry["nome"]), icon)
+		_items.set_item_metadata(i, entry["key"])
+		_items.set_item_tooltip(i, "%s\n%s" % [entry["nome"], entry["dica"]] if String(entry["dica"]) != "" else String(entry["nome"]))
+		if entry["key"] == _placing:
+			_items.select(i)
+
+
+## Teclas do que dá para fazer agora (barra de baixo).
+func _update_hints() -> void:
+	if _hints == null:
+		return
+	for child: Node in _hints.get_children():
+		child.queue_free()
+	var list: Array = []
+	if _placing != "":
+		list = [[["Clique"], "coloca"], [["Q", "E"], "gira 90°"], [["Shift"], "+ roda: gira 15°"], [["Ctrl"], "+ roda: tamanho"],
+			[["Alt"], "solta da grade"], [["Esc"], "para de colocar"]]
+	elif not selection.is_empty() and not (selection.size() == 1 and selection[0] == level):
+		list = [[["Arrastar"], "move"], [["Q", "E"], "gira 90°"], [["←", "→", "↑", "↓"], "anda 1 célula"], [["C"], "centraliza na grade"],
+			[["Del"], "apaga"], [["Ctrl", "D"], "duplica"], [["F"], "foca"], [["Esc"], "solta"]]
+	else:
+		list = [[["Clique"], "escolhe uma peça"], [["Arrastar"], "escolhe várias"], [["W", "A", "S", "D"], "anda"], [["Botão dir."], "gira a câmera"],
+			[["Roda"], "aproxima"], [["G"], "grade %s" % ("ligada" if snap else "desligada")], [["T"], "de cima"], [["Ctrl", "Z"], "desfaz"]]
+	for entry: Array in list:
+		var item := HBoxContainer.new()
+		item.add_theme_constant_override("separation", 3)
+		item.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		for key: String in entry[0]:
+			item.add_child(OptionsMenu.keycap(key))
+		var text := Label.new()
+		text.text = " " + String(entry[1])
+		text.add_theme_font_size_override("font_size", 14)
+		item.add_child(text)
+		_hints.add_child(item)
+
+
+func set_grid(size: float) -> void:
+	grid = size
+	if _grid_pick:
+		_grid_pick.select(GRIDS.find(size))
+	_toast_text(("Grade de %s m" % str(size)).replace(".", ","))
 
 
 # --- abrir, salvar, testar ------------------------------------------------------------------
@@ -235,7 +459,12 @@ func open_level(path: String, source: String = "") -> void:
 		_toast_text("Não consegui abrir %s" % path)
 		return
 	level = scene.instantiate(PackedScene.GEN_EDIT_STATE_MAIN) as Node3D
+	_level_cameras.clear()
+	for found: Node in level.find_children("*", "Camera3D", true, false):
+		if (found as Camera3D).current:
+			_level_cameras.append(found as Camera3D)
 	_world.add_child(level)
+	_camera.camera.make_current()  # a câmera do jogo (CameraRig) vem marcada como atual e roubava a vista
 	level_path = path
 	Game.edit_level = path
 	dirty = false
@@ -259,7 +488,8 @@ func save(path: String = "") -> Error:
 		return err
 	if path == level_path:
 		dirty = false
-		_toast_text("Salvo em %s" % path)
+		var promoted := promote_acervo(path)
+		_toast_text("Salvo em %s%s" % [path, ("  (%d modelo(s) do acervo copiados para o projeto)" % promoted) if promoted > 0 else ""])
 	_update_status()
 	return OK
 
@@ -274,12 +504,56 @@ func test_level() -> void:
 	Game.test_level(Game.EDITOR_DRAFT)
 
 
+## Modelos do acervo (fora do Git) usados na fase: copia cada um para assets/kits/polypizza/<pacote>/
+## (que vai para o Git), troca o caminho no arquivo salvo e anota o crédito do autor. Devolve quantos copiou.
+func promote_acervo(path: String) -> int:
+	var text := FileAccess.get_file_as_string(path)
+	if not text.contains(EditorLibrary.ACERVO):
+		return 0
+	var regex := RegEx.new()
+	regex.compile('\\[ext_resource type="PackedScene"( uid="[^"]*")? path="(res://assets/acervo/([^/"]+)/([^"]+))"')
+	var count := 0
+	var credits: PackedStringArray = []
+	for m: RegExMatch in regex.search_all(text):
+		var old := m.get_string(2)
+		var target := "res://assets/kits/polypizza/%s/%s" % [m.get_string(3), m.get_string(4)]
+		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(target.get_base_dir()))
+		if not FileAccess.file_exists(target):
+			DirAccess.copy_absolute(ProjectSettings.globalize_path(old), ProjectSettings.globalize_path(target))
+		text = text.replace(m.get_string(0), '[ext_resource type="PackedScene" path="%s"' % target)
+		text = text.replace('"' + old + '"', '"' + target + '"')
+		var entry: Dictionary = library.by_key.get(old, {})
+		if not entry.is_empty():
+			credits.append("- %s (%s): %s — %s" % [entry.get("autor", ""), entry.get("licenca", ""), entry.get("nome", ""), target])
+		count += 1
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	file.store_string(text)
+	file.close()
+	if not credits.is_empty():
+		var credit_path := "res://assets/kits/polypizza/CREDITOS.md"
+		var old_credits := FileAccess.get_file_as_string(credit_path) if FileAccess.file_exists(credit_path) else ""
+		var add: PackedStringArray = []
+		for line: String in credits:
+			if not old_credits.contains(line):
+				add.append(line)
+		if not add.is_empty():
+			var cf := FileAccess.open(credit_path, FileAccess.WRITE)
+			cf.store_string(old_credits.rstrip("\n") + ("\n\n## Do acervo (D043)\n" if not old_credits.contains("## Do acervo") else "\n") + "\n".join(add) + "\n")
+			cf.close()
+	return count
+
+
 func _write(path: String) -> Error:
 	var hud := level.get_node_or_null("HUD") as CanvasLayer
 	if hud:
 		hud.visible = _hud_was_visible
+	for cam: Camera3D in _level_cameras:
+		if is_instance_valid(cam):
+			cam.current = true
 	var packed := PackedScene.new()
 	var err := packed.pack(level)
+	_camera.camera.make_current()
+	_camera.camera.make_current.call_deferred()  # a troca de câmera da fase também chega um quadro depois
 	if hud:
 		hud.visible = false
 	if err != OK:
@@ -327,7 +601,7 @@ func _on_level_picked(index: int) -> void:
 
 func _ask_new_level() -> void:
 	_new_name.text = ""
-	_new_dialog.popup_centered()
+	_new_dialog.popup_centered(Vector2i(420, 140))
 	_new_name.grab_focus()
 
 
@@ -345,7 +619,7 @@ func _create_level() -> void:
 	_leave(func() -> void:
 		var fresh := (ResourceLoader.load(TEMPLATE, "", ResourceLoader.CACHE_MODE_REPLACE) as PackedScene).instantiate(PackedScene.GEN_EDIT_STATE_MAIN)
 		for child: Node in fresh.get_children():
-			if not (SYSTEM.has(String(child.name)) or child.name == &"PlayerSpawn"):
+			if not (SYSTEM.has(String(child.name)) or child.name == &"PlayerSpawn") or child.name in [&"Grama", &"Smoke", &"Missoes"]:
 				fresh.remove_child(child)
 				child.free()
 		var ground := fresh.get_node_or_null("Ground")
@@ -358,6 +632,7 @@ func _create_level() -> void:
 		fresh.set("chapter_title", title)
 		fresh.set("intro_lines", PackedStringArray([title + "."]))
 		fresh.set("start_story", "")
+		fresh.set("cena_de_abertura", null)
 		var packed := PackedScene.new()
 		packed.pack(fresh)
 		fresh.free()
@@ -366,106 +641,16 @@ func _create_level() -> void:
 			_toast_text("Não deu para criar a fase (só rodando pelo Godot)")
 			return
 		open_level(path)
-		_toast_text("Fase nova: %s. Coloque peças pelo catálogo e salve." % path))
+		_toast_text("Fase nova: %s. Pegue peças na Biblioteca e salve." % path))
 
 
-# --- peças do catálogo ----------------------------------------------------------------------
+# --- colocar peças --------------------------------------------------------------------------
 
-func _build_catalog() -> void:
-	var search := LineEdit.new()
-	search.placeholder_text = "Buscar peça (ex.: porta, telhado, barril)"
-	search.clear_button_enabled = true
-	search.text_changed.connect(_filter_catalog)
-	_catalog.add_child(search)
-	var by_category: Dictionary[String, Array] = {}
-	var order: Array[String] = []
-	var files: Array[String] = []
-	for file: String in DirAccess.get_files_at(PROPS_DIR):
-		if file.ends_with(".tscn"):
-			files.append(file.get_basename())
-	var keys: Array[String] = []
-	keys.assign(CATALOG.keys())
-	for file: String in files:
-		if not keys.has(file):
-			keys.append(file)
-	for key: String in keys:
-		if not files.has(key):
-			continue
-		var category := String(CATALOG[key][1]) if CATALOG.has(key) else "Outras"
-		if not by_category.has(category):
-			by_category[category] = []
-			order.append(category)
-		by_category[category].append(key)
-	for category: String in order:
-		var entries: Array = []
-		for key: String in by_category[category]:
-			entries.append([key, String(CATALOG[key][0]) if CATALOG.has(key) else key.capitalize(),
-				(String(CATALOG[key][4]) + "\n" if CATALOG.has(key) else "") + PROPS_DIR + key + ".tscn"])
-		_add_catalog_section(category, entries, false)
-	for dir: String in KITS:
-		var entries: Array = []
-		for file: String in DirAccess.get_files_at(dir):
-			if file.ends_with(".gltf") or file.ends_with(".glb"):
-				entries.append([dir + file, file.get_basename().replace("_", " "), dir + file])
-		if not entries.is_empty():
-			_add_catalog_section(String(KITS[dir][0]) + " (%d)" % entries.size(), entries, true)
-
-
-func _add_catalog_section(title: String, entries: Array, folded: bool) -> void:
-	var header := Button.new()
-	header.text = ("▸ " if folded else "▾ ") + title
-	header.flat = true
-	header.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	header.focus_mode = Control.FOCUS_NONE
-	header.add_theme_color_override("font_color", Color(1.0, 0.78, 0.45))
-	header.set_meta("header", true)
-	_catalog.add_child(header)
-	var grid_box := GridContainer.new()
-	grid_box.columns = 2
-	grid_box.visible = not folded
-	_catalog.add_child(grid_box)
-	header.pressed.connect(func() -> void:
-		grid_box.visible = not grid_box.visible
-		header.text = ("▾ " if grid_box.visible else "▸ ") + title)
-	for entry: Array in entries:
-		var key: String = entry[0]
-		var button := Button.new()
-		button.text = entry[1]
-		button.toggle_mode = true
-		button.focus_mode = Control.FOCUS_NONE
-		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		button.clip_text = true
-		button.tooltip_text = entry[2]
-		button.set_meta("key", key)
-		button.set_meta("search", (String(entry[1]) + " " + key).to_lower())
-		button.pressed.connect(func() -> void: start_placing(key if _placing != key else ""))
-		grid_box.add_child(button)
-
-
-## Busca no catálogo: mostra só as peças com esse texto (e abre as categorias que têm alguma).
-func _filter_catalog(text: String) -> void:
-	var query := text.strip_edges().to_lower()
-	var children := _catalog.get_children()
-	for i: int in children.size():
-		var grid_box := children[i] as GridContainer
-		if grid_box == null:
-			continue
-		var any := false
-		for child: Node in grid_box.get_children():
-			var button := child as Button
-			button.visible = query == "" or String(button.get_meta("search", "")).contains(query)
-			any = any or button.visible
-		var header := children[i - 1] as Button
-		if query != "":
-			grid_box.visible = any
-			header.visible = any
-		else:
-			header.visible = true
-			grid_box.visible = not header.text.begins_with("▸")
-
-
-func _scene_path(key: String) -> String:
-	return key if key.begins_with("res://") else PROPS_DIR + key + ".tscn"
+func _entry_of(key: String) -> Dictionary:
+	var path := key if key.begins_with("res://") else EditorLibrary.PROPS + key + ".tscn"
+	if library.by_key.has(path):
+		return library.by_key[path]
+	return {"key": path, "nome": path.get_file().get_basename(), "dica": "", "grupo": "Props", "varia": false, "escala": 1.0, "estrutura": false}
 
 
 ## Começa a colocar uma peça: ela segue o mouse; clique coloca (pode colocar várias), Esc para.
@@ -473,76 +658,80 @@ func start_placing(key: String) -> void:
 	_cancel_placing()
 	if key == "":
 		return
-	_placing = key
+	select_nodes([])
+	_entry = _entry_of(key)
+	_placing = String(_entry["key"])
 	_ghost_yaw = 0.0
 	_ghost_scale = 1.0
-	_ghost = (load(_scene_path(key)) as PackedScene).instantiate() as Node3D
+	_ghost = (load(_placing) as PackedScene).instantiate() as Node3D
 	_overlay.add_child(_ghost)
 	for body: Node in _ghost.find_children("*", "CollisionObject3D", true, false):
 		(body as CollisionObject3D).collision_layer = 0
+	_ghost.visible = false
 	_vary_ghost()
-	_sync_catalog_buttons()
-	_toast_text("Clique no mapa para colocar. Q/E gira. Esc para.")
+	if _entry.get("acervo", false):
+		_overlay.remove_child(_ghost)
+		_world.add_child(_ghost)  # medir precisa da peça na árvore
+		var size := _bounds(_ghost).get_longest_axis_size()
+		_world.remove_child(_ghost)
+		_overlay.add_child(_ghost)
+		if size > 40.0 or size < 0.08:
+			_ghost_scale = 2.0 / maxf(size, 0.001)  # tamanho maluco: começa com uns 2 m (+/- ou Ctrl+roda ajusta)
+			_vary_ghost_keep()
+	_recent.erase(_placing)
+	_recent.push_front(_placing)
+	_recent = _recent.slice(0, 24)
+	_update_hints()
 
 
-## Coloca uma peça do catálogo neste ponto (é o que o clique faz). Devolve a peça colocada.
+## Coloca uma peça neste ponto (é o que o clique faz; os testes chamam direto). Devolve a peça colocada.
 func place(key: String, at: Vector3, yaw: float = 0.0, size: float = 1.0) -> Node3D:
-	var scene := load(_scene_path(key)) as PackedScene
+	var entry := _entry_of(key)
+	var scene := load(String(entry["key"])) as PackedScene
 	var piece := scene.instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node3D
-	var parent := _container_for(key)
+	var parent := _container_for(entry)
 	parent.add_child(piece, true)
 	piece.owner = level
-	piece.global_transform = Transform3D(Basis(Vector3.UP, yaw).scaled(Vector3.ONE * size), _snapped(at))
-	if key.begins_with("res://") and _kit_collides(key, piece):
+	piece.global_transform = Transform3D(Basis(Vector3.UP, yaw).scaled(Vector3.ONE * size * float(entry["escala"])), at)
+	if not String(entry["key"]).begins_with(EditorLibrary.PROPS) and _kit_collides(entry, piece):
 		piece.add_to_group("colisao_auto", true)  # a fase dá colisão do formato da peça
 	_push({"kind": "add", "nodes": [piece], "parents": [parent], "indexes": [piece.get_index()], "owned": [_owned_paths(piece)]})
 	dirty = true
 	_refresh_all()
-	select_nodes([piece])
 	return piece
 
 
 func _cancel_placing() -> void:
 	_placing = ""
+	_entry = {}
 	if _ghost:
 		_ghost.queue_free()
 		_ghost = null
-	if is_node_ready():
-		_sync_catalog_buttons()
+	if _items:
+		_items.deselect_all()
+	_update_hints()
 
 
 func _vary_ghost() -> void:
-	if CATALOG.has(_placing) and CATALOG[_placing][3]:
+	if _entry.get("varia", false):
 		_ghost_yaw = randf() * TAU
-		_ghost_scale = randf_range(0.8, 1.25)
+		_ghost_scale = randf_range(0.85, 1.2)
 	if _ghost:
-		_ghost.scale = Vector3.ONE * _ghost_scale
-		_ghost.rotation.y = _ghost_yaw
+		_ghost.basis = Basis(Vector3.UP, _ghost_yaw).scaled(Vector3.ONE * _ghost_scale * float(_entry.get("escala", 1.0)))
 
 
-func _sync_catalog_buttons() -> void:
-	for node: Node in _catalog.find_children("*", "Button", true, false):
-		var button := node as Button
-		button.set_pressed_no_signal(String(button.get_meta("key", "")) == _placing)
-
-
-## Peça solta de kit: paredes e móveis ganham colisão; plantas e coisas pequenas, não.
-func _kit_collides(path: String, piece: Node3D) -> bool:
-	var file := path.get_file()
-	if path.contains("/natureza/"):
+## Peça solta de kit: estruturas grandes ganham colisão; plantas e coisas pequenas, não.
+func _kit_collides(entry: Dictionary, piece: Node3D) -> bool:
+	var file := String(entry["key"]).get_file()
+	if String(entry["key"]).contains("/natureza/"):
 		return file.begins_with("Rock_") or file.begins_with("DeadTree") or file.begins_with("TwistedTree")
 	var box := _bounds(piece)
 	return maxf(box.size.x, maxf(box.size.y, box.size.z)) >= KIT_MIN_COLLISION
 
 
 ## O grupo da fase onde a peça entra (cria o grupo se a fase ainda não tem).
-func _container_for(key: String) -> Node3D:
-	var group_name := String(CATALOG[key][2]) if CATALOG.has(key) else "Props"
-	for dir: String in KITS:
-		if key.begins_with(dir):
-			group_name = String(KITS[dir][1])
-			if dir.ends_with("natureza/") and key.get_file().begins_with("Rock"):
-				group_name = "Rocks"
+func _container_for(entry: Dictionary) -> Node3D:
+	var group_name := String(entry.get("grupo", "Props"))
 	var found := level.get_node_or_null(group_name) as Node3D
 	if found:
 		return found
@@ -553,6 +742,62 @@ func _container_for(key: String) -> Node3D:
 	if NAV_GROUPS.has(group_name):
 		created.add_to_group("nav_source", true)
 	return created
+
+
+# --- grade: encaixe pela pegada ---------------------------------------------------------------
+
+## Centro de uma pegada de tamanho `size` perto de `x` na grade: se cabe um número ímpar de células, o
+## centro fica no meio de uma célula; se par, numa linha. Assim as bordas sempre caem nas linhas.
+func _snap_axis(x: float, size: float) -> float:
+	var cells := maxi(1, roundi(size / grid))
+	if cells % 2 == 1:
+		return (floorf(x / grid) + 0.5) * grid
+	return roundf(x / grid) * grid
+
+
+## Onde a peça deve ficar para a pegada dela encaixar na grade com o centro perto de `point`.
+## Devolve a origem nova (o y continua o de `point`).
+func snap_piece(piece: Node3D, point: Vector3) -> Vector3:
+	var box := _bounds(piece)
+	var offset := box.get_center() - piece.global_position
+	offset.y = 0.0
+	var center := point + offset
+	if snap:
+		center = Vector3(_snap_axis(center.x, box.size.x), center.y, _snap_axis(center.z, box.size.z))
+	return center - offset
+
+
+## Centraliza as peças escolhidas na grade (pela pegada de cada uma).
+func center_selection() -> void:
+	var was := snap
+	snap = true
+	_transform_selection(func(n: Node3D) -> Transform3D:
+		var xf := n.transform
+		var target := snap_piece(n, n.global_position)
+		var parent := n.get_parent_node_3d()
+		xf.origin = parent.global_transform.affine_inverse() * target if parent else target
+		return xf)
+	snap = was
+
+
+## A pegada (retângulo no chão) de uma peça.
+func _footprint(piece: Node3D) -> Rect2:
+	var box := _bounds(piece)
+	return Rect2(box.position.x, box.position.z, box.size.x, box.size.z)
+
+
+## A pegada bate em outra estrutura da fase? (coisa pequena, chão e plantas não contam)
+func _blocked(rect: Rect2, ignore: Array) -> bool:
+	var inner := rect.grow(-0.15)
+	for item: Node3D in items():
+		if ignore.has(item) or not item.is_visible_in_tree():
+			continue
+		var other := _footprint(item)
+		if other.size.x * other.size.y < 1.5 or other.size.x > 60.0 or other.size.y > 60.0:
+			continue
+		if inner.intersects(other.grow(-0.15)):
+			return true
+	return false
 
 
 # --- entrada (mouse e teclado) --------------------------------------------------------------
@@ -569,23 +814,34 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_mouse_button(event: InputEventMouseButton) -> void:
-	if event.ctrl_pressed and event.pressed and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
-		var factor := 1.08 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1.0 / 1.08
-		if _ghost:
-			_ghost_scale *= factor
-			_ghost.scale = Vector3.ONE * _ghost_scale
+	var wheel := event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]
+	if wheel and event.pressed and (event.ctrl_pressed or event.shift_pressed):
+		var up := event.button_index == MOUSE_BUTTON_WHEEL_UP
+		if event.shift_pressed:
+			var step := deg_to_rad(15.0) * (1.0 if up else -1.0)
+			if _ghost:
+				_ghost_yaw += step
+				_vary_ghost_keep()
+			else:
+				rotate_selection(step)
 		else:
-			scale_selection(factor)
+			var factor := 1.08 if up else 1.0 / 1.08
+			if _ghost:
+				_ghost_scale *= factor
+				_vary_ghost_keep()
+			else:
+				scale_selection(factor)
 		get_viewport().set_input_as_handled()
 		return
 	if event.button_index != MOUSE_BUTTON_LEFT:
 		return
 	if event.pressed:
 		if _placing != "":
-			var hit: Variant = _ground_hit(event.position)
-			if hit != null:
-				place(_placing, hit, _ghost_yaw, _ghost_scale)
+			if _ghost and _ghost.visible:
+				var piece := place(_placing, _ghost.global_position, _ghost_yaw, _ghost_scale)
+				_flash(piece)
 				_vary_ghost()
+				_toast_text("%s colocado%s" % [_entry.get("nome", ""), "" if _ghost_ok else " (está batendo em outra coisa)"])
 			return
 		_press_pos = event.position
 		_pressing = true
@@ -595,7 +851,7 @@ func _on_mouse_button(event: InputEventMouseButton) -> void:
 			if not event.shift_pressed:
 				select_nodes([])
 			return
-		if event.shift_pressed:
+		if event.shift_pressed or event.ctrl_pressed:
 			var now := selection.duplicate()
 			if now.has(picked):
 				now.erase(picked)
@@ -606,11 +862,12 @@ func _on_mouse_button(event: InputEventMouseButton) -> void:
 			return
 		if not selection.has(picked):
 			select_nodes([picked])
-		var hit: Variant = _ground_hit(event.position)
+		var hit: Variant = _ground_hit(event.position, selection)
 		_drag_hit = hit if hit != null else picked.global_position
 		_drag_from.clear()
 		for node: Node3D in selection:
 			_drag_from.append(node.global_transform)
+		_drag_center = _bounds(selection[0]).get_center()
 	else:
 		if _dragging:
 			var to: Array = []
@@ -639,12 +896,16 @@ func _on_mouse_button(event: InputEventMouseButton) -> void:
 		_box.visible = false
 
 
-func _on_mouse_motion(event: InputEventMouseMotion) -> void:
+func _vary_ghost_keep() -> void:
 	if _ghost:
-		var hit: Variant = _ground_hit(event.position)
-		_ghost.visible = hit != null
-		if hit != null:
-			_ghost.global_position = _snapped(hit)
+		_ghost.basis = Basis(Vector3.UP, _ghost_yaw).scaled(Vector3.ONE * _ghost_scale * float(_entry.get("escala", 1.0)))
+		_move_ghost()
+
+
+func _on_mouse_motion(event: InputEventMouseMotion) -> void:
+	_mouse = event.position
+	if _ghost:
+		_move_ghost()
 	if not _pressing or not (event.button_mask & MOUSE_BUTTON_MASK_LEFT):
 		return
 	if _boxing:
@@ -655,20 +916,45 @@ func _on_mouse_motion(event: InputEventMouseMotion) -> void:
 		return
 	if not _dragging and _press_pos.distance_to(event.position) < 5.0:
 		return
-	if selection.is_empty() or _drag_from.size() != selection.size():
+	if selection.is_empty() or _drag_from.size() != selection.size() or selection.has(level):
 		return
 	_dragging = true
-	var hit: Variant = _ground_hit(event.position)
+	var hit: Variant = _ground_hit(event.position, selection)
 	if hit == null:
 		return
 	var delta: Vector3 = (hit as Vector3) - _drag_hit
-	# a primeira peça "manda" na grade; as outras andam junto, do mesmo tanto
-	var lead := _drag_from[0].origin + delta
-	delta += _snapped(lead) - lead
+	delta.y = 0.0
+	# a primeira peça "manda" na grade (pela pegada); as outras andam junto, do mesmo tanto
+	if snap and not Input.is_key_pressed(KEY_ALT):
+		var box := _bounds(selection[0])
+		var center := _drag_center + delta
+		var snapped_center := Vector3(_snap_axis(center.x, box.size.x), center.y, _snap_axis(center.z, box.size.z))
+		delta += snapped_center - center
 	for i: int in selection.size():
 		var xf := _drag_from[i]
 		xf.origin += delta
 		selection[i].global_transform = xf
+
+
+## A peça que segue o mouse: encaixa a pegada na grade e pousa no que estiver embaixo
+## (estruturas ficam no chão; objetos podem ir em cima de mesa, balcão...).
+func _move_ghost() -> void:
+	var structure: bool = _entry.get("estrutura", false)
+	var hit: Variant = _ground_hit(_mouse, [], not structure)
+	_ghost.visible = hit != null
+	if hit == null:
+		return
+	var point: Vector3 = hit
+	_ghost.global_position = point
+	var was := snap
+	if Input.is_key_pressed(KEY_ALT):
+		snap = false
+	var target := snap_piece(_ghost, point)
+	snap = was
+	var ground: Variant = _surface_y(target, not structure)
+	target.y = float(ground) if ground != null else point.y
+	_ghost.global_position = target
+	_ghost_ok = not structure or not _blocked(_footprint(_ghost), [])
 
 
 func _on_key(event: InputEventKey) -> void:
@@ -689,20 +975,31 @@ func _on_key(event: InputEventKey) -> void:
 				duplicate_selection()
 			KEY_A:
 				select_nodes(items())
+			KEY_F:
+				_search.grab_focus()
 			_:
 				return
 		get_viewport().set_input_as_handled()
 		return
-	if event.echo and key not in [KEY_Q, KEY_E, KEY_PAGEUP, KEY_PAGEDOWN, KEY_EQUAL, KEY_PLUS, KEY_KP_ADD, KEY_MINUS, KEY_KP_SUBTRACT]:
+	var repeats := [KEY_Q, KEY_E, KEY_PAGEUP, KEY_PAGEDOWN, KEY_EQUAL, KEY_PLUS, KEY_KP_ADD, KEY_MINUS, KEY_KP_SUBTRACT, KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN]
+	if event.echo and key not in repeats:
 		return
 	match key:
 		KEY_Q, KEY_E:
-			var step := deg_to_rad(5.0 if fine else (90.0 if snap else 15.0)) * (1.0 if key == KEY_Q else -1.0)
+			var step := deg_to_rad(15.0 if fine else 90.0) * (1.0 if key == KEY_Q else -1.0)
 			if _ghost:
 				_ghost_yaw += step
-				_ghost.rotation.y = _ghost_yaw
+				_vary_ghost_keep()
 			else:
 				rotate_selection(step)
+		KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN:
+			if selection.is_empty():
+				return
+			var axes := _camera.ground_axes()
+			var dir: Vector3 = {KEY_LEFT: -axes[1], KEY_RIGHT: axes[1], KEY_UP: axes[0], KEY_DOWN: -axes[0]}[key]
+			# anda na direção da tela, mas sempre por um eixo do mundo (x ou z)
+			dir = Vector3(signf(dir.x), 0, 0) if absf(dir.x) > absf(dir.z) else Vector3(0, 0, signf(dir.z))
+			move_selection(dir * (grid if not fine else grid * 0.25))
 		KEY_PAGEUP, KEY_PAGEDOWN:
 			move_selection(Vector3.UP * (1.0 if fine else 0.25) * (1.0 if key == KEY_PAGEUP else -1.0))
 		KEY_EQUAL, KEY_PLUS, KEY_KP_ADD:
@@ -711,17 +1008,23 @@ func _on_key(event: InputEventKey) -> void:
 			scale_selection(1.0 / 1.1)
 		KEY_R:
 			_transform_selection(func(n: Node3D) -> Transform3D: return Transform3D(Basis(), n.transform.origin))
+		KEY_C:
+			center_selection()
+			_toast_text("Centralizado na grade")
 		KEY_DELETE, KEY_BACKSPACE:
 			delete_selection()
 		KEY_G:
 			_snap_button.button_pressed = not _snap_button.button_pressed
-			_toast_text("Grade de %s m: %s" % [grid, "ligada" if snap else "desligada"])
+			_toast_text("Grade %s" % ("ligada" if snap else "desligada"))
+		KEY_BRACKETLEFT, KEY_BRACKETRIGHT:
+			var i := clampi(GRIDS.find(grid) + (1 if key == KEY_BRACKETRIGHT else -1), 0, GRIDS.size() - 1)
+			set_grid(GRIDS[i])
 		KEY_T:
 			_camera.toggle_top_view()
 		KEY_F:
 			if not selection.is_empty():
 				var box := _bounds(selection[0])
-				_camera.focus(selection[0].global_position, maxf(box.get_longest_axis_size() * 2.5, 8.0))
+				_camera.focus(box.get_center(), maxf(box.get_longest_axis_size() * 2.5, 8.0))
 		KEY_ESCAPE:
 			if _placing != "":
 				_cancel_placing()
@@ -743,11 +1046,23 @@ func select_nodes(nodes: Array) -> void:
 			selection.append(node as Node3D)
 	_sync_tree_selection()
 	_build_inspector()
+	_update_hints()
+	_update_status()
 	selection_changed.emit()
 
 
 func rotate_selection(angle: float) -> void:
-	_transform_selection(func(n: Node3D) -> Transform3D: return n.transform.rotated_local(Vector3.UP, angle))
+	# gira em volta do centro da pegada (a peça não "anda" ao girar)
+	_transform_selection(func(n: Node3D) -> Transform3D:
+		var center := _bounds(n).get_center()
+		var parent := n.get_parent_node_3d()
+		var local_center := parent.global_transform.affine_inverse() * center if parent else center
+		var xf := n.transform
+		var turn := Transform3D(Basis(Vector3.UP, angle), Vector3.ZERO)
+		var rel := xf.origin - local_center
+		xf.origin = local_center + turn.basis * rel
+		xf.basis = turn.basis * xf.basis
+		return xf)
 
 
 func scale_selection(factor: float) -> void:
@@ -803,8 +1118,11 @@ func duplicate_selection() -> void:
 		_restore_owned(copy, paths)
 		for rel: NodePath in editable:
 			level.set_editable_instance(copy.get_node(rel), true)
-		var offset := _camera.ground_axes()[1] * maxf(grid * 2.0, 1.0)
-		copy.global_position += offset
+		# a cópia vai para o lado, encostada na original (largura da pegada), já na grade
+		var box := _bounds(node)
+		var right := _camera.ground_axes()[1]
+		var side := Vector3(signf(right.x), 0, 0) if absf(right.x) > absf(right.z) else Vector3(0, 0, signf(right.z))
+		copy.global_position += side * maxf(absf(box.size.dot(side)), grid)
 		copies.append(copy)
 		parents.append(copy.get_parent())
 		indexes.append(copy.get_index())
@@ -965,7 +1283,7 @@ func items() -> Array[Node3D]:
 
 
 ## Grupo da fase: Node3D simples direto na raiz que junta peças (Buildings, Rocks, Encounters...).
-## Um Node3D simples feito só de malhas e colisão (o poço) é uma peça, não um grupo.
+## Um Node3D simples feito só de malhas e colisão é uma peça, não um grupo.
 func _is_group(node: Node) -> bool:
 	if not (node.get_parent() == level and node.get_class() == "Node3D" and node.get_script() == null
 			and node.scene_file_path == "" and not SYSTEM.has(String(node.name))):
@@ -1028,23 +1346,35 @@ func _pick(screen: Vector2, deep: bool) -> Node3D:
 	return best
 
 
-## Onde o mouse aponta no chão (terreno, piso), atravessando as peças. null = céu.
-func _ground_hit(screen: Vector2) -> Variant:
+## Onde o mouse aponta. Por padrão no chão (atravessa as peças); on_top = pousa em cima do que tiver
+## (mesa, balcão, caixote), menos as peças em `ignore`. null = céu.
+func _ground_hit(screen: Vector2, ignore: Array = [], on_top: bool = false) -> Variant:
 	var cam := _camera.camera
 	var from := cam.project_ray_origin(screen)
 	var dir := cam.project_ray_normal(screen)
+	return _ray_surface(from, dir, ignore, on_top)
+
+
+func _ray_surface(from: Vector3, dir: Vector3, ignore: Array, on_top: bool) -> Variant:
 	var query := PhysicsRayQueryParameters3D.create(from, from + dir * 2000.0, 1 | 4)
 	var exclude: Array[RID] = []
-	for i: int in 16:
+	for i: int in 24:
 		query.exclude = exclude
 		var hit := get_world_3d().direct_space_state.intersect_ray(query)
 		if hit.is_empty():
 			break
-		if _item_of(hit["collider"] as Node) != null:
+		var item := _item_of(hit["collider"] as Node)
+		if item != null and (not on_top or ignore.has(item)):
 			exclude.append(hit["rid"])
 			continue
 		return hit["position"]
 	return Plane(Vector3.UP, 0.0).intersects_ray(from, dir)
+
+
+## Altura do chão (ou do que tiver embaixo, com on_top) neste ponto.
+func _surface_y(point: Vector3, on_top: bool) -> Variant:
+	var hit: Variant = _ray_surface(point + Vector3.UP * 60.0, Vector3.DOWN, [], on_top)
+	return (hit as Vector3).y if hit != null else null
 
 
 func _bounds(node: Node3D) -> AABB:
@@ -1055,7 +1385,7 @@ func _bounds(node: Node3D) -> AABB:
 		visuals.append(node)
 	for v: Node in visuals:
 		var vi := v as VisualInstance3D
-		if not vi.is_visible_in_tree() or vi is Light3D or vi is GPUParticles3D:
+		if not vi.is_visible_in_tree() or vi is Light3D or vi is GPUParticles3D or vi is Label3D:
 			continue
 		var part := vi.global_transform * vi.get_aabb()
 		box = part if first else box.merge(part)
@@ -1065,27 +1395,50 @@ func _bounds(node: Node3D) -> AABB:
 	return box
 
 
-func _snapped(point: Vector3) -> Vector3:
-	if not snap:
-		return point
-	return Vector3(snappedf(point.x, grid), point.y, snappedf(point.z, grid))
-
-
-# --- desenho: seleção e etiquetas -----------------------------------------------------------
+# --- desenho: grade, pegada, seleção e etiquetas ------------------------------------------------
 
 func _process(_delta: float) -> void:
 	var mesh := _lines.mesh as ImmediateMesh
 	mesh.clear_surfaces()
+	mesh.surface_begin(Mesh.PRIMITIVE_LINES)
 	var any := false
+	_size_label.visible = false
+	_footprint_fill.visible = false
+	var focus: Variant = null
+	if _ghost and _ghost.visible:
+		var color := Color(0.45, 1.0, 0.5) if _ghost_ok else Color(1.0, 0.35, 0.3)
+		_draw_footprint(mesh, _footprint(_ghost), _ghost.global_position.y, color)
+		_fill_footprint(_footprint(_ghost), _ghost.global_position.y, color)
+		focus = _ghost.global_position
+		_show_size(_ghost)
+		any = true
 	for node: Node3D in selection:
 		if not is_instance_valid(node) or not node.is_inside_tree() or node == level:
 			continue
-		if not any:
-			mesh.surface_begin(Mesh.PRIMITIVE_LINES)
-			any = true
-		_draw_box(mesh, _bounds(node).grow(0.08), Color(1.0, 0.82, 0.3))
-	if any:
-		mesh.surface_end()
+		var box := _bounds(node)
+		_draw_box(mesh, box.grow(0.06), Color(1.0, 0.82, 0.3))
+		_draw_footprint(mesh, _footprint(node), box.position.y, Color(1.0, 0.82, 0.3))
+		if focus == null:
+			_fill_footprint(_footprint(node), box.position.y, Color(1.0, 0.82, 0.3))
+			focus = box.get_center()
+			if selection.size() == 1:
+				_show_size(node)
+		any = true
+	if not any:
+		mesh.surface_add_vertex(Vector3.ZERO)
+		mesh.surface_add_vertex(Vector3.ZERO)
+	mesh.surface_end()
+	# a grade aparece em volta do mouse (ou da peça escolhida)
+	_grid_mesh.visible = snap and level != null
+	if _grid_mesh.visible:
+		var at: Variant = focus if focus != null else _ground_hit(_mouse)
+		if at != null:
+			var p: Vector3 = at
+			_grid_mesh.global_position = Vector3(snappedf(p.x, grid * 4.0), p.y + 0.04, snappedf(p.z, grid * 4.0))
+			var mat := _grid_mesh.material_override as ShaderMaterial
+			mat.set_shader_parameter("celula", grid)
+			mat.set_shader_parameter("centro", Vector2(p.x, p.z))
+			mat.set_shader_parameter("raio", clampf(_camera.distance * 0.7, 10.0, 40.0))
 	for entry: Dictionary in _labels:
 		var target := entry["node"] as Node3D
 		var label := entry["label"] as Label3D
@@ -1096,17 +1449,45 @@ func _process(_delta: float) -> void:
 			label.visible = false
 
 
+func _show_size(node: Node3D) -> void:
+	var box := _bounds(node)
+	_size_label.visible = true
+	_size_label.text = ("%.1f × %.1f m" % [box.size.x, box.size.z]).replace(".", ",")
+	_size_label.global_position = Vector3(box.get_center().x, box.end.y + 0.6, box.get_center().z)
+
+
+func _fill_footprint(rect: Rect2, y: float, color: Color) -> void:
+	_footprint_fill.visible = true
+	_footprint_fill.global_transform = Transform3D(Basis().scaled(Vector3(rect.size.x, 1, rect.size.y)),
+		Vector3(rect.get_center().x, y + 0.05, rect.get_center().y))
+	(_footprint_fill.material_override as StandardMaterial3D).albedo_color = Color(color, 0.28)
+
+
+func _draw_footprint(mesh: ImmediateMesh, rect: Rect2, y: float, color: Color) -> void:
+	mesh.surface_set_color(color)
+	var h := y + 0.06
+	var a := Vector3(rect.position.x, h, rect.position.y)
+	var b := Vector3(rect.end.x, h, rect.position.y)
+	var c := Vector3(rect.end.x, h, rect.end.y)
+	var d := Vector3(rect.position.x, h, rect.end.y)
+	for pair: Array in [[a, b], [b, c], [c, d], [d, a], [a, c], [b, d]]:
+		mesh.surface_add_vertex(pair[0])
+		mesh.surface_add_vertex(pair[1])
+
+
 func _draw_box(mesh: ImmediateMesh, box: AABB, color: Color) -> void:
 	mesh.surface_set_color(color)
-	for i: int in 12:
-		var edge := _box_edge(box, i)
-		mesh.surface_add_vertex(edge[0])
-		mesh.surface_add_vertex(edge[1])
-
-
-func _box_edge(box: AABB, i: int) -> Array[Vector3]:
 	const EDGES := [[0, 1], [1, 3], [3, 2], [2, 0], [4, 5], [5, 7], [7, 6], [6, 4], [0, 4], [1, 5], [2, 6], [3, 7]]
-	return [box.get_endpoint(EDGES[i][0]), box.get_endpoint(EDGES[i][1])]
+	for edge: Array in EDGES:
+		mesh.surface_add_vertex(box.get_endpoint(edge[0]))
+		mesh.surface_add_vertex(box.get_endpoint(edge[1]))
+
+
+## Pisca a peça recém-colocada (para ver que entrou).
+func _flash(piece: Node3D) -> void:
+	var start := piece.scale
+	piece.scale = start * 1.06
+	create_tween().tween_property(piece, "scale", start, 0.18)
 
 
 ## Etiquetas no mapa para o que não se vê no jogo: começo, heróis esperando, falas, saídas, lutas, luzes.
@@ -1143,9 +1524,6 @@ func _refresh_labels() -> void:
 			text = "🎥 %s" % node.name
 			height = 0.3
 			color = Color(0.75, 0.9, 1.0)
-		elif node is OmniLight3D and node.owner == level:
-			text = "✦ Luz"
-			height = 0.4
 		if text == "":
 			continue
 		var label := Label3D.new()
@@ -1170,25 +1548,28 @@ func _refresh_all() -> void:
 
 
 func _update_status() -> void:
-	if not is_node_ready():
+	if _status == null:
 		return
 	_status.text = "%s%s   ·   %d peças%s" % [level_path.get_file(), " *" if dirty else "", items().size(),
 		"   ·   %d escolhida(s)" % selection.size() if selection.size() > 1 else ""]
 
 
 func _toast_text(text: String) -> void:
-	if not is_node_ready():
+	if _toast == null:
 		return
 	_toast.text = text
+	var width := _toast.get_combined_minimum_size().x
+	_toast.offset_left = -width / 2.0
+	_toast.offset_right = width / 2.0
 	_toast.modulate.a = 1.0
 	var tween := create_tween()
-	tween.tween_interval(2.6)
+	tween.tween_interval(2.4)
 	tween.tween_property(_toast, "modulate:a", 0.0, 0.6)
 
 
-## Aba "Cena": a fase inteira em árvore (o mesmo que o Godot mostra). Clique escolhe qualquer nó.
+## "Na fase": a fase inteira em árvore (o mesmo que o Godot mostra). Clique escolhe qualquer nó.
 func _refresh_tree() -> void:
-	if not is_node_ready():
+	if _tree == null:
 		return
 	_tree.clear()
 	if level == null:
@@ -1204,9 +1585,6 @@ func _fill_tree(item: TreeItem, node: Node) -> void:
 	if node.scene_file_path != "" and node != level and not level.is_editable_instance(node):
 		item.set_tooltip_text(0, node.scene_file_path)
 		item.collapsed = true
-		for inner: Node in node.get_children():
-			if inner is Node3D and inner.owner == node:
-				_fill_tree(_tree.create_item(item), inner)
 		return
 	for child: Node in node.get_children():
 		if child.owner == level or (child.owner != null and child.owner != level and node != level):
@@ -1217,7 +1595,7 @@ func _fill_tree(item: TreeItem, node: Node) -> void:
 
 
 func _sync_tree_selection() -> void:
-	if not is_node_ready() or _tree.get_root() == null:
+	if _tree == null or _tree.get_root() == null:
 		return
 	_syncing_tree = true
 	_tree.deselect_all()
@@ -1249,6 +1627,8 @@ func _on_tree_selected() -> void:
 	var node: Variant = _tree.get_selected().get_metadata(0)
 	if node is Node3D:
 		select_nodes([node])
+		var box := _bounds(node as Node3D)
+		_camera.focus(box.get_center(), maxf(box.get_longest_axis_size() * 2.5, 8.0))
 	elif node is Node:
 		selection.clear()
 		_build_inspector(node as Node)
@@ -1256,7 +1636,7 @@ func _on_tree_selected() -> void:
 
 ## Painel da direita: tudo o que dá para mudar na peça escolhida.
 func _build_inspector(other: Node = null) -> void:
-	if not is_node_ready():
+	if _inspector == null:
 		return
 	_section_box = null
 	for child: Node in _inspector.get_children():
@@ -1264,15 +1644,21 @@ func _build_inspector(other: Node = null) -> void:
 		child.queue_free()
 	var node: Node = other if other else (selection[0] if selection.size() == 1 else null)
 	if node == null:
-		_add_note("Nada escolhido.\n\nClique numa peça no mapa, escolha uma na aba Cena ou pegue uma peça no catálogo." if selection.is_empty()
-			else "%d peças escolhidas.\nArraste, gire (Q/E), mude o tamanho (+/-), duplique (Ctrl+D) ou apague (Del) todas juntas." % selection.size())
+		_add_note("Nada escolhido.\n\nPegue uma peça na Biblioteca (à esquerda) e clique no mapa para colocar.\nClique numa peça do mapa para mexer nela."
+			if selection.is_empty() else "%d peças escolhidas.\nArraste, gire (Q/E), centralize na grade (C), duplique (Ctrl+D) ou apague (Del) todas juntas." % selection.size())
 		return
-	_add_header(String(node.name), node.scene_file_path.get_file() if node.scene_file_path != "" and node != level else node.get_class())
+	_add_header(String(node.name), _entry_name(node))
 	if node == level:
 		_add_section("Fase")
 		_add_script_fields(level)
 		_add_environment()
 		return
+	if node is Node3D:
+		var actions := HFlowContainer.new()
+		for spec: Array in [["↺ 90°", func() -> void: rotate_selection(PI / 2.0)], ["↻ 90°", func() -> void: rotate_selection(-PI / 2.0)],
+				["Centralizar", center_selection], ["Duplicar", duplicate_selection], ["Apagar", delete_selection]]:
+			_tool_button(actions, spec[0], "", spec[1])
+		_inspector.add_child(actions)
 	var name_edit := LineEdit.new()
 	name_edit.text = node.name
 	name_edit.editable = node.owner == level
@@ -1300,7 +1686,15 @@ func _build_inspector(other: Node = null) -> void:
 	for inner: Node in scripted.slice(0, 8):
 		_add_section(String(node.get_path_to(inner)), scripted.size() > 2 and not (inner is Interactable or inner is HeroSpot))
 		_add_script_fields(inner)
-	_add_colors(node)
+
+
+## Nome da peça na biblioteca (ou o tipo do nó).
+func _entry_name(node: Node) -> String:
+	if node == level:
+		return "Fase"
+	if library.by_key.has(node.scene_file_path):
+		return String(library.by_key[node.scene_file_path]["nome"])
+	return node.scene_file_path.get_file() if node.scene_file_path != "" else node.get_class()
 
 
 func _add_note(text: String) -> void:
@@ -1314,12 +1708,13 @@ func _add_note(text: String) -> void:
 func _add_header(title: String, kind: String) -> void:
 	var label := Label.new()
 	label.text = title
+	label.theme_type_variation = &"TitleLabel"
 	label.add_theme_font_size_override("font_size", 22)
-	label.add_theme_color_override("font_color", Color(1.0, 0.82, 0.5))
+	label.clip_text = true
 	_inspector.add_child(label)
 	var sub := Label.new()
 	sub.text = kind
-	sub.add_theme_color_override("font_color", Color(0.65, 0.6, 0.55))
+	sub.add_theme_color_override("font_color", Color(0.85, 0.75, 0.6))
 	sub.add_theme_font_size_override("font_size", 13)
 	_inspector.add_child(sub)
 
@@ -1345,10 +1740,11 @@ func _add_row(title: String, control: Control) -> void:
 	var row := HBoxContainer.new()
 	var label := Label.new()
 	label.text = title
-	label.custom_minimum_size.x = 104
+	label.custom_minimum_size.x = 88
 	label.clip_text = true
 	label.tooltip_text = title
 	label.mouse_filter = Control.MOUSE_FILTER_PASS
+	label.add_theme_font_size_override("font_size", 15)
 	control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(label)
 	row.add_child(control)
@@ -1401,7 +1797,7 @@ func _add_field(object: Object, property: String, title: String = "") -> void:
 			options.select(options.get_item_index(int(value)))
 			options.item_selected.connect(func(index: int) -> void:
 				set_prop(object, property, options.get_item_id(index), false)
-				_build_inspector_later())
+				_build_inspector.call_deferred())
 			_add_row(title, options)
 		TYPE_INT, TYPE_FLOAT:
 			_add_row(title, _spin(float(value), hint, hint_string, int(info["type"]) == TYPE_INT,
@@ -1423,6 +1819,7 @@ func _add_field(object: Object, property: String, title: String = "") -> void:
 					now[axis] = v
 					set_prop(object, property, now))
 				spin.custom_minimum_size.x = 0
+				spin.get_line_edit().add_theme_font_size_override("font_size", 13)
 				row.add_child(spin)
 				spin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			_add_row(title, row)
@@ -1524,42 +1921,6 @@ func _describe(value: Variant) -> String:
 	if value is Array:
 		return "%d itens" % (value as Array).size()
 	return str(value)
-
-
-func _build_inspector_later() -> void:
-	_build_inspector.call_deferred()
-
-
-## Cores das partes da peça. A primeira mudança faz uma cópia da tinta, para não pintar as outras peças iguais.
-func _add_colors(node: Node) -> void:
-	var meshes: Array[MeshInstance3D] = []
-	if node is MeshInstance3D:
-		meshes.append(node as MeshInstance3D)
-	for inner: Node in node.find_children("*", "MeshInstance3D", true, false):
-		meshes.append(inner as MeshInstance3D)
-	var seen: Array[Material] = []
-	for mesh: MeshInstance3D in meshes:
-		var mat := mesh.material_override as StandardMaterial3D
-		if mat == null or seen.has(mat) or seen.size() >= 10:
-			continue
-		if seen.is_empty():
-			_add_section("Cores")
-		seen.append(mat)
-		var users: Array[MeshInstance3D] = []
-		for other: MeshInstance3D in meshes:
-			if other.material_override == mat:
-				users.append(other)
-		var picker := ColorPickerButton.new()
-		picker.color = mat.albedo_color
-		picker.custom_minimum_size.y = 28
-		var own: Array[StandardMaterial3D] = [null]
-		picker.color_changed.connect(func(c: Color) -> void:
-			if own[0] == null:
-				own[0] = mat.duplicate() as StandardMaterial3D
-				for user: MeshInstance3D in users:
-					set_prop(user, "material_override", own[0], false)
-			set_prop(own[0], "albedo_color", c))
-		_add_row(String(mesh.name), picker)
 
 
 ## Sol, céu e neblina da fase.
