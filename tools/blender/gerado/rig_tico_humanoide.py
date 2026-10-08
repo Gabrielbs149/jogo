@@ -6,9 +6,11 @@ Pesos: o Blender calcula pelo método de calor ("Automatic Weights") numa CÓPIA
 porque a malha do TRELLIS tem buracos e o cálculo direto falha; depois os pesos são transferidos para a malha original.
 O modelo é exportado olhando para +Z no Godot (igual aos personagens do KayKit); a cena do herói vira o modelo.
 
-Uso: blender --background --factory-startup --python tools/blender/gerado/rig_tico_humanoide.py -- C:/dev/jogo
-Lê art_src/tico_lirou.blend (objeto TicoLirou; no Blender ele olha para +Y, +X é a direita dele, pés na origem).
-Salva art_src/tico_lirou_humanoide.blend e actors/tico_lirou/tico_lirou_humanoide.glb.
+Uso: blender --background --factory-startup --python tools/blender/gerado/rig_tico_humanoide.py -- C:/dev/jogo [tico|tika]
+Cada personagem tem um PERFIL abaixo: o .blend limpo (no Blender olhando para +Y, esquerda em -X, pés na origem),
+onde ficam os ossos (medidos com grade na foto de frente e de lado) e as regiões do corpo (mochila, braços, pernas, rabo).
+Tico: art_src/tico_lirou.blend -> actors/tico_lirou/tico_lirou_humanoide.glb.
+Tika (D046): art_src/tika_muro_limpa.blend -> actors/tika_muro/tika_muro_humanoide.glb.
 """
 import math
 import sys
@@ -16,13 +18,15 @@ import sys
 import bpy
 from mathutils import Vector
 
-ROOT = sys.argv[sys.argv.index("--") + 1] if "--" in sys.argv else "C:/dev/jogo"
+_ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+ROOT = _ARGS[0] if _ARGS else "C:/dev/jogo"
+WHO = _ARGS[1] if len(_ARGS) > 1 else "tico"
 K = 10.0
 # só o tronco e o rabo usam o teste de "enxergar o osso" (separa barriga, costas e rabo)
 VISIBILITY = {"Hips", "Spine", "Chest", "Tail1", "Tail2", "Tail3"}
 
-# osso: (cabeça, ponta, pai) — coordenadas do Blender, Tico olhando para +Y, esquerda dele em -X
-BONES = {
+# osso: (cabeça, ponta, pai) — coordenadas do Blender, olhando para +Y, esquerda em -X
+TICO_BONES = {
     "Root": ((0, 0, 0), (0, 0.12, 0), None),
     "Hips": ((0, 0.05, 0.30), (0, 0.045, 0.45), "Root"),
     "Spine": ((0, 0.045, 0.45), (0, 0.05, 0.62), "Hips"),
@@ -45,6 +49,53 @@ BONES = {
     "Tail2": ((0, -0.25, 0.24), (0, -0.38, 0.2), "Tail1"),
     "Tail3": ((0, -0.38, 0.2), (0, -0.53, 0.2), "Tail2"),
 }
+
+# Tika (medida já com o corpo no centro: o modelo vem 0,27 m para a frente por causa do rabo comprido e da mochila)
+TIKA_BONES = {
+    "Root": ((0, 0, 0), (0, 0.12, 0), None),
+    "Hips": ((0, -0.02, 0.28), (0, 0.0, 0.42), "Root"),
+    "Spine": ((0, 0.0, 0.42), (0, 0.01, 0.56), "Hips"),
+    "Chest": ((0, 0.01, 0.56), (0, 0.04, 0.70), "Spine"),
+    "Neck": ((0, 0.04, 0.70), (0, 0.07, 0.78), "Chest"),
+    "Head": ((0, 0.07, 0.78), (0, 0.12, 1.05), "Neck"),
+    "LeftUpperArm": ((-0.15, 0.05, 0.62), (-0.18, 0.09, 0.50), "Chest"),
+    "LeftLowerArm": ((-0.18, 0.09, 0.50), (-0.19, 0.14, 0.43), "LeftUpperArm"),
+    "LeftHand": ((-0.19, 0.14, 0.43), (-0.19, 0.18, 0.35), "LeftLowerArm"),
+    "RightUpperArm": ((0.15, 0.05, 0.62), (0.18, 0.09, 0.50), "Chest"),
+    "RightLowerArm": ((0.18, 0.09, 0.50), (0.19, 0.14, 0.43), "RightUpperArm"),
+    "RightHand": ((0.19, 0.14, 0.43), (0.19, 0.18, 0.35), "RightLowerArm"),
+    "LeftUpperLeg": ((-0.11, 0.0, 0.28), (-0.14, 0.05, 0.17), "Hips"),
+    "LeftLowerLeg": ((-0.14, 0.05, 0.17), (-0.16, 0.05, 0.06), "LeftUpperLeg"),
+    "LeftFoot": ((-0.16, 0.05, 0.06), (-0.17, 0.16, 0.02), "LeftLowerLeg"),
+    "RightUpperLeg": ((0.11, 0.0, 0.28), (0.14, 0.05, 0.17), "Hips"),
+    "RightLowerLeg": ((0.14, 0.05, 0.17), (0.16, 0.05, 0.06), "RightUpperLeg"),
+    "RightFoot": ((0.16, 0.05, 0.06), (0.17, 0.16, 0.02), "RightLowerLeg"),
+    "Tail1": ((0, -0.12, 0.28), (0, -0.32, 0.22), "Hips"),
+    "Tail2": ((0, -0.32, 0.22), (0, -0.55, 0.15), "Tail1"),
+    "Tail3": ((0, -0.55, 0.15), (0, -0.84, 0.2), "Tail2"),
+}
+
+# regiões do corpo (metros, sem escala): o que cada osso pode puxar
+PROFILES = {
+    "tico": {
+        "blend": "/art_src/tico_lirou.blend", "object": "TicoLirou", "rig": "TicoRig", "shift_y": 0.0,
+        "out_blend": "/art_src/tico_lirou_humanoide.blend", "out_glb": "/actors/tico_lirou/tico_lirou_humanoide.glb",
+        "bones": TICO_BONES,
+        "backpack": (-0.12, 0.42, 0.95), "head_z": 0.74, "neck_z": (0.68, 0.9), "arm_x": 0.14, "arm_top": 0.76,
+        "leg_top": 0.42, "leg_back": -0.2, "tail": (-0.08, 0.5), "hips_top": 0.56, "spine_z": (0.36, 0.8), "chest_z": 0.5,
+        "sleeve_z": 0.5,
+    },
+    "tika": {
+        "blend": "/art_src/tika_muro_limpa.blend", "object": "TikaMuro", "rig": "TikaRig", "shift_y": -0.27,
+        "out_blend": "/art_src/tika_muro_humanoide.blend", "out_glb": "/actors/tika_muro/tika_muro_humanoide.glb",
+        "bones": TIKA_BONES,
+        "backpack": (-0.06, 0.4, 1.02), "head_z": 0.74, "neck_z": (0.66, 0.86), "arm_x": 0.13, "arm_top": 0.7,
+        "leg_top": 0.32, "leg_back": -0.12, "tail": (-0.05, 0.4), "hips_top": 0.5, "spine_z": (0.36, 0.76), "chest_z": 0.5,
+        "sleeve_z": 0.48,
+    },
+}
+P = PROFILES[WHO]
+BONES = P["bones"]
 
 
 def _skin_mask(mesh):
@@ -71,9 +122,10 @@ def _skin_mask(mesh):
     r, g, b = c[:, 0], c[:, 1], c[:, 2]
     skin = (g > r + 0.06) & (g > b + 0.08) & (g > 0.28)
     peach = (r > 0.6) & (r > g + 0.1) & (g > b)
-    # capa/manga: verde-azulado escuro (verde e azul parecidos, os dois acima do vermelho)
+    # capa/manga: verde-azulado escuro (Tico) ou roxo (Tika)
     teal = (g > r + 0.03) & (b > r + 0.03) & (np.abs(g - b) < 0.1) & ~skin
-    return skin, peach, teal
+    purple = (r > g + 0.03) & (b > g + 0.03) & ~skin
+    return skin, peach, teal | purple
 
 
 def _weights(mesh, rig) -> None:
@@ -105,36 +157,37 @@ def _weights(mesh, rig) -> None:
     closest = heads[None] + t[..., None] * ab[None]
     d = np.linalg.norm(v[:, None, :] - closest, axis=2)
 
-    # regiões (coordenadas sem escala; Tico olha para +Y, esquerda em -X)
+    # regiões (coordenadas sem escala; olhando para +Y, esquerda em -X), do perfil do personagem
     x, y, z = v[:, 0] / K, v[:, 1] / K, v[:, 2] / K
-    backpack = (y < -0.12) & (z > 0.42) & (z < 0.95)
+    bp = P["backpack"]
+    backpack = (y < bp[0]) & (z > bp[1]) & (z < bp[2])
     allowed = np.ones_like(d, bool)
     for j, b in enumerate(names):
         if b == "Head":
-            allowed[:, j] = (z > 0.74) & ~backpack
+            allowed[:, j] = (z > P["head_z"]) & ~backpack
         elif b == "Neck":
-            allowed[:, j] = (z > 0.68) & (z < 0.9) & ~backpack
+            allowed[:, j] = (z > P["neck_z"][0]) & (z < P["neck_z"][1]) & ~backpack
         elif "Arm" in b or "Hand" in b:
-            side = (x < -0.14) if b.startswith("Left") else (x > 0.14)
-            allowed[:, j] = side & (z < 0.76) & ~backpack
+            side = (x < -P["arm_x"]) if b.startswith("Left") else (x > P["arm_x"])
+            allowed[:, j] = side & (z < P["arm_top"]) & ~backpack
         elif "Leg" in b or "Foot" in b:
             side = (x < 0.02) if b.startswith("Left") else (x > -0.02)
-            allowed[:, j] = side & (z < 0.42) & (y > -0.2)
+            allowed[:, j] = side & (z < P["leg_top"]) & (y > P["leg_back"])
         elif b.startswith("Tail"):
-            allowed[:, j] = (y < -0.08) & (z < 0.5)
+            allowed[:, j] = (y < P["tail"][0]) & (z < P["tail"][1])
         elif b == "Hips":
-            allowed[:, j] = z < 0.56
+            allowed[:, j] = z < P["hips_top"]
         elif b == "Spine":
-            allowed[:, j] = (z > 0.36) & (z < 0.8)
+            allowed[:, j] = (z > P["spine_z"][0]) & (z < P["spine_z"][1])
         elif b == "Chest":
-            allowed[:, j] = z > 0.5
+            allowed[:, j] = z > P["chest_z"]
     # pela cor da textura: braço e mão seguem o osso onde é PELE (verde; palma cor de pêssego na mão).
     # Perto do osso também vale o que não é pele: as garras (escuras) seguem a mão e a manga da capa segue o braço
     # (antes ficavam presas na barriga e esticavam em espinhos quando a mão mexia). O resto da capa fica no peito.
     skin, peach, teal = _skin_mask(mesh)
     for j, b in enumerate(names):
         if "UpperArm" in b:
-            allowed[:, j] &= skin | ((d[:, j] < 0.06 * K) & (z > 0.5))
+            allowed[:, j] &= skin | ((d[:, j] < 0.06 * K) & (z > P["sleeve_z"]))
         elif "LowerArm" in b:
             allowed[:, j] &= skin | ((d[:, j] < 0.045 * K) & ~teal)
         elif "Hand" in b:
@@ -198,9 +251,9 @@ def _weights(mesh, rig) -> None:
 
 
 def main() -> None:
-    bpy.ops.wm.open_mainfile(filepath=ROOT + "/art_src/tico_lirou.blend")
+    bpy.ops.wm.open_mainfile(filepath=ROOT + P["blend"])
     scene = bpy.context.scene
-    mesh = bpy.data.objects["TicoLirou"]
+    mesh = bpy.data.objects[P["object"]]
     for o in list(scene.objects):
         if o != mesh:
             bpy.data.objects.remove(o)
@@ -214,13 +267,17 @@ def main() -> None:
     for o in scene.objects:
         o.select_set(o == mesh)
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    if P["shift_y"]:
+        # corpo no centro (os pés e o quadril ficam na origem, o rabo vai para trás)
+        for vert in mesh.data.vertices:
+            vert.co.y += P["shift_y"]
     # o cálculo de calor do Blender falha em modelos pequenos (1,1 m): faz tudo 10x maior e volta no fim
     mesh.scale = (K, K, K)
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
     # esqueleto
-    arm_data = bpy.data.armatures.new("TicoRig")
-    rig = bpy.data.objects.new("TicoRig", arm_data)
+    arm_data = bpy.data.armatures.new(P["rig"])
+    rig = bpy.data.objects.new(P["rig"], arm_data)
     scene.collection.objects.link(rig)
     bpy.context.view_layer.objects.active = rig
     for o in scene.objects:
@@ -255,12 +312,12 @@ def main() -> None:
     bpy.context.view_layer.objects.active = rig
     bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 
-    bpy.ops.wm.save_as_mainfile(filepath=ROOT + "/art_src/tico_lirou_humanoide.blend")
+    bpy.ops.wm.save_as_mainfile(filepath=ROOT + P["out_blend"])
     for o in scene.objects:
         o.select_set(o in (rig, mesh))
     bpy.context.view_layer.objects.active = rig
     bpy.ops.export_scene.gltf(
-        filepath=ROOT + "/actors/tico_lirou/tico_lirou_humanoide.glb", export_format="GLB", use_selection=True,
+        filepath=ROOT + P["out_glb"], export_format="GLB", use_selection=True,
         export_yup=True, export_apply=False, export_skins=True, export_animations=False, export_def_bones=False,
     )
     print("exportado")
