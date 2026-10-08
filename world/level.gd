@@ -22,6 +22,9 @@ extends Node3D
 @export var piso: String = "grama"
 @export var mapa_do_piso: Texture2D
 @export var area_do_mapa: float = 220.0
+## De noite (D045): céu escuro com estrelas, o sol vira lua e a cidade fica com as luzes dela (postes, lanternas, tochas).
+## No jogo, F3 alterna dia e noite (para testar).
+@export var noite: bool = false
 ## Pula a abertura (testes rodam sem janela e também pulam).
 @export var skip_intro: bool = false
 ## Sem inimigo brigando por tantos segundos, quem caiu se levanta com 1 PV (estabilizado).
@@ -46,6 +49,12 @@ var encounters: Array[Encounter] = []
 var _calm_time: float = 0.0
 var _floor_image: Image
 var _finished: bool = false
+var _night: bool = false
+var _day_env: Environment
+var _day_sun: Array = []
+var _night_windows: Array = []
+var _night_lights: Array = []
+var _night_glow: Array = []
 
 @onready var _navigation: NavigationRegion3D = $Navigation
 @onready var _camera: ThirdPersonCamera = $CameraRig
@@ -66,7 +75,9 @@ func _ready() -> void:
 					part.owner = null
 	_auto_collision()
 	if editing:
-		return
+		return  # o editor mostra a fase de dia (a noite mexe em materiais que não podem ir para o arquivo)
+	if noite:
+		set_night(true)
 	_hide_far_details()
 	# voltando de uma luta: no mesmo lugar do mapa, com a vida que sobrou
 	var start := _spawn.transform
@@ -169,6 +180,118 @@ func _notification(what: int) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("map_editor") and not editing:
 		Game.open_editor(scene_file_path)
+	elif event is InputEventKey and event.is_pressed() and not event.is_echo() and (event as InputEventKey).keycode == KEY_F3 and not editing:
+		set_night(not _night)
+		_hud.toast("Noite" if _night else "Dia")
+
+
+## Troca o dia pela noite (e volta): céu, luar, neblina e brilho. O dia de antes fica guardado para voltar igual.
+func set_night(on: bool) -> void:
+	var env_node := get_node_or_null("WorldEnvironment") as WorldEnvironment
+	var sun := get_node_or_null("Sun") as DirectionalLight3D
+	if env_node == null or sun == null or on == _night:
+		return
+	if _day_env == null:
+		_day_env = env_node.environment
+		_day_sun = [sun.light_color, sun.light_energy, sun.rotation, sun.light_volumetric_fog_energy]
+	_night = on
+	_night_details(on)
+	if not on:
+		env_node.environment = _day_env
+		sun.light_color = _day_sun[0]
+		sun.light_energy = _day_sun[1]
+		sun.rotation = _day_sun[2]
+		sun.light_volumetric_fog_energy = _day_sun[3]
+		return
+	var env := _day_env.duplicate() as Environment
+	var sky_mat := ShaderMaterial.new()
+	sky_mat.shader = load("res://assets/shaders/ceu_noite.gdshader")
+	var sky := Sky.new()
+	sky.sky_material = sky_mat
+	env.sky = sky
+	env.background_energy_multiplier = 1.0
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color = Color(0.32, 0.38, 0.6)
+	env.ambient_light_energy = 0.32
+	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
+	env.tonemap_exposure = 1.15
+	env.ssil_intensity = 1.0
+	env.glow_intensity = 0.6
+	env.glow_bloom = 0.03
+	env.glow_hdr_threshold = 1.0
+	env.fog_light_color = Color(0.1, 0.13, 0.22)
+	env.fog_density = 0.0035
+	env.fog_sky_affect = 0.35
+	env.volumetric_fog_density = 0.008
+	env.volumetric_fog_albedo = Color(0.55, 0.6, 0.75)
+	env.volumetric_fog_ambient_inject = 0.0
+	env.adjustment_saturation = 0.95
+	env_node.environment = env
+	# a lua: luz fria e fraca, alta no céu do leste, com sombra
+	sun.light_color = Color(0.6, 0.7, 1.0)
+	sun.light_energy = 0.32
+	sun.rotation = Vector3(deg_to_rad(-48.0), deg_to_rad(40.0), 0.0)
+	sun.light_volumetric_fog_energy = 0.4
+
+
+## De noite: janelas acesas em 7 de cada 10 casas (as outras já dormem), postes um pouco mais fortes, e fumaça e
+## água sem brilho próprio (de dia elas não recebem luz; de noite ficariam brilhando no escuro). O fogo continua aceso.
+func _night_details(on: bool) -> void:
+	if on:
+		var lit := StandardMaterial3D.new()
+		lit.albedo_color = Color(1.0, 0.78, 0.45)
+		lit.emission_enabled = true
+		lit.emission = Color(1.0, 0.62, 0.3)
+		lit.emission_energy_multiplier = 2.2
+		var dark := StandardMaterial3D.new()
+		dark.albedo_color = Color(0.08, 0.09, 0.13)
+		dark.roughness = 0.2
+		var buildings := get_node_or_null("Buildings")
+		if buildings:
+			for house: Node in buildings.get_children():
+				var p := (house as Node3D).global_position if house is Node3D else Vector3.ZERO
+				var awake := fposmod(sin(p.x * 12.9898 + p.z * 78.233) * 43758.5453, 1.0) < 0.7
+				for found: Node in house.find_children("*", "MeshInstance3D", true, false):
+					var mesh := found as MeshInstance3D
+					if mesh.mesh == null:
+						continue
+					for k: int in mesh.mesh.get_surface_count():
+						var mat := mesh.get_active_material(k)
+						if mat and mat.resource_name in ["MI_WindowGlass", "Windows"]:
+							mesh.set_surface_override_material(k, lit if awake else dark)
+							_night_windows.append([mesh, k])
+		for found: Node in find_children("*", "OmniLight3D", true, false):
+			var light := found as OmniLight3D
+			if light.omni_range < 5.0:
+				continue  # fogo e velas já brilham o bastante de perto; o reforço é para postes e lanternas
+			_night_lights.append([light, light.light_energy, light.omni_range])
+			light.light_energy *= 1.5
+			light.omni_range *= 1.25
+		for found: Node in find_children("*", "GPUParticles3D", true, false):
+			var parts := found as GPUParticles3D
+			var mat: Material = parts.material_override
+			if mat == null and parts.draw_pass_1:
+				mat = parts.draw_pass_1.surface_get_material(0)
+			var std := mat as StandardMaterial3D
+			if std == null or std.shading_mode != BaseMaterial3D.SHADING_MODE_UNSHADED or std.blend_mode != BaseMaterial3D.BLEND_MODE_MIX:
+				continue
+			if _night_glow.any(func(pair: Array) -> bool: return pair[0] == std):
+				continue
+			_night_glow.append([std, std.albedo_color])
+			std.albedo_color = Color(std.albedo_color.r * 0.22, std.albedo_color.g * 0.24, std.albedo_color.b * 0.3, std.albedo_color.a)
+		return
+	for pair: Array in _night_windows:
+		if is_instance_valid(pair[0]):
+			(pair[0] as MeshInstance3D).set_surface_override_material(pair[1], null)
+	for item: Array in _night_lights:
+		if is_instance_valid(item[0]):
+			(item[0] as OmniLight3D).light_energy = item[1]
+			(item[0] as OmniLight3D).omni_range = item[2]
+	for pair: Array in _night_glow:
+		(pair[0] as StandardMaterial3D).albedo_color = pair[1]
+	_night_windows.clear()
+	_night_lights.clear()
+	_night_glow.clear()
 
 
 ## Coisa pequena longe não aparece mesmo: objetos, plantas, bichos, gente de fundo e lápides param de ser desenhados

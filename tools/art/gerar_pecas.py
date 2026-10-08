@@ -435,6 +435,13 @@ for k in range(16):
 s.mesh("Fundo", s.cyl(3.7, 3.7, 0.3, 32), s.color((0.14, 0.2, 0.2), 0.9), (0, 0.51, 0))
 s.glb(GD + "Water_Fountain", (0, 0.92 + 1.25 * 2.4, 0), 0.0, 2.4, name="Fonte")
 s.scene("Agua", "res://assets/vfx/agua_chafariz.tscn", (0, 0, 0))
+# quatro lanternas na beirada da bacia (de noite o chafariz não vira uma sombra no meio da praça)
+for k in range(4):
+    ang = math.pi / 4 + k * math.pi / 2
+    at = (math.sin(ang) * 3.85, 1.19, math.cos(ang) * 3.85)
+    s.glb("Halloween-Bits/Lantern", at, ang, 0.6, name="Lanterna")
+    s.node("Luz%d" % k, "OmniLight3D", ".", "transform = " + xf((at[0], at[1] + 0.45, at[2])), "light_color = Color(1, 0.72, 0.42, 1)",
+           "light_energy = 0.9", "omni_range = 5.5")
 s.save("chafariz")
 
 s = Scene("Estatua", groups=AUTO)

@@ -120,6 +120,9 @@ func _run() -> void:
 	glow.light_energy = 0.9
 	glow.set("base_energy", 0.9)
 	glow.omni_range = 3.0
+	# fogo pequeno: as mesmas partículas do fogo grande, num espaço 3x menor, somam luz até ficar branco; aqui vão menos
+	for parts: Node in flame.find_children("*", "GPUParticles3D", false, false):
+		(parts as GPUParticles3D).amount_ratio = 0.35
 	level.set_editable_instance(flame, true)
 	fire.visible = false
 	var toward: Vector3 = fire_at - to_world.call(tico_l)
