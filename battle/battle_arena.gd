@@ -5,6 +5,8 @@ extends Node3D
 ## Espaço no tempo certo = vantagem no d20 (PERFEITO); quase = normal; errou = desvantagem.
 ## Turno do inimigo: Espaço esquiva (o golpe erra); F apara (sem dano, você contra-ataca e ganha 1 PA).
 ## Monta tudo a partir de Game.battle; no fim, Game.end_battle() volta para o mapa.
+## Visual (D047, do Look Outside): em primeira pessoa. A câmera fica nos olhos do herói (que aparece só pela sombra),
+## o inimigo grande na frente, e quem fala aparece na caixa de texto. As regras não mudam.
 
 signal finished(victory: bool)
 
@@ -18,6 +20,13 @@ signal finished(victory: bool)
 ## Janelas (s) da defesa: esquivar é folgado, aparar é apertado.
 @export var dodge_window: float = 0.15
 @export var parry_window: float = 0.08
+@export_group("Visual")
+## Primeira pessoa (D047). Desligado: a câmera da cena, de longe, como antes.
+@export var first_person: bool = true
+@export var eye_height: float = 0.6
+## Quanto a câmera fica atrás do herói (ele está invisível; só a sombra aparece).
+@export var eye_back: float = 0.5
+@export var view_fov: float = 50.0
 @export_group("Teste e simulador")
 ## A IA joga por você e "aperta" os QTE com estas chances.
 @export var auto_play: bool = false
@@ -35,6 +44,11 @@ var order: Array[Combatant] = []
 var _first_strike: bool = false
 var _homes: Dictionary = {}
 var _marker: Label3D
+var _camera: Camera3D
+var _look: Vector3 = Vector3.ZERO
+var _shake: float = 0.0
+## Quem a câmera olha agora (o inimigo que está atacando); vazio = o grupo todo.
+var _focus: Combatant
 
 @onready var _hud: BattleHUD = $BattleHUD
 @onready var _fx: CombatFX = $FX
@@ -67,15 +81,21 @@ func _ready() -> void:
 		_face(c, enemies[0] if c == player else player)
 		_homes[c] = c.transform
 	target = enemies[0]
+	_camera = get_node_or_null("Camera3D") as Camera3D
 	_marker = Label3D.new()
 	_marker.text = "▼"
 	_marker.font_size = 96
-	_marker.pixel_size = 0.004
+	_marker.pixel_size = 0.0022 if first_person else 0.004
 	_marker.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	_marker.no_depth_test = true
 	_marker.modulate = Color(1, 0.85, 0.4)
 	add_child(_marker)
 	_hud.setup(self)
+	var model := player.get_node_or_null("Model") as Node3D
+	if model:
+		_hud.setup_portrait(model)  # antes de sumir com o herói (o retrato é uma cópia dele)
+	if first_person and _camera:
+		_first_person_view()
 	if DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	for i: int in 3:
@@ -83,10 +103,13 @@ func _ready() -> void:
 	_run()
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	if first_person and _camera and is_instance_valid(player):
+		_update_view(delta)
 	if _marker and target and is_instance_valid(target) and target.hp > 0:
 		_marker.visible = true
-		_marker.global_position = target.global_position + Vector3.UP * (3.8 if target.is_boss else 2.3)
+		var above := (3.6 if target.is_boss else 1.35) if first_person else (3.8 if target.is_boss else 2.3)
+		_marker.global_position = target.global_position + Vector3.UP * above
 	elif _marker:
 		_marker.visible = false
 
@@ -129,7 +152,13 @@ func _run() -> void:
 	Audio.play_music("batalha", 0.6)
 	Audio.play_ambient("")
 	_hud.banner("Primeiro golpe!  +1 PA" if _first_strike else "Luta!")
-	await _wait(0.8)
+	if not auto_play:
+		await _hud.say("", _intro_text(), 0.5)
+		var line := _battle_line(enemies[0])
+		if line != "":
+			await _hud.say(enemies[0].display_name, line, 0.7)
+	else:
+		await _wait(0.8)
 	while not is_over():
 		round_number += 1
 		for entry: Variant in order.duplicate():
@@ -171,6 +200,7 @@ func _player_turn() -> void:
 		index = _auto_choice()
 		await get_tree().process_frame
 	else:
+		_hud.say(player.display_name, "O que %s vai fazer?" % player.display_name)
 		index = await _hud.choose_action()
 	var ability := player.abilities[index]
 	ap -= ability.ap_cost
@@ -217,7 +247,7 @@ func _attack_qte(on: Combatant) -> String:
 	if auto_play:
 		var r := randf()
 		return "perfeito" if r < auto_perfect else ("bom" if r < auto_perfect + auto_good else "errou")
-	var res := await _hud.qte(on.global_position + Vector3.UP, attack_qte_time, [&"dodge"], "Espaço")
+	var res := await _hud.qte(on.global_position + Vector3.UP * (0.3 if first_person and not on.is_boss else 1.0), attack_qte_time, [&"dodge"], "Espaço")
 	if res["key"] == &"":
 		return "errou"
 	var error := absf(float(res["error"]))
@@ -252,10 +282,18 @@ func _enemy_turn(enemy: Combatant) -> void:
 	if not enemy.is_active():
 		return
 	_face(enemy, player)
+	_focus = enemy
+	if not auto_play and randf() < 0.3:
+		var line := _battle_line(enemy)
+		if line != "":
+			await _hud.say(enemy.display_name, line, 0.4)
 	var melee := ability.shape == Ability.Shape.ENEMIES_AROUND or (ability.shape == Ability.Shape.TARGET and not ability.projectile)
 	if melee:
 		await _approach(enemy, player.global_position, 2.6 if enemy.is_boss else 1.6)
-	_hud.banner(ability.title, Color(1, 0.6, 0.5))
+	if auto_play:
+		_hud.banner(ability.title, Color(1, 0.6, 0.5))
+	else:
+		_hud.say(enemy.display_name, "%s usa **%s**!" % [enemy.display_name, ability.title])
 	_fx.lunge(enemy)
 	Audio.play_at("golpe", enemy.global_position, -3.0)
 	var defense := await _defense_qte(ability)
@@ -288,13 +326,17 @@ func _enemy_turn(enemy: Combatant) -> void:
 	await _wait(0.4)
 	if melee and is_instance_valid(enemy) and enemy.is_active():
 		await _return_home(enemy)
+	_focus = null
 
 
 func _defense_qte(ability: Ability) -> String:
 	if auto_play:
 		var r := randf()
 		return "aparou" if r < auto_parry else ("esquivou" if r < auto_parry + auto_dodge else "falhou")
-	var res := await _hud.qte(player.global_position + Vector3.UP, 0.55 + ability.windup, [&"dodge", &"parry"], "Espaço esquiva  ·  F apara")
+	var at := player.global_position + Vector3.UP
+	if first_person and _focus and is_instance_valid(_focus):
+		at = _focus.global_position + Vector3.UP * 0.3  # na primeira pessoa o herói está atrás da câmera: o anel vai em quem ataca
+	var res := await _hud.qte(at, 0.55 + ability.windup, [&"dodge", &"parry"], "Espaço esquiva  ·  F apara")
 	var error := absf(float(res["error"]))
 	if res["key"] == &"dodge" and error <= dodge_window:
 		return "esquivou"
@@ -347,6 +389,65 @@ func _hop(who: Combatant) -> void:
 	var tween := create_tween()
 	tween.tween_property(who, "global_position", who.global_position + side, 0.12)
 	tween.tween_property(who, "global_position", who.global_position, 0.2)
+
+
+# ---------- primeira pessoa (D047)
+
+func _first_person_view() -> void:
+	_camera.fov = view_fov
+	_camera.current = true
+	# o herói some, mas deixa a sombra no chão (dá para ver que você está ali)
+	for found: Node in player.find_children("*", "GeometryInstance3D", true, false):
+		(found as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+	_fx.first_person_target = player
+	player.hurt.connect(func(_by: Combatant) -> void:
+		_hud.hurt_flash()
+		_shake = 0.22)
+	_look = _group_center()
+	_update_view(1.0)
+
+
+## Para onde olhar: quem está atacando, ou o meio dos inimigos vivos, na altura do corpo deles (o chefe é mais alto).
+func _group_center() -> Vector3:
+	if _focus and is_instance_valid(_focus) and _focus.hp > 0:
+		return _focus.global_position + Vector3.UP * (1.5 if _focus.is_boss else 0.1)
+	var alive := alive_enemies()
+	if alive.is_empty():
+		return _look
+	var sum := Vector3.ZERO
+	var tall := 0.1
+	for e: Combatant in alive:
+		sum += e.global_position
+		if e.is_boss:
+			tall = 1.5
+	return sum / alive.size() + Vector3.UP * tall
+
+
+func _update_view(delta: float) -> void:
+	_look = _look.lerp(_group_center(), clampf(delta * 3.0, 0.0, 1.0))
+	var ahead := _look - player.global_position
+	ahead.y = 0.0
+	var forward := ahead.normalized() if ahead.length() > 0.1 else Vector3.FORWARD
+	var eye := player.global_position + Vector3.UP * eye_height - forward * eye_back
+	if _shake > 0.0:
+		_shake = maxf(0.0, _shake - delta)
+		eye += Vector3(randf_range(-1, 1), randf_range(-1, 1), 0.0) * _shake * 0.35
+	_camera.look_at_from_position(eye, _look)
+
+
+func _intro_text() -> String:
+	var names: PackedStringArray = []
+	for e: Combatant in enemies:
+		names.append(e.display_name)
+	if names.size() == 1:
+		return "%s aparece!" % names[0]
+	return "%s e %s aparecem!" % [", ".join(names.slice(0, names.size() - 1)), names[names.size() - 1]]
+
+
+func _battle_line(enemy: Combatant) -> String:
+	if enemy == null or not is_instance_valid(enemy) or enemy.battle_lines.is_empty():
+		return ""
+	return enemy.battle_lines[randi() % enemy.battle_lines.size()]
 
 
 func _wait(seconds: float) -> void:

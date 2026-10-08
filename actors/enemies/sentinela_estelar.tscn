@@ -14,6 +14,7 @@ height = 1.8
 [node name="SentinelaEstelar" type="CharacterBody3D"]
 script = ExtResource("c_script")
 display_name = "Sentinela estelar"
+battle_lines = PackedStringArray("Luzes giram dentro do peito de arenito.", "**INTRUSO.**", "A pedra range, como se lembrasse de andar.")
 team = 1
 max_hp = 20
 armor_class = 14

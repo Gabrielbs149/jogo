@@ -54,6 +54,9 @@ const DASH_SPEED := 16.0
 @export var is_boss: bool = false
 ## Fala ao ser encontrado no caminho (heróis que dá para chamar para o grupo).
 @export_multiline var greeting: String = ""
+## Na luta (D047): frases que aparecem na caixa de texto, uma no começo e de vez em quando antes de atacar.
+## Entre ** fica em vermelho (grito).
+@export var battle_lines: PackedStringArray = []
 
 var hp: int = 0
 var cooldowns: Array[float] = []
