@@ -4,6 +4,7 @@
 [ext_resource type="Material" path="res://assets/materials/calcada.tres" id="2_calcada"]
 [ext_resource type="PackedScene" path="res://assets/kits/polypizza/Low-Poly-Outdoor-Garden-Decorations/Water_Fountain.glb" id="3_Water_Fountain"]
 [ext_resource type="PackedScene" path="res://assets/vfx/agua_chafariz.tscn" id="4_agua_chafariz"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Halloween-Bits/Lantern.glb" id="5_Lantern"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_1"]
 top_radius = 6.4
@@ -215,3 +216,39 @@ transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 0, 3.92, 0)
 
 [node name="Agua" parent="." instance=ExtResource("4_agua_chafariz")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Lanterna" parent="." instance=ExtResource("5_Lantern")]
+transform = Transform3D(0.4243, 0, 0.4243, 0, 0.6, 0, -0.4243, 0, 0.4243, 2.7224, 1.19, 2.7224)
+
+[node name="Luz0" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7224, 1.64, 2.7224)
+light_color = Color(1, 0.72, 0.42, 1)
+light_energy = 0.9
+omni_range = 5.5
+
+[node name="Lanterna2" parent="." instance=ExtResource("5_Lantern")]
+transform = Transform3D(-0.4243, 0, 0.4243, 0, 0.6, 0, -0.4243, 0, -0.4243, 2.7224, 1.19, -2.7224)
+
+[node name="Luz1" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7224, 1.64, -2.7224)
+light_color = Color(1, 0.72, 0.42, 1)
+light_energy = 0.9
+omni_range = 5.5
+
+[node name="Lanterna3" parent="." instance=ExtResource("5_Lantern")]
+transform = Transform3D(-0.4243, 0, -0.4243, 0, 0.6, 0, 0.4243, 0, -0.4243, -2.7224, 1.19, -2.7224)
+
+[node name="Luz2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7224, 1.64, -2.7224)
+light_color = Color(1, 0.72, 0.42, 1)
+light_energy = 0.9
+omni_range = 5.5
+
+[node name="Lanterna4" parent="." instance=ExtResource("5_Lantern")]
+transform = Transform3D(0.4243, 0, -0.4243, 0, 0.6, 0, 0.4243, 0, 0.4243, -2.7224, 1.19, 2.7224)
+
+[node name="Luz3" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7224, 1.64, 2.7224)
+light_color = Color(1, 0.72, 0.42, 1)
+light_energy = 0.9
+omni_range = 5.5

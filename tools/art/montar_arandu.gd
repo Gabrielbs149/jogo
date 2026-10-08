@@ -291,6 +291,9 @@ func _walls() -> void:
 	for x: float in [-5.2, 5.2]:
 		_place("estandarte", _group("Walls"), Vector3(x, 0.4, -h + 2.35), 0.0, 1.0, "Estandarte")
 		_place("tocha", _group("Lights", false), Vector3(x * 0.42, 2.2, -h + 0.6), 0.0, 1.0, "TochaDoPortao")
+		# postes de lanterna dos dois lados do portão, por dentro e por fora (de noite o portão é escuro)
+		for z: float in [-h + 3.4, -h - 3.0]:
+			_place("poste_lanterna", _group("Lights", false), Vector3(x * 0.85, 0, z), _yaw_facing(Vector3(-signf(x), 0, 0)), 1.0, "PosteDoPortao")
 
 
 ## Ponto da muralha: lado 0 = norte (portão), 1 = sul, 2 = oeste, 3 = leste; t = posição ao longo do lado.
@@ -1191,6 +1194,8 @@ func _paint_ground() -> void:
 	shape.shape = bs
 	mat.set_shader_parameter("mask", load(ART + "chao_mascara.res"))
 	level.set("mapa_do_piso", load(ART + "chao_mascara.res"))
+	level.set("area_do_mapa", AREA)  # os passos leem a máscara com o mesmo tamanho
+	level.set("noite", true)  # D045: Arandu começa de noite (F3 troca no jogo)
 	var nav := level.get_node("Navigation") as NavigationRegion3D
 	nav.navigation_mesh.filter_baking_aabb = AABB(Vector3(-HALF - 3, -2, -HALF - 3), Vector3(HALF * 2 + 6, 22, HALF * 2 + 6))
 
