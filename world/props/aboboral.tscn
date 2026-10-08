@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Halloween-Bits/Pumpkin.glb" id="1_Pumpkin"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Halloween-Bits/Small_Pumpkin.glb" id="2_Small_Pumpkin"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Halloween-Bits/Yellow_pumpkin.glb" id="3_Yellow_pumpkin"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Halloween-Bits/Small_Pumpkin_2.glb" id="4_Small_Pumpkin_"]
+
+
+[node name="Aboboral" type="Node3D"]
+
+[node name="Abobora" parent="." instance=ExtResource("1_Pumpkin")]
+transform = Transform3D(0.55, 0, 0, 0, 0.55, 0, 0, 0, 0.55, 0, 0, 0)
+
+[node name="Abobora2" parent="." instance=ExtResource("2_Small_Pumpkin")]
+transform = Transform3D(0.3175, 0, 0.6238, 0, 0.7, 0, -0.6238, 0, 0.3175, 0.55, 0, 0.3)
+
+[node name="Abobora3" parent="." instance=ExtResource("3_Yellow_pumpkin")]
+transform = Transform3D(-0.412, 0, 0.5659, 0, 0.7, 0, -0.5659, 0, -0.412, -0.5, 0, 0.35)
+
+[node name="Abobora4" parent="." instance=ExtResource("4_Small_Pumpkin_")]
+transform = Transform3D(-0.4937, 0, -0.0789, 0, 0.5, 0, 0.0789, 0, -0.4937, 0.2, 0, -0.55)
+
+[node name="Abobora5" parent="." instance=ExtResource("2_Small_Pumpkin")]
+transform = Transform3D(-0.1844, 0, -0.571, 0, 0.6, 0, 0.571, 0, -0.1844, -0.45, 0, -0.4)

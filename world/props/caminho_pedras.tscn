@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Halloween-Bits/Path.glb" id="1_Path"]
+
+
+[node name="Caminho_pedras" type="Node3D"]
+
+[node name="Modelo" parent="." instance=ExtResource("1_Path")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)

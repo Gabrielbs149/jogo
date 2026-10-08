@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Halloween-Bits/Candles.glb" id="1_Candles"]
+
+
+[node name="Velas" type="Node3D"]
+
+[node name="Modelo" parent="." instance=ExtResource("1_Candles")]
+transform = Transform3D(-0.8, 0, 0, 0, 0.8, 0, 0, 0, -0.8, 0, 0, 0)

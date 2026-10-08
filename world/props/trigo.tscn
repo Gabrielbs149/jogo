@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Avulsos/Wheat_lPspzfC8Pu.glb" id="1_Wheat_lPspzfC8"]
+
+
+[node name="Trigo" type="Node3D"]
+
+[node name="Trigo" parent="." instance=ExtResource("1_Wheat_lPspzfC8")]
+transform = Transform3D(1.0986, 0.055, 0, -0.0549, 1.0966, 0.066, 0.0033, -0.0659, 1.098, 0.12, 0, 0)
+
+[node name="Trigo2" parent="." instance=ExtResource("1_Wheat_lPspzfC8")]
+transform = Transform3D(-0.869, 0.0435, 0.797, 0.059, 1.1785, 0, -0.7961, 0.0398, -0.8701, -0.1622, 0, 0.1486)
+
+[node name="Trigo3" parent="." instance=ExtResource("1_Wheat_lPspzfC8")]
+transform = Transform3D(0.1139, -0.0697, -1.2529, -0.0629, 1.2562, -0.0756, 1.2533, 0.0693, 0.1101, 0.028, 0, -0.3188)
+
+[node name="Trigo4" parent="." instance=ExtResource("1_Wheat_lPspzfC8")]
+transform = Transform3D(0.811, -0.1044, 1.0616, 0.0669, 1.3359, 0.0804, -1.0646, 0.0043, 0.8137, 0.073, 0, 0.0952)
+
+[node name="Trigo5" parent="." instance=ExtResource("1_Wheat_lPspzfC8")]
+transform = Transform3D(-1.0818, -0.0541, -0.1918, -0.055, 1.0986, 0, 0.1915, 0.0096, -1.0832, -0.2166, 0, -0.0384)
+
+[node name="Trigo6" parent="." instance=ExtResource("1_Wheat_lPspzfC8")]
+transform = Transform3D(0.9926, -0.0877, -0.632, 0.0589, 1.1764, -0.0708, 0.6353, 0.028, 0.994, 0.27, 0, -0.1717)
+
+[node name="Trigo7" parent="." instance=ExtResource("1_Wheat_lPspzfC8")]
+transform = Transform3D(-0.3233, -0.0892, 1.2145, -0.0629, 1.2562, 0.0756, -1.2162, -0.0412, -0.3268, -0.0312, 0, 0.1159)
+
+[node name="Trigo8" parent="." instance=ExtResource("1_Wheat_lPspzfC8")]
+transform = Transform3D(-0.6165, 0.0309, -1.1893, 0.067, 1.3383, 0, 1.1879, -0.0594, -0.6173, -0.1013, 0, -0.1953)
+
+[node name="Trigo9" parent="." instance=ExtResource("1_Wheat_lPspzfC8")]
+transform = Transform3D(1.0307, 0.0743, 0.377, -0.0549, 1.0966, -0.066, -0.3803, 0.043, 1.0313, 0.3006, 0, 0.1099)

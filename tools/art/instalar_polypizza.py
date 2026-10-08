@@ -27,6 +27,17 @@ PICK = {
     "Ultimate-RPG-Items-Bundle": ["Shield", "Shield_Round", "Shield_2", "Sword", "Sword_2", "Claymore", "Axe_Double", "Axe_Small", "Spear",
                                   "Armor_Metal", "Armor_Leather", "Knife", "Scythe", "Coin_Pouch", "Bag", "Parchment", "Scroll", "Gold_Ingots"],
     "Modular-Dungeons-Pack": "*",
+    # D044: Arandu maior (fazendas fora da muralha, cemitério da capela)
+    "Farm-Buildings-Bundle": "*",
+    "Halloween-Bits": ["Gravestone", "Gravestone_2", "Grave", "Grave_2", "Grave_Marker", "Gravemarker", "Damaged_Grave", "Crypt",
+                       "Iron_Fence", "Damaged_Iron_fence", "Fence_Gate", "Fence_Pillar", "Broken_Fence_Pillar", "Arch_Gate", "Shrine",
+                       "Shrine_2", "Lantern", "Post_Lantern", "Hanging_Lantern", "Pumpkin", "Small_Pumpkin", "Small_Pumpkin_2",
+                       "Yellow_pumpkin", "Autumn_pine", "Autumn_pine_2", "Autumn_pine_3", "Autumn_pine_4", "Autumn_pine_5",
+                       "Autumn_pine_6", "Dead_tree", "Dead_tree_2", "Tree_Dead_Large_Deco", "Coffin", "Bench", "Candles",
+                       "Plaque_Candles", "Path", "Path_2"],
+    # avulsos (achados pela busca do site) vão para a pasta Avulsos
+    "_avulsos": ["Guard_Tower_sbaM8I229r", "Broken_Cart_NBDHe8J7f9", "Stag_Statue_cKloIsNcT8", "Wall_Flag_TWDvd4qPzq",
+                 "Wheat_lPspzfC8Pu"],
 }
 
 
@@ -35,17 +46,21 @@ def main():
     total = 0
     for pack, wanted in PICK.items():
         man = json.load(open(SRC + pack + "/manifesto.json", encoding="utf-8"))
-        os.makedirs(DST + pack, exist_ok=True)
-        for m in man["modelos"]:
+        out = "Avulsos" if pack.startswith("_") else pack
+        os.makedirs(DST + out, exist_ok=True)
+        models = man["modelos"].values() if isinstance(man["modelos"], dict) else man["modelos"]
+        for m in models:
+            if not m.get("arquivo"):
+                continue
             name = m["arquivo"][:-4]
             if wanted != "*" and name not in wanted:
                 continue
             src = SRC + pack + "/" + m["arquivo"]
             if not os.path.exists(src):
                 continue
-            shutil.copyfile(src, DST + pack + "/" + m["arquivo"])
+            shutil.copyfile(src, DST + out + "/" + m["arquivo"])
             total += 1
-            credits.setdefault((m["autor"], m["licenca"]), set()).add(pack)
+            credits.setdefault((m["autor"], m["licenca"]), set()).add(out)
     lines = ["# Modelos do poly.pizza (D041)", "",
              "Baixados de https://poly.pizza por `tools/art/baixar_polypizza.py`. CC0 = domínio público; CC-BY 3.0 = livre com crédito ao autor.", ""]
     for (autor, lic), packs in sorted(credits.items()):
