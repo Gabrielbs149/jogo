@@ -12,6 +12,11 @@ enum Shape { TARGET, DASH, LINE, AREA, CONE, SELF, ALLIES_AROUND, ENEMIES_AROUND
 enum Roll { ATTACK, SAVE, AUTO }
 enum Save { DEX, CON, WIS }
 
+## O golpe com tempo do dano (D048): depois que o d20 acerta, este desafio diz quanto do dano entra.
+enum Golpe { AUTO, NENHUM, ANEL, BARRA, SEQUENCIA, MARTELAR, SEGURAR }
+## Como se defende quando um inimigo usa isto (D048).
+enum Defesa { AUTO, ANEL, DIRECAO, COMBO, FINTA }
+
 @export var title: String = "Golpe"
 @export_multiline var description: String = ""
 ## De onde vem no D&D 5.5 (aparece na ficha): "Ação · ataque com arma", "Magia de 1º círculo"...
@@ -39,6 +44,13 @@ enum Save { DEX, CON, WIS }
 @export var half_on_save: bool = true
 ## O golpe já vem com vantagem (rola 2d20 e fica com o maior).
 @export var advantage: bool = false
+
+@export_group("Na arena (D048)")
+## AUTO escolhe pelo tipo: ataque simples = Anel; investida = Sequência; vários golpes = Barra; área = Martelar;
+## habilidade grande (4+ PA) = Segurar; buff e cura = nenhum.
+@export var golpe: Golpe = Golpe.AUTO
+## AUTO: corpo a corpo = Anel; de longe = Direção.
+@export var defesa: Defesa = Defesa.AUTO
 
 @export_group("Ataque furtivo")
 ## d6 extras uma vez a cada 2,5 s quando tem vantagem ou um aliado a 2 m do alvo.
@@ -94,3 +106,27 @@ func average() -> float:
 	if dice_count <= 0:
 		return 0.0
 	return (dice_count * (dice_sides + 1) / 2.0 + bonus) * hits
+
+
+## O golpe com tempo que vale para esta habilidade (resolve o AUTO).
+func damage_qte() -> Golpe:
+	if golpe != Golpe.AUTO:
+		return golpe
+	if not is_offensive() or dice_count <= 0:
+		return Golpe.NENHUM
+	if ap_cost >= 4:
+		return Golpe.SEGURAR
+	if hits > 1:
+		return Golpe.BARRA
+	if shape == Shape.DASH:
+		return Golpe.SEQUENCIA
+	if roll == Roll.SAVE or shape in [Shape.AREA, Shape.CONE, Shape.LINE, Shape.ENEMIES_AROUND]:
+		return Golpe.MARTELAR
+	return Golpe.ANEL
+
+
+## Como o herói se defende disto (resolve o AUTO).
+func defense_qte() -> Defesa:
+	if defesa != Defesa.AUTO:
+		return defesa
+	return Defesa.DIRECAO if projectile else Defesa.ANEL

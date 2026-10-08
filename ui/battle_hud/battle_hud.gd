@@ -39,6 +39,9 @@ var _flash_tween: Tween
 @onready var _banner: Label = %Banner
 @onready var _flash: ColorRect = %Flash
 @onready var _qte: QuickTime = %Qte
+@onready var _dice: DiceRoller = %Dice
+@onready var _golpe: GolpeQte = %Golpe
+@onready var _ritmo: Label = %Ritmo
 @onready var _result: Control = %Result
 @onready var _result_title: Label = %ResultTitle
 @onready var _result_text: Label = %ResultText
@@ -83,10 +86,18 @@ func setup(arena: BattleArena) -> void:
 		bar.show_percentage = false
 		bar.add_theme_stylebox_override("fill", _flat(Color(0.9, 0.62, 0.35)))
 		bar.add_theme_stylebox_override("background", _flat(Color(0.16, 0.08, 0.1)))
+		# postura (D048): enche com golpes bons; cheia, quebra
+		var posture := ProgressBar.new()
+		posture.custom_minimum_size = Vector2(280, 4)
+		posture.show_percentage = false
+		posture.tooltip_text = "Postura: golpes bons e aparadas enchem; cheia, ele QUEBRA (perde a vez e leva +50%)."
+		posture.add_theme_stylebox_override("fill", _flat(Color(0.75, 0.85, 1.0)))
+		posture.add_theme_stylebox_override("background", _flat(Color(0.1, 0.1, 0.16)))
 		row.add_child(label)
 		row.add_child(bar)
+		row.add_child(posture)
 		_enemies.add_child(row)
-		_enemy_rows[enemy] = {"label": label, "bar": bar}
+		_enemy_rows[enemy] = {"label": label, "bar": bar, "posture": posture}
 	_set_choosing(false)
 	refresh()
 
@@ -136,13 +147,17 @@ func refresh() -> void:
 		if status["title"] != "":
 			names.append("%s (%d)" % [status["title"], ceili(float(status["time"]))])
 	_statuses.text = "   ".join(names)
+	_ritmo.text = ("Ritmo  " + "◆".repeat(_arena.ritmo) + "◇".repeat(maxi(0, 5 - _arena.ritmo)) + ("   +%d%%" % (_arena.ritmo * 10) if _arena.ritmo > 0 else ""))
 	for i: int in _buttons.size():
 		_buttons[i].disabled = not _choosing or not _arena.can_afford(i)
 	for key: Variant in _enemy_rows.keys():
 		var row: Dictionary = _enemy_rows[key]
 		var enemy := key as Combatant if is_instance_valid(key) else null
 		var alive := enemy != null and enemy.hp > 0
-		(row["label"] as Label).text = "%s%s   CA %d" % ["▶ " if alive and enemy == _arena.target else "", enemy.display_name if enemy else "", enemy.current_ac() if alive else 0]
+		(row["label"] as Label).text = "%s%s   CA %d%s" % ["▶ " if alive and enemy == _arena.target else "", enemy.display_name if enemy else "",
+			enemy.current_ac() if alive else 0, "   QUEBRADO" if alive and enemy.quebrado else ""]
+		(row["posture"] as ProgressBar).max_value = enemy.posture_limit() if enemy else 1
+		(row["posture"] as ProgressBar).value = enemy.postura if alive else 0
 		(row["bar"] as ProgressBar).max_value = enemy.max_hp if enemy else 1
 		(row["bar"] as ProgressBar).value = enemy.hp if alive else 0
 		(row["label"] as Label).modulate.a = 1.0 if alive else 0.4
@@ -217,6 +232,20 @@ func qte(world_pos: Vector3, duration: float, keys: Array[StringName], label: St
 	var cam := get_viewport().get_camera_3d()
 	var point := cam.unproject_position(world_pos) if cam and not cam.is_position_behind(world_pos) else get_viewport().get_visible_rect().size * Vector2(0.5, 0.42)
 	return await _qte.run(point, duration, keys, label)
+
+
+## Meio da janela da cena (onde aparecem o dado e os desafios).
+func scene_center() -> Vector2:
+	return get_viewport().get_visible_rect().size * Vector2(0.5, 0.36)
+
+
+## Mostra o(s) d20 rolando até parar no que saiu (D048).
+func roll_dice(dice: Array[Dictionary]) -> void:
+	await _dice.roll(dice, scene_center() + Vector2(0, -20))
+
+
+func golpe() -> GolpeQte:
+	return _golpe
 
 
 func banner(text: String, color: Color = Color(1, 0.9, 0.6)) -> void:

@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_ability")
 title = "Onda de cinza"
+defesa = 4
 description = "O guardião bate no chão: quem estiver perto faz salvamento de Destreza."
 dnd_note = ""
 kind = 0
