@@ -63,6 +63,11 @@ var _action_target: Combatant
 var _action_on: bool = false
 var _cam_eye := Vector3.ZERO
 var _cam_look := Vector3.ZERO
+## Adagas psíquicas do Tico (D051): uma em cada mão, e um par na frente da câmera na primeira pessoa.
+var _daggers: Array[AdagaPsiquica] = []
+var _view_rig: Node3D
+var _view_daggers: Array[AdagaPsiquica] = []
+var _view_time: float = 0.0
 
 @onready var _hud: BattleHUD = $BattleHUD
 @onready var _fx: CombatFX = $FX
@@ -110,6 +115,8 @@ func _ready() -> void:
 	var model := player.get_node_or_null("Model") as Node3D
 	if model:
 		_hud.setup_portrait(model)  # antes de sumir com o herói (o retrato é uma cópia dele)
+	if player.hero_id == "tico":
+		_daggers = AdagaPsiquica.attach_to(player)
 	if first_person and _camera:
 		_first_person_view()
 	if DisplayServer.get_name() != "headless":
@@ -120,6 +127,10 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if _view_rig:
+		# as adagas da tela respiram (sobe e desce devagar, balança um pouco)
+		_view_time += delta
+		_view_rig.position = Vector3(sin(_view_time * 1.3) * 0.006, sin(_view_time * 2.6) * 0.008, 0.0)
 	if first_person and _camera and is_instance_valid(player):
 		_update_view(delta)
 	if _marker and target and is_instance_valid(target) and target.hp > 0 and not _action_on:
@@ -168,7 +179,12 @@ func _run() -> void:
 	Audio.play_music("batalha", 0.6)
 	Audio.play_ambient("")
 	_hud.banner("Primeiro golpe!  +1 PA" if _first_strike else "Luta!")
+	for dagger: AdagaPsiquica in _daggers + _view_daggers:
+		dagger.materialize()
 	if not auto_play:
+		if not _view_daggers.is_empty():
+			Audio.play("aparar", -6.0, 0.0)
+			await _hud.say(player.display_name, "As adagas psíquicas acendem nas mãos de %s." % player.display_name, 0.3)
 		await _hud.say("", _intro_text(), 0.5)
 		var line := _battle_line(enemies[0])
 		if line != "":
@@ -274,10 +290,16 @@ func _player_action(index: int) -> void:
 			if is_instance_valid(t) and t.quebrado and int(r["amount"]) > 0:
 				CombatRules.scale_damage([r] as Array[Dictionary], 1.5, "quebrado")
 	# a cena do golpe
+	if ability.is_offensive() and not fumble:
+		_view_pose("thrust")
+		await _wait(0.18)
 	_action_cam(tgt)
 	await _wait(0.3)
 	if melee:
 		await _approach(player, tgt.global_position, 1.3 if not tgt.is_boss else 2.2)
+	for dagger: AdagaPsiquica in _daggers:
+		dagger.trail(true)
+		dagger.flare(0.6)
 	player.ability_used.emit(index)
 	Audio.play_at("golpe", player.global_position, -3.0)
 	await _wait(0.22)  # o golpe chega
@@ -296,8 +318,16 @@ func _player_action(index: int) -> void:
 			var t := r["target"] as Combatant
 			if is_instance_valid(t):
 				var high := 1.6 if t.is_boss else 0.55
-				_fx.slash(t.global_position + Vector3.UP * high, t.global_position - player.global_position,
-					Color(1.0, 0.85, 0.45) if r["kind"] == "crit" else ability.vfx_color, 1.6 if t.is_boss else 1.0)
+				var crit: bool = r["kind"] == "crit"
+				var color := Color(1.0, 0.85, 0.45) if crit else (AdagaPsiquica.PINK if not _daggers.is_empty() else ability.vfx_color)
+				var size := 1.6 if t.is_boss else 1.0
+				if _daggers.is_empty():
+					_fx.slash(t.global_position + Vector3.UP * high, t.global_position - player.global_position, color, size)
+				else:
+					# as duas adagas: um corte em X, roxo (dourado no crítico), e faíscas roxas
+					_fx.slash(t.global_position + Vector3.UP * high, t.global_position - player.global_position, color, size, 0.75)
+					_fx.slash(t.global_position + Vector3.UP * high, t.global_position - player.global_position, color, size, -0.75)
+					_fx.sparks(t.global_position + Vector3.UP * high, AdagaPsiquica.PURPLE, 20 if crit else 12)
 	for r: Dictionary in results:
 		var t := r["target"] as Combatant
 		if r["kind"] in ["miss", "save"] and is_instance_valid(t) and t != player and not fumble:
@@ -311,6 +341,8 @@ func _player_action(index: int) -> void:
 	if ability.is_offensive():
 		player.remove_flag("invisible")
 	await _wait(0.6)
+	for dagger: AdagaPsiquica in _daggers:
+		dagger.trail(false)
 	if melee and player.is_active():
 		await _return_home(player)
 	_action_cam(null)
@@ -593,6 +625,10 @@ func _enemy_turn(enemy: Combatant, extra: bool = false) -> void:
 				CombatRules.scale_damage([r] as Array[Dictionary], keep, defense["text"])
 		countered = bool(defense["counter"])
 		_after_grade(String(defense["grade"]))
+		if countered or keep <= 0.0:
+			_view_pose("cross" if countered else "dodge")
+		elif keep < 1.0:
+			_view_pose("dodge")
 		if keep <= 0.0:
 			player.dodged.emit()
 			_fx.floating_text(player.global_position, defense["text"], Color(0.8, 0.95, 1.0))
@@ -741,6 +777,8 @@ func _first_person_view() -> void:
 	for found: Node in player.find_children("*", "GeometryInstance3D", true, false):
 		(found as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
 	_fx.first_person_target = player
+	if not _daggers.is_empty():
+		_make_view_daggers()
 	player.hurt.connect(func(_by: Combatant) -> void:
 		_hud.hurt_flash()
 		_shake = 0.22)
@@ -814,6 +852,8 @@ func _action_cam(on: Combatant) -> void:
 	var mode := GeometryInstance3D.SHADOW_CASTING_SETTING_ON if _action_on else GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
 	for found: Node in player.find_children("*", "GeometryInstance3D", true, false):
 		(found as GeometryInstance3D).cast_shadow = mode
+	if _view_rig:
+		_view_rig.visible = not _action_on
 
 
 func _intro_text() -> String:
@@ -833,3 +873,53 @@ func _battle_line(enemy: Combatant) -> String:
 
 func _wait(seconds: float) -> void:
 	await get_tree().create_timer(seconds).timeout
+
+
+# ---------- adagas na tela (D051)
+
+## As adagas na frente da câmera, nos cantos de baixo, com as lâminas para cima e para dentro (como no desenho).
+func _make_view_daggers() -> void:
+	_view_rig = Node3D.new()
+	_view_rig.name = "AdagasNaTela"
+	_camera.add_child(_view_rig)
+	for side: float in [-1.0, 1.0]:
+		var dagger := AdagaPsiquica.new()
+		dagger.glow = 0.9
+		dagger.name = "Adaga" + ("Esquerda" if side < 0 else "Direita")
+		_view_rig.add_child(dagger)
+		dagger.transform = _view_rest(side)
+		_view_daggers.append(dagger)
+
+
+func _view_rest(side: float) -> Transform3D:
+	# a janela da cena acaba a 70% da altura: o cabo fica logo acima dela e a lâmina sobe para dentro da cena
+	return Transform3D(Basis.from_euler(Vector3(deg_to_rad(-12), deg_to_rad(side * -8), deg_to_rad(side * -22))),
+		Vector3(side * 0.36, -0.27, -0.85))
+
+
+## Movimentos das adagas da tela: "thrust" (estocada para a frente, as duas se fechando), "cross" (cruzam em X na
+## frente: aparou) e "dodge" (vão para o lado: esquivou).
+func _view_pose(kind: String) -> void:
+	for i: int in _view_daggers.size():
+		var dagger := _view_daggers[i]
+		var side := -1.0 if i == 0 else 1.0
+		var rest := _view_rest(side)
+		var tween := create_tween()
+		match kind:
+			"thrust":
+				var back := rest.translated(Vector3(0, -0.04, 0.12))
+				var hit := Transform3D(Basis.from_euler(Vector3(deg_to_rad(-78), 0, deg_to_rad(side * -30))), Vector3(side * 0.12, -0.15, -1.15))
+				tween.tween_property(dagger, "transform", back, 0.07).set_ease(Tween.EASE_OUT)
+				tween.tween_property(dagger, "transform", hit, 0.08).set_ease(Tween.EASE_IN)
+				tween.tween_interval(0.15)
+				tween.tween_property(dagger, "transform", rest, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			"cross":
+				var crossed := Transform3D(Basis.from_euler(Vector3(deg_to_rad(-6), 0, deg_to_rad(side * 38))), Vector3(side * 0.08, -0.2, -0.95))
+				tween.tween_property(dagger, "transform", crossed, 0.06)
+				tween.tween_interval(0.3)
+				tween.tween_property(dagger, "transform", rest, 0.3).set_trans(Tween.TRANS_SINE)
+			"dodge":
+				var moved := rest.translated(Vector3(-0.22, -0.05, 0.05))
+				tween.tween_property(dagger, "transform", moved, 0.08)
+				tween.tween_property(dagger, "transform", rest, 0.35).set_trans(Tween.TRANS_SINE)
+		dagger.flare(0.4)

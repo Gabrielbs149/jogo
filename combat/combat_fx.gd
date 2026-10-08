@@ -169,7 +169,7 @@ func sparks(at: Vector3, color: Color, amount: int = 14) -> void:
 
 
 ## O rastro do golpe (D050): um arco de luz que varre na frente do alvo e some.
-func slash(at: Vector3, facing: Vector3, color: Color, size: float = 1.0) -> void:
+func slash(at: Vector3, facing: Vector3, color: Color, size: float = 1.0, angle: float = INF) -> void:
 	var mesh := MeshInstance3D.new()
 	var im := ImmediateMesh.new()
 	mesh.mesh = im
@@ -189,7 +189,7 @@ func slash(at: Vector3, facing: Vector3, color: Color, size: float = 1.0) -> voi
 		mesh.global_basis = cam.global_basis
 	elif facing.length() > 0.01:
 		mesh.global_basis = Basis.looking_at(Vector3(facing.x, 0, facing.z).normalized(), Vector3.UP)
-	mesh.rotate_object_local(Vector3.BACK, randf_range(-0.9, 0.9))
+	mesh.rotate_object_local(Vector3.BACK, randf_range(-0.9, 0.9) if angle == INF else angle)
 	var tween := create_tween()
 	tween.tween_method(func(t: float) -> void: _draw_slash(im, t, size), 0.0, 1.0, 0.24)
 	tween.tween_property(mat, "albedo_color:a", 0.0, 0.15)
