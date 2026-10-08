@@ -382,8 +382,22 @@ s.save("poco_telhado")
 COUNTER_Y = 0.765  # tampo do balcão da Market_Stand_2 (medido nos vértices)
 
 
+CRATE_NAMES = {"Apple": "maca", "Pear": "pera", "Lemon": "limao", "Cabbage": "couve", "Carrot": "cenoura", "Onion": "cebola",
+               "Fish": "peixe"}
+
+
+def crate_scene(item, scale, lying=False):
+    """Caixote raso cheio de uma mercadoria (D049): uma peça própria (world/props/caixa_<nome>.tscn), para o editor
+    separar a banca e mover o caixote inteiro. Devolve o caminho da peça."""
+    file = "caixa_" + CRATE_NAMES[item.split("/")[-1]]
+    s = Scene(file.capitalize(), groups=AUTO)
+    crate_of(s, item, scale, (0, 0, 0), lying)
+    s.save(file)
+    return "res://world/props/%s.tscn" % file
+
+
 def crate_of(s, item, scale, at, lying=False):
-    """Caixote raso cheio de uma mercadoria (duas camadas), apoiado no balcão em `at`."""
+    """Caixote raso cheio de uma mercadoria (duas camadas), com o fundo em `at`."""
     x, y, z = at
     s.piece("objetos/FarmCrate_Empty", (x, y, z), 0.0, 1.0, name="Caixote")
     k = 0
@@ -401,7 +415,7 @@ def stall(file, title, crates=(), loaves=()):
     s = Scene(title, groups=AUTO)
     s.glb(MV + "Market_Stand_2", (0, 0, 0), math.pi, K_MV, name="Banca")
     for k, (item, sc, lying) in enumerate(crates):
-        crate_of(s, item, sc, (-0.85 + k * 0.85, COUNTER_Y, -0.25), lying)
+        s.scene("Caixa_" + CRATE_NAMES[item.split("/")[-1]], crate_scene(item, sc, lying), (-0.85 + k * 0.85, COUNTER_Y, -0.25))
     for k, (item, sc, rot) in enumerate(loaves):
         s.glb(item, (-1.0 + (k % 6) * 0.4, COUNTER_Y, -0.45 + (k // 6) * 0.35), (0, rot + k * 0.3, 0), sc, name="Mercadoria")
     for x in (-1.6, 1.6):

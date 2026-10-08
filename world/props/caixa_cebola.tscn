@@ -1,0 +1,100 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/FarmCrate_Empty.gltf" id="1_FarmCrate_Empt"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Food-Kit/Onion.glb" id="2_Onion"]
+
+
+[node name="Caixa_cebola" type="Node3D" groups=["colisao_auto"]]
+
+[node name="Caixote" parent="." instance=ExtResource("1_FarmCrate_Empt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Mercadoria" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, -0.258, 0.06, -0.092)
+
+[node name="Mercadoria2" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(-0.058, 0, 0.4462, 0, 0.45, 0, -0.4462, 0, -0.058, -0.246, 0.06, 0.006)
+
+[node name="Mercadoria3" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(-0.4351, 0, -0.115, 0, 0.45, 0, 0.115, 0, -0.4351, -0.234, 0.06, 0.104)
+
+[node name="Mercadoria4" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.1701, 0, -0.4166, 0, 0.45, 0, 0.4166, 0, 0.1701, -0.102, 0.06, -0.128)
+
+[node name="Mercadoria5" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.3912, 0, 0.2224, 0, 0.45, 0, -0.2224, 0, 0.3912, -0.132, 0.06, 0.012)
+
+[node name="Mercadoria6" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(-0.2709, 0, 0.3593, 0, 0.45, 0, -0.3593, 0, -0.2709, -0.12, 0.06, 0.11)
+
+[node name="Mercadoria7" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(-0.3214, 0, -0.3149, 0, 0.45, 0, 0.3149, 0, -0.3214, 0.012, 0.06, -0.122)
+
+[node name="Mercadoria8" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.3537, 0, -0.2782, 0, 0.45, 0, 0.2782, 0, 0.3537, -0.018, 0.06, 0.018)
+
+[node name="Mercadoria9" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.2303, 0, 0.3866, 0, 0.45, 0, -0.3866, 0, 0.2303, -0.006, 0.06, 0.116)
+
+[node name="Mercadoria10" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(-0.4131, 0, 0.1785, 0, 0.45, 0, -0.1785, 0, -0.4131, 0.126, 0.06, -0.116)
+
+[node name="Mercadoria11" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(-0.1238, 0, -0.4326, 0, 0.45, 0, 0.4326, 0, -0.1238, 0.138, 0.06, -0.018)
+
+[node name="Mercadoria12" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.445, 0, -0.067, 0, 0.45, 0, 0.067, 0, 0.445, 0.108, 0.06, 0.122)
+
+[node name="Mercadoria13" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.0092, 0, 0.4499, 0, 0.45, 0, -0.4499, 0, 0.0092, 0.24, 0.06, -0.11)
+
+[node name="Mercadoria14" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(-0.4473, 0, -0.0489, 0, 0.45, 0, 0.0489, 0, -0.4473, 0.252, 0.06, -0.012)
+
+[node name="Mercadoria15" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.1061, 0, -0.4373, 0, 0.45, 0, 0.4373, 0, 0.1061, 0.222, 0.06, 0.128)
+
+[node name="Mercadoria16" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.42, 0, 0.1616, 0, 0.45, 0, -0.1616, 0, 0.42, -0.186, 0.12, -0.104)
+
+[node name="Mercadoria17" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(-0.2143, 0, 0.3957, 0, 0.45, 0, -0.3957, 0, -0.2143, -0.174, 0.12, -0.006)
+
+[node name="Mercadoria18" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(-0.3648, 0, -0.2635, 0, 0.45, 0, 0.2635, 0, -0.3648, -0.162, 0.12, 0.092)
+
+[node name="Mercadoria19" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.3083, 0, -0.3278, 0, 0.45, 0, 0.3278, 0, 0.3083, -0.072, 0.12, -0.098)
+
+[node name="Mercadoria20" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.2853, 0, 0.348, 0, 0.45, 0, -0.348, 0, 0.2853, -0.06, 0.12, 0)
+
+[node name="Mercadoria21" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(-0.3819, 0, 0.2381, 0, 0.45, 0, -0.2381, 0, -0.3819, -0.048, 0.12, 0.098)
+
+[node name="Mercadoria22" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(-0.1869, 0, -0.4094, 0, 0.45, 0, 0.4094, 0, -0.1869, 0.042, 0.12, -0.092)
+
+[node name="Mercadoria23" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.43, 0, -0.1326, 0, 0.45, 0, 0.1326, 0, 0.43, 0.054, 0.12, 0.006)
+
+[node name="Mercadoria24" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.0761, 0, 0.4435, 0, 0.45, 0, -0.4435, 0, 0.0761, 0.066, 0.12, 0.104)
+
+[node name="Mercadoria25" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(-0.4496, 0, 0.0183, 0, 0.45, 0, -0.0183, 0, -0.4496, 0.198, 0.12, -0.128)
+
+[node name="Mercadoria26" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.0398, 0, -0.4482, 0, 0.45, 0, 0.4482, 0, 0.0398, 0.168, 0.12, 0.012)
+
+[node name="Mercadoria27" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.4394, 0, 0.0972, 0, 0.45, 0, -0.0972, 0, 0.4394, 0.18, 0.12, 0.11)
+
+[node name="Mercadoria28" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(-0.153, 0, 0.4232, 0, 0.45, 0, -0.4232, 0, -0.153, 0.312, 0.12, -0.122)
+
+[node name="Mercadoria29" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(-0.4, 0, -0.2062, 0, 0.45, 0, 0.2062, 0, -0.4, 0.282, 0.12, 0.018)
+
+[node name="Mercadoria30" parent="." instance=ExtResource("2_Onion")]
+transform = Transform3D(0.2561, 0, -0.37, 0, 0.45, 0, 0.37, 0, 0.2561, 0.294, 0.12, 0.116)

@@ -417,7 +417,7 @@ func _update_hints() -> void:
 			[["Alt"], "solta da grade"], [["Esc"], "para de colocar"]]
 	elif not selection.is_empty() and not (selection.size() == 1 and selection[0] == level):
 		list = [[["Arrastar"], "move"], [["Q", "E"], "gira 90°"], [["←", "→", "↑", "↓"], "anda 1 célula"], [["C"], "centraliza na grade"],
-			[["Del"], "apaga"], [["Ctrl", "D"], "duplica"], [["F"], "foca"], [["Esc"], "solta"]]
+			[["Del"], "apaga"], [["Ctrl", "D"], "duplica"], [["X"], "separa as partes"], [["Alt"], "+ clique: pega uma parte"], [["Esc"], "solta"]]
 	else:
 		list = [[["Clique"], "escolhe uma peça"], [["Arrastar"], "escolhe várias"], [["W", "A", "S", "D"], "anda"], [["Botão dir."], "gira a câmera"],
 			[["Roda"], "aproxima"], [["G"], "grade %s" % ("ligada" if snap else "desligada")], [["T"], "de cima"], [["Ctrl", "Z"], "desfaz"]]
@@ -1013,6 +1013,8 @@ func _on_key(event: InputEventKey) -> void:
 			_toast_text("Centralizado na grade")
 		KEY_DELETE, KEY_BACKSPACE:
 			delete_selection()
+		KEY_X:
+			separate_selection()
 		KEY_G:
 			_snap_button.button_pressed = not _snap_button.button_pressed
 			_toast_text("Grade %s" % ("ligada" if snap else "desligada"))
@@ -1212,21 +1214,105 @@ func _apply(entry: Dictionary, backwards: bool) -> void:
 			(entry["object"] as Object).set(entry["property"], entry["from"] if backwards else entry["to"])
 			_refresh_tree()
 		"add", "del":
-			var removing: bool = (entry["kind"] == "add") == backwards
-			for i: int in nodes.size():
-				var node := nodes[i] as Node
-				if removing:
-					if node.get_parent():
-						node.get_parent().remove_child(node)
-				else:
-					var parent := entry["parents"][i] as Node
-					parent.add_child(node)
-					parent.move_child(node, mini(int(entry["indexes"][i]), parent.get_child_count() - 1))
-					_restore_owned(node, entry["owned"][i])
+			_swap_nodes(entry, (entry["kind"] == "add") == backwards)
+			_refresh_all()
+		"sep":
+			# separar = tira a peça inteira e põe as partes; desfazer = o contrário
+			_swap_nodes(entry["whole"], not backwards)
+			_swap_nodes(entry["parts"], backwards)
 			_refresh_all()
 	dirty = true
 	select_nodes(selection.filter(func(n: Node3D) -> bool: return is_instance_valid(n) and n.is_inside_tree()))
 	_update_status()
+
+
+func _swap_nodes(entry: Dictionary, removing: bool) -> void:
+	var nodes: Array = entry.get("nodes", [])
+	for i: int in nodes.size():
+		var node := nodes[i] as Node
+		if removing:
+			if node.get_parent():
+				node.get_parent().remove_child(node)
+		else:
+			var parent := entry["parents"][i] as Node
+			parent.add_child(node)
+			parent.move_child(node, mini(int(entry["indexes"][i]), parent.get_child_count() - 1))
+			_restore_owned(node, entry["owned"][i])
+
+
+## Separar (X, D049): a peça escolhida vira as partes dela, soltas no mesmo lugar e no mesmo grupo da fase.
+## Cada modelo de dentro (a barraca, cada caixote cheio, cada pão, a bigorna do ferreiro...) vira uma peça própria;
+## o que sobra (tábuas, placa, luz) vira uma peça "Base". Dá para desfazer (Ctrl+Z).
+func separate_selection() -> void:
+	var whole := {"nodes": [], "parents": [], "indexes": [], "owned": []}
+	var parts := {"nodes": [], "parents": [], "indexes": [], "owned": []}
+	var made: Array[Node3D] = []
+	for node: Node3D in selection.duplicate():
+		if node == level or node.owner != level or node.scene_file_path == "":
+			continue
+		var models: Array[Node3D] = []
+		var rest: Array[Node] = []
+		for child: Node in node.get_children():
+			if child.owner != node:
+				continue  # colisão automática e o que é criado na hora
+			if child is Node3D and child.scene_file_path != "":
+				models.append(child as Node3D)
+			else:
+				rest.append(child)
+		if models.size() + (0 if rest.is_empty() else 1) < 2:
+			_toast_text("%s já é uma peça só" % node.name)
+			continue
+		var parent := node.get_parent()
+		var collide := node.is_in_group("colisao_auto")
+		for model: Node3D in models:
+			var piece := (load(model.scene_file_path) as PackedScene).instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node3D
+			piece.name = model.name
+			parent.add_child(piece, true)
+			piece.owner = level
+			piece.global_transform = model.global_transform
+			if collide:
+				piece.add_to_group("colisao_auto", true)
+			made.append(piece)
+		if not rest.is_empty():
+			var base := Node3D.new()
+			base.name = String(node.name) + "Base"
+			parent.add_child(base, true)
+			base.owner = level
+			base.global_transform = node.global_transform
+			if collide:
+				base.add_to_group("colisao_auto", true)
+			for child: Node in rest:
+				var copy := child.duplicate()
+				base.add_child(copy, true)
+				_take_over(copy)
+			made.append(base)
+		(whole["nodes"] as Array).append(node)
+		(whole["parents"] as Array).append(parent)
+		(whole["indexes"] as Array).append(node.get_index())
+		(whole["owned"] as Array).append(_owned_paths(node))
+		parent.remove_child(node)
+	if made.is_empty():
+		return
+	for piece: Node3D in made:
+		(parts["nodes"] as Array).append(piece)
+		(parts["parents"] as Array).append(piece.get_parent())
+		(parts["indexes"] as Array).append(piece.get_index())
+		(parts["owned"] as Array).append(_owned_paths(piece))
+	_push({"kind": "sep", "whole": whole, "parts": parts})
+	dirty = true
+	_refresh_all()
+	select_nodes(made)
+	_toast_text("Separado em %d partes (Ctrl+Z junta de novo)" % made.size())
+
+
+## A cópia passa a ser da fase, com malha, material e forma próprios (os de antes moravam dentro do arquivo da peça).
+func _take_over(node: Node) -> void:
+	for found: Node in [node] + node.find_children("*", "", true, false):
+		found.owner = level
+		for prop: String in ["mesh", "material_override", "shape"]:
+			var value: Variant = found.get(prop)
+			if value is Resource and (value as Resource).resource_path.contains("::"):
+				found.set(prop, (value as Resource).duplicate(true))
 
 
 ## Nó de dentro de uma peça (um inimigo dentro do grupo, a fala dentro do morador): para a mudança
@@ -1656,8 +1742,8 @@ func _build_inspector(other: Node = null) -> void:
 	if node is Node3D:
 		var actions := HFlowContainer.new()
 		for spec: Array in [["↺ 90°", func() -> void: rotate_selection(PI / 2.0)], ["↻ 90°", func() -> void: rotate_selection(-PI / 2.0)],
-				["Centralizar", center_selection], ["Duplicar", duplicate_selection], ["Apagar", delete_selection]]:
-			_tool_button(actions, spec[0], "", spec[1])
+				["Centralizar", center_selection], ["Duplicar", duplicate_selection], ["Separar", separate_selection], ["Apagar", delete_selection]]:
+			_tool_button(actions, spec[0], "Separar (X): a peça vira as partes dela, soltas (a banca, cada caixote, cada pão)" if spec[0] == "Separar" else "", spec[1])
 		_inspector.add_child(actions)
 	var name_edit := LineEdit.new()
 	name_edit.text = node.name
