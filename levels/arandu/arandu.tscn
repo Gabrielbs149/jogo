@@ -9442,20 +9442,20 @@ visibility_range_end_margin = 10.0
 visibility_range_fade_mode = 1
 multimesh = ExtResource("622_mhqu4")
 
-[node name="CenaTico" type="Node3D" parent="." unique_id=107436486]
+[node name="CenaTico" type="Node3D" parent="." unique_id=897021503]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -10.9, 0, -58.237137)
 
-[node name="Marquise" parent="CenaTico" unique_id=283248582 instance=ExtResource("626_0he68")]
+[node name="Marquise" parent="CenaTico" unique_id=698287145 instance=ExtResource("626_0he68")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.41582108, 0, 1.8000002)
 
-[node name="TicoSentado" type="Marker3D" parent="CenaTico" unique_id=1302427588]
+[node name="TicoSentado" type="Marker3D" parent="CenaTico" unique_id=1740184970]
 transform = Transform3D(0.69190544, 0, -0.72198814, 0, 1, 0, 0.7219882, 0, 0.6919054, -0.1841774, 0, 1.3000002)
 
-[node name="Tika" parent="CenaTico" unique_id=389707691 instance=ExtResource("627_otlw4")]
+[node name="Tika" parent="CenaTico" unique_id=785967675 instance=ExtResource("627_otlw4")]
 transform = Transform3D(-0.69190544, 0, 0.72198814, 0, 1, 0, -0.7219882, 0, -0.6919054, 1.0158195, 0, 0.15000057)
 visible = false
 
-[node name="Fogueirinha" type="Node3D" parent="CenaTico" unique_id=444098077]
+[node name="Fogueirinha" type="Node3D" parent="CenaTico" unique_id=1413880762]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.4658203, 0, 0.8249998)
 visible = false
 
@@ -9474,13 +9474,13 @@ transform = Transform3D(-0.38890874, 0, 0.38890874, 0, 0.55, 0, -0.38890874, 0, 
 [node name="Pedra5" parent="CenaTico/Fogueirinha" unique_id=1317010003 instance=ExtResource("632_pv186")]
 transform = Transform3D(-0.55, 0, -4.8082526e-08, 0, 0.55, 0, 4.8082526e-08, 0, -0.55, -0.19999981, 0, 0)
 
-[node name="Pedra6" parent="CenaTico/Fogueirinha" unique_id=797165046 instance=ExtResource("628_2oqiw")]
+[node name="Pedra6" parent="CenaTico/Fogueirinha" unique_id=453058988 instance=ExtResource("628_2oqiw")]
 transform = Transform3D(-0.38890877, 0, -0.38890868, 0, 0.55, 0, 0.38890868, 0, -0.38890877, -0.14142132, 0, -0.14142227)
 
-[node name="Pedra7" parent="CenaTico/Fogueirinha" unique_id=1522014849 instance=ExtResource("629_bgv72")]
+[node name="Pedra7" parent="CenaTico/Fogueirinha" unique_id=1192746135 instance=ExtResource("629_bgv72")]
 transform = Transform3D(6.5586847e-09, 0, -0.55, 0, 0.55, 0, 0.55, 0, 6.5586847e-09, 0, 0, -0.20000076)
 
-[node name="Pedra8" parent="CenaTico/Fogueirinha" unique_id=823431889 instance=ExtResource("630_6ogb1")]
+[node name="Pedra8" parent="CenaTico/Fogueirinha" unique_id=1741787207 instance=ExtResource("630_6ogb1")]
 transform = Transform3D(0.38890865, 0, -0.3889088, 0, 0.55, 0, 0.3889088, 0, 0.38890865, 0.14142132, 0, -0.14142227)
 
 [node name="Fogo" parent="CenaTico/Fogueirinha" unique_id=1563749417 instance=ExtResource("633_uttk5")]
@@ -9500,7 +9500,7 @@ light_energy = 0.9
 omni_range = 3.0
 base_energy = 0.9
 
-[node name="EspetoNoFogo" type="Marker3D" parent="CenaTico" unique_id=2119112732]
+[node name="EspetoNoFogo" type="Marker3D" parent="CenaTico" unique_id=118519166]
 transform = Transform3D(0.79832375, 0.120654844, 0.5900183, -0.14943814, 0.9887711, 0, -0.583393, -0.088171236, 0.80739, 0.4658203, 0.2, 0.8249998)
 
 [node name="Rato" parent="CenaTico" unique_id=1395001395 instance=ExtResource("634_aha6h")]
@@ -9513,23 +9513,23 @@ metadata/inclinacao = 0.45
 transform = Transform3D(-0.9787194, 0, 0.2052034, 0, 1, 0, -0.20520343, 0, -0.97871935, 0.8958206, 0.48, 0.3699999)
 visible = false
 
-[node name="Plano1" type="Camera3D" parent="CenaTico" unique_id=1746477607]
+[node name="Plano1" type="Camera3D" parent="CenaTico" unique_id=1827925083]
 transform = Transform3D(-0.89301664, 0.12184795, -0.43321395, 0, 0.96264714, 0.27075902, 0.45002362, 0.2417923, -0.8596599, -1.1841774, 1.5, -2.4499998)
 fov = 50.0
 
-[node name="Plano2" type="Camera3D" parent="CenaTico" unique_id=1261477924]
+[node name="Plano2" type="Camera3D" parent="CenaTico" unique_id=1843582030]
 transform = Transform3D(-0.25873613, -0.14818047, 0.9545146, 0, 0.98816353, 0.15340418, -0.96594805, 0.039691202, -0.25567362, 2.6158218, 1, 0.5500002)
 fov = 34.0
 
-[node name="Plano3" type="Camera3D" parent="CenaTico" unique_id=547803523]
+[node name="Plano3" type="Camera3D" parent="CenaTico" unique_id=2101333445]
 transform = Transform3D(0.25873616, 0.13204245, -0.95688057, 0, 0.99061286, 0.13669726, 0.96594805, -0.035368524, 0.25630736, -1.7841797, 1.15, 0.9000006)
 fov = 34.0
 
-[node name="Plano4" type="Camera3D" parent="CenaTico" unique_id=768238472]
+[node name="Plano4" type="Camera3D" parent="CenaTico" unique_id=844948286]
 transform = Transform3D(-0.9980322, 0.024695346, -0.057635516, 0, 0.9191773, 0.393844, 0.06270337, 0.393069, -0.91736853, 0.11582184, 2.6, -4.0500007)
 fov = 50.0
 
-[node name="Plano5" type="Camera3D" parent="CenaTico" unique_id=168907371]
+[node name="Plano5" type="Camera3D" parent="CenaTico" unique_id=11914128]
 transform = Transform3D(-0.44721267, -0.27216554, 0.85201335, 0, 0.9525794, 0.30429018, -0.89442766, 0.13608243, -0.42600557, 1.1658211, 0.42, 0.47500038)
 fov = 38.0
 

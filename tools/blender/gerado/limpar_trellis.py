@@ -1,8 +1,10 @@
 """Limpa o modelo do TRELLIS: tira o chão, junta vértices, remove sobras, vira a frente para +Y, ajusta altura e reduz faces.
-Uso: blender --background --factory-startup --python bl_limpa_trellis.py -- entrada.glb saida.glb saida.blend [altura] [faces] [giro_graus] [desenho_ref.png]
+Uso: blender --background --factory-startup --python limpar_trellis.py -- entrada.glb saida.glb saida.blend [altura] [faces] [giro_graus] [desenho_ref.png] [nome]
 Ex.: ... -- art_src/tico_lirou_trellis_bruto.glb actors/tico_lirou/tico_lirou.glb art_src/tico_lirou.blend 1.18 30000 180 art_src/ref/tico_ref.png
 """
-import bpy, bmesh, sys, math
+import bpy, bmesh, sys, math, time, functools
+print = functools.partial(print, flush=True)
+_T0 = time.time()
 import numpy as np
 from mathutils import Vector
 
@@ -49,7 +51,8 @@ if REF:
         src_v = tp[used, ch]
         order = np.argsort(src_v)
         q = np.empty_like(src_v); q[order] = np.linspace(0, 1, len(src_v))
-        tp[used, ch] = np.quantile(rp[:, ch], q)
+        ref_sorted = np.sort(rp[:, ch])  # (np.quantile com milhões de pontos trava; dá na mesma pegar direto da lista ordenada)
+        tp[used, ch] = ref_sorted[np.round(q * (len(ref_sorted) - 1)).astype(int)]
     # o que era azul forte (olhos) mantém o azul original, só mais claro: o casamento por canal desbota
     t0 = pix0[:, :, :3].reshape(-1, 3)
     blue = used & (t0[:, 2] - np.maximum(t0[:, 0], t0[:, 1]) > 0.08)
@@ -60,6 +63,7 @@ if REF:
     img.update()
     print("cores casadas com", REF)
 
+print("[%.0fs] cores" % (time.time() - _T0))
 bm = bmesh.new(); bm.from_mesh(me)
 uv = bm.loops.layers.uv.active
 zs = np.array([v.co.z for v in bm.verts])
@@ -77,12 +81,27 @@ if cand:
     zc = np.array([f.calc_center_median().z for f in cand])
     hist, edges = np.histogram(zc, bins=40)
     k = int(np.argmax(hist)); floor_z = (edges[k] + edges[k + 1]) / 2
+# só conta como chão se estiver lá embaixo (modelo sem chão: o "pico" cairia no meio do corpo)
+if floor_z is not None and floor_z > zmin + (max(zs) - zmin) * 0.08:
+    floor_z = None
 kill = [f for f in cand if floor_z is not None and abs(f.calc_center_median().z - floor_z) < 0.02]
 bmesh.ops.delete(bm, geom=kill, context="FACES")
 print("chão removido:", len(kill), "faces em z", floor_z)
 
 # 2) junta vértices (TRELLIS entrega em pedaços) e remove ilhas pequenas
 bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.0008)
+# reduz faces logo depois de juntar (com as ilhas já apagadas o Decimate do Blender trava por muitos minutos), em passos
+# de no máximo metade: cortar de 280 mil para 30 mil de uma vez rasga a malha (Tika, D046)
+bm.to_mesh(me); bm.free()
+bpy.context.view_layer.objects.active = obj
+while len(me.polygons) > FACES * 1.05:
+    before = len(me.polygons)
+    dec = obj.modifiers.new("Reduz", "DECIMATE"); dec.ratio = max(0.5, FACES / len(me.polygons))
+    bpy.ops.object.modifier_apply(modifier=dec.name)
+    print("reduzido para", len(me.polygons), "faces")
+    if len(me.polygons) > before * 0.97:
+        break  # não desce mais sem rasgar as bordas: fica assim
+bm = bmesh.new(); bm.from_mesh(me)
 bm.verts.ensure_lookup_table(); bm.faces.ensure_lookup_table()
 seen = set(); parts = []
 for f in bm.faces:
@@ -108,11 +127,11 @@ bmesh.ops.delete(bm, geom=small, context="FACES")
 print("partes:", len(parts), "ilhas removidas:", len(small), "z0", round(z0, 3), "zr", round(zr, 3))
 bm.to_mesh(me); bm.free()
 
+print("[%.0fs] ilhas" % (time.time() - _T0))
 # 3) reduz faces
-if len(me.polygons) > FACES:
-    dec = obj.modifiers.new("Reduz", "DECIMATE"); dec.ratio = FACES / len(me.polygons)
-    bpy.ops.object.modifier_apply(modifier=dec.name)
+# (a redução de faces foi feita no passo 2)
 
+print("[%.0fs] reduz" % (time.time() - _T0))
 # 4) frente para +Y, pés na origem, altura do herói
 co = np.empty(len(me.vertices) * 3); me.vertices.foreach_get("co", co); co = co.reshape(-1, 3)
 t = math.radians(TURN)
@@ -151,7 +170,8 @@ print("tiras no chão removidas:", len(kill), "faces em", sorted(loose))
 bm.to_mesh(me); bm.free()
 for p in me.polygons:
     p.use_smooth = True
-obj.name = "TicoLirou"; me.name = "TicoLirou"
+NAME = argv[7] if len(argv) > 7 else "TicoLirou"
+obj.name = NAME; me.name = NAME
 print("final:", len(me.polygons), "faces")
 
 bpy.ops.export_scene.gltf(filepath=out_glb, export_format="GLB", export_apply=True, export_yup=True)

@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bxtq4bwq77fbl"
-path="res://.godot/imported/tika_muro.glb-4a61b02d3ba2926f6e716e933567505e.scn"
+uid="uid://c0utq2eum7ial"
+path="res://.godot/imported/tika_muro_humanoide.glb-a68cc9aec23d19521d380513dcba355c.scn"
 
 [deps]
 
-source_file="res://actors/tika_muro/tika_muro.glb"
-dest_files=["res://.godot/imported/tika_muro.glb-4a61b02d3ba2926f6e716e933567505e.scn"]
+source_file="res://actors/tika_muro/tika_muro_humanoide.glb"
+dest_files=["res://.godot/imported/tika_muro_humanoide.glb-a68cc9aec23d19521d380513dcba355c.scn"]
 
 [params]
 
@@ -39,7 +39,19 @@ import_script/path=""
 materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
-_subresources={}
+_subresources={
+"nodes": {
+"PATH:TikaRig/Skeleton3D": {
+"retarget/bone_map": Resource("res://actors/tico_lirou/mapa_ossos_tico.tres"),
+"retarget/bone_renamer/rename_bones": true,
+"retarget/bone_renamer/unique_node/make_unique": true,
+"retarget/bone_renamer/unique_node/skeleton_name": "GeneralSkeleton",
+"retarget/remove_tracks/unmapped_bones": true,
+"retarget/rest_fixer/fix_silhouette/enable": true,
+"retarget/rest_fixer/fix_silhouette/filter": [&"LeftUpperLeg", &"LeftLowerLeg", &"LeftFoot", &"RightUpperLeg", &"RightLowerLeg", &"RightFoot", &"Hips"]
+}
+}
+}
 gltf/naming_version=2
 gltf/embedded_image_handling=1
 gltf/texture_map_mode=1
