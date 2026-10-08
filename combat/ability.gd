@@ -12,8 +12,9 @@ enum Shape { TARGET, DASH, LINE, AREA, CONE, SELF, ALLIES_AROUND, ENEMIES_AROUND
 enum Roll { ATTACK, SAVE, AUTO }
 enum Save { DEX, CON, WIS }
 
-## O golpe com tempo do dano (D048): depois que o d20 acerta, este desafio diz quanto do dano entra.
-enum Golpe { AUTO, NENHUM, ANEL, BARRA, SEQUENCIA, MARTELAR, SEGURAR }
+## O golpe com tempo do dano (D048; simplificado na D050): depois que o d20 acerta, o anel diz quanto do dano entra.
+## RAJADA = um anel por golpe, seguidos e cada vez mais rápidos.
+enum Golpe { AUTO, NENHUM, ANEL, RAJADA }
 ## Como se defende quando um inimigo usa isto (D048).
 enum Defesa { AUTO, ANEL, DIRECAO, COMBO, FINTA }
 
@@ -46,8 +47,8 @@ enum Defesa { AUTO, ANEL, DIRECAO, COMBO, FINTA }
 @export var advantage: bool = false
 
 @export_group("Na arena (D048)")
-## AUTO escolhe pelo tipo: ataque simples = Anel; investida = Sequência; vários golpes = Barra; área = Martelar;
-## habilidade grande (4+ PA) = Segurar; buff e cura = nenhum.
+## AUTO escolhe pelo tipo: vários golpes (ou investida) = Rajada; o resto que causa dano = Anel; buff e cura = nenhum.
+## Habilidade grande (4+ PA): o anel fecha mais rápido e o perfeito vale mais.
 @export var golpe: Golpe = Golpe.AUTO
 ## AUTO: corpo a corpo = Anel; de longe = Direção.
 @export var defesa: Defesa = Defesa.AUTO
@@ -114,14 +115,8 @@ func damage_qte() -> Golpe:
 		return golpe
 	if not is_offensive() or dice_count <= 0:
 		return Golpe.NENHUM
-	if ap_cost >= 4:
-		return Golpe.SEGURAR
-	if hits > 1:
-		return Golpe.BARRA
-	if shape == Shape.DASH:
-		return Golpe.SEQUENCIA
-	if roll == Roll.SAVE or shape in [Shape.AREA, Shape.CONE, Shape.LINE, Shape.ENEMIES_AROUND]:
-		return Golpe.MARTELAR
+	if hits > 1 or shape == Shape.DASH:
+		return Golpe.RAJADA
 	return Golpe.ANEL
 
 
