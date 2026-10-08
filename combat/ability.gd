@@ -34,6 +34,8 @@ enum Defesa { AUTO, ANEL, DIRECAO, COMBO, FINTA }
 @export var cooldown: float = 1.0
 ## Luta por turnos: Pontos de Ação que custa (0 = ataque básico, que ganha 1 PA).
 @export var ap_cost: int = 0
+## Na arena (D052): turnos de recarga depois de usar (a habilidade fica apagada). -1 = pelo custo antigo em PA.
+@export var recarga: int = -1
 ## Preparo antes do efeito, em segundos (o golpe "carrega" e dá para desviar).
 @export var windup: float = 0.2
 @export var dice_count: int = 1
@@ -125,3 +127,8 @@ func defense_qte() -> Defesa:
 	if defesa != Defesa.AUTO:
 		return defesa
 	return Defesa.DIRECAO if projectile else Defesa.ANEL
+
+
+## Quantos turnos a habilidade fica sem poder ser usada depois de usar (0 = sempre livre, como o ataque).
+func recharge_turns() -> int:
+	return recarga if recarga >= 0 else clampi(ap_cost, 0, 4)

@@ -11,7 +11,8 @@ signal result_closed
 const KEYS: Array[String] = ["1", "Q", "E", "R"]
 const KEY_ACTIONS: Array[StringName] = [&"battle_attack", &"skill_q", &"skill_e", &"skill_r"]
 
-@export var log_lines: int = 2
+## Rolagens escritas embaixo do texto (D052: nenhuma; o dado na tela já mostra).
+@export var log_lines: int = 0
 ## Letras por segundo na caixa de texto.
 @export var text_speed: float = 90.0
 
@@ -20,6 +21,8 @@ var _buttons: Array[Button] = []
 ## Ações do meio da luta (D050): id -> botão.
 var _extra_buttons: Dictionary = {}
 var _enemy_rows: Dictionary = {}
+## Vida em cima de cada inimigo (D052).
+var _bars: Dictionary = {}
 var _choosing: bool = false
 var _log: PackedStringArray = []
 var _banner_tween: Tween
@@ -53,6 +56,9 @@ func _ready() -> void:
 	_result.hide()
 	_banner.modulate.a = 0.0
 	_hint.modulate.a = 0.0
+	_log_label.visible = log_lines > 0
+	%AP.visible = false
+	_ritmo.visible = false
 	_says.text = ""
 	_log_label.text = ""
 	%ResultButton.pressed.connect(func() -> void: result_closed.emit())
@@ -66,13 +72,11 @@ func setup(arena: BattleArena) -> void:
 	for i: int in player.abilities.size():
 		var ability := player.abilities[i]
 		var button := Button.new()
-		button.custom_minimum_size = Vector2(0, 36)
+		button.custom_minimum_size = Vector2(0, 38)
 		button.focus_mode = Control.FOCUS_NONE
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		button.add_theme_font_size_override("font_size", 14)
-		var cost := "+1 PA" if ability.ap_cost == 0 else "%d PA" % ability.ap_cost
-		var detail := ability.dice_text() if ability.dice_text() != "" else ability.status_title
-		button.text = "%s   %s\n      %s · %s" % [KEYS[i] if i < KEYS.size() else "", ability.title, cost, detail]
+		button.add_theme_font_size_override("font_size", 17)
+		button.text = _ability_label(i, 0)
 		button.tooltip_text = ability.description
 		button.pressed.connect(_choose.bind(i))
 		_actions.add_child(button)
@@ -91,6 +95,14 @@ func setup(arena: BattleArena) -> void:
 		extra_row.add_child(button)
 		_extra_buttons[int(action["id"])] = button
 	_actions.add_child(extra_row)
+	$Root/EnemyPanel.hide()  # D052: a vida fica em cima de cada inimigo
+	for enemy: Combatant in arena.enemies:
+		var bar := BarraInimigo.new()
+		bar.enemy = enemy
+		bar.head = _head_height(enemy)
+		$Root.add_child(bar)
+		$Root.move_child(bar, %Frame.get_index() + 1)
+		_bars[enemy] = bar
 	for enemy: Combatant in arena.enemies:
 		enemy.rolled.connect(log_line)
 		var row := VBoxContainer.new()
@@ -116,6 +128,33 @@ func setup(arena: BattleArena) -> void:
 		_enemy_rows[enemy] = {"label": label, "bar": bar, "posture": posture}
 	_set_choosing(false)
 	refresh()
+
+
+func _process(_delta: float) -> void:
+	var cam := get_viewport().get_camera_3d()
+	if cam == null or _arena == null:
+		return
+	for key: Variant in _bars.keys():
+		var bar := _bars[key] as BarraInimigo
+		if not is_instance_valid(key):
+			bar.visible = false
+			continue
+		var enemy := key as Combatant
+		var at := enemy.global_position + Vector3.UP * bar.head
+		bar.visible = not cam.is_position_behind(at)
+		bar.targeted = enemy == _arena.target and _choosing
+		bar.follow(cam.unproject_position(at))
+
+
+## Altura da cabeça do inimigo (topo do modelo), para a barra ficar logo acima.
+func _head_height(enemy: Combatant) -> float:
+	var top := 0.0
+	if enemy.model:
+		for found: Node in enemy.model.find_children("*", "MeshInstance3D", true, false):  # luz não conta (o alcance dela é enorme)
+			var vis := found as MeshInstance3D
+			var box := vis.global_transform * vis.get_aabb()
+			top = maxf(top, box.end.y - enemy.global_position.y)
+	return clampf(top + 0.25, 0.8, 5.0)
 
 
 ## Retrato do herói no canto: uma cópia do modelo dele, parado, num mundo só dele.
@@ -156,16 +195,15 @@ func refresh() -> void:
 	var player := _arena.player
 	_player_hp.max_value = player.max_hp
 	_player_hp.value = player.hp
-	_player_hp_text.text = "%d / %d PV    CA %d" % [player.hp, player.max_hp, player.current_ac()]
-	_ap.text = "PA  " + "●".repeat(_arena.ap) + "○".repeat(maxi(0, _arena.max_ap - _arena.ap))
+	_player_hp_text.text = "%d / %d" % [player.hp, player.max_hp]
 	var names: PackedStringArray = []
 	for status: Dictionary in player.statuses:
 		if status["title"] != "":
 			names.append("%s (%d)" % [status["title"], ceili(float(status["time"]))])
 	_statuses.text = "   ".join(names)
-	_ritmo.text = ("Ritmo  " + "◆".repeat(_arena.ritmo) + "◇".repeat(maxi(0, 5 - _arena.ritmo)) + ("   +%d%%" % (_arena.ritmo * 10) if _arena.ritmo > 0 else ""))
 	for i: int in _buttons.size():
 		_buttons[i].disabled = not _choosing or not _arena.can_afford(i)
+		_buttons[i].text = _ability_label(i, int(_arena.recharge.get(i, 0)))
 	for action: Dictionary in _arena.extra_actions():
 		var button := _extra_buttons.get(int(action["id"])) as Button
 		if button:
@@ -291,7 +329,16 @@ func banner(text: String, color: Color = Color(1, 0.9, 0.6)) -> void:
 
 
 ## As rolagens (d20, dano) aparecem miúdas embaixo do texto, as duas últimas.
+## "1  ⚔ Adaga" / "Q  ✦ Espinhos   ⟳ 2" (2 turnos para voltar).
+func _ability_label(i: int, wait: int) -> String:
+	var ability := _arena.player.abilities[i]
+	var icon := "⚔" if ability.recharge_turns() == 0 else "✦"
+	return "%s   %s %s%s" % [KEYS[i] if i < KEYS.size() else "", icon, ability.title, ("     ⟳ %d" % wait) if wait > 0 else ""]
+
+
 func log_line(line: String) -> void:
+	if log_lines <= 0:
+		return
 	_log.append(line)
 	while _log.size() > log_lines:
 		_log.remove_at(0)
@@ -310,7 +357,7 @@ func _set_choosing(on: bool) -> void:
 	_choosing = on
 	var tween := create_tween().set_parallel()
 	tween.tween_property(_actions, "modulate:a", 1.0 if on else 0.45, 0.15)
-	tween.tween_property(_hint, "modulate:a", 1.0 if on else 0.0, 0.15)
+	tween.tween_property(_hint, "modulate:a", 1.0 if on and _arena != null and _arena.alive_enemies().size() > 1 else 0.0, 0.15)
 
 
 func _flat(color: Color) -> StyleBoxFlat:

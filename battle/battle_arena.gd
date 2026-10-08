@@ -1,10 +1,11 @@
 class_name BattleArena
 extends Node3D
 ## Luta por turnos no estilo Clair Obscur: só você contra o grupo do encontro, numa arena separada.
-## Seu turno: ataque (1, ganha 1 PA) ou habilidade (Q/E/R, gasta PA). O d20 aparece rolando e diz se acertou (D&D);
+## Seu turno: ataque (1, sempre livre) ou habilidade (Q/E/R), que depois fica alguns turnos recarregando (D052).
+## O d20 aparece rolando e diz se acertou (D&D);
 ## se acertou, o golpe com tempo diz quanto do dano entra (D048): anel, barra, sequência, martelar ou segurar.
 ## Turno do inimigo: ele rola contra a sua CA; se acertou, você se defende (anel, direção, combo ou finta).
-## Ritmo: PERFEITO em seguida dá +10% de dano (até 5). Postura: golpes bons quebram o inimigo (perde a vez, +50%).
+## Postura: golpes bons quebram o inimigo (perde a vez, +50%).
 ## Fúria: o chefe com metade da vida ataca duas vezes.
 ## Monta tudo a partir de Game.battle; no fim, Game.end_battle() volta para o mapa.
 ## Visual (D047, do Look Outside): em primeira pessoa. A câmera fica nos olhos do herói (que aparece só pela sombra),
@@ -12,8 +13,6 @@ extends Node3D
 
 signal finished(victory: bool)
 
-@export var start_ap: int = 2
-@export var max_ap: int = 9
 ## Tempo (s) do anel no seu golpe.
 @export var attack_qte_time: float = 0.62
 ## Janelas (s) do seu golpe: perfeito e bom (D048: mais apertadas).
@@ -40,7 +39,8 @@ signal finished(victory: bool)
 var player: Combatant
 var enemies: Array[Combatant] = []
 var target: Combatant
-var ap: int = 0
+## Recarga das habilidades (D052): índice -> turnos que faltam (0 ou ausente = pronta).
+var recharge: Dictionary = {}
 var round_number: int = 0
 var order: Array[Combatant] = []
 var _first_strike: bool = false
@@ -51,8 +51,6 @@ var _look: Vector3 = Vector3.ZERO
 var _shake: float = 0.0
 ## Quem a câmera olha agora (o inimigo que está atacando); vazio = o grupo todo.
 var _focus: Combatant
-## Ritmo (D048): PERFEITO em seguida; dá +10% de dano por ponto (até 5).
-var ritmo: int = 0
 var _last_grade: String = ""
 var _fury: Dictionary = {}
 ## Poções por luta (D050).
@@ -111,12 +109,17 @@ func _ready() -> void:
 	add_child(_marker)
 	_hud.setup(self)
 	_hud.dice().landed.connect(_on_dice_landed)
+	for enemy: Combatant in enemies:
+		enemy.downed_changed.connect(func(down: bool) -> void:
+			if down and alive_enemies().is_empty() and not auto_play:
+				_final_blow())
 	_fx.hitstop_enabled = not auto_play
 	var model := player.get_node_or_null("Model") as Node3D
 	if model:
 		_hud.setup_portrait(model)  # antes de sumir com o herói (o retrato é uma cópia dele)
 	if player.hero_id == "tico":
 		_daggers = AdagaPsiquica.attach_to(player)
+		_dagger_animations()
 	if first_person and _camera:
 		_first_person_view()
 	if DisplayServer.get_name() != "headless":
@@ -142,7 +145,7 @@ func _process(delta: float) -> void:
 
 
 func can_afford(index: int) -> bool:
-	return index >= 0 and index < player.abilities.size() and player.abilities[index].ap_cost <= ap
+	return index >= 0 and index < player.abilities.size() and int(recharge.get(index, 0)) <= 0
 
 
 func alive_enemies() -> Array[Combatant]:
@@ -175,10 +178,9 @@ func _run() -> void:
 	if _first_strike:
 		order.erase(player)
 		order.push_front(player)
-	ap = start_ap + (1 if _first_strike else 0)
 	Audio.play_music("batalha", 0.6)
 	Audio.play_ambient("")
-	_hud.banner("Primeiro golpe!  +1 PA" if _first_strike else "Luta!")
+	_hud.banner("Primeiro golpe!" if _first_strike else "Luta!")
 	for dagger: AdagaPsiquica in _daggers + _view_daggers:
 		dagger.materialize()
 	if not auto_play:
@@ -246,6 +248,8 @@ func _run() -> void:
 func _player_turn() -> void:
 	Audio.play("turno", -8.0, 0.0)
 	player.sneak_ready_at = 0.0
+	for k: Variant in recharge.keys():
+		recharge[k] = maxi(0, int(recharge[k]) - 1)
 	if target == null or not is_instance_valid(target) or target.hp <= 0:
 		cycle_target(1)
 	var index: int
@@ -259,11 +263,10 @@ func _player_turn() -> void:
 		await _extra_action(index)
 		return
 	var ability := player.abilities[index]
-	ap -= ability.ap_cost
+	if ability.recharge_turns() > 0:
+		recharge[index] = ability.recharge_turns() + 1  # o +1 é este turno (desconta no começo do próximo)
 	_hud.refresh()
 	await _player_action(index)
-	if ability.ap_cost == 0:
-		ap = mini(ap + 1, max_ap)
 
 
 ## D048/D050: o d20 diz se acerta (aparece rolando); se acertou, o anel diz quanto do dano entra; aí a câmera
@@ -282,9 +285,7 @@ func _player_action(index: int) -> void:
 	if not landed.is_empty():
 		var outcome := await _damage_qte(ability, landed.size(), tgt)
 		_after_grade(String(outcome["grade"]))
-		var mult := float(outcome["mult"]) * (1.0 + ritmo * 0.1)
-		var why := String(outcome["grade"]) + (" · ritmo %d" % ritmo if ritmo > 0 else "")
-		CombatRules.scale_damage(results, mult, why)
+		CombatRules.scale_damage(results, float(outcome["mult"]), String(outcome["grade"]))
 		for r: Dictionary in results:
 			var t := r["target"] as Combatant
 			if is_instance_valid(t) and t.quebrado and int(r["amount"]) > 0:
@@ -350,13 +351,13 @@ func _player_action(index: int) -> void:
 
 
 ## O anel do dano (D050: um desafio só, claro e bonito). Rajada (vários golpes, investida) = um anel por golpe,
-## cada um mais rápido; habilidade grande (4+ PA) = anel mais rápido, mas o perfeito vale ×1,8.
+## cada um mais rápido; habilidade grande (recarga de 4 turnos) = anel mais rápido, mas o perfeito vale ×1,8.
 ## Devolve {"grade": "perfeito"|"bom"|"fraco", "mult"}.
 func _damage_qte(ability: Ability, hits: int, on: Combatant) -> Dictionary:
 	var kind := ability.damage_qte()
 	if kind == Ability.Golpe.NENHUM:
 		return {"grade": "bom", "mult": 1.0}
-	var big := ability.ap_cost >= 4
+	var big := ability.recharge_turns() >= 4
 	var best := 1.8 if big else 1.5
 	if auto_play:
 		var r := randf()
@@ -419,10 +420,10 @@ const FLEE := 103
 ## As ações que não são habilidade, para o menu: {"id", "key", "title", "info"}.
 func extra_actions() -> Array[Dictionary]:
 	return [
-		{"id": DEFEND, "key": "2", "title": "Defender", "info": "+2 CA e defesa mais folgada · +1 PA"},
-		{"id": POTION, "key": "3", "title": "Poção", "info": "cura 2d4+2 · restam %d" % potions},
-		{"id": ANALYZE, "key": "4", "title": "Analisar", "info": "mostra o próximo golpe · alvo exposto"},
-		{"id": FLEE, "key": "5", "title": "Fugir", "info": "d20 + DES contra CD %d" % flee_dc() if not _boss_alive() else "não dá para fugir do chefe"},
+		{"id": DEFEND, "key": "2", "title": "Defender", "info": "+2 de armadura e a defesa fica mais fácil até a sua vez"},
+		{"id": POTION, "key": "3", "title": "Poção", "info": "recupera vida (restam %d)" % potions},
+		{"id": ANALYZE, "key": "4", "title": "Analisar", "info": "mostra o próximo golpe do alvo; o seu próximo ataque tem vantagem"},
+		{"id": FLEE, "key": "5", "title": "Fugir", "info": "tenta escapar da luta" if not _boss_alive() else "não dá para fugir do chefe"},
 	]
 
 
@@ -447,7 +448,6 @@ func _extra_action(id: int) -> void:
 	match id:
 		DEFEND:
 			player.add_status(_status("Defendendo", {"ac": 2}))
-			ap = mini(ap + 1, max_ap)
 			_action_cam(player)
 			player.dodged.emit()
 			_fx.ring(player.global_position, 1.2, Color(0.6, 0.85, 1.0))
@@ -467,7 +467,6 @@ func _extra_action(id: int) -> void:
 		ANALYZE:
 			if target and is_instance_valid(target):
 				target.add_status(_status("Exposto", {"expose": true}))
-				ap = mini(ap + 1, max_ap)
 				await _hud.say(player.display_name, _analysis(target), 1.1)
 		FLEE:
 			var roll := Dice.d20()
@@ -510,18 +509,11 @@ func _on_dice_landed(special: String) -> void:
 		_shake = 0.15
 
 
-## Ritmo (D048): PERFEITO em seguida (no golpe ou na defesa) soma; qualquer erro zera.
+## O aviso do resultado do tempo (PERFEITO, Bom, Fraco) e o som dele.
 func _after_grade(grade: String) -> void:
 	_last_grade = grade
 	var text := {"perfeito": "PERFEITO!", "bom": "Bom", "fraco": "Fraco", "falhou": "Falhou"}.get(grade, grade) as String
 	var color := {"perfeito": Color(1, 0.85, 0.3), "bom": Color(0.9, 0.9, 0.9)}.get(grade, Color(0.85, 0.55, 0.5)) as Color
-	if grade == "perfeito":
-		ritmo = mini(ritmo + 1, 5)
-		text += "  Ritmo %d" % ritmo
-	elif grade in ["fraco", "falhou"]:
-		if ritmo > 0:
-			text += "  (ritmo perdido)"
-		ritmo = 0
 	Audio.play("qte_perfeito" if grade == "perfeito" else ("qte_bom" if grade == "bom" else "qte_errou"), -4.0, 0.0)
 	_hud.banner(text, color)
 	_hud.refresh()
@@ -641,8 +633,7 @@ func _enemy_turn(enemy: Combatant, extra: bool = false) -> void:
 	if countered and player.is_active() and enemy.is_active():
 		Audio.play_at("aparar", player.global_position + Vector3.UP, 0.0)
 		_fx.floating_text(player.global_position, "APAROU!", Color(1, 0.85, 0.3), true)
-		player.rolled.emit("%s aparou e contra-ataca (+1 PA)" % player.display_name)
-		ap = mini(ap + 1, max_ap)
+		player.rolled.emit("%s aparou e contra-ataca" % player.display_name)
 		player.ability_used.emit(0)
 		var counter := CombatRules.resolve(player, player.abilities[0], enemy, enemy.global_position, CombatRules.everyone(get_tree()), 1)
 		CombatRules.apply(player, player.abilities[0], counter, _fx)
@@ -923,3 +914,30 @@ func _view_pose(kind: String) -> void:
 				tween.tween_property(dagger, "transform", moved, 0.08)
 				tween.tween_property(dagger, "transform", rest, 0.35).set_trans(Tween.TRANS_SINE)
 		dagger.flare(0.4)
+
+
+## Com as adagas, o Tico usa as animações feitas para ele (D052): guarda com as lâminas para cima, corte em X e estocada
+## dupla. A peça que baixa os braços sai (a guarda já põe os braços no lugar).
+func _dagger_animations() -> void:
+	var animator := player.get_node_or_null("Animator")
+	if animator:
+		animator.set("idle", &"tico/Guarda")
+		var list: Array[StringName] = []
+		list.assign(animator.get("ability_animations"))
+		if list.size() >= 2:
+			list[0] = &"tico/Corte_X"
+			list[1] = &"tico/Estocada"
+		animator.set("ability_animations", list)
+		var anim_player := player.find_children("*", "AnimationPlayer", true, false)
+		if not anim_player.is_empty():
+			(anim_player[0] as AnimationPlayer).play(&"tico/Guarda", 0.2)
+	for modifier: Node in player.find_children("*", "SkeletonModifier3D", true, false):
+		(modifier as SkeletonModifier3D).active = false
+
+
+## O último inimigo caiu: câmera lenta por um instante (o golpe final pesa).
+func _final_blow() -> void:
+	Engine.time_scale = 0.3
+	_shake = 0.25
+	await get_tree().create_timer(0.7, true, false, true).timeout
+	Engine.time_scale = 1.0

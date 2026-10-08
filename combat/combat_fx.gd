@@ -235,14 +235,93 @@ func shake(unit: Combatant) -> void:
 	await tween.finished
 
 
+## Morte (D052): o inimigo cambaleia um instante, acende por dentro e se desfaz num estouro de cinza e brasas que sobem,
+## com um clarão e um anel no chão. Nada de virar de barriga e afundar no chão.
 func fall(unit: Combatant) -> void:
-	if unit.get_node_or_null("Animator"):  # deixa a animação de morte terminar antes de afundar
-		await get_tree().create_timer(1.5).timeout
+	# congela na pose em que apanhou (a animação de morte de alguns modelos vira de barriga para cima)
+	if unit.model:
+		for found: Node in unit.model.find_children("*", "AnimationPlayer", true, false):
+			(found as AnimationPlayer).pause()
+	await get_tree().create_timer(0.3).timeout
+	if not is_instance_valid(unit) or unit.model == null:
+		return
+	var boss := unit.is_boss
+	var size := 2.2 if boss else 1.0
+	var center := unit.global_position + Vector3.UP * (1.6 if boss else 0.45)
+	var glow := unit.color.lightened(0.25)
+	# acende por dentro antes de estourar
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	mat.albedo_color = Color(glow, 0.0)
+	for m: Node in unit.model.find_children("*", "GeometryInstance3D", true, false):
+		(m as GeometryInstance3D).material_overlay = mat
+	var charge := create_tween().set_parallel()
+	charge.tween_property(mat, "albedo_color:a", 0.5, 0.22)
+	charge.tween_property(unit.model, "scale", Vector3.ONE * 1.12, 0.22).set_trans(Tween.TRANS_SINE)
+	await charge.finished
+	# estouro
+	_ash(center, unit.color, size)
+	ring(unit.global_position, 2.2 * size, glow)
+	var light := OmniLight3D.new()
+	light.light_color = glow
+	light.light_energy = 5.0
+	light.omni_range = 5.0 * size
+	light.top_level = true
+	add_child(light)
+	light.global_position = center
 	var tween := create_tween().set_parallel()
-	tween.tween_property(unit, "global_position:y", unit.global_position.y - 1.6, 1.4).set_ease(Tween.EASE_IN)
-	tween.tween_property(unit, "scale", Vector3.ONE * 0.5, 1.4)
+	tween.tween_property(light, "light_energy", 0.0, 0.6)
+	tween.tween_property(unit.model, "scale", Vector3(1.4, 0.02, 1.4), 0.16).set_ease(Tween.EASE_IN)
 	await tween.finished
 	unit.visible = false
+	light.queue_free()
+
+
+## Cinza escura que cai e brasas que sobem, na cor do inimigo.
+func _ash(at: Vector3, color: Color, size: float) -> void:
+	var ember := color.lerp(Color(1.0, 0.55, 0.2), 0.75)
+	for spec: Array in [[Color(0.14, 0.12, 0.12), 34, 0.06, Vector3(0, -4.0, 0), 1.1, false], [ember, 28, 0.03, Vector3(0, 1.4, 0), 1.6, true]]:
+		var p := CPUParticles3D.new()
+		p.one_shot = true
+		p.emitting = false
+		p.amount = int(int(spec[1]) * size)
+		p.lifetime = float(spec[4])
+		p.explosiveness = 0.95
+		p.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
+		p.emission_sphere_radius = 0.35 * size
+		p.direction = Vector3.UP
+		p.spread = 70.0
+		p.initial_velocity_min = 1.5 * size
+		p.initial_velocity_max = 4.0 * size
+		p.gravity = spec[3]
+		p.damping_min = 1.0
+		p.damping_max = 2.5
+		p.scale_amount_min = 0.5
+		p.scale_amount_max = 1.2
+		var mesh: Mesh
+		if bool(spec[5]):
+			var dot := SphereMesh.new()
+			dot.radius = float(spec[2]) * size
+			dot.height = dot.radius * 2.0
+			dot.radial_segments = 6
+			dot.rings = 3
+			dot.material = _emissive(spec[0], 5.0)
+			mesh = dot
+		else:
+			var chip := BoxMesh.new()
+			chip.size = Vector3.ONE * float(spec[2]) * size
+			var chip_mat := StandardMaterial3D.new()
+			chip_mat.albedo_color = spec[0]
+			chip.material = chip_mat
+			mesh = chip
+		p.mesh = mesh
+		p.top_level = true
+		add_child(p)
+		p.global_position = at
+		p.emitting = true
+		get_tree().create_timer(2.5).timeout.connect(p.queue_free)
 
 
 ## Algo que corre pelo chão do atacante até o alvo, dá um pulinho no impacto e some (burro de guerra).
