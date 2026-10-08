@@ -1,0 +1,100 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/FarmCrate_Empty.gltf" id="1_FarmCrate_Empt"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Food-Kit/Cabbage.glb" id="2_Cabbage"]
+
+
+[node name="Caixa_couve" type="Node3D" groups=["colisao_auto"]]
+
+[node name="Caixote" parent="." instance=ExtResource("1_FarmCrate_Empt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Mercadoria" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.42, 0, 0, 0, 0.42, 0, 0, 0, 0.42, -0.258, 0.06, -0.092)
+
+[node name="Mercadoria2" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(-0.0541, 0, 0.4165, 0, 0.42, 0, -0.4165, 0, -0.0541, -0.246, 0.06, 0.006)
+
+[node name="Mercadoria3" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(-0.4061, 0, -0.1073, 0, 0.42, 0, 0.1073, 0, -0.4061, -0.234, 0.06, 0.104)
+
+[node name="Mercadoria4" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.1588, 0, -0.3888, 0, 0.42, 0, 0.3888, 0, 0.1588, -0.102, 0.06, -0.128)
+
+[node name="Mercadoria5" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.3651, 0, 0.2075, 0, 0.42, 0, -0.2075, 0, 0.3651, -0.132, 0.06, 0.012)
+
+[node name="Mercadoria6" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(-0.2528, 0, 0.3354, 0, 0.42, 0, -0.3354, 0, -0.2528, -0.12, 0.06, 0.11)
+
+[node name="Mercadoria7" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(-0.3, 0, -0.2939, 0, 0.42, 0, 0.2939, 0, -0.3, 0.012, 0.06, -0.122)
+
+[node name="Mercadoria8" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.3301, 0, -0.2596, 0, 0.42, 0, 0.2596, 0, 0.3301, -0.018, 0.06, 0.018)
+
+[node name="Mercadoria9" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.2149, 0, 0.3608, 0, 0.42, 0, -0.3608, 0, 0.2149, -0.006, 0.06, 0.116)
+
+[node name="Mercadoria10" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(-0.3855, 0, 0.1666, 0, 0.42, 0, -0.1666, 0, -0.3855, 0.126, 0.06, -0.116)
+
+[node name="Mercadoria11" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(-0.1156, 0, -0.4038, 0, 0.42, 0, 0.4038, 0, -0.1156, 0.138, 0.06, -0.018)
+
+[node name="Mercadoria12" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.4153, 0, -0.0626, 0, 0.42, 0, 0.0626, 0, 0.4153, 0.108, 0.06, 0.122)
+
+[node name="Mercadoria13" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.0085, 0, 0.4199, 0, 0.42, 0, -0.4199, 0, 0.0085, 0.24, 0.06, -0.11)
+
+[node name="Mercadoria14" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(-0.4175, 0, -0.0456, 0, 0.42, 0, 0.0456, 0, -0.4175, 0.252, 0.06, -0.012)
+
+[node name="Mercadoria15" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.099, 0, -0.4082, 0, 0.42, 0, 0.4082, 0, 0.099, 0.222, 0.06, 0.128)
+
+[node name="Mercadoria16" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.392, 0, 0.1508, 0, 0.42, 0, -0.1508, 0, 0.392, -0.186, 0.12, -0.104)
+
+[node name="Mercadoria17" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(-0.2001, 0, 0.3693, 0, 0.42, 0, -0.3693, 0, -0.2001, -0.174, 0.12, -0.006)
+
+[node name="Mercadoria18" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(-0.3404, 0, -0.246, 0, 0.42, 0, 0.246, 0, -0.3404, -0.162, 0.12, 0.092)
+
+[node name="Mercadoria19" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.2878, 0, -0.3059, 0, 0.42, 0, 0.3059, 0, 0.2878, -0.072, 0.12, -0.098)
+
+[node name="Mercadoria20" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.2663, 0, 0.3248, 0, 0.42, 0, -0.3248, 0, 0.2663, -0.06, 0.12, 0)
+
+[node name="Mercadoria21" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(-0.3564, 0, 0.2222, 0, 0.42, 0, -0.2222, 0, -0.3564, -0.048, 0.12, 0.098)
+
+[node name="Mercadoria22" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(-0.1744, 0, -0.3821, 0, 0.42, 0, 0.3821, 0, -0.1744, 0.042, 0.12, -0.092)
+
+[node name="Mercadoria23" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.4014, 0, -0.1238, 0, 0.42, 0, 0.1238, 0, 0.4014, 0.054, 0.12, 0.006)
+
+[node name="Mercadoria24" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.071, 0, 0.414, 0, 0.42, 0, -0.414, 0, 0.071, 0.066, 0.12, 0.104)
+
+[node name="Mercadoria25" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(-0.4197, 0, 0.0171, 0, 0.42, 0, -0.0171, 0, -0.4197, 0.198, 0.12, -0.128)
+
+[node name="Mercadoria26" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.0371, 0, -0.4184, 0, 0.42, 0, 0.4184, 0, 0.0371, 0.168, 0.12, 0.012)
+
+[node name="Mercadoria27" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.4101, 0, 0.0907, 0, 0.42, 0, -0.0907, 0, 0.4101, 0.18, 0.12, 0.11)
+
+[node name="Mercadoria28" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(-0.1428, 0, 0.395, 0, 0.42, 0, -0.395, 0, -0.1428, 0.312, 0.12, -0.122)
+
+[node name="Mercadoria29" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(-0.3733, 0, -0.1925, 0, 0.42, 0, 0.1925, 0, -0.3733, 0.282, 0.12, 0.018)
+
+[node name="Mercadoria30" parent="." instance=ExtResource("2_Cabbage")]
+transform = Transform3D(0.239, 0, -0.3454, 0, 0.42, 0, 0.3454, 0, 0.239, 0.294, 0.12, 0.116)

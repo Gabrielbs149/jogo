@@ -193,3 +193,28 @@ func test_saving_promotes_acervo_models() -> void:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 	for dir: String in ["res://assets/kits/polypizza/_teste", src_dir]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(dir))
+
+
+## D049: Separar (X) desmonta a peça nas partes dela (a banca, cada caixote cheio), salva assim e o Ctrl+Z junta de novo.
+func test_separate_splits_a_stall_into_its_parts() -> void:
+	var editor := await _open(Game.ARANDU)
+	var stall := editor.place("res://world/props/banca_frutas.tscn", Vector3(60, 0, 60))
+	var before := editor.items().size()
+	editor.select_nodes([stall])
+	editor.separate_selection()
+	assert_false(stall.is_inside_tree(), "a banca inteira saiu")
+	var names: Array[String] = []
+	for piece: Node3D in editor.selection:
+		names.append(String(piece.name))
+	assert_true(names.has("Caixa_maca"), "o caixote de maçã é uma peça própria: %s" % [names])
+	assert_true(names.any(func(n: String) -> bool: return n.begins_with("Banca")), "a barraca vazia também (o nome ganha número se já tiver outra)")
+	assert_eq(editor.items().size(), before - 1 + editor.selection.size())
+	var crate: Node3D = editor.selection[names.find("Caixa_maca")]
+	assert_almost_eq(crate.global_position.y, 0.765, 0.01, "o caixote fica no balcão")
+	assert_eq(editor.save(OUT), OK)
+	var again := (load(OUT) as PackedScene).instantiate() as Node3D
+	assert_not_null(again.find_child("Caixa_maca", true, false), "salvo separado")
+	again.free()
+	editor.undo()
+	assert_true(stall.is_inside_tree(), "Ctrl+Z junta de novo")
+	assert_false(crate.is_inside_tree())
