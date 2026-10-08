@@ -664,7 +664,7 @@ cast_shadow = 0
 multimesh = ExtResource("32_2g4b0")
 
 [node name="PlayerSlot" type="Marker3D" parent="." unique_id=1349562297]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 4.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 2.2)
 
 [node name="EnemySlots" type="Node3D" parent="." unique_id=1543895159]
 

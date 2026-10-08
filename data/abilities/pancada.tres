@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_ability")
 title = "Pancada"
+defesa = 3
 description = ""
 dnd_note = ""
 kind = 0

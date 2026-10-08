@@ -54,8 +54,16 @@ const DASH_SPEED := 16.0
 @export var is_boss: bool = false
 ## Fala ao ser encontrado no caminho (heróis que dá para chamar para o grupo).
 @export_multiline var greeting: String = ""
+## Postura (D048): golpes bons enchem; cheia, o inimigo QUEBRA (perde a vez e leva +50%). 0 = 60% da vida.
+@export var postura_max: int = 0
+## Na luta (D047): frases que aparecem na caixa de texto, uma no começo e de vez em quando antes de atacar.
+## Entre ** fica em vermelho (grito).
+@export var battle_lines: PackedStringArray = []
 
 var hp: int = 0
+## Arena (D048): postura acumulada e se está quebrado (perde a próxima vez).
+var postura: int = 0
+var quebrado: bool = false
 var cooldowns: Array[float] = []
 var dodge_left: float = 0.0
 ## Efeitos ativos: {"title", "time", "ac", "bless", "invisible", "frighten", "expose", "dodging", "mark", "mark_by"}
@@ -378,3 +386,8 @@ func _update_look() -> void:
 
 func _fx() -> CombatFX:
 	return get_tree().get_first_node_in_group("combat_fx") as CombatFX
+
+
+## Quanto de postura enche até quebrar (D048).
+func posture_limit() -> int:
+	return postura_max if postura_max > 0 else maxi(8, roundi(max_hp * 0.6))

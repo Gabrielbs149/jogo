@@ -2,28 +2,64 @@
 
 [ext_resource type="Script" path="res://ui/battle_hud/battle_hud.gd" id="hud"]
 [ext_resource type="Script" path="res://ui/battle_hud/quick_time.gd" id="qte"]
+[ext_resource type="Shader" path="res://ui/battle_hud/moldura.gdshader" id="moldura"]
+[ext_resource type="Script" path="res://ui/battle_hud/dice_roller.gd" id="dados"]
+[ext_resource type="Script" path="res://ui/battle_hud/golpe_qte.gd" id="golpe"]
 
-[sub_resource type="StyleBoxFlat" id="Soft"]
-content_margin_left = 14.0
-content_margin_top = 10.0
-content_margin_right = 14.0
-content_margin_bottom = 10.0
-bg_color = Color(0.12, 0.07, 0.05, 0.84)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 0.82, 0.55, 0.3)
+[sub_resource type="ShaderMaterial" id="Moldura"]
+shader = ExtResource("moldura")
+
+[sub_resource type="StyleBoxFlat" id="Box"]
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 18.0
+content_margin_bottom = 14.0
+bg_color = Color(0.09, 0.065, 0.1, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.55, 0.24, 0.3, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
+[sub_resource type="StyleBoxFlat" id="Tag"]
+content_margin_left = 12.0
+content_margin_top = 4.0
+content_margin_right = 12.0
+content_margin_bottom = 4.0
+bg_color = Color(0.13, 0.09, 0.13, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.55, 0.24, 0.3, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="Clear"]
+content_margin_left = 10.0
+content_margin_top = 6.0
+content_margin_right = 10.0
+content_margin_bottom = 6.0
+bg_color = Color(0.05, 0.035, 0.06, 0.55)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [sub_resource type="StyleBoxFlat" id="HpFill"]
-bg_color = Color(0.85, 0.3, 0.2, 1)
+bg_color = Color(0.82, 0.25, 0.27, 1)
 
 [sub_resource type="StyleBoxFlat" id="HpBack"]
-bg_color = Color(0.1, 0.05, 0.04, 0.8)
+bg_color = Color(0.16, 0.08, 0.1, 1)
+
+[sub_resource type="StyleBoxFlat" id="EnemyFill"]
+bg_color = Color(0.9, 0.62, 0.35, 1)
 
 [node name="BattleHUD" type="CanvasLayer"]
 script = ExtResource("hud")
@@ -37,148 +73,62 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="OrderPanel" type="PanelContainer" parent="Root"]
-mouse_filter = 2
-theme_override_styles/panel = SubResource("Soft")
+[node name="Flash" type="ColorRect" parent="Root"]
+unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -360.0
-offset_top = 14.0
-offset_right = 360.0
-offset_bottom = 60.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.85, 0.05, 0.08, 0)
+
+[node name="Frame" type="ColorRect" parent="Root"]
+unique_name_in_owner = true
+material = SubResource("Moldura")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="OrderPanel" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+visible = false
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Clear")
+layout_mode = 1
+anchors_preset = 0
+offset_left = 64.0
+offset_top = 44.0
+offset_right = 560.0
+offset_bottom = 80.0
 
 [node name="Order" type="HBoxContainer" parent="Root/OrderPanel"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 22
-alignment = 1
-
-[node name="PlayerPanel" type="PanelContainer" parent="Root"]
-mouse_filter = 2
-theme_override_styles/panel = SubResource("Soft")
-layout_mode = 1
-anchors_preset = 2
-anchor_left = 0.0
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 16.0
-offset_top = -150.0
-offset_right = 470.0
-offset_bottom = -16.0
-grow_vertical = 0
-
-[node name="VBox" type="VBoxContainer" parent="Root/PlayerPanel"]
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="PlayerName" type="Label" parent="Root/PlayerPanel/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"TitleLabel"
-theme_override_font_sizes/font_size = 20
-
-[node name="PlayerHp" type="ProgressBar" parent="Root/PlayerPanel/VBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 16)
-layout_mode = 2
-show_percentage = false
-theme_override_styles/background = SubResource("HpBack")
-theme_override_styles/fill = SubResource("HpFill")
-
-[node name="PlayerHpText" type="Label" parent="Root/PlayerPanel/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-
-[node name="AP" type="Label" parent="Root/PlayerPanel/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(1, 0.85, 0.4, 1)
-
-[node name="Statuses" type="Label" parent="Root/PlayerPanel/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-
-[node name="Actions" type="HBoxContainer" parent="Root"]
-unique_name_in_owner = true
-theme_override_constants/separation = 10
-alignment = 1
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -230.0
-offset_top = -110.0
-offset_right = 630.0
-offset_bottom = -30.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="Hint" type="Label" parent="Root"]
-unique_name_in_owner = true
-theme_type_variation = &"ToastLabel"
-theme_override_font_sizes/font_size = 15
-horizontal_alignment = 1
-text = "Escolha: 1 ataca (+1 PA) · Q E R habilidades · A / D trocam o alvo"
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -230.0
-offset_top = -140.0
-offset_right = 630.0
-offset_bottom = -114.0
-grow_horizontal = 2
-grow_vertical = 0
+theme_override_constants/separation = 14
 
 [node name="EnemyPanel" type="PanelContainer" parent="Root"]
 mouse_filter = 2
-theme_override_styles/panel = SubResource("Soft")
+theme_override_styles/panel = SubResource("Clear")
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -310.0
-offset_top = 80.0
-offset_right = -16.0
-offset_bottom = 80.0
+offset_left = -380.0
+offset_top = 44.0
+offset_right = -64.0
+offset_bottom = 120.0
 grow_horizontal = 0
 
 [node name="Enemies" type="VBoxContainer" parent="Root/EnemyPanel"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="LogPanel" type="PanelContainer" parent="Root"]
-unique_name_in_owner = true
-mouse_filter = 2
-theme_override_styles/panel = SubResource("Soft")
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -440.0
-offset_top = 320.0
-offset_right = -16.0
-offset_bottom = 320.0
-grow_horizontal = 0
-
-[node name="Log" type="RichTextLabel" parent="Root/LogPanel"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/normal_font_size = 14
-fit_content = true
-scroll_active = false
+theme_override_constants/separation = 6
 
 [node name="Banner" type="Label" parent="Root"]
 unique_name_in_owner = true
@@ -190,10 +140,162 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -500.0
-offset_top = 110.0
+offset_top = 96.0
 offset_right = 500.0
-offset_bottom = 180.0
+offset_bottom = 166.0
 grow_horizontal = 2
+
+[node name="Bottom" type="HBoxContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 48.0
+offset_top = -252.0
+offset_right = -48.0
+offset_bottom = -22.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 18
+
+[node name="Commands" type="PanelContainer" parent="Root/Bottom"]
+custom_minimum_size = Vector2(380, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("Box")
+
+[node name="VBox" type="VBoxContainer" parent="Root/Bottom/Commands"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Actions" type="VBoxContainer" parent="Root/Bottom/Commands/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 3
+
+[node name="Hint" type="Label" parent="Root/Bottom/Commands/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+modulate = Color(1, 1, 1, 0.6)
+theme_override_font_sizes/font_size = 14
+text = "1 / Q / E / R escolhem  ·  A / D trocam o alvo"
+horizontal_alignment = 1
+
+[node name="TextColumn" type="VBoxContainer" parent="Root/Bottom"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = -2
+
+[node name="SpeakerTag" type="PanelContainer" parent="Root/Bottom/TextColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_styles/panel = SubResource("Tag")
+
+[node name="Speaker" type="Label" parent="Root/Bottom/TextColumn/SpeakerTag"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.95, 0.75, 1)
+text = "Luta"
+
+[node name="LogPanel" type="PanelContainer" parent="Root/Bottom/TextColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("Box")
+
+[node name="VBox" type="VBoxContainer" parent="Root/Bottom/TextColumn/LogPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Says" type="RichTextLabel" parent="Root/Bottom/TextColumn/LogPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+theme_override_font_sizes/normal_font_size = 24
+theme_override_font_sizes/bold_font_size = 24
+theme_override_colors/default_color = Color(0.96, 0.9, 0.86, 1)
+scroll_active = false
+
+[node name="Log" type="RichTextLabel" parent="Root/Bottom/TextColumn/LogPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+fit_content = true
+scroll_active = false
+theme_override_font_sizes/normal_font_size = 14
+theme_override_colors/default_color = Color(0.8, 0.74, 0.78, 0.75)
+
+[node name="PlayerPanel" type="PanelContainer" parent="Root/Bottom"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("Box")
+
+[node name="HBox" type="HBoxContainer" parent="Root/Bottom/PlayerPanel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Portrait" type="SubViewportContainer" parent="Root/Bottom/PlayerPanel/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(170, 190)
+layout_mode = 2
+size_flags_vertical = 4
+stretch = true
+
+[node name="View" type="SubViewport" parent="Root/Bottom/PlayerPanel/HBox/Portrait"]
+own_world_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(170, 190)
+render_target_update_mode = 4
+
+[node name="VBox" type="VBoxContainer" parent="Root/Bottom/PlayerPanel/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="PlayerName" type="Label" parent="Root/Bottom/PlayerPanel/HBox/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
+
+[node name="PlayerHp" type="ProgressBar" parent="Root/Bottom/PlayerPanel/HBox/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+theme_override_styles/background = SubResource("HpBack")
+theme_override_styles/fill = SubResource("HpFill")
+show_percentage = false
+
+[node name="PlayerHpText" type="Label" parent="Root/Bottom/PlayerPanel/HBox/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+
+[node name="AP" type="Label" parent="Root/Bottom/PlayerPanel/HBox/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.85, 0.5, 1)
+
+[node name="Ritmo" type="Label" parent="Root/Bottom/PlayerPanel/HBox/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.6, 0.95, 1, 1)
+tooltip_text = "Ritmo: cada PERFEITO seguido dá +10% de dano (até 5). Errar zera."
+
+[node name="Statuses" type="Label" parent="Root/Bottom/PlayerPanel/HBox/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+autowrap_mode = 3
 
 [node name="Qte" type="Control" parent="Root"]
 unique_name_in_owner = true
@@ -206,9 +308,31 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="Dice" type="Control" parent="Root"]
+unique_name_in_owner = true
+script = ExtResource("dados")
+mouse_filter = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Golpe" type="Control" parent="Root"]
+unique_name_in_owner = true
+script = ExtResource("golpe")
+mouse_filter = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
 [node name="Result" type="PanelContainer" parent="Root"]
 unique_name_in_owner = true
-theme_override_styles/panel = SubResource("Soft")
+theme_override_styles/panel = SubResource("Box")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -216,9 +340,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -300.0
-offset_top = -90.0
+offset_top = -150.0
 offset_right = 300.0
-offset_bottom = 90.0
+offset_bottom = 30.0
 grow_horizontal = 2
 grow_vertical = 2
 

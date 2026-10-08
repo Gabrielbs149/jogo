@@ -15,6 +15,7 @@ height = 3
 [node name="UltimoGuardiao" type="CharacterBody3D"]
 script = ExtResource("c_script")
 display_name = "Último Guardião"
+battle_lines = PackedStringArray("A areia treme a cada passo.", "**NINGUÉM PASSA.**", "O ar fica pesado. Quente demais para respirar.")
 team = 1
 max_hp = 85
 armor_class = 15

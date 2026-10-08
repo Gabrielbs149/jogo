@@ -4,6 +4,8 @@ extends Node3D
 ## Todos devolvem quando terminam (use com await). Os personagens acham este nó pelo grupo "combat_fx".
 
 @export var font: Font
+## Primeira pessoa (D047): o número de quem está na câmera aparece na frente dela, e não em cima da cabeça.
+var first_person_target: Node3D
 
 
 func _ready() -> void:
@@ -24,6 +26,10 @@ func floating_text(at: Vector3, text: String, color: Color, big: bool = false) -
 	label.top_level = true
 	add_child(label)
 	label.global_position = at + Vector3.UP * 2.0
+	var cam := get_viewport().get_camera_3d()
+	if first_person_target and cam and at.distance_to(first_person_target.global_position) < 0.05:
+		label.global_position = cam.global_position - cam.global_basis.z * 2.2 + Vector3.DOWN * 0.45
+		label.pixel_size = 0.0016
 	var tween := create_tween().set_parallel()
 	tween.tween_property(label, "global_position", label.global_position + Vector3.UP * 1.2, 1.2).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	tween.tween_property(label, "modulate:a", 0.0, 0.5).set_delay(0.8)

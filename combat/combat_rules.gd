@@ -29,10 +29,10 @@ static func everyone(tree: SceneTree) -> Array[Combatant]:
 static func d20(advantage: int) -> Dictionary:
 	var a := Dice.d20()
 	if advantage == 0:
-		return {"value": a, "text": str(a)}
+		return {"value": a, "text": str(a), "rolls": [a]}
 	var b := Dice.d20()
 	var value := maxi(a, b) if advantage > 0 else mini(a, b)
-	return {"value": value, "text": "%d/%d %s" % [a, b, "vant." if advantage > 0 else "desv."]}
+	return {"value": value, "text": "%d/%d %s" % [a, b, "vant." if advantage > 0 else "desv."], "rolls": [a, b]}
 
 
 static func attack_advantage(attacker: Combatant, ability: Ability, target: Combatant) -> int:
@@ -154,6 +154,20 @@ static func apply(user: Combatant, ability: Ability, results: Array[Dictionary],
 			t.remove_flag("expose")  # o "exposto" vale para o próximo ataque
 
 
+## Multiplica o dano já rolado (o golpe com tempo, o Ritmo, o inimigo quebrado — D048). Arredonda, e quem acertou
+## leva pelo menos 1. O registro mostra o "×".
+static func scale_damage(results: Array[Dictionary], mult: float, why: String = "") -> void:
+	if is_equal_approx(mult, 1.0):
+		return
+	for r: Dictionary in results:
+		var amount := int(r["amount"])
+		if amount <= 0:
+			continue
+		var scaled := maxi(1, roundi(amount * mult))
+		r["amount"] = scaled
+		r["text"] = "%s ×%.1f%s = %d" % [r["text"], mult, (" " + why) if why != "" else "", scaled]
+
+
 static func make_status(user: Combatant, ability: Ability) -> Dictionary:
 	return {
 		"title": ability.status_title,
@@ -179,11 +193,16 @@ static func _strike(user: Combatant, ability: Ability, t: Combatant, all: Array[
 			var total := natural + user.attack_bonus + bless
 			var head := "%s+%d%s = %d vs CA %d" % [die["text"], user.attack_bonus, (" +%d bênção" % bless) if bless > 0 else "", total, t.current_ac()]
 			var crit := natural == 20
+			# o dado na tela (D048): quem rolou, as faces, o que soma e contra o quê
+			var shown := {"by": user, "rolls": die["rolls"], "kept": natural, "mod": user.attack_bonus + bless, "total": total,
+				"vs": t.current_ac(), "vs_name": "CA", "target": t}
 			if natural == 1 or (not crit and total < t.current_ac()):
-				return {"target": t, "kind": "miss", "amount": 0, "text": head + ", errou"}
+				shown["verdict"] = "FALHA" if natural == 1 else "ERROU"
+				return {"target": t, "kind": "miss", "amount": 0, "text": head + ", errou", "die": shown}
 			var dmg := _damage(user, ability, t, all, now, adv, crit)
+			shown["verdict"] = "CRÍTICO!" if crit else "ACERTOU"
 			return {"target": t, "kind": "crit" if crit else "hit", "amount": dmg["amount"],
-					"text": "%s, %s %s" % [head, "CRÍTICO" if crit else "acerto", dmg["text"]]}
+					"text": "%s, %s %s" % [head, "CRÍTICO" if crit else "acerto", dmg["text"]], "die": shown}
 		Ability.Roll.SAVE:
 			var save_die := d20(save_adv)
 			var die := int(save_die["value"])
@@ -193,10 +212,16 @@ static func _strike(user: Combatant, ability: Ability, t: Combatant, all: Array[
 			var save_name: String = ["DES", "CON", "SAB"][ability.save]
 			var head := "salv. %s %s+%d%s = %d vs CD %d" % [save_name, save_die["text"], bonus, (" +%d bênção" % bless) if bless > 0 else "", total, user.spell_dc]
 			var dmg := _damage(user, ability, t, all, now, 0, false)
+			# no salvamento quem rola é o alvo
+			var shown := {"by": t, "rolls": save_die["rolls"], "kept": die, "mod": bonus + bless, "total": total,
+				"vs": user.spell_dc, "vs_name": "CD", "target": t, "save": save_name}
 			if total >= user.spell_dc:
 				var half := int(dmg["amount"]) / 2 if ability.half_on_save else 0
-				return {"target": t, "kind": "save", "amount": half, "text": head + ", passou%s" % ((" (½ = %d)" % half) if half > 0 else "")}
-			return {"target": t, "kind": "fail", "amount": dmg["amount"], "text": "%s, falhou %s" % [head, dmg["text"]]}
+				shown["verdict"] = "PASSOU"
+				return {"target": t, "kind": "save", "amount": half, "text": head + ", passou%s" % ((" (½ = %d)" % half) if half > 0 else ""),
+					"die": shown}
+			shown["verdict"] = "FALHOU"
+			return {"target": t, "kind": "fail", "amount": dmg["amount"], "text": "%s, falhou %s" % [head, dmg["text"]], "die": shown}
 	var auto := _damage(user, ability, t, all, now, 0, false)
 	return {"target": t, "kind": "auto", "amount": auto["amount"], "text": auto["text"]}
 

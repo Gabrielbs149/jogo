@@ -31,7 +31,7 @@
 - [A DEFINIR] **Break/stagger, mira livre, mecânica própria de cada herói** — citados como "talvez depois", nunca decididos.
 
 ## Core loop
-- **30 s (luta):** escolher ação (ataque ganha PA, habilidade gasta PA) → acertar o tempo do anel (Espaço) para ter vantagem → no turno do inimigo, esquivar (Espaço) ou aparar (F) no tempo certo.
+- **30 s (luta, D048):** escolher a ação → o d20 rola na tela e diz se acertou → se acertou, o desafio de tempo da habilidade (anel, barra, sequência, martelar ou segurar) diz quanto do dano entra → no turno do inimigo, ele rola contra a sua CA e, se acertar, você se defende do jeito que o golpe pede (aparar/esquivar, pular para o lado, combo de 3, finta). Ritmo, Postura (quebra) e Fúria do chefe.
 - **5–10 min (fase):** explorar, ler inscrições, conversar, achar heróis, escolher quando encarar cada grupo de inimigos (ou pegar o primeiro golpe), descansar na fogueira.
 - **Sessão:** um capítulo: cena de abertura → caminho → chefe (Astro/guardião) → próxima fase *(estrutura da campanha; detalhe em aberto)*.
 
