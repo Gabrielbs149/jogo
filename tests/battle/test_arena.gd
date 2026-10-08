@@ -128,3 +128,14 @@ func test_cannot_flee_from_the_boss() -> void:
 	var arena := _arena(PackedStringArray(["res://actors/enemies/ultimo_guardiao.tscn"]))
 	await wait_until(func() -> bool: return arena.order.size() > 0, 10.0)
 	assert_false(arena.can_use_extra(BattleArena.FLEE))
+
+
+## D051: o Tico luta com as adagas psíquicas, uma em cada mão.
+func test_tico_fights_with_psychic_daggers() -> void:
+	var arena := _arena(PackedStringArray([BEETLE]))
+	await wait_until(func() -> bool: return arena.order.size() > 0, 10.0)
+	var daggers := arena.player.find_children("*", "AdagaPsiquica", true, false)
+	assert_eq(daggers.size(), 2, "uma em cada mão")
+	var dagger := daggers[0] as AdagaPsiquica
+	assert_gt(dagger.blade_length, 0.3, "a lâmina tem tamanho de adaga")
+	assert_true(dagger.has_node("Lamina"), "a lâmina foi montada")
