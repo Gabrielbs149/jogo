@@ -76,10 +76,9 @@ func test_damage_timing_scales_the_damage() -> void:
 
 func test_each_ability_picks_its_challenge() -> void:
 	assert_eq((load("res://data/abilities/adaga.tres") as Ability).damage_qte(), Ability.Golpe.ANEL)
-	assert_eq((load("res://data/abilities/bote_das_sombras.tres") as Ability).damage_qte(), Ability.Golpe.SEQUENCIA)
-	assert_eq((load("res://data/abilities/espinhos.tres") as Ability).damage_qte(), Ability.Golpe.MARTELAR)
-	assert_eq((load("res://data/abilities/tiro_duplo.tres") as Ability).damage_qte(), Ability.Golpe.BARRA)
-	assert_eq((load("res://data/abilities/chuva_de_flechas.tres") as Ability).damage_qte(), Ability.Golpe.SEGURAR)
+	assert_eq((load("res://data/abilities/bote_das_sombras.tres") as Ability).damage_qte(), Ability.Golpe.RAJADA, "investida: anéis seguidos")
+	assert_eq((load("res://data/abilities/espinhos.tres") as Ability).damage_qte(), Ability.Golpe.ANEL)
+	assert_eq((load("res://data/abilities/tiro_duplo.tres") as Ability).damage_qte(), Ability.Golpe.RAJADA, "um anel por flecha")
 	assert_eq((load("res://data/abilities/camuflagem.tres") as Ability).damage_qte(), Ability.Golpe.NENHUM)
 	assert_eq((load("res://data/abilities/raio_vigia.tres") as Ability).defense_qte(), Ability.Defesa.DIRECAO)
 	assert_eq((load("res://data/abilities/pancada.tres") as Ability).defense_qte(), Ability.Defesa.COMBO)
@@ -97,3 +96,35 @@ func test_posture_breaks_and_the_enemy_loses_a_turn() -> void:
 	assert_eq(arena.ritmo, 0, "errar zera o ritmo")
 	arena.call("_after_grade", "perfeito")
 	assert_eq(arena.ritmo, 1)
+
+
+## D050: ações do meio da luta. Defender dá CA e PA; a poção cura e acaba; do chefe não dá para fugir.
+func test_extra_actions() -> void:
+	# sem o piloto automático: a luta fica parada esperando você escolher (primeiro golpe = você começa)
+	Game.chosen = "tico"
+	Game.hero_hp = -1
+	Game.battle = {"id": "teste", "enemies": PackedStringArray([BEETLE]), "first_strike": true}
+	var arena := (load(ARENA) as PackedScene).instantiate() as BattleArena
+	add_child_autofree(arena)
+	await wait_until(func() -> bool: return arena.get_node("BattleHUD").get("_choosing"), 20.0)
+	var ac := arena.player.current_ac()
+	arena.ap = 2
+	await arena.call("_extra_action", BattleArena.DEFEND)
+	assert_eq(arena.player.current_ac(), ac + 2, "defendendo: +2 CA")
+	assert_eq(arena.ap, 3, "+1 PA")
+	arena.player.hp = 5
+	assert_true(arena.can_use_extra(BattleArena.POTION))
+	await arena.call("_extra_action", BattleArena.POTION)
+	assert_gt(arena.player.hp, 5, "a poção cura")
+	assert_eq(arena.potions, 1)
+	arena.potions = 0
+	assert_false(arena.can_use_extra(BattleArena.POTION), "sem poção")
+	assert_true(arena.can_use_extra(BattleArena.FLEE), "do escaravelho dá para fugir")
+	await arena.call("_extra_action", BattleArena.ANALYZE)
+	assert_true(arena.target.has_flag("expose"), "analisar deixa o alvo exposto")
+
+
+func test_cannot_flee_from_the_boss() -> void:
+	var arena := _arena(PackedStringArray(["res://actors/enemies/ultimo_guardiao.tscn"]))
+	await wait_until(func() -> bool: return arena.order.size() > 0, 10.0)
+	assert_false(arena.can_use_extra(BattleArena.FLEE))

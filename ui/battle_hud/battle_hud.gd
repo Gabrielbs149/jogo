@@ -17,6 +17,8 @@ const KEY_ACTIONS: Array[StringName] = [&"battle_attack", &"skill_q", &"skill_e"
 
 var _arena: BattleArena
 var _buttons: Array[Button] = []
+## Ações do meio da luta (D050): id -> botão.
+var _extra_buttons: Dictionary = {}
 var _enemy_rows: Dictionary = {}
 var _choosing: bool = false
 var _log: PackedStringArray = []
@@ -64,10 +66,10 @@ func setup(arena: BattleArena) -> void:
 	for i: int in player.abilities.size():
 		var ability := player.abilities[i]
 		var button := Button.new()
-		button.custom_minimum_size = Vector2(0, 42)
+		button.custom_minimum_size = Vector2(0, 36)
 		button.focus_mode = Control.FOCUS_NONE
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		button.add_theme_font_size_override("font_size", 15)
+		button.add_theme_font_size_override("font_size", 14)
 		var cost := "+1 PA" if ability.ap_cost == 0 else "%d PA" % ability.ap_cost
 		var detail := ability.dice_text() if ability.dice_text() != "" else ability.status_title
 		button.text = "%s   %s\n      %s · %s" % [KEYS[i] if i < KEYS.size() else "", ability.title, cost, detail]
@@ -75,6 +77,20 @@ func setup(arena: BattleArena) -> void:
 		button.pressed.connect(_choose.bind(i))
 		_actions.add_child(button)
 		_buttons.append(button)
+	# ações do meio da luta: uma fileira de botões menores embaixo das habilidades (2 / 3 / 4 / 5)
+	var extra_row := HBoxContainer.new()
+	extra_row.add_theme_constant_override("separation", 4)
+	for action: Dictionary in arena.extra_actions():
+		var button := Button.new()
+		button.custom_minimum_size = Vector2(0, 30)
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.focus_mode = Control.FOCUS_NONE
+		button.add_theme_font_size_override("font_size", 13)
+		button.text = "%s %s" % [action["key"], action["title"]]
+		button.pressed.connect(_choose.bind(int(action["id"])))
+		extra_row.add_child(button)
+		_extra_buttons[int(action["id"])] = button
+	_actions.add_child(extra_row)
 	for enemy: Combatant in arena.enemies:
 		enemy.rolled.connect(log_line)
 		var row := VBoxContainer.new()
@@ -150,6 +166,13 @@ func refresh() -> void:
 	_ritmo.text = ("Ritmo  " + "◆".repeat(_arena.ritmo) + "◇".repeat(maxi(0, 5 - _arena.ritmo)) + ("   +%d%%" % (_arena.ritmo * 10) if _arena.ritmo > 0 else ""))
 	for i: int in _buttons.size():
 		_buttons[i].disabled = not _choosing or not _arena.can_afford(i)
+	for action: Dictionary in _arena.extra_actions():
+		var button := _extra_buttons.get(int(action["id"])) as Button
+		if button:
+			button.disabled = not _choosing or not _arena.can_use_extra(int(action["id"]))
+			button.tooltip_text = String(action["info"])
+			if int(action["id"]) == BattleArena.POTION:
+				button.text = "%s Poção ×%d" % [action["key"], _arena.potions]
 	for key: Variant in _enemy_rows.keys():
 		var row: Dictionary = _enemy_rows[key]
 		var enemy := key as Combatant if is_instance_valid(key) else null
@@ -221,9 +244,14 @@ func say(speaker: String, text: String, hold: float = 0.0) -> void:
 
 ## A tela pisca vermelho (você apanhou).
 func hurt_flash(strength: float = 0.35) -> void:
+	flash(Color(0.85, 0.05, 0.08), strength)
+
+
+## A tela pisca de uma cor (dourado no 20, vermelho quando apanha).
+func flash(color: Color, strength: float = 0.35) -> void:
 	if _flash_tween:
 		_flash_tween.kill()
-	_flash.color.a = strength
+	_flash.color = Color(color, strength)
 	_flash_tween = create_tween()
 	_flash_tween.tween_property(_flash, "color:a", 0.0, 0.35).set_ease(Tween.EASE_OUT)
 
@@ -246,6 +274,10 @@ func roll_dice(dice: Array[Dictionary]) -> void:
 
 func golpe() -> GolpeQte:
 	return _golpe
+
+
+func dice() -> DiceRoller:
+	return _dice
 
 
 func banner(text: String, color: Color = Color(1, 0.9, 0.6)) -> void:
@@ -284,11 +316,17 @@ func _set_choosing(on: bool) -> void:
 func _flat(color: Color) -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()
 	box.bg_color = color
+	box.set_corner_radius_all(3)
 	return box
 
 
 func _choose(index: int) -> void:
-	if _choosing and _arena.can_afford(index):
+	if not _choosing:
+		return
+	if index >= BattleArena.EXTRA_BASE:
+		if _arena.can_use_extra(index):
+			action_chosen.emit(index)
+	elif _arena.can_afford(index):
 		action_chosen.emit(index)
 
 
@@ -303,6 +341,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.is_action_pressed(KEY_ACTIONS[i]) and i < _buttons.size():
 			get_viewport().set_input_as_handled()
 			_choose(i)
+			return
+	if event is InputEventKey and event.is_pressed() and not event.is_echo():
+		var extra := {KEY_2: BattleArena.DEFEND, KEY_3: BattleArena.POTION, KEY_4: BattleArena.ANALYZE, KEY_5: BattleArena.FLEE}
+		var code := (event as InputEventKey).keycode
+		if extra.has(code):
+			get_viewport().set_input_as_handled()
+			_choose(int(extra[code]))
 			return
 	if event.is_action_pressed(&"move_left"):
 		_arena.cycle_target(-1)

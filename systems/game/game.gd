@@ -45,6 +45,8 @@ var return_transform: Transform3D = Transform3D.IDENTITY
 var returning: bool = false
 ## Encontros já vencidos: somem do mapa.
 var defeated: Array[String] = []
+## Grupo de quem você acabou de fugir (D050): não puxa luta até você se afastar.
+var fled_from: String = ""
 ## Sua vida entre uma luta e outra (-1 = cheia). A fogueira enche.
 var hero_hp: int = -1
 ## Texto da história para mostrar quando voltar ao mapa (depois do chefe, por exemplo).
@@ -223,6 +225,17 @@ func end_battle(victory: bool, hp: int) -> void:
 	else:
 		hero_hp = -1
 		returning = false
+	battle = {}
+	get_tree().paused = false
+	Transition.go(return_scene)
+
+
+## Fugiu da luta (D050): volta para o mesmo lugar com a vida que sobrou; o grupo continua no mapa, mas espera você
+## se afastar antes de poder começar outra luta.
+func flee_battle(hp: int) -> void:
+	hero_hp = hp
+	fled_from = String(battle.get("id", ""))
+	returning = true
 	battle = {}
 	get_tree().paused = false
 	Transition.go(return_scene)

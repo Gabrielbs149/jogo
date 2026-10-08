@@ -55,6 +55,14 @@ var _focus: Combatant
 var ritmo: int = 0
 var _last_grade: String = ""
 var _fury: Dictionary = {}
+## Poções por luta (D050).
+var potions: int = 2
+var _fled: bool = false
+## Câmera da ação (D050): mostra o herói atacando; null = primeira pessoa.
+var _action_target: Combatant
+var _action_on: bool = false
+var _cam_eye := Vector3.ZERO
+var _cam_look := Vector3.ZERO
 
 @onready var _hud: BattleHUD = $BattleHUD
 @onready var _fx: CombatFX = $FX
@@ -97,6 +105,8 @@ func _ready() -> void:
 	_marker.modulate = Color(1, 0.85, 0.4)
 	add_child(_marker)
 	_hud.setup(self)
+	_hud.dice().landed.connect(_on_dice_landed)
+	_fx.hitstop_enabled = not auto_play
 	var model := player.get_node_or_null("Model") as Node3D
 	if model:
 		_hud.setup_portrait(model)  # antes de sumir com o herói (o retrato é uma cópia dele)
@@ -112,7 +122,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if first_person and _camera and is_instance_valid(player):
 		_update_view(delta)
-	if _marker and target and is_instance_valid(target) and target.hp > 0:
+	if _marker and target and is_instance_valid(target) and target.hp > 0 and not _action_on:
 		_marker.visible = true
 		var above := (3.6 if target.is_boss else 1.35) if first_person else (3.8 if target.is_boss else 2.3)
 		_marker.global_position = target.global_position + Vector3.UP * above
@@ -142,7 +152,7 @@ func cycle_target(direction: int) -> void:
 
 
 func is_over() -> bool:
-	return not player.is_active() or alive_enemies().is_empty()
+	return _fled or not player.is_active() or alive_enemies().is_empty()
 
 
 func _run() -> void:
@@ -195,6 +205,13 @@ func _run() -> void:
 			if is_instance_valid(actor):
 				actor.end_turn()
 			_hud.refresh()
+	if _fled:
+		CombatRules.turn_mode = false
+		Audio.stop_music(0.8)
+		finished.emit(false)
+		if not auto_play:
+			Game.flee_battle(player.hp)
+		return
 	var victory := player.is_active()
 	CombatRules.turn_mode = false
 	Audio.stop_music(0.8)
@@ -222,6 +239,9 @@ func _player_turn() -> void:
 	else:
 		_hud.say(player.display_name, "O que %s vai fazer?" % player.display_name)
 		index = await _hud.choose_action()
+	if index >= EXTRA_BASE:
+		await _extra_action(index)
+		return
 	var ability := player.abilities[index]
 	ap -= ability.ap_cost
 	_hud.refresh()
@@ -230,20 +250,21 @@ func _player_turn() -> void:
 		ap = mini(ap + 1, max_ap)
 
 
-## D048: primeiro o d20 diz se acerta (aparece rolando); se acertou, o golpe com tempo diz quanto do dano entra.
+## D048/D050: o d20 diz se acerta (aparece rolando); se acertou, o anel diz quanto do dano entra; aí a câmera
+## sai dos seus olhos e mostra o herói atacando (animação dele, rastro do golpe, o inimigo apanhando).
 func _player_action(index: int) -> void:
 	var ability := player.abilities[index]
 	var tgt: Combatant = target if ability.is_offensive() else player
 	var melee := ability.is_offensive() and (ability.shape == Ability.Shape.DASH or (ability.shape == Ability.Shape.TARGET and not ability.projectile))
 	if tgt != player:
 		_face(player, tgt)
-	player.ability_used.emit(index)
 	var point := tgt.global_position
 	var results := CombatRules.resolve(player, ability, tgt if ability.needs_target() else null, point, CombatRules.everyone(get_tree()))
 	await _show_dice(results)
+	var fumble := _natural(results) == 1
 	var landed := results.filter(func(r: Dictionary) -> bool: return int(r["amount"]) > 0)
 	if not landed.is_empty():
-		var outcome := await _damage_qte(ability, landed.size())
+		var outcome := await _damage_qte(ability, landed.size(), tgt)
 		_after_grade(String(outcome["grade"]))
 		var mult := float(outcome["mult"]) * (1.0 + ritmo * 0.1)
 		var why := String(outcome["grade"]) + (" · ritmo %d" % ritmo if ritmo > 0 else "")
@@ -252,70 +273,209 @@ func _player_action(index: int) -> void:
 			var t := r["target"] as Combatant
 			if is_instance_valid(t) and t.quebrado and int(r["amount"]) > 0:
 				CombatRules.scale_damage([r] as Array[Dictionary], 1.5, "quebrado")
+	# a cena do golpe
+	_action_cam(tgt)
+	await _wait(0.3)
 	if melee:
-		await _approach(player, tgt.global_position, 1.4)
+		await _approach(player, tgt.global_position, 1.3 if not tgt.is_boss else 2.2)
+	player.ability_used.emit(index)
 	Audio.play_at("golpe", player.global_position, -3.0)
-	if ability.projectile and tgt != player:
+	await _wait(0.22)  # o golpe chega
+	if fumble:
+		# 1 natural: tropeça (e diz isso)
+		player.dodged.emit()
+		_shake = 0.2
+		if not auto_play:
+			_hud.say(player.display_name, "%s tropeça no próprio rabo!" % player.display_name)
+	elif ability.projectile and tgt != player:
 		await _fx.projectile(player.global_position, point, ability.vfx_color, ability.projectile_scene)
 	elif ability.shape in [Ability.Shape.AREA, Ability.Shape.ALLIES_AROUND, Ability.Shape.ENEMIES_AROUND, Ability.Shape.CONE, Ability.Shape.LINE]:
 		_fx.ring(point if ability.shape == Ability.Shape.AREA else player.global_position, maxf(ability.radius_m, 2.0), ability.vfx_color)
-	elif melee:
-		_fx.lunge(player)
+	if ability.is_offensive() and not fumble and not ability.projectile:
+		for r: Dictionary in results:
+			var t := r["target"] as Combatant
+			if is_instance_valid(t):
+				var high := 1.6 if t.is_boss else 0.55
+				_fx.slash(t.global_position + Vector3.UP * high, t.global_position - player.global_position,
+					Color(1.0, 0.85, 0.45) if r["kind"] == "crit" else ability.vfx_color, 1.6 if t.is_boss else 1.0)
+	for r: Dictionary in results:
+		var t := r["target"] as Combatant
+		if r["kind"] in ["miss", "save"] and is_instance_valid(t) and t != player and not fumble:
+			t.dodged.emit()  # o inimigo desvia
+		if r["kind"] == "crit":
+			_shake = 0.3
+			_hud.flash(Color(1.0, 0.82, 0.35), 0.35)
 	CombatRules.apply(player, ability, results, _fx)
 	for r: Dictionary in results:
 		_add_posture(r["target"] as Combatant, int(r["amount"]) + (8 if _last_grade == "perfeito" else 0))
 	if ability.is_offensive():
 		player.remove_flag("invisible")
-	await _wait(0.45)
+	await _wait(0.6)
 	if melee and player.is_active():
 		await _return_home(player)
+	_action_cam(null)
+	await _wait(0.2)
 
 
-## O golpe com tempo do dano (D048). Devolve {"grade": "perfeito"|"bom"|"fraco", "mult"}.
-## Bem difícil de propósito: as janelas são curtas, e cada tipo pede uma coisa diferente.
-func _damage_qte(ability: Ability, hits: int) -> Dictionary:
+## O anel do dano (D050: um desafio só, claro e bonito). Rajada (vários golpes, investida) = um anel por golpe,
+## cada um mais rápido; habilidade grande (4+ PA) = anel mais rápido, mas o perfeito vale ×1,8.
+## Devolve {"grade": "perfeito"|"bom"|"fraco", "mult"}.
+func _damage_qte(ability: Ability, hits: int, on: Combatant) -> Dictionary:
 	var kind := ability.damage_qte()
 	if kind == Ability.Golpe.NENHUM:
 		return {"grade": "bom", "mult": 1.0}
+	var big := ability.ap_cost >= 4
+	var best := 1.8 if big else 1.5
 	if auto_play:
 		var r := randf()
-		return _grade("perfeito" if r < auto_perfect else ("bom" if r < auto_perfect + auto_good else "fraco"))
+		return _grade("perfeito" if r < auto_perfect else ("bom" if r < auto_perfect + auto_good else "fraco"), best)
+	var count := (hits if hits > 1 else 3) if kind == Ability.Golpe.RAJADA else 1
 	var q := _hud.golpe()
-	var at := _hud.scene_center() + Vector2(0, 40)
-	match kind:
-		Ability.Golpe.ANEL:
-			var res := await q.ring(at, attack_qte_time, [&"dodge"], "Espaço no tempo")
-			var error := absf(float(res["error"])) if res["key"] != &"" else 9.0
-			return _grade("perfeito" if error <= perfect_window else ("bom" if error <= good_window else "fraco"))
-		Ability.Golpe.BARRA:
-			# vários golpes: uma barra por golpe, cada uma mais rápida; vale a média
-			var total := 0.0
-			for h: int in hits:
-				var res := await q.bar(at, 0.75 - h * 0.15, 0.07, 0.24, "Golpe %d de %d: Espaço no dourado" % [h + 1, hits])
-				var off := float(res["offset"])
-				total += 1.6 if off <= 0.07 else (1.1 if off <= 0.24 else 0.5)
-			var avg := total / hits
-			return {"grade": "perfeito" if avg >= 1.55 else ("bom" if avg >= 1.0 else "fraco"), "mult": avg}
-		Ability.Golpe.SEQUENCIA:
-			var res := await q.sequence(at, 5, 0.62)
-			var right := int(res["correct"])
-			var mult := 0.5 + right * 0.25  # 5 certas = ×1,75
-			return {"grade": "perfeito" if right >= 5 else ("bom" if right >= 3 else "fraco"), "mult": mult}
-		Ability.Golpe.MARTELAR:
-			var res := await q.mash(at, 1.6)
-			var n := int(res["presses"])
-			return {"grade": "perfeito" if n >= 18 else ("bom" if n >= 11 else "fraco"), "mult": clampf(0.5 + n * 0.06, 0.5, 1.6)}
-		Ability.Golpe.SEGURAR:
-			var res := await q.hold(at, 1.25)
-			var lv := float(res["level"])
-			if bool(res["over"]):
-				return {"grade": "fraco", "mult": 0.3}
-			return _grade("perfeito" if lv >= 0.85 and lv <= 0.93 else ("bom" if lv >= 0.7 else "fraco"), 1.8)
-	return {"grade": "bom", "mult": 1.0}
+	var at := _screen_of(on)
+	var total := 0.0
+	var grade := "bom"
+	for i: int in count:
+		var duration := attack_qte_time * (0.8 if big else 1.0) * pow(0.82, i)
+		var res := await q.ring(at, duration, [&"dodge"], "Golpe %d de %d" % [i + 1, count] if count > 1 else "Na hora!", false, 0,
+			i, count if count > 1 else 0)
+		var error := absf(float(res["error"])) if res["key"] != &"" else 9.0
+		grade = "perfeito" if error <= perfect_window * (0.8 if big else 1.0) else ("bom" if error <= good_window else "fraco")
+		q.pop(grade)
+		total += {"perfeito": best, "bom": 1.0, "fraco": 0.6}[grade]
+		if count > 1:
+			Audio.play("qte_" + ("errou" if grade == "fraco" else grade), -8.0, 0.0)
+			await _wait(0.08)
+	var avg := total / count
+	if count > 1:
+		grade = "perfeito" if avg >= best - 0.01 else ("bom" if avg >= 0.95 else "fraco")
+	return {"grade": grade, "mult": avg}
 
 
 func _grade(grade: String, perfect_mult: float = 1.5) -> Dictionary:
 	return {"grade": grade, "mult": {"perfeito": perfect_mult, "bom": 1.0, "fraco": 0.6}[grade]}
+
+
+## Onde fica alguém na tela (para o anel aparecer em cima dele).
+func _screen_of(c: Combatant) -> Vector2:
+	var cam := get_viewport().get_camera_3d()
+	if c and is_instance_valid(c) and cam:
+		var p := c.global_position + Vector3.UP * (1.4 if c.is_boss else 0.35)
+		if not cam.is_position_behind(p):
+			var s := cam.unproject_position(p)
+			var size := get_viewport().get_visible_rect().size
+			return Vector2(clampf(s.x, 120.0, size.x - 120.0), clampf(s.y, 120.0, size.y * 0.62))
+	return _hud.scene_center() + Vector2(0, 40)
+
+
+## O número natural do d20 que valeu (o primeiro resultado com dado); 0 = ninguém rolou.
+func _natural(results: Array[Dictionary]) -> int:
+	for r: Dictionary in results:
+		if r.has("die"):
+			return int((r["die"] as Dictionary)["kept"])
+	return 0
+
+
+# ---------- ações do meio da luta (D050): Defender, Poção, Analisar, Fugir
+
+const EXTRA_BASE := 100
+const DEFEND := 100
+const POTION := 101
+const ANALYZE := 102
+const FLEE := 103
+
+
+## As ações que não são habilidade, para o menu: {"id", "key", "title", "info"}.
+func extra_actions() -> Array[Dictionary]:
+	return [
+		{"id": DEFEND, "key": "2", "title": "Defender", "info": "+2 CA e defesa mais folgada · +1 PA"},
+		{"id": POTION, "key": "3", "title": "Poção", "info": "cura 2d4+2 · restam %d" % potions},
+		{"id": ANALYZE, "key": "4", "title": "Analisar", "info": "mostra o próximo golpe · alvo exposto"},
+		{"id": FLEE, "key": "5", "title": "Fugir", "info": "d20 + DES contra CD %d" % flee_dc() if not _boss_alive() else "não dá para fugir do chefe"},
+	]
+
+
+func can_use_extra(id: int) -> bool:
+	match id:
+		POTION:
+			return potions > 0 and player.hp < player.max_hp
+		FLEE:
+			return not _boss_alive()
+	return true
+
+
+func flee_dc() -> int:
+	return 10 + 2 * alive_enemies().size()
+
+
+func _boss_alive() -> bool:
+	return alive_enemies().any(func(e: Combatant) -> bool: return e.is_boss)
+
+
+func _extra_action(id: int) -> void:
+	match id:
+		DEFEND:
+			player.add_status(_status("Defendendo", {"ac": 2}))
+			ap = mini(ap + 1, max_ap)
+			_action_cam(player)
+			player.dodged.emit()
+			_fx.ring(player.global_position, 1.2, Color(0.6, 0.85, 1.0))
+			await _hud.say(player.display_name, "%s se prepara: +2 CA e a defesa fica mais folgada até a vez dele." % player.display_name, 0.4)
+			_action_cam(null)
+		POTION:
+			potions -= 1
+			var amount := Dice.roll(2, 4) + 2
+			player.heal(amount)
+			_action_cam(player)
+			player.ability_used.emit(3)  # mesma animação de usar item
+			_fx.rising_glow(player.global_position, Color(0.5, 1.0, 0.6))
+			_fx.floating_text(player.global_position, "+%d" % amount, Color(0.6, 1.0, 0.65))
+			player.rolled.emit("%s bebe uma poção: 2d4+2 = %d" % [player.display_name, amount])
+			await _hud.say(player.display_name, "%s bebe uma poção e recupera %d PV." % [player.display_name, amount], 0.4)
+			_action_cam(null)
+		ANALYZE:
+			if target and is_instance_valid(target):
+				target.add_status(_status("Exposto", {"expose": true}))
+				ap = mini(ap + 1, max_ap)
+				await _hud.say(player.display_name, _analysis(target), 1.1)
+		FLEE:
+			var roll := Dice.d20()
+			var total := roll + player.dex_save
+			var ok := roll != 1 and (roll == 20 or total >= flee_dc())
+			await _hud.roll_dice([{"by": player, "rolls": [roll], "kept": roll, "mod": player.dex_save, "total": total, "vs": flee_dc(),
+				"vs_name": "CD", "target": player, "verdict": "FUGIU!" if ok else "NÃO DEU"}] as Array[Dictionary])
+			if ok:
+				_fled = true
+				await _hud.say(player.display_name, "%s some no meio da poeira." % player.display_name, 0.5)
+			else:
+				await _hud.say(player.display_name, "%s tenta fugir, mas não acha saída." % player.display_name, 0.4)
+	_hud.refresh()
+
+
+func _status(title: String, extra: Dictionary) -> Dictionary:
+	var s := {"title": title, "time": 2.0, "ac": 0, "bless": 0, "invisible": false, "frighten": false, "expose": false, "mark": 0, "mark_by": null}
+	s.merge(extra, true)
+	return s
+
+
+## O que o Analisar mostra: vida, o próximo golpe e como se defender dele.
+func _analysis(enemy: Combatant) -> String:
+	var next_round := round_number + (1 if order.find(enemy) < order.find(player) else 0)
+	var index := 1 if enemy.abilities.size() > 1 and next_round % 3 == 0 else 0
+	var ability := enemy.abilities[index]
+	var how := {Ability.Defesa.ANEL: "F apara, Espaço esquiva", Ability.Defesa.DIRECAO: "pule para o lado da seta",
+		Ability.Defesa.COMBO: "três golpes seguidos, apare um por um", Ability.Defesa.FINTA: "o anel engana: espere a hora de verdade"}
+	return "%s: %d/%d PV, CA %d. Próximo golpe: **%s** (%s). Fica exposto: o próximo ataque tem vantagem." % [
+		enemy.display_name, enemy.hp, enemy.max_hp, enemy.current_ac(), ability.title, how.get(ability.defense_qte(), "")]
+
+
+## O 20 e o 1 na hora em que o dado para (D050): brilho dourado ou piscada, e a câmera treme.
+func _on_dice_landed(special: String) -> void:
+	if special == "20":
+		_hud.flash(Color(1.0, 0.85, 0.35), 0.16)
+		_shake = 0.25
+	elif special == "1":
+		_hud.flash(Color(0.6, 0.1, 0.1), 0.3)
+		_shake = 0.15
 
 
 ## Ritmo (D048): PERFEITO em seguida (no golpe ou na defesa) soma; qualquer erro zera.
@@ -408,6 +568,15 @@ func _enemy_turn(enemy: Combatant, extra: bool = false) -> void:
 	if ability.shape == Ability.Shape.ENEMIES_AROUND and results.is_empty():
 		results = CombatRules.resolve(enemy, ability, null, player.global_position, [player] as Array[Combatant])
 	await _show_dice(results)
+	var nat := _natural(results)
+	if nat == 1:
+		# 1 natural do inimigo: tropeça e erra feio
+		enemy.dodged.emit()
+		_fx.shake(enemy)
+		if not auto_play:
+			await _hud.say(enemy.display_name, "%s tropeça e erra feio!" % enemy.display_name, 0.3)
+	elif nat == 20:
+		_hud.banner("GOLPE CRÍTICO!", Color(1, 0.35, 0.3))
 	_fx.lunge(enemy)
 	Audio.play_at("golpe", enemy.global_position, -3.0)
 	var on_me := results.filter(func(r: Dictionary) -> bool: return r["target"] == player and int(r["amount"]) > 0)
@@ -465,48 +634,54 @@ func _defense(ability: Ability, enemy: Combatant) -> Dictionary:
 			return {"keep": 0.5 if kind == Ability.Defesa.ANEL else 0.0, "counter": false, "grade": "bom", "text": "esquivou"}
 		return {"keep": 1.0, "counter": false, "grade": "falhou", "text": ""}
 	var q := _hud.golpe()
-	var at := _hud.scene_center() + Vector2(0, 40)
-	if first_person and enemy and is_instance_valid(enemy):
-		var cam := get_viewport().get_camera_3d()
-		var p := enemy.global_position + Vector3.UP * (1.2 if enemy.is_boss else 0.3)
-		if cam and not cam.is_position_behind(p):
-			at = cam.unproject_position(p)
+	var at := _screen_of(enemy)
 	var windup := 0.5 + ability.windup
+	# Defendendo (D050): as janelas ficam 50% maiores
+	var easy := 1.5 if player.statuses.any(func(st: Dictionary) -> bool: return st["title"] == "Defendendo") else 1.0
+	var dodge_w := dodge_window * easy
+	var parry_w := parry_window * easy
 	match kind:
 		Ability.Defesa.DIRECAO:
 			var side := -1 if randf() < 0.5 else 1
 			var res := await q.ring(at, windup + 0.15, [], "Pule para o lado da seta", false, side)
 			var right_key := &"move_right" if side > 0 else &"move_left"
 			var error := absf(float(res["error"]))
-			if res["key"] == right_key and error <= dodge_window:
-				return {"keep": 0.0, "counter": false, "grade": "perfeito" if error <= parry_window else "bom", "text": "desviou"}
+			q.pop("bom" if res["key"] == right_key and error <= dodge_w else "falhou")
+			if res["key"] == right_key and error <= dodge_w:
+				return {"keep": 0.0, "counter": false, "grade": "perfeito" if error <= parry_w else "bom", "text": "desviou"}
 			return {"keep": 1.0, "counter": false, "grade": "falhou", "text": ""}
 		Ability.Defesa.COMBO:
 			var parried := 0
 			var avoided := 0
 			for i: int in 3:
-				var res := await q.ring(at, randf_range(0.32, 0.62), [&"dodge", &"parry"], "Golpe %d de 3: F apara · Espaço esquiva" % (i + 1))
+				var res := await q.ring(at, randf_range(0.32, 0.62), [&"dodge", &"parry"], "F apara · Espaço esquiva", false, 0, i, 3)
 				var error := absf(float(res["error"]))
-				if res["key"] == &"parry" and error <= parry_window:
+				if res["key"] == &"parry" and error <= parry_w:
 					parried += 1
+					q.pop("perfeito")
 					Audio.play("aparar", -6.0, 0.0)
-				elif res["key"] == &"dodge" and error <= dodge_window:
+				elif res["key"] == &"dodge" and error <= dodge_w:
 					avoided += 1
+					q.pop("bom")
+				else:
+					q.pop("falhou")
 			var keep := 1.0 - (parried + avoided) / 3.0
 			return {"keep": keep, "counter": parried == 3, "grade": "perfeito" if parried == 3 else ("bom" if keep < 0.5 else "falhou"),
 				"text": "aparou os três" if parried == 3 else "segurou %d de 3" % (parried + avoided)}
 		Ability.Defesa.FINTA:
-			var res := await q.ring(at, windup, [&"dodge"], "Cuidado com a finta: Espaço", true)
+			var res := await q.ring(at, windup, [&"dodge"], "Cuidado com a finta", true)
 			var error := absf(float(res["error"]))
-			if res["key"] == &"dodge" and error <= dodge_window:
-				return {"keep": 0.0, "counter": false, "grade": "perfeito" if error <= parry_window else "bom", "text": "pulou a onda"}
+			q.pop("perfeito" if res["key"] == &"dodge" and error <= parry_w else ("bom" if res["key"] == &"dodge" and error <= dodge_w else "falhou"))
+			if res["key"] == &"dodge" and error <= dodge_w:
+				return {"keep": 0.0, "counter": false, "grade": "perfeito" if error <= parry_w else "bom", "text": "pulou a onda"}
 			return {"keep": 1.0, "counter": false, "grade": "falhou", "text": ""}
 	# anel
 	var res := await q.ring(at, windup, [&"dodge", &"parry"], "F apara · Espaço esquiva")
 	var error := absf(float(res["error"]))
-	if res["key"] == &"parry" and error <= parry_window:
+	q.pop("perfeito" if res["key"] == &"parry" and error <= parry_w else ("bom" if res["key"] == &"dodge" and error <= dodge_w else "falhou"))
+	if res["key"] == &"parry" and error <= parry_w:
 		return {"keep": 0.0, "counter": true, "grade": "perfeito", "text": "aparou"}
-	if res["key"] == &"dodge" and error <= dodge_window:
+	if res["key"] == &"dodge" and error <= dodge_w:
 		return {"keep": 0.5, "counter": false, "grade": "bom", "text": "esquivou (½)"}
 	return {"keep": 1.0, "counter": false, "grade": "falhou", "text": ""}
 
@@ -570,6 +745,8 @@ func _first_person_view() -> void:
 		_hud.hurt_flash()
 		_shake = 0.22)
 	_look = _group_center()
+	_cam_eye = player.global_position + Vector3.UP * eye_height
+	_cam_look = _look
 	_update_view(1.0)
 
 
@@ -591,14 +768,52 @@ func _group_center() -> Vector3:
 
 func _update_view(delta: float) -> void:
 	_look = _look.lerp(_group_center(), clampf(delta * 3.0, 0.0, 1.0))
-	var ahead := _look - player.global_position
-	ahead.y = 0.0
-	var forward := ahead.normalized() if ahead.length() > 0.1 else Vector3.FORWARD
-	var eye := player.global_position + Vector3.UP * eye_height - forward * eye_back
+	var eye: Vector3
+	var look: Vector3
+	if _action_on:
+		# câmera da ação: atrás e ao lado do herói, olhando para ele e o alvo
+		var focus_other := _action_target != null and is_instance_valid(_action_target) and _action_target != player
+		var other: Vector3 = _action_target.global_position if focus_other else _look
+		var to := other - player.global_position
+		to.y = 0.0
+		var f := to.normalized() if to.length() > 0.1 else Vector3.FORWARD
+		var side := f.cross(Vector3.UP)
+		var boss := focus_other and _action_target.is_boss
+		if focus_other:
+			# de lado, os dois de perfil: o herói à esquerda, o alvo à direita
+			var mid := player.global_position.lerp(other, 0.5)
+			var spread := Vector2(player.global_position.x, player.global_position.z).distance_to(Vector2(other.x, other.z))
+			eye = mid + side * (2.2 + spread * 0.55 + (2.0 if boss else 0.0)) - f * 0.9 + Vector3.UP * (1.0 if not boss else 1.9)
+			look = mid + Vector3.UP * (1.2 if boss else 0.5)
+		else:
+			# o herói sozinho (defender, poção): de frente, meio de lado
+			eye = player.global_position + f * 2.2 + side * 1.0 + Vector3.UP * 0.9
+			look = player.global_position + Vector3.UP * 0.55
+	else:
+		var ahead := _look - player.global_position
+		ahead.y = 0.0
+		var forward := ahead.normalized() if ahead.length() > 0.1 else Vector3.FORWARD
+		eye = player.global_position + Vector3.UP * eye_height - forward * eye_back
+		look = _look
+	var k := clampf(delta * 7.0, 0.0, 1.0)
+	_cam_eye = _cam_eye.lerp(eye, k)
+	_cam_look = _cam_look.lerp(look, k)
+	var shaken := _cam_eye
 	if _shake > 0.0:
 		_shake = maxf(0.0, _shake - delta)
-		eye += Vector3(randf_range(-1, 1), randf_range(-1, 1), 0.0) * _shake * 0.35
-	_camera.look_at_from_position(eye, _look)
+		shaken += Vector3(randf_range(-1, 1), randf_range(-1, 1), 0.0) * _shake * 0.35
+	_camera.look_at_from_position(shaken, _cam_look)
+
+
+## Liga a câmera da ação mostrando o herói (on = alvo do golpe, ou o próprio herói) ou volta para os olhos dele (null).
+func _action_cam(on: Combatant) -> void:
+	if not first_person or _camera == null:
+		return
+	_action_on = on != null
+	_action_target = on
+	var mode := GeometryInstance3D.SHADOW_CASTING_SETTING_ON if _action_on else GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+	for found: Node in player.find_children("*", "GeometryInstance3D", true, false):
+		(found as GeometryInstance3D).cast_shadow = mode
 
 
 func _intro_text() -> String:

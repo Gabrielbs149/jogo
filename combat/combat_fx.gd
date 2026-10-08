@@ -96,6 +96,135 @@ func lunge(unit: Combatant) -> void:
 	await tween.finished
 
 
+## Quem apanha (D050): pisca branco, é jogado para trás e inclina, solta faíscas, e o jogo trava um instante
+## no impacto (mais no crítico). Vale para heróis e inimigos.
+var hitstop_enabled: bool = true
+var _flash_mat: StandardMaterial3D
+
+
+func hit(unit: Combatant, crit: bool = false) -> void:
+	if unit == null or not is_instance_valid(unit) or unit.model == null:
+		return
+	var center := unit.global_position + Vector3.UP * (1.6 if unit.is_boss else 0.6)
+	sparks(center, Color(1.0, 0.85, 0.4) if crit else Color(1.0, 0.95, 0.8), 26 if crit else 14)
+	if hitstop_enabled:
+		_hitstop(0.13 if crit else 0.06)
+	# pisca: uma camada branca por cima do modelo, que some
+	if _flash_mat == null:
+		_flash_mat = StandardMaterial3D.new()
+		_flash_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		_flash_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		_flash_mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	var mat := _flash_mat.duplicate() as StandardMaterial3D
+	mat.albedo_color = Color(1, 0.95, 0.85, 0.9) if not crit else Color(1, 0.8, 0.3, 1.0)
+	var meshes := unit.model.find_children("*", "GeometryInstance3D", true, false)
+	for m: Node in meshes:
+		(m as GeometryInstance3D).material_overlay = mat
+	var fade := create_tween()
+	fade.tween_property(mat, "albedo_color:a", 0.0, 0.22).set_delay(0.04)
+	fade.tween_callback(func() -> void:
+		for m: Node in meshes:
+			if is_instance_valid(m) and (m as GeometryInstance3D).material_overlay == mat:
+				(m as GeometryInstance3D).material_overlay = null)
+	# empurrão para trás (o modelo olha para -Z: para trás é +Z) e inclinação
+	var push := 0.45 if crit else 0.22
+	var tween := create_tween()
+	tween.tween_property(unit.model, "position:z", push, 0.07).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	tween.parallel().tween_property(unit.model, "rotation:x", -0.25 if crit else -0.12, 0.07)
+	tween.parallel().tween_property(unit.model, "scale", Vector3(1.08, 0.9, 1.08), 0.07)
+	tween.tween_property(unit.model, "position:z", 0.0, 0.3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	tween.parallel().tween_property(unit.model, "rotation:x", 0.0, 0.3)
+	tween.parallel().tween_property(unit.model, "scale", Vector3.ONE, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	await tween.finished
+
+
+## Faíscas que saem do ponto em todas as direções e caem.
+func sparks(at: Vector3, color: Color, amount: int = 14) -> void:
+	var p := CPUParticles3D.new()
+	p.one_shot = true
+	p.emitting = false
+	p.amount = amount
+	p.lifetime = 0.45
+	p.explosiveness = 1.0
+	p.direction = Vector3.UP
+	p.spread = 180.0
+	p.initial_velocity_min = 2.5
+	p.initial_velocity_max = 5.5
+	p.gravity = Vector3(0, -9.0, 0)
+	p.scale_amount_min = 0.5
+	p.scale_amount_max = 1.0
+	var dot := SphereMesh.new()
+	dot.radius = 0.022
+	dot.height = 0.044
+	dot.radial_segments = 6
+	dot.rings = 3
+	dot.material = _emissive(color, 4.0)
+	p.mesh = dot
+	p.top_level = true
+	add_child(p)
+	p.global_position = at
+	p.emitting = true
+	await get_tree().create_timer(0.8).timeout
+	p.queue_free()
+
+
+## O rastro do golpe (D050): um arco de luz que varre na frente do alvo e some.
+func slash(at: Vector3, facing: Vector3, color: Color, size: float = 1.0) -> void:
+	var mesh := MeshInstance3D.new()
+	var im := ImmediateMesh.new()
+	mesh.mesh = im
+	var mat := _emissive(color, 5.0)
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.vertex_color_use_as_albedo = true
+	mesh.material_override = mat
+	mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mesh.top_level = true
+	add_child(mesh)
+	mesh.global_position = at
+	# virado para a câmera (sempre se vê o arco inteiro), cada golpe num ângulo
+	var cam := get_viewport().get_camera_3d()
+	if cam:
+		mesh.global_basis = cam.global_basis
+	elif facing.length() > 0.01:
+		mesh.global_basis = Basis.looking_at(Vector3(facing.x, 0, facing.z).normalized(), Vector3.UP)
+	mesh.rotate_object_local(Vector3.BACK, randf_range(-0.9, 0.9))
+	var tween := create_tween()
+	tween.tween_method(func(t: float) -> void: _draw_slash(im, t, size), 0.0, 1.0, 0.24)
+	tween.tween_property(mat, "albedo_color:a", 0.0, 0.15)
+	await tween.finished
+	mesh.queue_free()
+
+
+func _draw_slash(im: ImmediateMesh, t: float, size: float) -> void:
+	im.clear_surfaces()
+	var head := lerpf(-1.3, 1.3, t)
+	var tail := maxf(-1.3, head - 1.2)
+	im.surface_begin(Mesh.PRIMITIVE_TRIANGLE_STRIP)
+	var steps := 14
+	for i: int in steps + 1:
+		var a := lerpf(tail, head, float(i) / steps)
+		var k := float(i) / steps  # 0 na cauda, 1 na ponta
+		var r := 0.8 * size
+		var w := 0.16 * size * k
+		var dir := Vector3(sin(a), cos(a) - 0.4, 0.0)
+		im.surface_set_color(Color(1, 1, 1, k))
+		im.surface_add_vertex(dir * (r - w))
+		im.surface_set_color(Color(1, 1, 1, k * 0.2))
+		im.surface_add_vertex(dir * (r + w))
+	im.surface_end()
+
+
+func _hitstop(seconds: float) -> void:
+	var before := Engine.time_scale
+	if before < 0.5:
+		return  # já travado
+	Engine.time_scale = 0.05
+	await get_tree().create_timer(seconds, true, false, true).timeout
+	Engine.time_scale = before
+
+
 func shake(unit: Combatant) -> void:
 	if unit.model == null:
 		return

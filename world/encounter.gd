@@ -15,12 +15,15 @@ signal triggered(encounter: Encounter, first_strike: bool)
 @export_multiline var after_text: String = ""
 
 var _fired: bool = false
+## Você acabou de fugir deste grupo (D050): só puxa luta de novo depois que você se afastar.
+var _grace: bool = false
 
 
 func _ready() -> void:
 	add_to_group("encounter")
 	if Level.editing:
 		return  # no editor de mapas nada muda sozinho
+	_grace = Game.fled_from != "" and Game.fled_from == id()
 	for c: Combatant in members():
 		var brain := c.get_node_or_null("AIBrain")
 		if brain:
@@ -50,6 +53,13 @@ func data(first_strike: bool) -> Dictionary:
 ## Chamado pela fase a cada quadro com a sua posição.
 func check(player: Combatant) -> void:
 	if _fired or not is_inside_tree() or not player.is_inside_tree():
+		return
+	if _grace:
+		for c: Combatant in members():
+			if c.global_position.distance_to(player.global_position) <= trigger_radius + 3.0:
+				return
+		_grace = false
+		Game.fled_from = ""
 		return
 	for c: Combatant in members():
 		if c.global_position.distance_to(player.global_position) <= trigger_radius:

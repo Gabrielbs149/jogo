@@ -149,7 +149,8 @@ static func apply(user: Combatant, ability: Ability, results: Array[Dictionary],
 				if fx:
 					var label := ("%d!" % amount) if kind == "crit" else (str(amount) if amount > 0 else ability.status_title)
 					fx.floating_text(t.global_position, label, Color(1.0, 0.55, 0.3) if kind == "crit" else Color(1.0, 0.9, 0.7), kind == "crit")
-					fx.shake(t)
+					if amount > 0:
+						fx.hit(t, kind == "crit")
 		if kind in ["hit", "crit", "miss"]:
 			t.remove_flag("expose")  # o "exposto" vale para o próximo ataque
 
