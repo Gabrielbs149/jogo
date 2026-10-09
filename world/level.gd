@@ -355,6 +355,54 @@ func play_cutscene(roteiro: Roteiro) -> void:
 	_hud.visible = true
 
 
+## Conversa (D059): o herói e quem fala se viram um para o outro e a câmera chega um pouco mais perto, mirando entre
+## os dois. null = acabou a conversa (a câmera volta). from_other: a câmera fica do lado de quem fala, olhando o herói
+## (para quando é o herói que está fazendo alguma coisa, como acordar).
+func focus_talk(with_who: Node3D, from_other: bool = false) -> void:
+	if with_who == null or player == null:
+		_camera.focus_off()
+		return
+	var me := player.global_position
+	var other := with_who.global_position
+	turn_toward(player, other)
+	# quem fala só vira se for gente (os nós de conversa ficam dentro da pessoa)
+	if with_who.has_method("face") or with_who.get_node_or_null("Figure") != null:
+		turn_toward(with_who, me)
+	var mid := (me + other) / 2.0 + Vector3.UP * (_camera.height - 0.25)
+	var to_other := (me - other) if from_other else (other - me)
+	var look_yaw: Variant = atan2(-to_other.x, -to_other.z) if Vector2(to_other.x, to_other.z).length() > 0.3 else null
+	_camera.focus_on(mid, clampf(me.distance_to(other) + 1.6, 2.4, 3.6), look_yaw)
+
+
+## Vira alguém (só no giro) para olhar um ponto, num instante curto.
+func turn_toward(who: Node3D, point: Vector3) -> void:
+	if who == null:
+		return
+	if who.has_method("face"):
+		who.call("face", point)
+		return
+	var flat := point - who.global_position
+	flat.y = 0.0
+	if flat.length() < 0.05:
+		return
+	if who is Combatant:
+		# o personagem vira sozinho para face_dir (Combatant._physics_process); depois solta
+		var hero := who as Combatant
+		var dir := flat.normalized()
+		hero.desired_velocity = Vector3.ZERO
+		hero.face_dir = dir
+		# o tween é do próprio herói: some junto com ele (nada fica apontando para um herói que já saiu da fase)
+		var release := hero.create_tween()
+		release.tween_interval(0.6)
+		release.tween_callback(func() -> void:
+			if hero.face_dir == dir:
+				hero.face_dir = Vector3.ZERO)
+		return
+	var yaw := atan2(-flat.x, -flat.z)  # a frente é -Z
+	var tween := who.create_tween()
+	tween.tween_property(who, "rotation:y", who.rotation.y + wrapf(yaw - who.global_rotation.y, -PI, PI), 0.25)
+
+
 func in_combat() -> bool:
 	for node: Node in get_tree().get_nodes_in_group("enemies"):
 		var enemy := node as Combatant
@@ -446,6 +494,7 @@ func _on_used(_by: Combatant, what: Interactable) -> void:
 	Audio.play(sound, -4.0)
 	match what.action:
 		Interactable.Action.READ:
+			turn_toward(player, what.global_position)  # examinar: o herói vira para a coisa (D059)
 			_hud.show_story(what.text)
 		Interactable.Action.REST:
 			if in_combat():

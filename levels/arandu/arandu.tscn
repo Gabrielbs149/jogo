@@ -20,9 +20,14 @@
 [ext_resource type="Script" path="res://world/quests/padeiro_ia.gd" id="16_otlw4"]
 [ext_resource type="PackedScene" path="res://world/props/arbusto.tscn" id="17_cbaqg"]
 [ext_resource type="PackedScene" path="res://world/props/casa_estreita.tscn" id="19_bo4rr"]
+[ext_resource type="Script" path="res://world/quests/prologo_tico.gd" id="20_6ogb1"]
 [ext_resource type="PackedScene" path="res://world/props/casa.tscn" id="20_isatd"]
+[ext_resource type="Script" path="res://world/quests/missao_padaria.gd" id="20_ra3w5"]
+[ext_resource type="Script" path="res://world/quests/conversa_mendigo.gd" id="21_g045v"]
 [ext_resource type="PackedScene" path="res://world/props/casa_estreita_pedra.tscn" id="21_l2c7x"]
+[ext_resource type="Script" path="res://world/quests/bico_caixas.gd" id="22_ra3w5"]
 [ext_resource type="Script" path="res://world/figurante.gd" id="23_1wlkg"]
+[ext_resource type="Script" path="res://world/quests/briga_feira.gd" id="23_hqk81"]
 [ext_resource type="PackedScene" path="res://world/props/casa_longa.tscn" id="25_jh6xx"]
 [ext_resource type="PackedScene" path="res://world/props/poste.tscn" id="26_77tdx"]
 [ext_resource type="PackedScene" path="res://world/props/poste_lanterna.tscn" id="26_e6kd3"]
@@ -131,6 +136,7 @@
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g031.res" id="91_ltdf4"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/trigo/trigodomoinho.res" id="92_aha6h"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g032.res" id="92_g5s5f"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Crate_Wooden.gltf" id="92_ob378"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/trigo/trigaloeste.res" id="93_g045v"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g033.res" id="93_wrapk"]
 [ext_resource type="PackedScene" path="res://world/props/aboboral.tscn" id="94_ra3w5"]
@@ -339,7 +345,6 @@
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g217.res" id="277_jpy8c"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g218.res" id="278_jpy8c"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g219.res" id="280_c555i"]
-[ext_resource type="Script" path="res://world/quests/missao_padaria.gd" id="293_3bqkj"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g220.res" id="299_0donp"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g221.res" id="300_abnep"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g222.res" id="301_m3a6u"]
@@ -623,6 +628,7 @@
 [ext_resource type="PackedScene" path="res://world/props/marquise.tscn" id="626_0he68"]
 [ext_resource type="PackedScene" path="res://actors/tika_muro/tika_muro.tscn" id="627_otlw4"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Pebble_Round_1.gltf" id="628_2oqiw"]
+[ext_resource type="Script" path="res://world/ator.gd" id="628_bgv72"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Pebble_Round_2.gltf" id="629_bgv72"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Pebble_Round_3.gltf" id="630_6ogb1"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Pebble_Round_4.gltf" id="631_mp1mj"]
@@ -630,6 +636,9 @@
 [ext_resource type="PackedScene" path="res://assets/vfx/fogo.tscn" id="633_uttk5"]
 [ext_resource type="PackedScene" path="res://actors/props/rato/rato_espeto.glb" id="634_aha6h"]
 [ext_resource type="PackedScene" path="res://actors/props/rato/rato_traseiro.glb" id="635_g045v"]
+[ext_resource type="PackedScene" path="res://world/props/pao.tscn" id="637_6ogb1"]
+[ext_resource type="PackedScene" path="res://world/props/meio_pao.tscn" id="638_mp1mj"]
+[ext_resource type="Script" path="res://world/ambiente_camadas.gd" id="644_i8npn"]
 [ext_resource type="Script" path="res://systems/camera/third_person_camera.gd" id="cam"]
 [ext_resource type="FontFile" path="res://assets/fonts/cinzel.ttf" id="font"]
 [ext_resource type="Script" path="res://combat/combat_fx.gd" id="fx"]
@@ -853,13 +862,32 @@ particles_anim_loop = false
 material = SubResource("StandardMaterial3D_vb8fo")
 size = Vector2(1.1, 1.1)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eby0h"]
+albedo_color = Color(0.55, 0.2, 0.75, 1)
+emission_enabled = true
+emission = Color(0.4, 0.12, 0.55, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_gepnm"]
+material = SubResource("StandardMaterial3D_eby0h")
+size = Vector3(0.11, 0.015, 0.05)
+
+[sub_resource type="BoxMesh" id="BoxMesh_r1gup"]
+material = SubResource("StandardMaterial3D_eby0h")
+size = Vector3(0.11, 0.015, 0.05)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4v1ux"]
+material = SubResource("StandardMaterial3D_eby0h")
+size = Vector3(0.03, 0.02, 0.03)
+
 [node name="Arandu" type="Node3D" unique_id=1435295502]
 script = ExtResource("level")
 chapter_title = "Arandu"
 intro_lines = PackedStringArray()
 start_story = "WASD anda e o mouse olha em volta. Chegue perto das pessoas e das coisas e aperte F."
 cena_de_abertura = ExtResource("2_xyn7r")
-musica = "arandu"
+musica = "rotina"
+ambiente = "cidade"
 mapa_do_piso = ExtResource("7_fk7c7")
 area_do_mapa = 300.0
 noite = true
@@ -898,8 +926,8 @@ shape = SubResource("BoxShape3D_02u00")
 [node name="Look" type="Node3D" parent="TicoCorner" unique_id=515419272]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 0.6, -57.987137)
 script = ExtResource("inter")
-prompt_text = "Olhar o seu canto"
-text = "Um cobertor fino e uma caneca vazia. É aqui que o Tico-Lirou dorme quando ninguém expulsa ele do beco."
+prompt_text = "Examinar o papelão"
+text = "O papelão onde o Tico e a Tika dormem. Já foi caixa de sabão; ainda tem um cheirinho de limpo, de tão velho."
 
 [node name="Blanket" type="MeshInstance3D" parent="TicoCorner" unique_id=607289289]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.9, 0.02, -58.237137)
@@ -917,6 +945,24 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -12.
 
 [node name="Wall_UnevenBrick_Straight3" parent="TicoCorner" unique_id=571800240 groups=["colisao_auto"] instance=ExtResource("13_614qq")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -12.7, 0, -56.43714)
+
+[node name="OlharFogueira" type="Node3D" parent="TicoCorner" unique_id=678731164]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.724999, 0.4, -57.771317)
+script = ExtResource("inter")
+prompt_text = "Examinar a fogueirinha"
+text = "Cinza morna da fogueira de ontem. Do rato, sobrou o rabo. A Tika jura que nunca comeu o rabo. A Tika já comeu o rabo."
+
+[node name="OlharCaixote" type="Node3D" parent="TicoCorner" unique_id=383583189]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.95, 0.6, -56.33714)
+script = ExtResource("inter")
+prompt_text = "Examinar o caixote"
+text = "O cofre da família: uma colher torta, um botão de latão e um toco de vela. O botão é da Tika. A vela também. A colher é dos dois."
+
+[node name="OlharCaneca" type="Node3D" parent="TicoCorner" unique_id=1135095415]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.3, -57.487137)
+script = ExtResource("inter")
+prompt_text = "Examinar a caneca"
+text = "A caneca da Tika. Ninguém bebe nela, nem a Tika: ela diz que é de enfeite. É o único enfeite do barraco."
 
 [node name="People" type="Node3D" parent="." unique_id=1560292177]
 
@@ -977,8 +1023,8 @@ shape = SubResource("CapsuleShape3D_97")
 [node name="Talk" type="Node3D" parent="People/Vendedor" unique_id=2110581532]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("inter")
+action = 4
 prompt_text = "Falar com o vendedor"
-text = "— Fruta é pra quem paga, moço-planta. ...Tá bom, essa machucada pode levar."
 
 [node name="Guarda" type="Node3D" parent="People" unique_id=684443982]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 2.4, 0, -72)
@@ -1057,6 +1103,40 @@ outline_size = 14
 script = ExtResource("16_otlw4")
 padaria = NodePath("../../../Buildings/Padaria")
 
+[node name="Bras" parent="People" unique_id=52855000 instance=ExtResource("16_j5u7p")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -5.1, 0, -53.4)
+
+[node name="Figure" parent="People/Bras" index="0"]
+animacao = "Sit_Floor_Idle"
+
+[node name="Talk" parent="People/Bras" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+action = 4
+prompt_text = "Falar com o Seu Brás"
+text = ""
+
+[node name="Garoto" parent="People" unique_id=1825834691 instance=ExtResource("16_j5u7p")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 12.3, 0, -9)
+
+[node name="Figure" parent="People/Garoto" index="0"]
+transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, 0, 0, 0)
+personagem = "Rogue"
+
+[node name="Talk" parent="People/Garoto" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+action = 4
+prompt_text = "Falar com o garoto"
+text = ""
+
+[node name="Intervir" type="Node3D" parent="People/Garoto" unique_id=630323005]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+script = ExtResource("inter")
+action = 4
+prompt_text = "Intervir"
+
+[node name="GarotoDepois" type="Marker3D" parent="People" unique_id=1068574265]
+transform = Transform3D(-0.6426123, 0, 0.76619154, 0, 1, 0, -0.76619154, 0, -0.6426123, 6.2, 0, -5.2)
+
 [node name="Gate" type="Node3D" parent="." unique_id=341104906]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -75.8)
 script = ExtResource("inter")
@@ -1091,7 +1171,7 @@ far = 300.0
 [node name="Missoes" type="Node" parent="." unique_id=313488569]
 
 [node name="MissaoPadaria" type="Node" parent="Missoes" unique_id=1762497791 node_paths=PackedStringArray("padeiro", "viuva", "marca_padeiro", "marca_viuva", "ia", "roubo")]
-script = ExtResource("293_3bqkj")
+script = ExtResource("20_ra3w5")
 padeiro = NodePath("../../People/Padeiro/Talk")
 viuva = NodePath("../../People/Viuva/Talk")
 marca_padeiro = NodePath("../../People/Padeiro/MarcaMissao")
@@ -1104,6 +1184,41 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 26.4
 script = ExtResource("inter")
 action = 4
 prompt_text = "Pegar um pão  [Furtividade]"
+
+[node name="PrologoTico" type="Node" parent="Missoes" unique_id=821871400 node_paths=PackedStringArray("tika", "falar_tika", "marca_tika", "cama", "tika_acordando", "tika_saida", "tika_sentada", "fogueira", "fita", "plano_acordar")]
+script = ExtResource("20_6ogb1")
+tika = NodePath("../../CenaTico/Tika")
+falar_tika = NodePath("../../CenaTico/Tika/FalarTika")
+marca_tika = NodePath("../../CenaTico/Tika/MarcaTika")
+cama = NodePath("../../CenaTico/TicoDeitado")
+tika_acordando = NodePath("../../CenaTico/TikaAcordando")
+tika_saida = NodePath("../../CenaTico/TikaNaSaida")
+tika_sentada = NodePath("../../CenaTico/TikaSentada")
+fogueira = NodePath("../../CenaTico/Fogueirinha")
+fita = NodePath("../../BecoLateral/Fita")
+plano_acordar = NodePath("../../CenaTico/Plano1")
+
+[node name="MendigoBras" type="Node" parent="Missoes" unique_id=1567946830 node_paths=PackedStringArray("falar")]
+script = ExtResource("21_g045v")
+falar = NodePath("../../People/Bras/Talk")
+
+[node name="BicoCaixas" type="Node" parent="Missoes" unique_id=2015082906 node_paths=PackedStringArray("carregador", "na_carroca", "na_pilha", "pegar", "largar", "marca")]
+script = ExtResource("22_ra3w5")
+carregador = NodePath("../../Crowd/Carregador/Talk")
+na_carroca = [NodePath("../../Props/BicoCeleiro/CaixoteCarroca0"), NodePath("../../Props/BicoCeleiro/CaixoteCarroca1"), NodePath("../../Props/BicoCeleiro/CaixoteCarroca2")]
+na_pilha = [NodePath("../../Props/BicoCeleiro/CaixoteGalpao0"), NodePath("../../Props/BicoCeleiro/CaixoteGalpao1"), NodePath("../../Props/BicoCeleiro/CaixoteGalpao2")]
+pegar = NodePath("../../Props/BicoCeleiro/PegarCaixote")
+largar = NodePath("../../Props/BicoCeleiro/LargarCaixote")
+marca = NodePath("../../Crowd/Carregador/MarcaBico")
+
+[node name="BrigaFeira" type="Node" parent="Missoes" unique_id=1891468955 node_paths=PackedStringArray("vendedor", "falar_vendedor", "garoto", "intervir", "falar_garoto", "lugar_depois")]
+script = ExtResource("23_hqk81")
+vendedor = NodePath("../../People/Vendedor")
+falar_vendedor = NodePath("../../People/Vendedor/Talk")
+garoto = NodePath("../../People/Garoto")
+intervir = NodePath("../../People/Garoto/Intervir")
+falar_garoto = NodePath("../../People/Garoto/Talk")
+lugar_depois = NodePath("../../People/GarotoDepois")
 
 [node name="Walls" type="Node3D" parent="." unique_id=1173862127 groups=["nav_source"]]
 
@@ -2852,6 +2967,47 @@ transform = Transform3D(-0.27099213, 0, -0.9625816, 0, 1, 0, 0.9625816, 0, -0.27
 
 [node name="Carroca4" parent="Props" unique_id=1902034824 instance=ExtResource("41_n6gni")]
 transform = Transform3D(0.23955604, 0, -0.97088253, 0, 1, 0, 0.97088253, 0, 0.23955604, -19.980652, 0, 29.996902)
+
+[node name="BicoCeleiro" type="Node3D" parent="Props" unique_id=589195444]
+
+[node name="PegarCaixote" type="Node3D" parent="Props/BicoCeleiro" unique_id=1359858606]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.9, 0.8, -49.7)
+script = ExtResource("inter")
+action = 4
+prompt_text = "Pegar um caixote"
+
+[node name="LargarCaixote" type="Node3D" parent="Props/BicoCeleiro" unique_id=2109197704]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.4, 0.8, -57.1)
+script = ExtResource("inter")
+action = 4
+prompt_text = "Largar o caixote"
+
+[node name="Carroca" parent="Props/BicoCeleiro" unique_id=1393937321 instance=ExtResource("41_n6gni")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.4, 0, -50.6)
+
+[node name="PosteCarroca" parent="Props/BicoCeleiro" unique_id=860068997 instance=ExtResource("26_e6kd3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.4, 0, -52)
+
+[node name="LanternaGalpao" parent="Props/BicoCeleiro" unique_id=2140037925 instance=ExtResource("34_rx60w")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 31.4, 1.9, -58.3)
+
+[node name="CaixoteCarroca0" parent="Props/BicoCeleiro" unique_id=504997077 instance=ExtResource("92_ob378")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 24.9, 0, -50)
+
+[node name="CaixoteGalpao0" parent="Props/BicoCeleiro" unique_id=421439096 instance=ExtResource("92_ob378")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 31.2, 0, -57.7)
+
+[node name="CaixoteCarroca1" parent="Props/BicoCeleiro" unique_id=396908456 instance=ExtResource("92_ob378")]
+transform = Transform3D(0.4844562, 0, 0.12370198, 0, 0.5, 0, -0.12370198, 0, 0.4844562, 24.9, 0, -49.45)
+
+[node name="CaixoteGalpao1" parent="Props/BicoCeleiro" unique_id=1197003646 instance=ExtResource("92_ob378")]
+transform = Transform3D(0.4900333, 0, -0.099334665, 0, 0.5, 0, 0.099334665, 0, 0.4900333, 31.75, 0, -57.7)
+
+[node name="CaixoteCarroca2" parent="Props/BicoCeleiro" unique_id=795993860 instance=ExtResource("92_ob378")]
+transform = Transform3D(0.43879128, 0, 0.23971277, 0, 0.5, 0, -0.23971277, 0, 0.43879128, 24.9, 0.47, -50)
+
+[node name="CaixoteGalpao2" parent="Props/BicoCeleiro" unique_id=1281559075 instance=ExtResource("92_ob378")]
+transform = Transform3D(0.4605305, 0, -0.19470917, 0, 0.5, 0, 0.19470917, 0, 0.4605305, 31.2, 0.47, -57.7)
 
 [node name="Animals" type="Node3D" parent="." unique_id=415257563]
 
@@ -5460,13 +5616,13 @@ collision_mask = 0
 shape = SubResource("CapsuleShape3D_hqk81")
 
 [node name="Carregador" type="Node3D" parent="Crowd" unique_id=749657511]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 28.114666, 0, -55.404)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 28.1, 0, -55.4)
 
 [node name="Figure" type="Node3D" parent="Crowd/Carregador" unique_id=2031916919]
 transform = Transform3D(0.62, 0, 0, 0, 0.62, 0, 0, 0, 0.62, 0, 0, 0)
 script = ExtResource("23_1wlkg")
 personagem = "Barbarian"
-animacao = "Use_Item"
+animacao = "Sit_Floor_Idle"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Carregador" unique_id=1752799716]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -5475,6 +5631,26 @@ collision_mask = 0
 
 [node name="@CollisionShape3D@206" type="CollisionShape3D" parent="Crowd/Carregador/Collision" unique_id=434675400]
 shape = SubResource("CapsuleShape3D_ob378")
+
+[node name="Talk" type="Node3D" parent="Crowd/Carregador" unique_id=1288671190]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+script = ExtResource("inter")
+action = 4
+prompt_text = "Falar com o carregador"
+
+[node name="MarcaBico" type="Label3D" parent="Crowd/Carregador" unique_id=433900652]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+visible = false
+pixel_size = 0.0009
+billboard = 1
+no_depth_test = true
+fixed_size = true
+modulate = Color(1, 0.82, 0.3, 1)
+outline_modulate = Color(0.2, 0.08, 0.02, 1)
+text = "!"
+font = ExtResource("font")
+font_size = 72
+outline_size = 14
 
 [node name="Moleiro" type="Node3D" parent="Crowd" unique_id=485769818]
 transform = Transform3D(-0.84799826, 0, -0.529999, 0, 1, 0, 0.529999, 0, -0.84799826, -28.767574, 0, -56.86876)
@@ -9444,8 +9620,28 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.41582108, 0, 1.8000002)
 transform = Transform3D(0.69190544, 0, -0.72198814, 0, 1, 0, 0.7219882, 0, 0.6919054, -0.1841774, 0, 1.3000002)
 
 [node name="Tika" parent="CenaTico" unique_id=1901462000 instance=ExtResource("627_otlw4")]
-transform = Transform3D(-0.69190544, 0, 0.72198814, 0, 1, 0, -0.7219882, 0, -0.6919054, 1.0158195, 0, 0.15000057)
+transform = Transform3D(-0.7071065, 0, 0.70710707, 0, 1, 0, -0.70710707, 0, -0.7071065, 0.95000076, 0, -0.9499998)
+script = ExtResource("628_bgv72")
+
+[node name="FalarTika" type="Node3D" parent="CenaTico/Tika" unique_id=1256007534]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+script = ExtResource("inter")
+action = 4
+prompt_text = "Falar com a Tika"
+
+[node name="MarcaTika" type="Label3D" parent="CenaTico/Tika" unique_id=2075349664]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, 0)
 visible = false
+pixel_size = 0.0009
+billboard = 1
+no_depth_test = true
+fixed_size = true
+modulate = Color(1, 0.82, 0.3, 1)
+outline_modulate = Color(0.2, 0.08, 0.02, 1)
+text = "▼"
+font = ExtResource("font")
+font_size = 72
+outline_size = 14
 
 [node name="Fogueirinha" type="Node3D" parent="CenaTico" unique_id=725444076]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.4658203, 0, 0.8249998)
@@ -9492,6 +9688,12 @@ light_energy = 0.9
 omni_range = 3.0
 base_energy = 0.9
 
+[node name="Brasa" type="OmniLight3D" parent="CenaTico/Fogueirinha" unique_id=1736122721]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+light_color = Color(1, 0.45, 0.18, 1)
+light_energy = 0.55
+omni_range = 3.2
+
 [node name="EspetoNoFogo" type="Marker3D" parent="CenaTico" unique_id=141382332]
 transform = Transform3D(0.79832375, 0.120654844, 0.5900183, -0.14943814, 0.9887711, 0, -0.583393, -0.088171236, 0.80739, 0.4658203, 0.2, 0.8249998)
 
@@ -9525,5 +9727,102 @@ fov = 50.0
 transform = Transform3D(-0.44721267, -0.27216554, 0.85201335, 0, 0.9525794, 0.30429018, -0.89442766, 0.13608243, -0.42600557, 1.1658211, 0.42, 0.47500038)
 fov = 38.0
 
+[node name="TicoDeitado" type="Marker3D" parent="CenaTico" unique_id=775687891]
+
+[node name="TikaAcordando" type="Marker3D" parent="CenaTico" unique_id=2112560788]
+transform = Transform3D(-0.7071065, 0, 0.70710707, 0, 1, 0, -0.70710707, 0, -0.7071065, 0.95000076, 0, -0.9499998)
+
+[node name="TikaNaSaida" type="Marker3D" parent="CenaTico" unique_id=327956225]
+transform = Transform3D(-0.9334492, 0, 0.35870957, 0, 1, 0, -0.35870957, 0, -0.9334492, 1.5371361, 0, -4)
+
+[node name="TikaSentada" type="Marker3D" parent="CenaTico" unique_id=2053877738]
+transform = Transform3D(-0.7071065, 0, 0.70710707, 0, 1, 0, -0.70710707, 0, -0.7071065, 0.95000076, 0, -0.9499998)
+
+[node name="PaoDoTico" parent="CenaTico" unique_id=1151836613 instance=ExtResource("637_6ogb1")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0.3, 0)
+visible = false
+
+[node name="MeioPaoTico" parent="CenaTico" unique_id=455460784 instance=ExtResource("638_mp1mj")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0.3, 0)
+visible = false
+
+[node name="MeioPaoTika" parent="CenaTico" unique_id=1039481859 instance=ExtResource("638_mp1mj")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0.3, 0)
+visible = false
+
+[node name="BecoLateral" type="Node3D" parent="." unique_id=2119153194 groups=["nav_source"]]
+
+[node name="Luz" type="OmniLight3D" parent="BecoLateral" unique_id=48247842]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 2.3, -49.4)
+light_color = Color(1, 0.7, 0.42, 1)
+light_energy = 0.7
+omni_range = 4.5
+
+[node name="OlharBarril" type="Node3D" parent="BecoLateral" unique_id=2016793352]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.9, 0.9, -48.45)
+script = ExtResource("inter")
+prompt_text = "Examinar o barril"
+text = "Água de chuva com gosto de telhado. Já matou a sede do Tico mais vezes do que ele gosta de admitir."
+
+[node name="OlharCaixotes" type="Node3D" parent="BecoLateral" unique_id=1966379345]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.9, -48.5)
+script = ExtResource("inter")
+prompt_text = "Examinar os caixotes"
+text = "Caixotes de maçã, vazios. Alguém já passou por aqui antes, e foi mais rápido."
+
+[node name="OlharGato" type="Node3D" parent="BecoLateral" unique_id=1094117205]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 1, -48.45)
+script = ExtResource("inter")
+prompt_text = "Examinar o gato"
+text = "Um gato dormindo em cima do caixote. Ele abre um olho, avalia o Tico como comida e fecha de novo. Respeito mútuo."
+
+[node name="Fita" type="Node3D" parent="BecoLateral" unique_id=379795803]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0.03, -49.6)
+script = ExtResource("inter")
+action = 4
+prompt_text = "Pegar a fita"
+
+[node name="Laco" type="Node3D" parent="BecoLateral/Fita" unique_id=371982297]
+
+[node name="Parte0" type="MeshInstance3D" parent="BecoLateral/Fita/Laco" unique_id=1991378257]
+transform = Transform3D(0.9393727, 0, 0.3428978, 0, 1, 0, -0.3428978, 0, 0.9393727, -0.055, 0, 0)
+mesh = SubResource("BoxMesh_gepnm")
+
+[node name="Parte1" type="MeshInstance3D" parent="BecoLateral/Fita/Laco" unique_id=599477203]
+transform = Transform3D(0.9393727, 0, -0.3428978, 0, 1, 0, 0.3428978, 0, 0.9393727, 0.055, 0, 0)
+mesh = SubResource("BoxMesh_r1gup")
+
+[node name="Parte2" type="MeshInstance3D" parent="BecoLateral/Fita/Laco" unique_id=1483893782]
+mesh = SubResource("BoxMesh_4v1ux")
+
+[node name="Muro0" parent="BecoLateral" unique_id=1852034189 groups=["colisao_auto"] instance=ExtResource("13_614qq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.3, 0, -47.75)
+
+[node name="Muro1" parent="BecoLateral" unique_id=854000070 groups=["colisao_auto"] instance=ExtResource("13_614qq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.3, 0, -47.75)
+
+[node name="Muro2" parent="BecoLateral" unique_id=1516115134 groups=["colisao_auto"] instance=ExtResource("13_614qq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.3, 0, -47.75)
+
+[node name="Barril" parent="BecoLateral" unique_id=664410900 instance=ExtResource("27_5fv7g")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.9, 0, -48.45)
+
+[node name="Balde" parent="BecoLateral" unique_id=1161200172 instance=ExtResource("26_oqo87")]
+transform = Transform3D(0.8253356, 0, 0.5646425, 0, 1, 0, -0.5646425, 0, 0.8253356, -9.3, 0, -48.35)
+
+[node name="Caixote" parent="BecoLateral" unique_id=1613117247 instance=ExtResource("33_ca5o6")]
+transform = Transform3D(0.9553365, 0, 0.29552022, 0, 1, 0, -0.29552022, 0, 0.9553365, -11.5, 0, -48.45)
+
+[node name="CaixoteAlto" parent="BecoLateral" unique_id=2107438147 instance=ExtResource("36_1j2ax")]
+transform = Transform3D(0.9800666, 0, -0.19866933, 0, 1, 0, 0.19866933, 0, 0.9800666, -12.6, 0, -48.5)
+
+[node name="Gato" parent="BecoLateral" unique_id=1387565500 instance=ExtResource("74_b68sd")]
+transform = Transform3D(-0.58850116, 0, 0.80849636, 0, 1, 0, -0.80849636, 0, -0.58850116, -11.5, 0.66, -48.45)
+
+[node name="AmbienteCamadas" type="Node3D" parent="." unique_id=2094907088]
+script = ExtResource("644_i8npn")
+
 [editable path="People/Padeiro"]
+[editable path="People/Bras"]
+[editable path="People/Garoto"]
 [editable path="CenaTico/Fogueirinha/Fogo"]

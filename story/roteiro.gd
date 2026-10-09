@@ -13,6 +13,7 @@ extends Resource
 ##   [para som]              [legenda: texto] (vazio apaga)                   [pausa 1.5]
 ##   [mostra: Nó]            [esconde: Nó]      (Nó pode ser caminho: Pao/Inteiro)
 ##   [anima: Tico sit]       prende o personagem numa animação               [solta: Tico]  volta ao normal
+##   [fica: Tico Lie_Idle]   como [anima], mas continua assim depois que a cena acaba (o jogo solta depois)
 ##   [coloca: Tico Marca]    põe o nó no lugar e na direção da Marca         [olha: Tika Tico]  vira um para o outro
 ##   [na mão: Pao]           prende o nó na mão direita do herói ([na mão: Pao Tico] para escolher quem)
 ##   [fim]                   termina aqui

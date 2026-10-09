@@ -20,6 +20,8 @@ func before_each() -> void:
 	Game.chosen = "tico"
 	Game.party.clear()
 	Game.flags.clear()
+	# D059: a padaria é um dos caminhos do prólogo; começa depois que o Tico sai do beco
+	Game.flags.merge({"prologo.etapa": "saiu", "comida.comecou": true})
 	Game.items.clear()
 	Game.objective = ""
 	Game.seen.assign([ARANDU])
@@ -48,8 +50,8 @@ func _talk_baker(answers: Array[int]) -> void:
 
 
 func test_tico_wakes_up_hungry_and_the_baker_has_a_quest_mark() -> void:
-	assert_true(Game.flag("padaria.comecou", false))
-	assert_string_contains(Game.objective, "comer")
+	await wait_physics_frames(2)
+	assert_true(Game.flag("padaria.comecou", false), "saiu do beco: a padaria vira um dos caminhos")
 	assert_true(_quest.marca_padeiro.visible, "! em cima do padeiro")
 	assert_false(_quest.marca_viuva.visible)
 
@@ -69,7 +71,8 @@ func test_the_favor_delivery_trip_ends_with_bread() -> void:
 	await _talk_baker([])
 	assert_eq(_quest.estado(), "feito")
 	assert_eq(Game.flag("padaria.jeito"), "favor")
-	assert_eq(Game.objective, "", "fome resolvida")
+	assert_true(Game.has_item("comida"), "o pão vai para a Tika (D059)")
+	assert_string_contains(Game.objective, "Tika", "agora é voltar para o barraco")
 	assert_false(_quest.marca_padeiro.visible)
 
 
@@ -108,7 +111,7 @@ func test_stealing_rolls_stealth_and_a_good_roll_gets_the_bread() -> void:
 	assert_eq(_quest.estado(), "feito")
 	assert_eq(_dialogue.history.size(), 0, "roubar não tem conversa")
 	assert_eq(Game.flag("padaria.jeito"), "roubou")
-	var check: Dictionary = Game.flag("padaria.ultimo_teste")
+	var check: Dictionary = Game.flag("ultimo_teste")
 	assert_eq(check["pericia"], "Furtividade")
 	assert_eq(check["total"], 17)
 

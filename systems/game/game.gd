@@ -66,6 +66,8 @@ var testing: bool = false
 var flags: Dictionary = {}
 var items: Array[String] = []
 var objective: String = ""
+## Nome da missão do objetivo (aparece pequeno em cima dele: "FOME"). Vazio = "OBJETIVO".
+var objective_title: String = ""
 
 signal objective_changed(text: String)
 
@@ -97,6 +99,7 @@ func new_game(hero_id: String) -> void:
 	flags.clear()
 	items.clear()
 	objective = ""
+	objective_title = ""
 	prologue_pending = true
 	testing = false
 	Transition.go(start_level(hero_id))
@@ -135,6 +138,7 @@ func save_game(level_path: String, where: Transform3D) -> bool:
 		"marcas": flags,
 		"itens": items,
 		"objetivo": objective,
+		"objetivo_titulo": objective_title,
 		"fase": level_path,
 		"posicao": [where.origin.x, where.origin.y, where.origin.z],
 		"giro": where.basis.get_euler().y,
@@ -181,6 +185,7 @@ func continue_game(change: bool = true) -> bool:
 	flags = (data.get("marcas", {}) as Dictionary).duplicate()
 	items.assign((data.get("itens", []) as Array).map(func(v: Variant) -> String: return String(v)))
 	objective = String(data.get("objetivo", ""))
+	objective_title = String(data.get("objetivo_titulo", ""))
 	hero_hp = int(data.get("vida", -1))
 	battle = {}
 	pending_story = ""
@@ -295,8 +300,9 @@ func remove_item(item: String) -> void:
 
 
 ## Objetivo que aparece no canto da tela. Vazio = nenhum.
-func set_objective(text: String) -> void:
+func set_objective(text: String, title: String = "") -> void:
 	objective = text
+	objective_title = title
 	objective_changed.emit(text)
 
 

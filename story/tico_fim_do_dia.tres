@@ -1,0 +1,75 @@
+[gd_resource type="Resource" script_class="Roteiro" format=3]
+
+[ext_resource type="Script" path="res://story/roteiro.gd" id="1_roteiro"]
+
+[resource]
+script = ExtResource("1_roteiro")
+texto = "# Fim do primeiro dia (D059): o Tico volta com a comida e os dois dividem no barraco. Falas *(proposta)*.
+# As linhas COMIDA e EXTRAS (entre chaves) viram as falas do que aconteceu no dia (world/quests/prologo_tico.gd).
+# Câmeras (Plano1..Plano5), marcas, a Tika, o pão e a fogueirinha ficam no nó CenaTico da fase Arandu.
+[tela preta 1.2]
+[esconde: Rato]
+[esconde: PedacoDaTika]
+[mostra: Fogueirinha]
+[mostra: Fogueirinha/Fogo]
+[coloca: Tico TicoSentado]
+[anima: Tico Sit_Floor_Idle]
+[coloca: Tika TikaSentada]
+[anima: Tika Sit_Floor_Idle]
+[mostra: PaoDoTico]
+[na mão: PaoDoTico]
+[corta: Plano1]
+[som: fogo | (o fogo estalando baixinho)]
+[abre 1.5]
+O Tico reacende a fogueirinha. A Tika já está sentada, esperando, como quem não está esperando.
+[pausa 0.8]
+{comida}
+[corta: Plano3]
+Tika: \"Metade é minha.\"
+[corta: Plano2]
+Tico: \"Metade da metade.\"
+[corta: Plano3]
+Tika: \"Metade INTEIRA.\"
+[corta: Plano1]
+[esconde: PaoDoTico]
+[mostra: MeioPaoTico]
+[na mão: MeioPaoTico]
+[mostra: MeioPaoTika]
+[na mão: MeioPaoTika Tika]
+Ele parte a comida em dois. Os pedaços não ficam iguais. O maior vai pra ela, e ela finge que não percebeu.
+[pausa 1.2]
+{extras}
+[corta: Plano3]
+Tika: \"Sabe o que eu ouvi hoje? Lá perto da muralha, no portão do leste, tá chegando gente nova.\"
+Tika: \"Carroça coberta, gente de fora. Dizem que tem até música de noite.\"
+[corta: Plano2]
+Tico: \"Gente nova é gente que ainda não aprendeu a desviar de mendigo.\"
+Tico: \"Mercado inexplorado.\"
+[corta: Plano3]
+Tika: \"Tico.\"
+Tika: \"Eu queria ver. Só ver. Faz tanto tempo que nada novo acontece por aqui.\"
+[corta: Plano2]
+[pausa 0.8]
+Tico: \"...Tá. Amanhã a gente vai lá. Depois do café.\"
+[corta: Plano3]
+Tika: \"Que café?\"
+[corta: Plano2]
+Tico: \"Exatamente.\"
+[corta: Plano1]
+[pausa 0.6]
+[esconde: MeioPaoTico]
+[esconde: MeioPaoTika]
+[anima: Tika Lie_Idle]
+Tika: \"Boa noite, Tico.\"
+[anima: Tico Lie_Idle]
+Tico: \"Boa noite, patrimônio da família.\"
+[câmera: Plano4 6]
+[pausa 2.5]
+[tela preta 2.5]
+[para som]
+> A fogueirinha estala até virar brasa.
+> Lá longe, perto da muralha, uma carroça coberta passa sem fazer barulho.
+
+> Fim do primeiro dia.
+
+"

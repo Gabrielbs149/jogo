@@ -30,5 +30,5 @@ func test_arandu_floor_types() -> void:
 	assert_eq(level.surface_at(Vector3(44, 0, 20)), "pedra", "a rua do anel é de pedra")
 	assert_eq(level.surface_at(Vector3(0, 0, -100)), "terra", "a estrada lá fora é de terra")
 	assert_eq(level.surface_at(Vector3(110, 0, 110)), "grama", "fora da muralha é grama")
-	assert_eq(level.musica, "arandu")
+	assert_eq(level.musica, "rotina", "D059: violão calmo da rotina")
 	Level.editing = false
