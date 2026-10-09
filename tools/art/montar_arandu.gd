@@ -20,7 +20,7 @@ const ART := "res://levels/arandu/art/"
 const AREA := 300.0
 const MASK_PX := 1536
 const HALF := 76.0  # muralha: quadrado de 152 m
-const RING := 44.0  # rua do anel (linha do meio): depois do ferreiro e antes do sapateiro, que são da história
+const RING := 45.0  # rua do anel (linha do meio): depois do ferreiro e antes do sapateiro, que são da história
 const RING_W := 2.6  # meia largura do anel
 const AVE := 5.5  # meia largura das avenidas
 const PLAZA := 17.5  # meia largura da praça
@@ -387,7 +387,11 @@ func _row(start: Vector3, along: Vector3, front: Vector3, lots: Array, setback: 
 		house.position += shift
 		var rect := _rect(AABB(box.position + shift, box.size), 0.1)
 		if _overlaps(rect):
-			print("não coube: ", key, " ", lot[1] if lot.size() > 1 else "", " em ", target.snapped(Vector3.ONE * 0.1))
+			var hit := Rect2()
+			for blk: Rect2 in blocks:
+				if blk.intersects(rect):
+					hit = blk
+			print("não coube: ", key, " ", lot[1] if lot.size() > 1 else "", " em ", target.snapped(Vector3.ONE * 0.1), " bate em ", hit)
 			house.get_parent().remove_child(house)
 			house.free()
 			cursor += width + 0.4
@@ -417,7 +421,7 @@ func _town() -> void:
 	_row(Vector3(-PLAZA, 0, PLAZA), e, n, [["casa_longa", "Capela"], ["casa_estreita_pedra", ""]])
 	_row(Vector3(AVE + 0.6, 0, PLAZA), e, n, [["casa_grande_barro", "Taverna"], ["casa_estreita", ""]])
 	# avenida do leste: padaria (missão da fome) e ferreiro do lado norte, casas do lado sul
-	_row(Vector3(PLAZA + 0.6, 0, -AVE), e, s, [["padaria", "Padaria"], ["ferreiro", "Ferreiro"]])
+	_row(Vector3(PLAZA + 1.0, 0, -AVE), e, s, [["padaria", "Padaria"], ["ferreiro", "Ferreiro"]])
 	_row(Vector3(PLAZA + 0.6, 0, AVE), e, n, [["casa_enxaimel2", ""], ["casa_barro", ""], ["casa_estreita_pedra", ""]])
 	# avenida do oeste: depois das casas da beira da praça
 	_row(Vector3(-PLAZA - 11.0, 0, -AVE), w, s, [["casa", ""], ["casa_estreita", ""]])
@@ -439,7 +443,7 @@ func _town() -> void:
 		["vão", 1.2], ["casa_longa", ""], ["casa_estreita", ""], ["casa", ""], ["casa_enxaimel2", ""], ["vão", 1.6], ["casa_estreita_pedra", ""]])
 	_row(Vector3(AVE, 0, -HALF + 2.4), s, w, [["guarita", ""], ["casa_estreita_pedra", ""], ["casa_pedra", ""], ["vão", 1.4], ["casa", ""],
 		["casa_estreita", ""], ["sobrado_longo", ""], ["casa_barro", ""]])
-	_row(Vector3(PLAZA + 0.6, 0, -AVE), e, s, [["padaria", ""], ["ferreiro", ""], ["casa_estreita", ""], ["casa_grande", ""],
+	_row(Vector3(PLAZA + 1.0, 0, -AVE), e, s, [["padaria", ""], ["ferreiro", ""], ["casa_estreita", ""], ["casa_grande", ""],
 		["casa_estreita_pedra", ""], ["casa", ""]])
 	_row(Vector3(PLAZA + 0.6, 0, AVE), e, n, [["casa_enxaimel2", ""], ["casa_barro", ""], ["casa_estreita_pedra", ""], ["casa_pedra", ""],
 		["vão", 1.4], ["casa_longa", ""], ["casa_estreita", ""], ["casa_enxaimel", ""]])

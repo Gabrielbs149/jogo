@@ -1,6 +1,7 @@
 extends GutTest
 ## 1ª missão do Tico (D040): a fome e a padaria. O dono não dá pão de graça; dá para conversar, convencer,
 ## fazer o favor (levar a encomenda até a casa da viúva), intimidar ou roubar. Os testes de perícia rolam o d20.
+## D058: o padeiro anda; falar só no balcão, roubar só com ele de costas (sem conversa).
 
 const ARANDU := "res://levels/arandu/arandu.tscn"
 # opções do padeiro na primeira conversa
@@ -8,7 +9,7 @@ const CONVERSAR := 0
 const FAVOR := 1
 const CONVENCER := 2
 const INTIMIDAR := 3
-const ROUBAR := 4
+const SAIR := 4
 
 var _level: Level
 var _quest: MissaoPadaria
@@ -72,10 +73,40 @@ func test_the_favor_delivery_trip_ends_with_bread() -> void:
 	assert_false(_quest.marca_padeiro.visible)
 
 
+## D058: o padeiro vai trabalhar de costas (forno) e volta a atender no balcão.
+func _baker_at(step: int) -> void:
+	_quest.ia.call("_go_to", step, true)
+	await wait_seconds(0.6)
+
+
+func test_talk_only_at_the_counter_and_steal_only_with_his_back_turned() -> void:
+	await _baker_at(0)  # balcão
+	await wait_physics_frames(2)
+	assert_true(_quest.ia.attending())
+	assert_true(_quest.padeiro.enabled, "atendendo: dá para falar")
+	assert_false(_quest.roubo.enabled, "de frente: não dá para roubar")
+	await _baker_at(1)  # forno
+	await wait_physics_frames(2)
+	assert_true(_quest.ia.back_turned())
+	assert_false(_quest.padeiro.enabled, "no forno: não dá para falar")
+	assert_true(_quest.roubo.enabled, "de costas: dá para pegar um pão")
+
+
+func test_the_baker_walks_between_his_stations() -> void:
+	await _baker_at(0)
+	var start := (_quest.padeiro.get_parent() as Node3D).global_position
+	_quest.ia.set("_wait", 0.0)  # acabou o tempo no balcão: vai para o forno
+	await wait_seconds(1.0)
+	var now := (_quest.padeiro.get_parent() as Node3D).global_position
+	assert_gt(start.distance_to(now), 0.5, "andou")
+
+
 func test_stealing_rolls_stealth_and_a_good_roll_gets_the_bread() -> void:
+	await _baker_at(1)
 	_next_d20(10)  # 10 + 7 (Furtividade do Tico) = 17 contra CD 12
-	await _talk_baker([ROUBAR])
+	await _quest._steal_at_counter(_level.player)
 	assert_eq(_quest.estado(), "feito")
+	assert_eq(_dialogue.history.size(), 0, "roubar não tem conversa")
 	assert_eq(Game.flag("padaria.jeito"), "roubou")
 	var check: Dictionary = Game.flag("padaria.ultimo_teste")
 	assert_eq(check["pericia"], "Furtividade")
@@ -87,20 +118,22 @@ func test_failed_intimidation_gets_you_thrown_out() -> void:
 	await _talk_baker([INTIMIDAR])
 	assert_eq(_quest.estado(), "expulso")
 	assert_string_contains(Game.objective, "expuls")
-	# expulso: só sobra ir embora ou tentar roubar (mais difícil)
+	# expulso: falar só dá "FORA"; roubar fica mais difícil
+	await _talk_baker([])
+	assert_true(_dialogue.history[_dialogue.history.size() - 1].contains("FORA"))
+	await _baker_at(1)
 	_next_d20(2)
-	await _talk_baker([1])
+	await _quest._steal_at_counter(_level.player)
 	assert_eq(_quest.estado(), "expulso", "2 + 7 = 9 não passa da CD 16")
-	assert_true(_dialogue.history[_dialogue.history.size() - 1].contains("FORA") or _dialogue.history.has("> Esperar ele se distrair e pegar um pão  [Furtividade, mais difícil]"))
 
 
 func test_persuasion_can_only_be_tried_once() -> void:
 	_next_d20(3)  # 3 + 2 contra CD 13: falha
-	await _talk_baker([CONVENCER, 4])  # tenta convencer; o menu volta sem "Convencer" e a 5ª é ir embora
+	await _talk_baker([CONVENCER, 3])  # tenta convencer; o menu volta sem "Convencer" e a 4ª é ir embora
 	assert_true(Game.flag("padaria.tentou_convencer", false))
 	assert_eq(_quest.estado(), "")
 	_dialogue.history.clear()
-	await _talk_baker([4])  # sem "Convencer" o menu tem 5 opções; a última é ir embora
+	await _talk_baker([3])  # sem "Convencer" o menu tem 4 opções; a última é ir embora
 	assert_false(_dialogue.history.has("> Convencer  [Persuasão]"))
 	assert_true(_dialogue.history.has("> Ir embora"))
 

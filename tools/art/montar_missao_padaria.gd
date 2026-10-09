@@ -37,6 +37,8 @@ func _run() -> void:
 	quest.set("viuva", widow.get_node("Talk"))
 	quest.set("marca_padeiro", _mark(baker, "!", "MarcaMissao"))
 	quest.set("marca_viuva", _mark(widow, "▼", "MarcaEntrega"))
+	quest.set("ia", _brain(baker, bakery))
+	quest.set("roubo", _steal_spot(bakery))
 	var packed := PackedScene.new()
 	print("pack ", packed.pack(level), " save ", ResourceSaver.save(packed, LEVEL))
 	quit()
@@ -70,7 +72,7 @@ func _baker(bakery: Node3D) -> Node3D:
 		baker.name = "Padeiro"
 		people.add_child(baker)
 		baker.owner = level
-	baker.global_transform = bakery.global_transform * Transform3D(Basis(), Vector3(-1.05, 0, 0.5))
+	baker.global_transform = (bakery.get_node("PontoBalcao") as Node3D).global_transform
 	var figure := baker.get_node("Figure")
 	figure.set("personagem", "Barbarian")
 	figure.set("animacao", "Unarmed_Idle")
@@ -81,6 +83,37 @@ func _baker(bakery: Node3D) -> Node3D:
 	talk.set("text", "")
 	level.set_editable_instance(baker, true)
 	return baker
+
+
+## O jeito de andar do padeiro (D058): anda entre os pontos da padaria.
+func _brain(baker: Node3D, bakery: Node3D) -> Node:
+	var brain := baker.get_node_or_null("IA")
+	if brain == null:
+		brain = Node.new()
+		brain.name = "IA"
+		baker.add_child(brain)
+		brain.owner = level
+	brain.set_script(load("res://world/quests/padeiro_ia.gd"))
+	brain.set("padaria", bakery)
+	return brain
+
+
+## "Pegar um pão" no balcão, do lado dos fregueses (só aparece com o padeiro de costas).
+func _steal_spot(bakery: Node3D) -> Node:
+	var missions := level.get_node("Missoes")
+	var spot := missions.get_node_or_null("RoubarPao") as Node3D
+	if spot == null:
+		spot = Node3D.new()
+		spot.name = "RoubarPao"
+		missions.add_child(spot)
+		spot.owner = level
+	spot.set_script(load("res://world/interactable.gd"))
+	spot.set("action", 4)  # QUEST
+	spot.set("prompt_text", "Pegar um pão  [Furtividade]")
+	spot.set("text", "")
+	# Missoes é um Node (sem posição): o lugar vai como transform global gravado no próprio nó
+	spot.transform = (bakery.get_node("PontoRoubo") as Node3D).global_transform.translated(Vector3.UP * 1.0)
+	return spot
 
 
 ## A moça que ficava na praça vira a viúva, na porta da Casa da Viúva (perto do portão do norte).

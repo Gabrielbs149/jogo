@@ -126,6 +126,8 @@ func _draw() -> void:
 			var good: bool = view[1]
 			var sum := "%d + %d = %d   contra %s %d" % [int(d["kept"]), int(d["mod"]), int(d["total"]), d["vs_name"], int(d["vs"])]
 			var who := ("%s · salv. %s" % [by.display_name, d["save"]]) if d.has("save") else by.display_name
+			if d.has("skill"):
+				who = "%s · %s" % [by.display_name, d["skill"]]
 			var cx := x0 + i * column
 			_text(font, Vector2(cx, _center.y - size_px - 26), who, 17, Color(1, 1, 1, 0.75 * settle))
 			# placa escura atrás da conta e do veredito (lê em cima de qualquer fundo, até na piscada dourada)
@@ -213,6 +215,8 @@ static func _player_view(d: Dictionary, enemy_roll: bool) -> Array:
 			return ["ACERTOU" if failed else "RESISTIU", failed]
 		return ["NÃO RESISTIU" if failed else "RESISTIU", not failed]
 	var hit := verdict in ["ACERTOU", "CRÍTICO!"]
+	if d.has("skill"):
+		return ["CONSEGUIU!" if kept == 20 else ("FALHOU" if kept == 1 or not hit else "CONSEGUIU"), hit]
 	if not enemy_roll:
 		if kept == 20:
 			return ["CRÍTICO!", true]
