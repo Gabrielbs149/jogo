@@ -33,6 +33,9 @@ var _toast_tween: Tween
 var _log: PackedStringArray = []
 var _intro_ready: bool = false
 var _modal: bool = false
+## Sem inimigo por perto e com a vida cheia: vida, golpes e mira somem (a exploração do dia a dia fica limpa).
+var _calm: bool = false
+var _calm_check: float = 0.0
 
 @onready var _reticle: Control = %Reticle
 @onready var _target_frame: Control = %TargetFrame
@@ -185,10 +188,12 @@ func begin_talk() -> void:
 		_controller.enabled = false
 	_prompt_box.hide()
 	_set_mouse(true)
+	Audio.duck_music(true)
 
 
 func end_talk() -> void:
 	dialogue.close()
+	Audio.duck_music(false)
 	_modal = false
 	if _controller:
 		_controller.enabled = true
@@ -198,6 +203,7 @@ func end_talk() -> void:
 func _on_objective(text: String) -> void:
 	_objective.visible = text != ""
 	(%ObjectiveText as Label).text = text
+	(%Objective.get_node("VBox/Header") as Label).text = Game.objective_title.to_upper() if Game.objective_title != "" else "OBJETIVO"
 	if text != "":
 		_objective.modulate = Color(1.4, 1.25, 1.0)
 		create_tween().tween_property(_objective, "modulate", Color.WHITE, 1.2)
@@ -252,6 +258,14 @@ func show_story(text: String) -> void:
 	_story_tween.tween_interval(story_time)
 	_story_tween.tween_property(_story, "modulate:a", 0.0, 0.6)
 	_story_tween.tween_callback(_story.hide)
+
+
+## Tira da tela, na hora, o painel de história e o cartão de dicas (uma cena começou por cima deles).
+func hide_hints() -> void:
+	if _story_tween:
+		_story_tween.kill()
+	_story.hide()
+	_tips.hide()
 
 
 func play_intro(title: String, lines: PackedStringArray) -> void:
@@ -356,7 +370,37 @@ func _process(_delta: float) -> void:
 		_target_hp.max_value = target.max_hp
 		_target_hp.value = target.hp
 		_target_info.text = "CA %d   ·   %d / %d PV%s" % [target.current_ac(), target.hp, target.max_hp, "   ·   " + _status_names(target) if not target.statuses.is_empty() else ""]
-	_reticle.visible = not _modal and not _pause.visible and not _options.visible
+	_reticle.visible = not _modal and not _pause.visible and not _options.visible and not _calm
+	_update_calm()
+
+
+## Distância (m) em que um inimigo acordado traz de volta o painel de luta.
+const COMBAT_RANGE := 30.0
+
+
+func _update_calm() -> void:
+	_calm_check -= get_process_delta_time()
+	if _calm_check > 0.0:
+		return
+	_calm_check = 0.4
+	var calm := _player.hp >= _player.max_hp and not _player.downed
+	if calm:
+		for node: Node in get_tree().get_nodes_in_group("enemies"):
+			var enemy := node as Combatant
+			if enemy and enemy.is_active() and enemy.is_inside_tree() \
+					and enemy.global_position.distance_to(_player.global_position) < COMBAT_RANGE:
+				calm = false
+				break
+	if calm == _calm:
+		return
+	_calm = calm
+	for panel: Control in [$Root/PlayerPanel as Control, _skill_bar]:
+		var tween := create_tween()
+		if not calm:
+			panel.show()
+		tween.tween_property(panel, "modulate:a", 0.0 if calm else 1.0, 0.5)
+		if calm:
+			tween.tween_callback(panel.hide)
 
 
 func _make_slot(key: String, title: String, index: int) -> Dictionary:

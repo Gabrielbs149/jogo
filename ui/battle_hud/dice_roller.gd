@@ -53,6 +53,9 @@ func roll(dice: Array[Dictionary], center: Vector2) -> void:
 	show()
 	await _finished
 	hide()
+	# volta no quadro seguinte, fora do _process do dado: quem esperava pode liberar a tela (e o dado) sem
+	# derrubar o Godot no meio do sinal (crash na CI do Linux)
+	await get_tree().process_frame
 
 
 func _process(delta: float) -> void:

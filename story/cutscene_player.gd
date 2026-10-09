@@ -150,9 +150,9 @@ func _command(body: String) -> bool:
 			var node := _find(arg) as Node3D
 			if node:
 				node.visible = name == "mostra"
-		"anima":
+		"anima", "fica":
 			if words.size() >= 2:
-				_animate(_find(" ".join(words.slice(0, words.size() - 1))), StringName(words[-1]))
+				_animate(_find(" ".join(words.slice(0, words.size() - 1))), StringName(words[-1]), name == "fica")
 		"solta":
 			var node := _find(arg)
 			var animator := node.get_node_or_null("Animator") if node else null
@@ -345,13 +345,16 @@ func _play_sound(arg: String) -> void:
 		_caption.text = parts[1].strip_edges()  # sem o arquivo de som: a legenda conta o que se ouviria
 
 
-func _animate(target: Node, anim: StringName) -> void:
+func _animate(target: Node, anim: StringName, keep: bool = false) -> void:
 	if target == null:
 		return
 	var animator := target.get_node_or_null("Animator")
 	if animator and animator.has_method("hold"):
 		if animator.call("hold", anim):
-			_held.append(animator)
+			if keep:
+				_held.erase(animator)  # [fica]: não solta no fim da cena, mesmo que um [anima] antes tenha prendido
+			elif not _held.has(animator):
+				_held.append(animator)
 		return
 	var found := target.find_children("*", "AnimationPlayer", true, false)
 	if not found.is_empty() and (found[0] as AnimationPlayer).has_animation(anim):

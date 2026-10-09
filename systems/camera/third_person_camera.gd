@@ -16,6 +16,10 @@ extends Node3D
 
 var yaw: float = 0.0
 var pitch: float = -0.28
+## Conversa (D059): a câmera mira entre os dois e chega um pouco mais perto. null = segue o alvo normal.
+var _focus: Variant = null
+var _focus_distance: float = 0.0
+var _focus_yaw: Variant = null
 
 @onready var _arm: SpringArm3D = $Arm
 @onready var camera: Camera3D = $Arm/Camera3D
@@ -60,11 +64,31 @@ func _unhandled_input(event: InputEvent) -> void:
 			distance = minf(distance + 0.5, max_distance)
 
 
+## Conversa: mira no ponto (entre quem fala) e aproxima até `dist`, devagar. focus_off() volta ao normal.
+## look_yaw: para onde a câmera gira (por cima do ombro, olhando quem fala); null = não gira.
+func focus_on(point: Vector3, dist: float, look_yaw: Variant = null) -> void:
+	_focus = point
+	_focus_distance = dist
+	_focus_yaw = look_yaw
+
+
+func focus_off() -> void:
+	_focus = null
+	_focus_yaw = null
+
+
 func _process(delta: float) -> void:
-	if target and is_instance_valid(target):
+	var length := distance
+	if _focus != null:
+		global_position = global_position.lerp(_focus as Vector3, minf(1.0, delta * 3.0))
+		length = minf(distance, _focus_distance)
+		if _focus_yaw != null:
+			yaw = lerp_angle(yaw, float(_focus_yaw), minf(1.0, delta * 3.0))
+			pitch = lerpf(pitch, -0.2, minf(1.0, delta * 3.0))
+	elif target and is_instance_valid(target):
 		global_position = global_position.lerp(target.global_position + Vector3.UP * height, minf(1.0, delta * 14.0))
 	rotation = Vector3(pitch, yaw, 0.0)
-	_arm.spring_length = lerpf(_arm.spring_length, distance, minf(1.0, delta * 8.0))
+	_arm.spring_length = lerpf(_arm.spring_length, length, minf(1.0, delta * (3.0 if _focus != null else 8.0)))
 
 
 func forward_flat() -> Vector3:

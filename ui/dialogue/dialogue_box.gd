@@ -25,6 +25,7 @@ var _choosing: bool = false
 @onready var _text: RichTextLabel = %Text
 @onready var _choices: VBoxContainer = %Choices
 @onready var _hint: Control = %Hint
+@onready var _panel: PanelContainer = $Panel
 
 
 func _ready() -> void:
@@ -69,6 +70,7 @@ func choose(speaker: String, text: String, options: Array) -> int:
 		button.pressed.connect(func() -> void: _picked.emit(i))
 		_choices.add_child(button)
 	_choices.show()
+	_fit.call_deferred()
 	_choosing = true
 	if _typing:
 		_typing.kill()
@@ -77,6 +79,7 @@ func choose(speaker: String, text: String, options: Array) -> int:
 	var picked: int = await _picked
 	_choosing = false
 	_choices.hide()
+	_fit.call_deferred()
 	history.append("> " + String(options[picked]))
 	return picked
 
@@ -98,6 +101,15 @@ func _show_line(speaker: String, text: String) -> void:
 	_typing = create_tween()
 	_typing.tween_property(_text, "visible_ratio", 1.0, maxf(0.15, length / chars_per_second))
 	Audio.play("fala", -14.0, 0.1)
+	_fit.call_deferred()
+
+
+## A caixa fica do tamanho do que mostra, presa embaixo (sem espaço vazio em cima).
+func _fit() -> void:
+	# o tamanho mínimo dos filhos (escolhas que somem, texto novo) só atualiza no quadro seguinte
+	for i: int in 2:
+		_panel.offset_top = _panel.offset_bottom - _panel.get_combined_minimum_size().y
+		await get_tree().process_frame
 
 
 func _unhandled_input(event: InputEvent) -> void:

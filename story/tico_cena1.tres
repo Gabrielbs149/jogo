@@ -62,16 +62,18 @@ Tika: \"Idiota.\"
 Tika senta do lado dele (ou fica ali), e os dois comem olhando o fogo.
 [câmera: Plano4 6]
 [pausa 2.0]
-# passagem para o jogo, com as frases da história do Tico:
+# passagem para o jogo (D059): os dois dormem; a fome acorda os dois no meio da noite (world/quests/prologo_tico.gd).
+# O sumiço da Tika (\"Certo dia, Tico acorda e não vê Tika do seu lado...\") fica para depois do primeiro dia.
 [tela preta 2]
 [para som]
-[esconde: Tika]
 [esconde: PedacoDaTika]
 [esconde: Rato]
-[esconde: Fogueirinha]
-[solta: Tico]
-> Certo dia, Tico acorda e não vê Tika do seu lado, em cima de seu papelão.
-> Desesperado, procura por todos os lados, mas nada dela aparecer.
+[esconde: Fogueirinha/Fogo]
+[coloca: Tico TicoDeitado]
+[fica: Tico Lie_Idle]
+[coloca: Tika TikaAcordando]
+[anima: Tika Idle]
+> O rato não deu nem pra um.
+> Os dois dormem do jeito que dá. A fome acorda antes deles.
 
-[abre 1.5]
 "
