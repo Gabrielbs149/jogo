@@ -46,6 +46,44 @@ func test_fountain_is_one_piece_and_walls_carry_their_collision() -> void:
 	assert_false(wall.find_children("*", "CollisionObject3D", true, false).is_empty(), "o muro ganha colisão e ela anda junto")
 
 
+func _click(editor: MapEditor, at: Vector2, button: MouseButton = MOUSE_BUTTON_LEFT) -> void:
+	for pressed: bool in [true, false]:
+		var event := InputEventMouseButton.new()
+		event.button_index = button
+		event.pressed = pressed
+		event.position = at
+		editor.call("_on_mouse_button", event)
+
+
+func test_clicking_again_picks_the_piece_underneath() -> void:
+	var editor := await _open(Game.ARANDU)
+	var spot := Vector3(150, 0, 150)
+	var house := editor.place("casa", spot)
+	var crate := editor.place("caixa_maca", spot + Vector3(0, 0.2, 0))
+	editor.select_nodes([])
+	(editor.get("_camera") as EditorCamera).focus(spot, 30.0)
+	await wait_physics_frames(4)
+	var cam: Camera3D = editor.get("_camera").camera
+	var screen := cam.unproject_position(spot + Vector3(0, 0.4, 0))
+	var under := editor.pieces_under(screen)
+	assert_true(under.has(house), "a casa está embaixo do mouse")
+	assert_true(under.has(crate), "o caixote dentro da casa também")
+	_click(editor, screen)
+	assert_eq(editor.selection.size(), 1)
+	var first := editor.selection[0]
+	_click(editor, screen)
+	assert_eq(editor.selection.size(), 1)
+	assert_ne(editor.selection[0], first, "clicar de novo passa para a de baixo")
+	var seen: Array = [first, editor.selection[0]]
+	for i: int in under.size():
+		_click(editor, screen)
+		seen.append(editor.selection[0])
+	assert_true(seen.has(house) and seen.has(crate), "dá a volta por todas")
+	_click(editor, screen + Vector2(40, 0))
+	_click(editor, screen)
+	assert_eq(editor.selection[0], first, "clicou em outro lugar: começa pela de cima")
+
+
 func test_place_move_undo_redo() -> void:
 	var editor := await _open(Game.ARANDU)
 	var before := editor.items().size()

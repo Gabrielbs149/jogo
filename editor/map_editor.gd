@@ -57,6 +57,14 @@ var _ghost_scale: float = 1.0
 var _ghost_ok: bool = true
 var _press_pos: Vector2
 var _pressing: bool = false
+## Peça em cima/dentro de outra: clicar de novo no mesmo lugar passa para a de baixo; clique direito (sem
+## arrastar) mostra a lista de tudo que está embaixo do mouse.
+var _cycle_pos: Vector2 = Vector2(-999, -999)
+var _cycle_list: Array[Node3D] = []
+var _cycle_index: int = 0
+var _right_pos: Vector2
+var _under_menu: PopupMenu
+var _under_list: Array[Node3D] = []
 var _dragging: bool = false
 var _boxing: bool = false
 var _drag_hit: Vector3
@@ -417,9 +425,11 @@ func _update_hints() -> void:
 			[["Alt"], "solta da grade"], [["Esc"], "para de colocar"]]
 	elif not selection.is_empty() and not (selection.size() == 1 and selection[0] == level):
 		list = [[["Arrastar"], "move"], [["Q", "E"], "gira 90°"], [["←", "→", "↑", "↓"], "anda 1 célula"], [["C"], "centraliza na grade"],
-			[["Del"], "apaga"], [["Ctrl", "D"], "duplica"], [["X"], "separa as partes"], [["Alt"], "+ clique: pega uma parte"], [["Esc"], "solta"]]
+			[["Del"], "apaga"], [["Ctrl", "D"], "duplica"], [["X"], "separa as partes"], [["Alt"], "+ clique: pega uma parte"],
+			[["Clique"], "de novo: a de baixo"], [["Esc"], "solta"]]
 	else:
-		list = [[["Clique"], "escolhe uma peça"], [["Arrastar"], "escolhe várias"], [["W", "A", "S", "D"], "anda"], [["Botão dir."], "gira a câmera"],
+		list = [[["Clique"], "escolhe uma peça (de novo: a de baixo)"], [["Botão dir."], "parado: lista do que tem ali"], [["Arrastar"], "escolhe várias"],
+			[["W", "A", "S", "D"], "anda"], [["Botão dir."], "arrastando: gira a câmera"],
 			[["Roda"], "aproxima"], [["G"], "grade %s" % ("ligada" if snap else "desligada")], [["T"], "de cima"], [["Ctrl", "Z"], "desfaz"]]
 	for entry: Array in list:
 		var item := HBoxContainer.new()
@@ -833,6 +843,13 @@ func _on_mouse_button(event: InputEventMouseButton) -> void:
 				scale_selection(factor)
 		get_viewport().set_input_as_handled()
 		return
+	if event.button_index == MOUSE_BUTTON_RIGHT:
+		# clique direito parado (sem girar a câmera): a lista do que está embaixo do mouse
+		if event.pressed:
+			_right_pos = event.position
+		elif _placing == "" and _right_pos.distance_to(event.position) < 5.0:
+			_show_under_menu(event.position)
+		return
 	if event.button_index != MOUSE_BUTTON_LEFT:
 		return
 	if event.pressed:
@@ -846,6 +863,21 @@ func _on_mouse_button(event: InputEventMouseButton) -> void:
 		_press_pos = event.position
 		_pressing = true
 		var picked := _pick(event.position, event.alt_pressed)
+		# clicou de novo no mesmo lugar: passa para a peça de baixo/de dentro (e volta para a primeira no fim)
+		if not event.alt_pressed and not event.shift_pressed and not event.ctrl_pressed:
+			if event.position.distance_to(_cycle_pos) < 5.0 and _cycle_list.size() > 1 and selection.size() == 1 \
+					and is_instance_valid(selection[0]) and _cycle_list.has(selection[0]):
+				_cycle_index = (_cycle_list.find(selection[0]) + 1) % _cycle_list.size()
+				picked = _cycle_list[_cycle_index]
+				select_nodes([picked])
+				_flash(picked)
+				_toast_text("%d de %d: %s  (clique de novo para a próxima; botão direito mostra a lista)" % [_cycle_index + 1, _cycle_list.size(), _entry_name(picked)])
+			else:
+				_cycle_list = pieces_under(event.position)
+				_cycle_index = 0
+				if _cycle_list.size() > 1 and picked != null:
+					_toast_text("Tem %d peças aqui: clique de novo para pegar a de baixo" % _cycle_list.size())
+			_cycle_pos = event.position
 		if picked == null:
 			_boxing = true
 			if not event.shift_pressed:
@@ -877,6 +909,7 @@ func _on_mouse_button(event: InputEventMouseButton) -> void:
 			for i: int in selection.size():
 				from.append(selection[i].get_parent_node_3d().global_transform.affine_inverse() * _drag_from[i])
 			_push({"kind": "xf", "nodes": selection.duplicate(), "from": from, "to": to})
+			_cycle_pos = Vector2(-999, -999)  # mexeu: o próximo clique começa a lista de novo
 			dirty = true
 			_update_status()
 			_build_inspector()
@@ -1430,6 +1463,74 @@ func _pick(screen: Vector2, deep: bool) -> Node3D:
 		if inner_best:
 			return inner_best
 	return best
+
+
+## Todas as peças embaixo do mouse, da mais perto para a mais longe: o raio atravessa as colisões uma a uma
+## e também pega as peças sem colisão ou escondidas dentro de outra (pela caixa delas). Grupos enormes (grama,
+## chão) ficam de fora.
+func pieces_under(screen: Vector2, limit: int = 14) -> Array[Node3D]:
+	var cam := _camera.camera
+	var from := cam.project_ray_origin(screen)
+	var dir := cam.project_ray_normal(screen)
+	var space := get_world_3d().direct_space_state
+	var found: Dictionary = {}
+	var exclude: Array[RID] = []
+	for k: int in 32:
+		var query := PhysicsRayQueryParameters3D.create(from, from + dir * 2000.0, 1 | 2 | 4)
+		query.exclude = exclude
+		var hit := space.intersect_ray(query)
+		if hit.is_empty():
+			break
+		exclude.append(hit["rid"])
+		var item := _item_of(hit["collider"] as Node)
+		if item and not found.has(item):
+			found[item] = from.distance_to(hit["position"])
+	for item: Node3D in items():
+		if found.has(item):
+			continue
+		var box := _bounds(item)
+		if box.get_longest_axis_size() > 40.0:
+			continue
+		var at: Variant = box.intersects_ray(from, dir)
+		if at != null:
+			found[item] = from.distance_to(at)
+		elif box.has_point(from):
+			found[item] = 0.0
+	var list: Array[Node3D] = []
+	for item: Variant in found.keys():
+		list.append(item as Node3D)
+	list.sort_custom(func(a: Node3D, b: Node3D) -> bool: return float(found[a]) < float(found[b]))
+	return list.slice(0, limit)
+
+
+## Menu do clique direito: tudo que está embaixo do mouse; passar por cima pisca a peça, clicar escolhe.
+func _show_under_menu(screen: Vector2) -> void:
+	_under_list = pieces_under(screen)
+	if _under_list.is_empty():
+		return
+	if _under_menu == null:
+		_under_menu = PopupMenu.new()
+		_under_menu.theme = load("res://ui/theme/journey_theme.tres")
+		($UI as CanvasLayer).add_child(_under_menu)
+		_under_menu.id_pressed.connect(func(id: int) -> void:
+			if id >= 0 and id < _under_list.size() and is_instance_valid(_under_list[id]):
+				select_nodes([_under_list[id]])
+				_cycle_list = _under_list.duplicate()
+				_cycle_index = id
+				_cycle_pos = _right_pos)
+		_under_menu.id_focused.connect(func(id: int) -> void:
+			if id >= 0 and id < _under_list.size() and is_instance_valid(_under_list[id]):
+				_flash(_under_list[id]))
+	_under_menu.clear()
+	_under_menu.add_separator("Peças aqui (de cima para baixo)")
+	for i: int in _under_list.size():
+		var label := _entry_name(_under_list[i])
+		if selection.has(_under_list[i]):
+			label += "  (escolhida)"
+		_under_menu.add_item(label, i)
+	_under_menu.position = Vector2i(get_viewport().get_screen_transform() * screen)
+	_under_menu.reset_size()
+	_under_menu.popup()
 
 
 ## Onde o mouse aponta. Por padrão no chão (atravessa as peças); on_top = pousa em cima do que tiver
