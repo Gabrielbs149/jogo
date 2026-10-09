@@ -61,6 +61,25 @@ func test_people_walk_on_the_ground() -> void:
 	assert_gt(checked, 5)
 
 
+func test_new_townsfolk_models_walk_wave_and_fit_in() -> void:
+	# D063: os modelos da Quaternius traduzem as animações do jogo e ficam do tamanho dos bonecos do KayKit
+	for model: String in Figurante.EXTRA:
+		var fig := Figurante.new()
+		add_child_autofree(fig)
+		fig.personagem = model
+		for anim: String in ["Idle", "Walking_A", "Running_A", "Cheer"]:
+			assert_true(fig.can_play(anim), "%s faz %s" % [model, anim])
+		fig.animacao = "Walking_A"
+		assert_true(fig.player().is_playing(), "%s anda" % model)
+		var model_node := fig.get_node("Modelo") as Node3D
+		var height := Figurante._height_of(model_node) * model_node.scale.y
+		assert_almost_eq(height, Figurante._kaykit_reference() * 1.1, 0.3, "%s com altura de gente da cidade" % model)
+	var stiff := Figurante.new()
+	add_child_autofree(stiff)
+	stiff.personagem = "Fazendeiro"
+	assert_false(stiff.can_play("Lie_Idle"), "os novos não deitam (quem deita fica do KayKit)")
+
+
 func test_residents_keep_their_hours() -> void:
 	await _open(12.0)
 	var seller := _level.get_node("Crowd/Vendedor2") as Morador

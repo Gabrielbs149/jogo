@@ -18,6 +18,12 @@ extends Node3D
 @export var folga_fala: float = 5.0
 
 const MODELS: Array[String] = ["Rogue_Hooded", "Barbarian", "Rogue", "Mage", "Barbarian", "Rogue_Hooded", "Knight"]
+## Gente de proporção normal (D063, Quaternius), misturada com os do KayKit (o Rei e a Bruxa aparecem pouco). Os de
+## capacete de obra e camiseta ficam de fora: modernos demais para Arandu.
+const MODELS_NOVOS: Array[String] = ["Fazendeiro", "Aventureiro", "Aventureira", "Encapuzada", "MulherDeVestido", "Mulher",
+	"Fazendeiro", "Anne", "MulherDeVestido", "Aventureira", "Rei", "Bruxa"]
+## Quantos (0..1) dos adultos que andam pela cidade são dos modelos novos.
+@export_range(0.0, 1.0) var mistura: float = 0.45
 const HUES: Array[float] = [-1.0, 0.08, 0.16, 0.3, 0.45, 0.55, 0.65, 0.78, 0.9]
 ## O que dizem quando você passa perto (pela hora do dia). *(proposta)*
 const FALAS_DIA: Array[String] = ["Bom dia, pequeno.", "Olha o kobold do beco...", "Viu o preço da farinha?",
@@ -136,14 +142,21 @@ func _spawn() -> void:
 		fig.name = "Figure"
 		fig.set_script(load("res://world/figurante.gd"))
 		var model := "Rogue" if kid and _rng.randf() < 0.6 else MODELS[_rng.randi() % MODELS.size()]
+		if not kid and _rng.randf() < mistura:
+			model = MODELS_NOVOS[_rng.randi() % MODELS_NOVOS.size()]
 		fig.scale = Vector3.ONE * (_rng.randf_range(0.42, 0.47) if kid else _rng.randf_range(0.56, 0.66))
+		# corpo (D063): uns mais largos, outros mais finos, mais altos, mais baixos
+		fig.set("largura", _rng.randf_range(0.86, 1.18))
+		fig.set("altura", _rng.randf_range(0.92, 1.08))
 		person.add_child(fig)
 		add_child(person)
 		fig.set("personagem", model)
 		fig.set("cor_roupa", HUES[_rng.randi() % HUES.size()])
 		fig.set("sem_chapeu", _rng.randf() < 0.45)
 		fig.set("sem_capa", _rng.randf() < 0.4)
-		fig.set("na_mao", "Mug" if model == "Barbarian" and _rng.randf() < 0.3 else "")
+		var hands: Dictionary = {"Barbarian": ["Mug", "Mug", ""], "Mage": ["Spellbook", "Spellbook_open", "2H_Staff"]}
+		var options: Array = hands.get(model, [""])
+		fig.set("na_mao", String(options[_rng.randi() % options.size()]) if _rng.randf() < 0.45 else "")
 		fig.set("animacao", "Idle")
 		person.vida = self
 		person.velocidade = _rng.randf_range(1.05, 1.5)

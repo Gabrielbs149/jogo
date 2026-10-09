@@ -26,3 +26,15 @@ Baixados de https://poly.pizza por `tools/art/baixar_polypizza.py`. CC0 = domín
 - Quaternius (CC0 1.0): Pallet Broken — res://assets/kits/polypizza/Post-Apocolypse-Pack/Pallet_Broken.glb
 - MiniPoly (CC0 1.0): Old Bottle — res://assets/kits/polypizza/Bottles/Old_Bottle.glb
 - Zsky (CC-BY 3.0): Flower Pot — res://assets/kits/polypizza/Low-Poly-Outdoor-Garden-Decorations/Flower_Pot_2.glb
+- Quaternius (CC0 1.0): Farmer — res://assets/kits/polypizza/Ultimate-Modular-Men-Pack/Farmer.glb
+- Quaternius (CC0 1.0): Worker — res://assets/kits/polypizza/Ultimate-Modular-Men-Pack/Worker.glb
+- Quaternius (CC0 1.0): King — res://assets/kits/polypizza/Ultimate-Modular-Men-Pack/King.glb
+- Quaternius (CC0 1.0): Adventurer — res://assets/kits/polypizza/Ultimate-Modular-Men-Pack/Adventurer.glb
+- Quaternius (CC0 1.0): Adventurer — res://assets/kits/polypizza/Ultimate-Modular-Women-Pack/Adventurer.glb
+- Quaternius (CC0 1.0): Hooded Adventurer — res://assets/kits/polypizza/Ultimate-Modular-Women-Pack/Hooded_Adventurer.glb
+- Quaternius (CC-BY 3.0): Witch — res://assets/kits/polypizza/Ultimate-Modular-Women-Pack/Witch.glb
+- Quaternius (CC-BY 3.0): Worker — res://assets/kits/polypizza/Ultimate-Modular-Women-Pack/Worker.glb
+- Quaternius (CC0 1.0): Animated Woman — res://assets/kits/polypizza/Ultimate-Modular-Women-Pack/Animated_Woman.glb
+- Quaternius (CC0 1.0): Animated Woman — res://assets/kits/polypizza/Ultimate-Modular-Women-Pack/Animated_Woman_2.glb
+- Quaternius (CC0 1.0): Woman in Dress — res://assets/kits/polypizza/Animated-Women-Pack/Woman_in_Dress.glb
+- Quaternius (CC0 1.0): Anne — res://assets/kits/polypizza/Avulsos/Anne.glb

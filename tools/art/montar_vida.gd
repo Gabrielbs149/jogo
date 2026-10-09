@@ -44,6 +44,7 @@ func _run() -> void:
 	_animals()
 	_pigeons()
 	_attractions()
+	_mix_crowd()
 	var packed := PackedScene.new()
 	print("pack ", packed.pack(level), " save ", ResourceSaver.save(packed, LEVEL))
 	quit()
@@ -459,3 +460,36 @@ func _remove(path: String) -> void:
 	if node:
 		node.get_parent().remove_child(node)
 		node.free()
+
+
+## Gente nova (D063): parte do pessoal fixo das ruas (Crowd, Atracoes) troca para os modelos da Quaternius, sorteado
+## pelo nome (rodar de novo dá o mesmo). Quem senta ou deita fica do KayKit (os novos não sentam nem deitam).
+func _mix_crowd() -> void:
+	# rei e bruxa não ficam parados na rua; criança, ferreiro, malabarista e músico têm pose e roupa do ofício
+	var models: Array = ["Fazendeiro", "Aventureiro", "Aventureira", "Encapuzada", "MulherDeVestido", "Mulher", "Anne"]
+	var keep: Array[String] = ["Crianca", "Ferreiro", "Malabarista", "Musico", "Guarda", "Bardo"]
+	for holder: String in ["Crowd", "Atracoes"]:
+		var group := level.get_node_or_null(holder)
+		if group == null:
+			continue
+		for person: Node in group.get_children():
+			var fig := person.get_node_or_null("Figure")
+			if fig == null or not fig is Figurante:
+				continue
+			var anim := String(fig.get("animacao"))
+			if anim.begins_with("Sit") or anim.begins_with("Lie"):
+				continue
+			if keep.any(func(k: String) -> bool: return String(person.name).begins_with(k)):
+				continue
+			var roll := RandomNumberGenerator.new()
+			roll.seed = hash(String(person.name))
+			if roll.randf() > 0.5:
+				continue
+			var pick: String = models[roll.randi() % models.size()]
+			if String(person.name).begins_with("Lavrad") or String(person.name).begins_with("Fazend"):
+				pick = "Fazendeiro" if not String(person.name).ends_with("a") else "MulherDeVestido"
+			fig.set("personagem", pick)
+			fig.set("largura", roll.randf_range(0.88, 1.15))
+			fig.set("altura", roll.randf_range(0.94, 1.06))
+			fig.set("na_mao", "")
+			print("gente nova: ", person.name, " -> ", fig.get("personagem"))

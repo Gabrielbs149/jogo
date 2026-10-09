@@ -172,6 +172,11 @@ func _arrive() -> void:
 	if look is Vector3:
 		_turn_to((look as Vector3) - global_position, 1.0)
 	var anims: Array = ponto.get("anims", ["Idle"])
+	if _fig and _fig.has_method("can_play"):
+		# os modelos novos (D063) não sentam nem deitam: fica com o que ele sabe fazer
+		anims = anims.filter(func(a: Variant) -> bool: return bool(_fig.call("can_play", String(a))))
+		if anims.is_empty():
+			anims = ["Idle"]
 	_set_anim(StringName(anims[randi() % anims.size()]))
 	_timer = randf_range(float(ponto.get("min", 4.0)), float(ponto.get("max", 12.0)))
 	if randf() < float(ponto.get("emote_chance", 0.15)):
