@@ -215,7 +215,8 @@ def padaria():
         x = -hw + 1.0 + i * 2.0
         if kind == "porta":
             s.piece("vila/Wall_Plaster_Door_Round", (x, 0, -hd), math.pi)
-            s.piece("vila/Door_1_Round", (x + 0.53, 0, -hd + 0.35), -math.pi / 2, name="Porta")
+            # a folha da porta aberta, encostada na parede de dentro (D060: o vão fica livre para gente passar)
+            s.piece("vila/Door_1_Round", (x + 1.45, 0, -hd + 0.12), math.pi, name="Porta")
         else:
             s.piece("vila/Wall_Plaster_Window_Wide_Flat", (x, 0, -hd), math.pi)
             s.piece("vila/Window_Wide_Flat1", (x, 0, -hd), math.pi)
@@ -256,7 +257,9 @@ def padaria():
     s.mesh("Balcao", s.box((5.7, 0.92, 0.7)), wood, (-1.15, 0.46, cz))
     s.mesh("BalcaoTampo", s.box((5.85, 0.06, 0.86)), s.color((0.42, 0.26, 0.15), 0.7), (-1.15, 0.95, cz))
     s.mesh("BalcaoRodape", s.box((5.72, 0.1, 0.72)), s.color((0.25, 0.15, 0.09), 0.8), (-1.15, 0.05, cz))
-    s.piece("objetos/Cabinet", (2.1, 0, cz), name="BalcaoArmario")
+    # o armário fica encostado na parede do fundo: a passagem do balcão para a cozinha (x 1,8 a 4) fica livre (D060:
+    # o padeiro precisa sair correndo atrás de ladrão)
+    s.piece("objetos/Cabinet", (-3.5, 0, 2.4), math.pi / 2, name="BalcaoArmario")
     for k, x in enumerate((-3.4, -3.0, -2.55, -1.8, -1.35, 0.3, 0.75)):
         s.scene("PaoBalcao", "res://world/props/pao.tscn", (x, 1.03, cz - 0.15 + (k % 2) * 0.18), 0.4 * k, 1.6)
     s.piece("objetos/Bucket_Wooden_1", (-0.6, 0.98, cz + 0.2), name="Cesto")
@@ -277,7 +280,7 @@ def padaria():
     # sacos de farinha, barris, banquinho
     for k, (x, z) in enumerate(((3.3, 2.0), (3.5, 2.5), (3.15, 2.6))):
         s.piece("objetos/Bag", (x, 0, z), 0.7 * k, 0.8, name="Farinha")
-    s.piece("objetos/Barrel", (3.35, 0, 0.7), name="Barril")
+    s.piece("objetos/Barrel", (3.45, 0, 4.25), name="Barril")
     s.piece("objetos/Stool", (-1.6, 0, 1.6), name="Banquinho")
     # lado dos fregueses: caixotes de pão embaixo das vitrines e um banco de espera
     for x in (-3.0, -1.0, 3.0):

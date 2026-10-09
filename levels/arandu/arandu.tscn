@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Wall_UnevenBrick_Straight.gltf" id="13_614qq"]
 [ext_resource type="PackedScene" path="res://world/props/arvore.tscn" id="13_rim2w"]
 [ext_resource type="PackedScene" path="res://world/props/arbusto_baixo.tscn" id="14_bl8x0"]
+[ext_resource type="Script" path="res://world/vida/morador.gd" id="15_lmcom"]
 [ext_resource type="PackedScene" path="res://world/props/morador.tscn" id="16_j5u7p"]
 [ext_resource type="Script" path="res://world/quests/padeiro_ia.gd" id="16_otlw4"]
 [ext_resource type="PackedScene" path="res://world/props/arbusto.tscn" id="17_cbaqg"]
@@ -108,7 +109,6 @@
 [ext_resource type="PackedScene" path="res://world/props/feno.tscn" id="71_otlw4"]
 [ext_resource type="PackedScene" path="res://world/props/sacos.tscn" id="72_2oqiw"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g012.res" id="72_d6a5e"]
-[ext_resource type="PackedScene" path="res://world/props/cachorro.tscn" id="72_lqnb2"]
 [ext_resource type="PackedScene" path="res://world/props/fardos.tscn" id="73_bgv72"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g013.res" id="73_vp086"]
 [ext_resource type="PackedScene" path="res://world/props/gato.tscn" id="74_b68sd"]
@@ -143,6 +143,7 @@
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g034.res" id="94_xc5uv"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g035.res" id="95_f3edd"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/trigo/trigalleste.res" id="95_hqk81"]
+[ext_resource type="Script" path="res://world/vida/bicho.gd" id="96_ev8jd"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g036.res" id="96_n3jqe"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g037.res" id="97_r4rk6"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g038.res" id="98_rvxkf"]
@@ -150,11 +151,15 @@
 [ext_resource type="PackedScene" path="res://world/props/grade_cemiterio.tscn" id="99_ob378"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g040.res" id="100_5g1nd"]
 [ext_resource type="PackedScene" path="res://world/props/grade_cemiterio_quebrada.tscn" id="100_i8npn"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Animated-Animal-Pack/Shiba_Inu.glb" id="100_rclym"]
 [ext_resource type="PackedScene" path="res://world/props/pilar_grade.tscn" id="101_eby0h"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g041.res" id="101_jaouy"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Animated-Animal-Pack/Husky.glb" id="101_wiiu0"]
 [ext_resource type="PackedScene" path="res://world/props/portao_cemiterio.tscn" id="102_gepnm"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Animated-Animal-Pack/Donkey.glb" id="102_vb8fo"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g042.res" id="102_yhgqe"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g043.res" id="103_2vekq"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Animated-Enemies/Rat.glb" id="103_emv2g"]
 [ext_resource type="PackedScene" path="res://world/props/cripta.tscn" id="103_r1gup"]
 [ext_resource type="PackedScene" path="res://world/props/caminho_pedras.tscn" id="104_4v1ux"]
 [ext_resource type="MultiMesh" path="res://levels/arandu/art/grama/g044.res" id="104_ko007"]
@@ -639,6 +644,9 @@
 [ext_resource type="PackedScene" path="res://world/props/pao.tscn" id="637_6ogb1"]
 [ext_resource type="PackedScene" path="res://world/props/meio_pao.tscn" id="638_mp1mj"]
 [ext_resource type="Script" path="res://world/ambiente_camadas.gd" id="644_i8npn"]
+[ext_resource type="Script" path="res://world/ciclo_do_dia.gd" id="651_wsoig"]
+[ext_resource type="Script" path="res://world/vida/vida.gd" id="652_u2m4e"]
+[ext_resource type="Script" path="res://world/vida/pombos.gd" id="653_owajm"]
 [ext_resource type="Script" path="res://systems/camera/third_person_camera.gd" id="cam"]
 [ext_resource type="FontFile" path="res://assets/fonts/cinzel.ttf" id="font"]
 [ext_resource type="Script" path="res://combat/combat_fx.gd" id="fx"]
@@ -690,6 +698,7 @@ geometry_parsed_geometry_type = 1
 geometry_collision_mask = 5
 geometry_source_geometry_mode = 1
 geometry_source_group_name = &"nav_source"
+agent_radius = 0.25
 agent_max_climb = 0.5
 agent_max_slope = 40.0
 filter_baking_aabb = AABB(-79, -2, -79, 158, 22, 158)
@@ -890,7 +899,6 @@ musica = "rotina"
 ambiente = "cidade"
 mapa_do_piso = ExtResource("7_fk7c7")
 area_do_mapa = 300.0
-noite = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=644594426]
 environment = SubResource("Environment_23")
@@ -1028,6 +1036,8 @@ prompt_text = "Falar com o vendedor"
 
 [node name="Guarda" type="Node3D" parent="People" unique_id=684443982]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 2.4, 0, -72)
+script = ExtResource("15_lmcom")
+gestos = Array[String](["2H_Melee_Idle", "Idle", "2H_Melee_Idle"])
 
 [node name="Figure" type="Node3D" parent="People/Guarda" unique_id=2079761263]
 transform = Transform3D(0.66, 0, 0, 0, 0.66, 0, 0, 0, 0.66, 0, 0, 0)
@@ -1052,6 +1062,11 @@ text = "— A estrada sai por aqui. Dizem que lá fora as estrelas andam estranh
 
 [node name="Crianca" type="Node3D" parent="People" unique_id=579734258]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 5.6, 0, 6.4)
+script = ExtResource("15_lmcom")
+de = 8.0
+ate = 18.5
+gestos = Array[String](["Cheer", "Idle", "Cheer"])
+emotes = Array[String](["nota", "!"])
 
 [node name="Figure" type="Node3D" parent="People/Crianca" unique_id=1589589804]
 transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, 0, 0, 0)
@@ -1158,10 +1173,10 @@ height = 1.9
 distance = 5.8
 
 [node name="Arm" type="SpringArm3D" parent="CameraRig" unique_id=1048504096]
-spring_length = 5.7339315
+spring_length = 5.8
 
 [node name="Camera3D" type="Camera3D" parent="CameraRig/Arm" unique_id=1474104767]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.2318994)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.9802322e-08, 1.2121094)
 current = true
 fov = 68.0
 far = 300.0
@@ -3013,87 +3028,247 @@ transform = Transform3D(0.4605305, 0, -0.19470917, 0, 0.5, 0, 0.19470917, 0, 0.4
 
 [node name="Cavalo" parent="Animals" unique_id=580751697 instance=ExtResource("85_uttk5")]
 transform = Transform3D(-0.03263179, 0, -0.99946743, 0, 1, 0, 0.99946743, 0, -0.03263179, 65.06747, 0, -56.765118)
+script = ExtResource("96_ev8jd")
+raio = 1.6
+velocidade = 0.25
+pula = false
 
 [node name="Cavalo2" parent="Animals" unique_id=1752345439 instance=ExtResource("85_uttk5")]
 transform = Transform3D(-0.54342616, 0, 0.839457, 0, 1, 0, -0.839457, 0, -0.54342616, 60.207973, 0, -60.5244)
+script = ExtResource("96_ev8jd")
+raio = 1.6
+velocidade = 0.25
+pula = false
 
 [node name="Vaca" parent="Animals" unique_id=1251064701 instance=ExtResource("71_cc52d")]
 transform = Transform3D(-0.02790898, 0, -0.9996105, 0, 1, 0, 0.9996105, 0, -0.02790898, 56.406696, 0, -57.990864)
+script = ExtResource("96_ev8jd")
+raio = 1.6
+velocidade = 0.25
+pula = false
 
 [node name="Vaca2" parent="Animals" unique_id=1196744898 instance=ExtResource("71_cc52d")]
 transform = Transform3D(0.9135598, 0, 0.4067045, 0, 1, 0, -0.4067045, 0, 0.9135598, 62.65303, 0, -63.49175)
+script = ExtResource("96_ev8jd")
+raio = 1.6
+velocidade = 0.25
+pula = false
 
 [node name="Porco" parent="Animals" unique_id=1215137393 instance=ExtResource("70_gs4i4")]
 transform = Transform3D(0.25028446, 0, -0.9681724, 0, 1, 0, 0.9681724, 0, 0.25028446, 66.90446, 0, -59.94951)
+script = ExtResource("96_ev8jd")
+raio = 1.6
+velocidade = 0.25
+pula = false
 
 [node name="Galinha" parent="Animals" unique_id=1584157579 instance=ExtResource("69_nqv7n")]
 transform = Transform3D(-0.0948449, 0, 0.99549204, 0, 1, 0, -0.99549204, 0, -0.0948449, 8.011927, 0, -111.65817)
+script = ExtResource("96_ev8jd")
+jeito = 1
+raio = 3.0
+velocidade = 0.7
+bica = true
 
 [node name="Galinha2" parent="Animals" unique_id=1827938021 instance=ExtResource("69_nqv7n")]
 transform = Transform3D(-0.0032698296, 0, 0.99999464, 0, 1, 0, -0.99999464, 0, -0.0032698296, 9.06543, 0, -110.7147)
+script = ExtResource("96_ev8jd")
+jeito = 1
+raio = 3.0
+velocidade = 0.7
+bica = true
 
 [node name="Galinha3" parent="Animals" unique_id=452162966 instance=ExtResource("69_nqv7n")]
 transform = Transform3D(-0.39254674, 0, -0.91973203, 0, 1, 0, 0.91973203, 0, -0.39254674, 7.5368695, 0, -110.3895)
+script = ExtResource("96_ev8jd")
+jeito = 1
+raio = 3.0
+velocidade = 0.7
+bica = true
 
 [node name="Galinha4" parent="Animals" unique_id=927619963 instance=ExtResource("69_nqv7n")]
 transform = Transform3D(-0.5247862, 0, 0.8512341, 0, 1, 0, -0.8512341, 0, -0.5247862, 8.515149, 0, -107.68011)
+script = ExtResource("96_ev8jd")
+jeito = 1
+raio = 3.0
+velocidade = 0.7
+bica = true
 
 [node name="Galinha5" parent="Animals" unique_id=1349542373 instance=ExtResource("69_nqv7n")]
 transform = Transform3D(0.45096302, 0, -0.8925426, 0, 1, 0, 0.8925426, 0, 0.45096302, 7.5008583, 0, -109.37032)
+script = ExtResource("96_ev8jd")
+jeito = 1
+raio = 3.0
+velocidade = 0.7
+bica = true
 
 [node name="Vaca3" parent="Animals" unique_id=1254034215 instance=ExtResource("71_cc52d")]
 transform = Transform3D(0.4534262, 0, 0.8912938, 0, 1, 0, -0.8912938, 0, 0.4534262, 33.378017, 0, -134.2025)
+script = ExtResource("96_ev8jd")
+raio = 1.6
+velocidade = 0.25
+pula = false
 
 [node name="Vaca4" parent="Animals" unique_id=564398125 instance=ExtResource("71_cc52d")]
 transform = Transform3D(-0.9884912, 0, 0.15127856, 0, 1, 0, -0.15127856, 0, -0.9884912, 44.14962, 0, -124.57692)
+script = ExtResource("96_ev8jd")
+raio = 1.6
+velocidade = 0.25
+pula = false
 
 [node name="Vaca5" parent="Animals" unique_id=1201397774 instance=ExtResource("71_cc52d")]
 transform = Transform3D(-0.0077291396, 0, 0.99997014, 0, 1, 0, -0.99997014, 0, -0.0077291396, 33.4535, 0, -123.9168)
+script = ExtResource("96_ev8jd")
+raio = 1.6
+velocidade = 0.25
+pula = false
 
 [node name="Porco2" parent="Animals" unique_id=1234791701 instance=ExtResource("70_gs4i4")]
 transform = Transform3D(0.944437, 0, -0.3286925, 0, 1, 0, 0.3286925, 0, 0.944437, 45.722237, 0, -135.25377)
+script = ExtResource("96_ev8jd")
+raio = 1.6
+velocidade = 0.25
+pula = false
 
 [node name="Porco3" parent="Animals" unique_id=1683707886 instance=ExtResource("70_gs4i4")]
 transform = Transform3D(-0.7057239, 0, -0.708487, 0, 1, 0, 0.708487, 0, -0.7057239, 46.806213, 0, -123.481834)
+script = ExtResource("96_ev8jd")
+raio = 1.6
+velocidade = 0.25
+pula = false
 
 [node name="Cavalo3" parent="Animals" unique_id=562579800 instance=ExtResource("85_uttk5")]
 transform = Transform3D(0.74288094, 0, -0.6694236, 0, 1, 0, 0.6694236, 0, 0.74288094, 40.44073, 0, -135.00047)
+script = ExtResource("96_ev8jd")
+raio = 1.6
+velocidade = 0.25
+pula = false
 
 [node name="Galinha6" parent="Animals" unique_id=282085278 instance=ExtResource("69_nqv7n")]
 transform = Transform3D(0.9372946, 0, 0.34853816, 0, 1, 0, -0.34853816, 0, 0.9372946, -26.593681, 0, -55.122997)
+script = ExtResource("96_ev8jd")
+jeito = 1
+raio = 3.0
+velocidade = 0.7
+bica = true
 
 [node name="Galinha7" parent="Animals" unique_id=2052710423 instance=ExtResource("69_nqv7n")]
 transform = Transform3D(-0.73579156, 0, 0.67720807, 0, 1, 0, -0.67720807, 0, -0.73579156, -25.877043, 0, -55.43199)
+script = ExtResource("96_ev8jd")
+jeito = 1
+raio = 3.0
+velocidade = 0.7
+bica = true
 
 [node name="Galinha8" parent="Animals" unique_id=14969534 instance=ExtResource("69_nqv7n")]
 transform = Transform3D(0.19179127, 0, -0.9814357, 0, 1, 0, 0.9814357, 0, 0.19179127, -27.412489, 0, -54.4592)
+script = ExtResource("96_ev8jd")
+jeito = 1
+raio = 3.0
+velocidade = 0.7
+bica = true
 
 [node name="Galinha9" parent="Animals" unique_id=1687791695 instance=ExtResource("69_nqv7n")]
 transform = Transform3D(0.9975981, 0, -0.06926738, 0, 1, 0, 0.06926738, 0, 0.9975981, -28.300478, 0, -54.702602)
+script = ExtResource("96_ev8jd")
+jeito = 1
+raio = 3.0
+velocidade = 0.7
+bica = true
 
 [node name="Galinha10" parent="Animals" unique_id=72415802 instance=ExtResource("69_nqv7n")]
 transform = Transform3D(0.44015387, 0, -0.89792234, 0, 1, 0, 0.89792234, 0, 0.44015387, -26.37992, 0, -55.06151)
+script = ExtResource("96_ev8jd")
+jeito = 1
+raio = 3.0
+velocidade = 0.7
+bica = true
 
 [node name="Porco4" parent="Animals" unique_id=1136024646 instance=ExtResource("70_gs4i4")]
 transform = Transform3D(0.33068272, 0, 0.943742, 0, 1, 0, -0.943742, 0, 0.33068272, -20.767574, 0, -59.86876)
+script = ExtResource("96_ev8jd")
+raio = 1.6
+velocidade = 0.25
+pula = false
 
 [node name="Vaca6" parent="Animals" unique_id=356175341 instance=ExtResource("71_cc52d")]
 transform = Transform3D(-0.9972518, 0, -0.074086994, 0, 1, 0, 0.074086994, 0, -0.9972518, -19.767574, 0, -63.36876)
+script = ExtResource("96_ev8jd")
+raio = 1.6
+velocidade = 0.25
+pula = false
 
 [node name="Galinha11" parent="Animals" unique_id=1376103498 instance=ExtResource("69_nqv7n")]
 transform = Transform3D(0.6908854, 0, 0.7229643, 0, 1, 0, -0.7229643, 0, 0.6908854, 54.72726, 0, -27.450726)
+script = ExtResource("96_ev8jd")
+jeito = 1
+raio = 3.0
+velocidade = 0.7
+bica = true
 
 [node name="Galinha12" parent="Animals" unique_id=1603228696 instance=ExtResource("69_nqv7n")]
 transform = Transform3D(-0.7159486, 0, 0.69815296, 0, 1, 0, -0.69815296, 0, -0.7159486, 55.631176, 0, -27.477201)
+script = ExtResource("96_ev8jd")
+jeito = 1
+raio = 3.0
+velocidade = 0.7
+bica = true
 
 [node name="Galinha13" parent="Animals" unique_id=231784291 instance=ExtResource("69_nqv7n")]
 transform = Transform3D(-0.18386866, 0, -0.9829508, 0, 1, 0, 0.9829508, 0, -0.18386866, 55.341843, 0, -27.106657)
+script = ExtResource("96_ev8jd")
+jeito = 1
+raio = 3.0
+velocidade = 0.7
+bica = true
 
-[node name="Cachorro" parent="Animals" unique_id=71726772 instance=ExtResource("72_lqnb2")]
-transform = Transform3D(-0.7373938, 0, 0.67546314, 0, 1, 0, -0.67546314, 0, -0.7373938, 4.2, 0, 7.6)
+[node name="Shiba" type="Node3D" parent="Animals" unique_id=1004945177]
+transform = Transform3D(-0.98916894, 0, 0.1467815, 0, 1, 0, -0.1467815, 0, -0.98916894, 3, 0, 6)
+script = ExtResource("96_ev8jd")
+jeito = 2
+raio = 12.0
+velocidade = 1.2
 
-[node name="Gato" parent="Animals" unique_id=1798186806 instance=ExtResource("74_b68sd")]
-transform = Transform3D(0.6967067, 0, 0.7173561, 0, 1, 0, -0.7173561, 0, 0.6967067, 21.075998, 0, -8.052)
+[node name="Modelo" parent="Animals/Shiba" unique_id=1256143660 instance=ExtResource("100_rclym")]
+transform = Transform3D(-0.17, 0, -1.4861872e-08, 0, 0.17, 0, 1.4861872e-08, 0, -0.17, 0, 0, 0)
+
+[node name="Husky" type="Node3D" parent="Animals" unique_id=332778004]
+transform = Transform3D(0.99491423, 0, 0.10072546, 0, 1, 0, -0.10072546, 0, 0.99491423, 7, 0, -22)
+script = ExtResource("96_ev8jd")
+jeito = 2
+raio = 10.0
+velocidade = 1.3
+
+[node name="Modelo" parent="Animals/Husky" unique_id=1105888967 instance=ExtResource("101_wiiu0")]
+transform = Transform3D(-0.17, 0, -1.4861872e-08, 0, 0.17, 0, 1.4861872e-08, 0, -0.17, 0, 0, 0)
+
+[node name="Burro" type="Node3D" parent="Animals" unique_id=895115425]
+transform = Transform3D(-0.99395156, 0, 0.10981958, 0, 1, 0, -0.10981958, 0, -0.99395156, 60, 0, -22)
+script = ExtResource("96_ev8jd")
+raio = 3.0
+velocidade = 0.6
+
+[node name="Modelo" parent="Animals/Burro" unique_id=1396825944 instance=ExtResource("102_vb8fo")]
+transform = Transform3D(-0.3, 0, -2.6226834e-08, 0, 0.3, 0, 2.6226834e-08, 0, -0.3, 0, 0, 0)
+
+[node name="Rato" type="Node3D" parent="Animals" unique_id=300042682]
+transform = Transform3D(0.9625661, 0, -0.27104706, 0, 1, 0, 0.27104706, 0, 0.9625661, -9.6, 0, -48.7)
+script = ExtResource("96_ev8jd")
+jeito = 1
+raio = 2.0
+velocidade = 1.4
+
+[node name="Modelo" parent="Animals/Rato" unique_id=309479939 instance=ExtResource("103_emv2g")]
+transform = Transform3D(-0.22, 0, -1.9233012e-08, 0, 0.22, 0, 1.9233012e-08, 0, -0.22, 0, 0, 0)
+
+[node name="GatoPreguica" type="Node3D" parent="Animals" unique_id=203231650]
+transform = Transform3D(-0.9341383, 0, -0.3569113, 0, 1, 0, 0.3569113, 0, -0.9341383, 5, 0, -15.6)
+script = ExtResource("96_ev8jd")
+jeito = 3
+raio = 1.5
+velocidade = 0.35
+dorme = true
+
+[node name="Modelo" parent="Animals/GatoPreguica" unique_id=306560734 instance=ExtResource("74_b68sd")]
 
 [node name="Gardens" type="Node3D" parent="." unique_id=1730624947]
 
@@ -5334,6 +5509,8 @@ transform = Transform3D(0.74681205, 0, -0.07348489, 0, 0.7504187, 0, 0.07348489,
 
 [node name="GuardaPortao" type="Node3D" parent="Crowd" unique_id=1608761065]
 transform = Transform3D(-0.99934864, 0, -0.036087696, 0, 1, 0, 0.036087696, 0, -0.99934864, -2.6, 0, -72)
+script = ExtResource("15_lmcom")
+gestos = Array[String](["2H_Melee_Idle", "Idle", "2H_Melee_Idle"])
 
 [node name="Figure" type="Node3D" parent="Crowd/GuardaPortao" unique_id=1187112950]
 transform = Transform3D(0.66, 0, 0, 0, 0.66, 0, 0, 0, 0.66, 0, 0, 0)
@@ -5352,6 +5529,11 @@ shape = SubResource("CapsuleShape3D_fqk84")
 
 [node name="Freguês" type="Node3D" parent="Crowd" unique_id=1996139624]
 transform = Transform3D(-0.11684125, 0, -0.9931506, 0, 1, 0, 0.9931506, 0, -0.11684125, 11.9, 0, -2.8000002)
+script = ExtResource("15_lmcom")
+de = 7.0
+ate = 18.0
+gestos = Array[String](["Idle", "Use_Item", "Interact", "PickUp"])
+emotes = Array[String](["?", "...", "nota"])
 
 [node name="Figure" type="Node3D" parent="Crowd/Freguês" unique_id=316298073]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
@@ -5368,6 +5550,11 @@ shape = SubResource("CapsuleShape3D_ivkix")
 
 [node name="Freguês2" type="Node3D" parent="Crowd" unique_id=1013064908]
 transform = Transform3D(-0.22903937, 0, -0.97341716, 0, 1, 0, 0.97341716, 0, -0.22903937, 11.9, 0, 2.8)
+script = ExtResource("15_lmcom")
+de = 7.5
+ate = 17.5
+gestos = Array[String](["Unarmed_Idle", "Interact", "PickUp", "Cheer"])
+emotes = Array[String](["?", "coracao"])
 
 [node name="Figure" type="Node3D" parent="Crowd/Freguês2" unique_id=2049825621]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
@@ -5385,6 +5572,11 @@ shape = SubResource("CapsuleShape3D_74i67")
 
 [node name="Freguês3" type="Node3D" parent="Crowd" unique_id=1502699105]
 transform = Transform3D(-0.3328201, 0, -0.94299036, 0, 1, 0, 0.94299036, 0, -0.3328201, 11.9, 0, 8.400001)
+script = ExtResource("15_lmcom")
+de = 8.0
+ate = 18.0
+gestos = Array[String](["Use_Item", "Idle", "Interact"])
+emotes = Array[String](["...", "?"])
 
 [node name="Figure" type="Node3D" parent="Crowd/Freguês3" unique_id=583129817]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
@@ -5401,6 +5593,11 @@ shape = SubResource("CapsuleShape3D_kg7fb")
 
 [node name="Sentado" type="Node3D" parent="Crowd" unique_id=993453094]
 transform = Transform3D(0.35732117, 0, 0.9339816, 0, 1, 0, -0.9339816, 0, 0.35732117, 8.555271, 0.35, 3.273062)
+script = ExtResource("15_lmcom")
+de = 8.0
+ate = 20.0
+gestos = Array[String](["Sit_Chair_Idle"])
+emotes = Array[String](["zz", "nota", "..."])
 
 [node name="Figure" type="Node3D" parent="Crowd/Sentado" unique_id=358998069]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
@@ -5418,6 +5615,11 @@ shape = SubResource("CapsuleShape3D_c0xkf")
 
 [node name="Sentado2" type="Node3D" parent="Crowd" unique_id=1233420579]
 transform = Transform3D(-0.9339816, 0, -0.3573211, 0, 1, 0, 0.3573211, 0, -0.9339816, -3.273062, 0.35, -8.555271)
+script = ExtResource("15_lmcom")
+de = 9.0
+ate = 19.0
+gestos = Array[String](["Sit_Chair_Idle"])
+emotes = Array[String](["...", "nota"])
 
 [node name="Figure" type="Node3D" parent="Crowd/Sentado2" unique_id=824988551]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
@@ -5434,6 +5636,11 @@ shape = SubResource("CapsuleShape3D_0he68")
 
 [node name="Hospede" type="Node3D" parent="Crowd" unique_id=1493678120]
 transform = Transform3D(-0.5843046, 0, 0.81153446, 0, 1, 0, -0.81153446, 0, -0.5843046, 14.643669, 0, -16.599998)
+script = ExtResource("15_lmcom")
+de = 7.0
+ate = 22.0
+gestos = Array[String](["Idle", "Interact", "Idle"])
+emotes = Array[String](["...", "?"])
 
 [node name="Figure" type="Node3D" parent="Crowd/Hospede" unique_id=1338313809]
 transform = Transform3D(0.62, 0, 0, 0, 0.62, 0, 0, 0, 0.62, 0, 0, 0)
@@ -5450,6 +5657,11 @@ shape = SubResource("CapsuleShape3D_otlw4")
 
 [node name="NaTaverna" type="Node3D" parent="Crowd" unique_id=1586060695]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 10.375998, 0, 16.4)
+script = ExtResource("15_lmcom")
+de = 15.0
+ate = 1.0
+gestos = Array[String](["Cheer", "Idle", "Interact", "Cheer"])
+emotes = Array[String](["nota", "nota", "coracao"])
 
 [node name="Figure" type="Node3D" parent="Crowd/NaTaverna" unique_id=1890847307]
 transform = Transform3D(0.64, 0, 0, 0, 0.64, 0, 0, 0, 0.64, 0, 0, 0)
@@ -5468,6 +5680,11 @@ shape = SubResource("CapsuleShape3D_2oqiw")
 
 [node name="NaTaverna2" type="Node3D" parent="Crowd" unique_id=1670807878]
 transform = Transform3D(-0.12403522, 0, 0.9922778, 0, 1, 0, -0.9922778, 0, -0.12403522, 11.675998, 0, 16.199999)
+script = ExtResource("15_lmcom")
+de = 15.0
+ate = 1.0
+gestos = Array[String](["Idle", "Cheer", "Idle"])
+emotes = Array[String](["nota", "..."])
 
 [node name="Figure" type="Node3D" parent="Crowd/NaTaverna2" unique_id=1965342352]
 transform = Transform3D(0.64, 0, 0, 0, 0.64, 0, 0, 0, 0.64, 0, 0, 0)
@@ -5484,6 +5701,14 @@ shape = SubResource("CapsuleShape3D_bgv72")
 
 [node name="FerreiroTrabalhando" type="Node3D" parent="Crowd" unique_id=1149075967]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38.750637, 0, -5.6000004)
+script = ExtResource("15_lmcom")
+de = 7.0
+ate = 19.0
+gestos = Array[String](["1H_Melee_Attack_Chop", "1H_Melee_Attack_Chop", "Use_Item", "1H_Melee_Attack_Chop"])
+troca = Vector2(4, 9)
+emotes = Array[String](["gota", "nota"])
+som = "aparar"
+gesto_do_som = "1H_Melee_Attack_Chop"
 
 [node name="Figure" type="Node3D" parent="Crowd/FerreiroTrabalhando" unique_id=446320511]
 transform = Transform3D(0.66, 0, 0, 0, 0.66, 0, 0, 0, 0.66, 0, 0, 0)
@@ -5502,6 +5727,11 @@ shape = SubResource("CapsuleShape3D_6ogb1")
 
 [node name="Crianca2" type="Node3D" parent="Crowd" unique_id=1769326657]
 transform = Transform3D(0.63570726, 0, -0.7719302, 0, 1, 0, 0.7719302, 0, 0.63570726, -6.4, 0, 6.8)
+script = ExtResource("15_lmcom")
+de = 8.0
+ate = 18.0
+gestos = Array[String](["Cheer", "Idle", "Jump_Full_Short", "Cheer"])
+emotes = Array[String](["nota", "!"])
 
 [node name="Figure" type="Node3D" parent="Crowd/Crianca2" unique_id=291869318]
 transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, 0, 0, 0)
@@ -5519,6 +5749,11 @@ shape = SubResource("CapsuleShape3D_mp1mj")
 
 [node name="Crianca3" type="Node3D" parent="Crowd" unique_id=1495575512]
 transform = Transform3D(0.6643636, 0, 0.74740946, 0, 1, 0, -0.74740946, 0, 0.6643636, -4.6, 0, 8.4)
+script = ExtResource("15_lmcom")
+de = 8.0
+ate = 18.0
+gestos = Array[String](["Idle", "Cheer", "Interact"])
+emotes = Array[String](["nota", "?"])
 
 [node name="Figure" type="Node3D" parent="Crowd/Crianca3" unique_id=1407576644]
 transform = Transform3D(0.43, 0, 0, 0, 0.43, 0, 0, 0, 0.43, 0, 0, 0)
@@ -5534,6 +5769,11 @@ shape = SubResource("CapsuleShape3D_pv186")
 
 [node name="Leitora" type="Node3D" parent="Crowd" unique_id=548354580]
 transform = Transform3D(-0.7348033, 0, 0.67828023, 0, 1, 0, -0.67828023, 0, -0.7348033, -23.85, 0, 59.2)
+script = ExtResource("15_lmcom")
+de = 8.0
+ate = 19.0
+gestos = Array[String](["Sit_Floor_Idle"])
+emotes = Array[String](["...", "..."])
 
 [node name="Figure" type="Node3D" parent="Crowd/Leitora" unique_id=1708851757]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
@@ -5552,6 +5792,10 @@ shape = SubResource("CapsuleShape3D_uttk5")
 
 [node name="NoCemiterio" type="Node3D" parent="Crowd" unique_id=566358345]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -61.8, 0, 60.6)
+script = ExtResource("15_lmcom")
+de = 8.0
+ate = 18.0
+emotes = Array[String](["gota", "..."])
 
 [node name="Figure" type="Node3D" parent="Crowd/NoCemiterio" unique_id=1474061766]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
@@ -5567,6 +5811,11 @@ shape = SubResource("CapsuleShape3D_aha6h")
 
 [node name="Lavrador" type="Node3D" parent="Crowd" unique_id=1859972977]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -25.2, 0, -94)
+script = ExtResource("15_lmcom")
+de = 6.0
+ate = 18.0
+gestos = Array[String](["Interact", "PickUp", "Use_Item"])
+emotes = Array[String](["gota", "nota"])
 
 [node name="Figure" type="Node3D" parent="Crowd/Lavrador" unique_id=1448680942]
 transform = Transform3D(0.62, 0, 0, 0, 0.62, 0, 0, 0, 0.62, 0, 0, 0)
@@ -5584,6 +5833,11 @@ shape = SubResource("CapsuleShape3D_g045v")
 
 [node name="Lavradora" type="Node3D" parent="Crowd" unique_id=676095055]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 30.5, 0, -108)
+script = ExtResource("15_lmcom")
+de = 6.0
+ate = 18.0
+gestos = Array[String](["PickUp", "Interact", "Use_Item"])
+emotes = Array[String](["gota", "nota"])
 
 [node name="Figure" type="Node3D" parent="Crowd/Lavradora" unique_id=1364923169]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
@@ -5601,6 +5855,11 @@ shape = SubResource("CapsuleShape3D_ra3w5")
 
 [node name="Fazendeiro" type="Node3D" parent="Crowd" unique_id=510678908]
 transform = Transform3D(-0.5462676, 0, 0.83761066, 0, 1, 0, -0.83761066, 0, -0.5462676, 8.6, 0, -101)
+script = ExtResource("15_lmcom")
+de = 6.0
+ate = 18.5
+gestos = Array[String](["Idle", "Interact", "Cheer"])
+emotes = Array[String](["...", "nota"])
 
 [node name="Figure" type="Node3D" parent="Crowd/Fazendeiro" unique_id=1536519547]
 transform = Transform3D(0.62, 0, 0, 0, 0.62, 0, 0, 0, 0.62, 0, 0, 0)
@@ -5617,6 +5876,9 @@ shape = SubResource("CapsuleShape3D_hqk81")
 
 [node name="Carregador" type="Node3D" parent="Crowd" unique_id=749657511]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 28.1, 0, -55.4)
+script = ExtResource("15_lmcom")
+gestos = Array[String](["Sit_Floor_Idle"])
+emotes = Array[String](["gota"])
 
 [node name="Figure" type="Node3D" parent="Crowd/Carregador" unique_id=2031916919]
 transform = Transform3D(0.62, 0, 0, 0, 0.62, 0, 0, 0, 0.62, 0, 0, 0)
@@ -5654,6 +5916,11 @@ outline_size = 14
 
 [node name="Moleiro" type="Node3D" parent="Crowd" unique_id=485769818]
 transform = Transform3D(-0.84799826, 0, -0.529999, 0, 1, 0, 0.529999, 0, -0.84799826, -28.767574, 0, -56.86876)
+script = ExtResource("15_lmcom")
+de = 6.0
+ate = 19.0
+gestos = Array[String](["Idle", "Interact", "Use_Item"])
+emotes = Array[String](["..."])
 
 [node name="Figure" type="Node3D" parent="Crowd/Moleiro" unique_id=2078565251]
 transform = Transform3D(0.62, 0, 0, 0, 0.62, 0, 0, 0, 0.62, 0, 0, 0)
@@ -5670,6 +5937,11 @@ shape = SubResource("CapsuleShape3D_i8npn")
 
 [node name="Cavalarico" type="Node3D" parent="Crowd" unique_id=1754552834]
 transform = Transform3D(-0.78086865, 0, -0.62469524, 0, 1, 0, 0.62469524, 0, -0.78086865, 57.049603, 0, -21.133137)
+script = ExtResource("15_lmcom")
+de = 6.0
+ate = 19.0
+gestos = Array[String](["Interact", "Use_Item", "Idle"])
+emotes = Array[String](["nota"])
 
 [node name="Figure" type="Node3D" parent="Crowd/Cavalarico" unique_id=2114833776]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
@@ -5683,6 +5955,60 @@ collision_mask = 0
 
 [node name="@CollisionShape3D@210" type="CollisionShape3D" parent="Crowd/Cavalarico/Collision" unique_id=581435738]
 shape = SubResource("CapsuleShape3D_eby0h")
+
+[node name="Vendedor2" parent="Crowd" unique_id=441202024 instance=ExtResource("16_j5u7p")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 16.15, 0, -3)
+script = ExtResource("15_lmcom")
+de = 7.0
+ate = 18.0
+gestos = Array[String](["Unarmed_Idle", "Interact", "Cheer", "Unarmed_Idle", "Use_Item"])
+emotes = Array[String](["nota", "!"])
+pregao = Array[String](["Olha a couve fresquinha!", "Cenoura, batata, cebola!", "Verdura colhida hoje cedo!"])
+
+[node name="Figure" parent="Crowd/Vendedor2" index="0"]
+animacao = "Unarmed_Idle"
+cor_roupa = 0.3
+
+[node name="Talk" parent="Crowd/Vendedor2" index="2"]
+prompt_text = "Falar com o vendedor"
+text = "— Olha a couve fresquinha! ...Comprar? Com o quê, pequeno?"
+
+[node name="Vendedor3" parent="Crowd" unique_id=1182395407 instance=ExtResource("16_j5u7p")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 16.15, 0, 3)
+script = ExtResource("15_lmcom")
+de = 7.0
+ate = 18.0
+gestos = Array[String](["Unarmed_Idle", "Interact", "Cheer", "Unarmed_Idle", "Use_Item"])
+emotes = Array[String](["nota", "!"])
+pregao = Array[String](["Pão de ontem pela metade!", "Broa de milho! Broa!", "Mais barato que na padaria!"])
+
+[node name="Figure" parent="Crowd/Vendedor3" index="0"]
+personagem = "Mage"
+animacao = "Unarmed_Idle"
+cor_roupa = 0.08
+
+[node name="Talk" parent="Crowd/Vendedor3" index="2"]
+prompt_text = "Falar com o vendedor"
+text = "— Pão de ontem pela metade! ...Comprar? Com o quê, pequeno?"
+
+[node name="Vendedor4" parent="Crowd" unique_id=1065163898 instance=ExtResource("16_j5u7p")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 16.15, 0, 9)
+script = ExtResource("15_lmcom")
+de = 7.0
+ate = 18.0
+gestos = Array[String](["Unarmed_Idle", "Interact", "Cheer", "Unarmed_Idle", "Use_Item"])
+emotes = Array[String](["nota", "!"])
+pregao = Array[String](["Peixe! Peixe fresco!", "Chegou do rio agora!", "Olha o tamanho desse!"])
+
+[node name="Figure" parent="Crowd/Vendedor4" index="0"]
+personagem = "Barbarian"
+animacao = "Unarmed_Idle"
+cor_roupa = 0.55
+sem_chapeu = true
+
+[node name="Talk" parent="Crowd/Vendedor4" index="2"]
+prompt_text = "Falar com o vendedor"
+text = "— Peixe! Peixe fresco! ...Comprar? Com o quê, pequeno?"
 
 [node name="Smoke" type="Node3D" parent="." unique_id=81444867]
 
@@ -9684,7 +10010,7 @@ amount_ratio = 0.35
 amount_ratio = 0.35
 
 [node name="Light" parent="CenaTico/Fogueirinha/Fogo" index="3" unique_id=702279728]
-light_energy = 0.9
+light_energy = 1.0067978
 omni_range = 3.0
 base_energy = 0.9
 
@@ -9818,11 +10144,1478 @@ transform = Transform3D(0.9800666, 0, -0.19866933, 0, 1, 0, 0.19866933, 0, 0.980
 
 [node name="Gato" parent="BecoLateral" unique_id=1387565500 instance=ExtResource("74_b68sd")]
 transform = Transform3D(-0.58850116, 0, 0.80849636, 0, 1, 0, -0.80849636, 0, -0.58850116, -11.5, 0.66, -48.45)
+script = ExtResource("96_ev8jd")
+jeito = 3
+raio = 0.05
+dorme = true
 
 [node name="AmbienteCamadas" type="Node3D" parent="." unique_id=2094907088]
 script = ExtResource("644_i8npn")
 
+[node name="CicloDoDia" type="Node" parent="." unique_id=2002802816]
+script = ExtResource("651_wsoig")
+
+[node name="Vida" type="Node3D" parent="." unique_id=288121697]
+script = ExtResource("652_u2m4e")
+
+[node name="Pontos" type="Node3D" parent="Vida" unique_id=1739744692]
+
+[node name="Rua0" type="Marker3D" parent="Vida/Pontos" unique_id=1065696040]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -70)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua1" type="Marker3D" parent="Vida/Pontos" unique_id=612744500]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, -2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua2" type="Marker3D" parent="Vida/Pontos" unique_id=745784130]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -70)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua3" type="Marker3D" parent="Vida/Pontos" unique_id=18135253]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, 2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua4" type="Marker3D" parent="Vida/Pontos" unique_id=44292327]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -61)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua5" type="Marker3D" parent="Vida/Pontos" unique_id=2057037716]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -61, 0, -2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua6" type="Marker3D" parent="Vida/Pontos" unique_id=110175849]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -61)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua7" type="Marker3D" parent="Vida/Pontos" unique_id=1126666236]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -61, 0, 2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua8" type="Marker3D" parent="Vida/Pontos" unique_id=129837109]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -52)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua9" type="Marker3D" parent="Vida/Pontos" unique_id=1229900370]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -52, 0, -2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua10" type="Marker3D" parent="Vida/Pontos" unique_id=1436960309]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -52)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua11" type="Marker3D" parent="Vida/Pontos" unique_id=1759012604]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -52, 0, 2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua12" type="Marker3D" parent="Vida/Pontos" unique_id=734627110]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -43)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua13" type="Marker3D" parent="Vida/Pontos" unique_id=1074440753]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43, 0, -2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua14" type="Marker3D" parent="Vida/Pontos" unique_id=91817951]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -43)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua15" type="Marker3D" parent="Vida/Pontos" unique_id=378782109]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43, 0, 2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua16" type="Marker3D" parent="Vida/Pontos" unique_id=1959071236]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -34)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua17" type="Marker3D" parent="Vida/Pontos" unique_id=1237018153]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 0, -2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua18" type="Marker3D" parent="Vida/Pontos" unique_id=457258550]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -34)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua19" type="Marker3D" parent="Vida/Pontos" unique_id=2012324148]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 0, 2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua20" type="Marker3D" parent="Vida/Pontos" unique_id=1380158913]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -25)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua21" type="Marker3D" parent="Vida/Pontos" unique_id=1269836378]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 0, -2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua22" type="Marker3D" parent="Vida/Pontos" unique_id=1818151260]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -25)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua23" type="Marker3D" parent="Vida/Pontos" unique_id=671699627]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 0, 2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua24" type="Marker3D" parent="Vida/Pontos" unique_id=1066583547]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, 20)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua25" type="Marker3D" parent="Vida/Pontos" unique_id=976782347]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, -2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua26" type="Marker3D" parent="Vida/Pontos" unique_id=1462177010]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, 20)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua27" type="Marker3D" parent="Vida/Pontos" unique_id=1003015450]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua28" type="Marker3D" parent="Vida/Pontos" unique_id=59636589]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, 29)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua29" type="Marker3D" parent="Vida/Pontos" unique_id=852493416]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29, 0, -2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua30" type="Marker3D" parent="Vida/Pontos" unique_id=1515905234]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, 29)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua31" type="Marker3D" parent="Vida/Pontos" unique_id=390726871]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29, 0, 2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua32" type="Marker3D" parent="Vida/Pontos" unique_id=28217204]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, 38)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua33" type="Marker3D" parent="Vida/Pontos" unique_id=1690270397]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, 0, -2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua34" type="Marker3D" parent="Vida/Pontos" unique_id=954236214]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, 38)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua35" type="Marker3D" parent="Vida/Pontos" unique_id=1071506893]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, 0, 2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua36" type="Marker3D" parent="Vida/Pontos" unique_id=1817929452]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, 47)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua37" type="Marker3D" parent="Vida/Pontos" unique_id=2136056901]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 0, -2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua38" type="Marker3D" parent="Vida/Pontos" unique_id=2051208377]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, 47)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua39" type="Marker3D" parent="Vida/Pontos" unique_id=1687274872]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 0, 2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua40" type="Marker3D" parent="Vida/Pontos" unique_id=988835779]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, 56)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua41" type="Marker3D" parent="Vida/Pontos" unique_id=1202865225]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56, 0, -2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua42" type="Marker3D" parent="Vida/Pontos" unique_id=87914112]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, 56)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua43" type="Marker3D" parent="Vida/Pontos" unique_id=1623492905]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56, 0, 2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua44" type="Marker3D" parent="Vida/Pontos" unique_id=46733314]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, 65)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua45" type="Marker3D" parent="Vida/Pontos" unique_id=1827786791]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, 0, -2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua46" type="Marker3D" parent="Vida/Pontos" unique_id=1494437055]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, 65)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua47" type="Marker3D" parent="Vida/Pontos" unique_id=1826228041]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, 0, 2.8)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua48" type="Marker3D" parent="Vida/Pontos" unique_id=773099639]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, -45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua49" type="Marker3D" parent="Vida/Pontos" unique_id=551486839]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0, -40)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua50" type="Marker3D" parent="Vida/Pontos" unique_id=1214866684]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua51" type="Marker3D" parent="Vida/Pontos" unique_id=60757094]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0, -40)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua52" type="Marker3D" parent="Vida/Pontos" unique_id=1988400410]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, -45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua53" type="Marker3D" parent="Vida/Pontos" unique_id=440796980]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0, -30)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua54" type="Marker3D" parent="Vida/Pontos" unique_id=1073158850]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua55" type="Marker3D" parent="Vida/Pontos" unique_id=493993550]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0, -30)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua56" type="Marker3D" parent="Vida/Pontos" unique_id=221403134]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, -45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua57" type="Marker3D" parent="Vida/Pontos" unique_id=2051208546]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0, -20)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua58" type="Marker3D" parent="Vida/Pontos" unique_id=841704955]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, 45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua59" type="Marker3D" parent="Vida/Pontos" unique_id=728288722]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0, -20)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua60" type="Marker3D" parent="Vida/Pontos" unique_id=1472831250]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua61" type="Marker3D" parent="Vida/Pontos" unique_id=1972853320]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0, -10)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua62" type="Marker3D" parent="Vida/Pontos" unique_id=129374032]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua63" type="Marker3D" parent="Vida/Pontos" unique_id=1145372057]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0, -10)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua64" type="Marker3D" parent="Vida/Pontos" unique_id=482394848]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua65" type="Marker3D" parent="Vida/Pontos" unique_id=946562327]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0, 0)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua66" type="Marker3D" parent="Vida/Pontos" unique_id=2059451645]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua67" type="Marker3D" parent="Vida/Pontos" unique_id=797707995]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0, 0)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua68" type="Marker3D" parent="Vida/Pontos" unique_id=2032572512]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua69" type="Marker3D" parent="Vida/Pontos" unique_id=2080394170]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0, 10)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua70" type="Marker3D" parent="Vida/Pontos" unique_id=1759991001]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua71" type="Marker3D" parent="Vida/Pontos" unique_id=397175729]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0, 10)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua72" type="Marker3D" parent="Vida/Pontos" unique_id=504947034]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, -45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua73" type="Marker3D" parent="Vida/Pontos" unique_id=675439016]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0, 20)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua74" type="Marker3D" parent="Vida/Pontos" unique_id=1943752006]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua75" type="Marker3D" parent="Vida/Pontos" unique_id=1567483033]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0, 20)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua76" type="Marker3D" parent="Vida/Pontos" unique_id=1934728203]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua77" type="Marker3D" parent="Vida/Pontos" unique_id=1740996470]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0, 30)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua78" type="Marker3D" parent="Vida/Pontos" unique_id=705051511]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua79" type="Marker3D" parent="Vida/Pontos" unique_id=1734792943]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0, 30)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua80" type="Marker3D" parent="Vida/Pontos" unique_id=774131296]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, -45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua81" type="Marker3D" parent="Vida/Pontos" unique_id=2007382411]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45, 0, 40)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua82" type="Marker3D" parent="Vida/Pontos" unique_id=447590951]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 45)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Rua83" type="Marker3D" parent="Vida/Pontos" unique_id=565096694]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0, 40)
+metadata/tipo = "rua"
+metadata/anims = ["Idle"]
+metadata/min = 0.5
+metadata/max = 2.5
+metadata/peso = 0.6
+
+[node name="Praca84" type="Marker3D" parent="Vida/Pontos" unique_id=1691154688]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 0, 0)
+metadata/tipo = "praca"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Cheer", "Interact", "Idle"]
+metadata/min = 4.0
+metadata/max = 11.0
+metadata/emotes = ["nota", "...", "?"]
+metadata/emote_chance = 0.2
+
+[node name="Praca85" type="Marker3D" parent="Vida/Pontos" unique_id=783595394]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.4946785, 0, 6.1717453)
+metadata/tipo = "praca"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Cheer", "Interact", "Idle"]
+metadata/min = 4.0
+metadata/max = 11.0
+metadata/emotes = ["nota", "...", "?"]
+metadata/emote_chance = 0.2
+
+[node name="Praca86" type="Marker3D" parent="Vida/Pontos" unique_id=987096651]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2446785, 0, 9.9860935)
+metadata/tipo = "praca"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Cheer", "Interact", "Idle"]
+metadata/min = 4.0
+metadata/max = 11.0
+metadata/emotes = ["nota", "...", "?"]
+metadata/emote_chance = 0.2
+
+[node name="Praca87" type="Marker3D" parent="Vida/Pontos" unique_id=1487641703]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2446785, 0, 9.9860935)
+metadata/tipo = "praca"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Cheer", "Interact", "Idle"]
+metadata/min = 4.0
+metadata/max = 11.0
+metadata/emotes = ["nota", "...", "?"]
+metadata/emote_chance = 0.2
+
+[node name="Praca88" type="Marker3D" parent="Vida/Pontos" unique_id=971579530]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.4946785, 0, 6.1717453)
+metadata/tipo = "praca"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Cheer", "Interact", "Idle"]
+metadata/min = 4.0
+metadata/max = 11.0
+metadata/emotes = ["nota", "...", "?"]
+metadata/emote_chance = 0.2
+
+[node name="Praca89" type="Marker3D" parent="Vida/Pontos" unique_id=508992040]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 0, 1.2858367e-15)
+metadata/tipo = "praca"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Cheer", "Interact", "Idle"]
+metadata/min = 4.0
+metadata/max = 11.0
+metadata/emotes = ["nota", "...", "?"]
+metadata/emote_chance = 0.2
+
+[node name="Praca90" type="Marker3D" parent="Vida/Pontos" unique_id=659255502]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.4946785, 0, -6.1717453)
+metadata/tipo = "praca"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Cheer", "Interact", "Idle"]
+metadata/min = 4.0
+metadata/max = 11.0
+metadata/emotes = ["nota", "...", "?"]
+metadata/emote_chance = 0.2
+
+[node name="Praca91" type="Marker3D" parent="Vida/Pontos" unique_id=1791536981]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2446785, 0, -9.9860935)
+metadata/tipo = "praca"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Cheer", "Interact", "Idle"]
+metadata/min = 4.0
+metadata/max = 11.0
+metadata/emotes = ["nota", "...", "?"]
+metadata/emote_chance = 0.2
+
+[node name="Praca92" type="Marker3D" parent="Vida/Pontos" unique_id=711430486]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2446785, 0, -9.9860935)
+metadata/tipo = "praca"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Cheer", "Interact", "Idle"]
+metadata/min = 4.0
+metadata/max = 11.0
+metadata/emotes = ["nota", "...", "?"]
+metadata/emote_chance = 0.2
+
+[node name="Praca93" type="Marker3D" parent="Vida/Pontos" unique_id=174737877]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.4946785, 0, -6.1717453)
+metadata/tipo = "praca"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Cheer", "Interact", "Idle"]
+metadata/min = 4.0
+metadata/max = 11.0
+metadata/emotes = ["nota", "...", "?"]
+metadata/emote_chance = 0.2
+
+[node name="Olhar94" type="Marker3D" parent="Vida/Pontos" unique_id=1181830426]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.114154, 0, 1.8913294)
+metadata/tipo = "olhar"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Idle", "PickUp"]
+metadata/min = 5.0
+metadata/max = 12.0
+metadata/emotes = Array[String](["nota", "..."])
+metadata/emote_chance = 0.25
+
+[node name="Olhar95" type="Marker3D" parent="Vida/Pontos" unique_id=1044391529]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4191375, 0, 6.240677)
+metadata/tipo = "olhar"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Idle", "PickUp"]
+metadata/min = 5.0
+metadata/max = 12.0
+metadata/emotes = Array[String](["nota", "..."])
+metadata/emote_chance = 0.25
+
+[node name="Olhar96" type="Marker3D" parent="Vida/Pontos" unique_id=683670588]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6950164, 0, 4.3493476)
+metadata/tipo = "olhar"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Idle", "PickUp"]
+metadata/min = 5.0
+metadata/max = 12.0
+metadata/emotes = Array[String](["nota", "..."])
+metadata/emote_chance = 0.25
+
+[node name="Olhar97" type="Marker3D" parent="Vida/Pontos" unique_id=187572058]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.114154, 0, -1.8913294)
+metadata/tipo = "olhar"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Idle", "PickUp"]
+metadata/min = 5.0
+metadata/max = 12.0
+metadata/emotes = Array[String](["nota", "..."])
+metadata/emote_chance = 0.25
+
+[node name="Olhar98" type="Marker3D" parent="Vida/Pontos" unique_id=1397640642]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4191375, 0, -6.240677)
+metadata/tipo = "olhar"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Idle", "PickUp"]
+metadata/min = 5.0
+metadata/max = 12.0
+metadata/emotes = Array[String](["nota", "..."])
+metadata/emote_chance = 0.25
+
+[node name="Olhar99" type="Marker3D" parent="Vida/Pontos" unique_id=1737965434]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.6950164, 0, -4.3493476)
+metadata/tipo = "olhar"
+metadata/olhar = Vector3(0, 0, 0)
+metadata/anims = ["Idle", "Idle", "PickUp"]
+metadata/min = 5.0
+metadata/max = 12.0
+metadata/emotes = Array[String](["nota", "..."])
+metadata/emote_chance = 0.25
+
+[node name="Conversa100" type="Marker3D" parent="Vida/Pontos" unique_id=465128410]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.545941, 0, 9.545941)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa101" type="Marker3D" parent="Vida/Pontos" unique_id=1995966573]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.323759, 0, 10.323759)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa102" type="Marker3D" parent="Vida/Pontos" unique_id=814202156]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.545941, 0, 9.545941)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa103" type="Marker3D" parent="Vida/Pontos" unique_id=705903016]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.323759, 0, 10.323759)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa104" type="Marker3D" parent="Vida/Pontos" unique_id=1174555472]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.545941, 0, -9.545941)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa105" type="Marker3D" parent="Vida/Pontos" unique_id=320479184]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.323759, 0, -10.323759)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa106" type="Marker3D" parent="Vida/Pontos" unique_id=755134756]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.545941, 0, -9.545941)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa107" type="Marker3D" parent="Vida/Pontos" unique_id=182271213]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.323759, 0, -10.323759)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa108" type="Marker3D" parent="Vida/Pontos" unique_id=594735295]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -26)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa109" type="Marker3D" parent="Vida/Pontos" unique_id=869484713]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.2, 0, -25.6)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa110" type="Marker3D" parent="Vida/Pontos" unique_id=40096624]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 26)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa111" type="Marker3D" parent="Vida/Pontos" unique_id=168709392]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 0, 26.4)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa112" type="Marker3D" parent="Vida/Pontos" unique_id=386044073]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 0, 6)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa113" type="Marker3D" parent="Vida/Pontos" unique_id=1009138460]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.2, 0, 6.4)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa114" type="Marker3D" parent="Vida/Pontos" unique_id=1484696419]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26, 0, -6)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa115" type="Marker3D" parent="Vida/Pontos" unique_id=1874819515]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.8, 0, -5.6)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa116" type="Marker3D" parent="Vida/Pontos" unique_id=1866792387]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -40)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa117" type="Marker3D" parent="Vida/Pontos" unique_id=1878794750]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2, 0, -39.6)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa118" type="Marker3D" parent="Vida/Pontos" unique_id=643141106]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 3)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Conversa119" type="Marker3D" parent="Vida/Pontos" unique_id=2048437742]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -38.8, 0, 3.4)
+metadata/tipo = "conversa"
+metadata/anims = ["Idle"]
+metadata/min = 6.0
+metadata/max = 14.0
+metadata/peso = 1.4
+
+[node name="Brincar120" type="Marker3D" parent="Vida/Pontos" unique_id=715605241]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.966766, 0, 0.78752977)
+metadata/tipo = "brincar"
+metadata/anims = ["Cheer", "Idle", "Jump_Full_Short"]
+metadata/min = 0.6
+metadata/max = 3.0
+
+[node name="Brincar121" type="Marker3D" parent="Vida/Pontos" unique_id=1627628117]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.173021, 0, -5.259412)
+metadata/tipo = "brincar"
+metadata/anims = ["Cheer", "Idle", "Jump_Full_Short"]
+metadata/min = 0.6
+metadata/max = 3.0
+
+[node name="Brincar122" type="Marker3D" parent="Vida/Pontos" unique_id=950915060]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.536604, 0, -4.533935)
+metadata/tipo = "brincar"
+metadata/anims = ["Cheer", "Idle", "Jump_Full_Short"]
+metadata/min = 0.6
+metadata/max = 3.0
+
+[node name="Brincar123" type="Marker3D" parent="Vida/Pontos" unique_id=1633263227]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5299935, 0, -12.552181)
+metadata/tipo = "brincar"
+metadata/anims = ["Cheer", "Idle", "Jump_Full_Short"]
+metadata/min = 0.6
+metadata/max = 3.0
+
+[node name="Brincar124" type="Marker3D" parent="Vida/Pontos" unique_id=487981023]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.816556, 0, 1.9045433)
+metadata/tipo = "brincar"
+metadata/anims = ["Cheer", "Idle", "Jump_Full_Short"]
+metadata/min = 0.6
+metadata/max = 3.0
+
+[node name="Brincar125" type="Marker3D" parent="Vida/Pontos" unique_id=1614613674]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.9543614, 0, -5.7750335)
+metadata/tipo = "brincar"
+metadata/anims = ["Cheer", "Idle", "Jump_Full_Short"]
+metadata/min = 0.6
+metadata/max = 3.0
+
+[node name="Brincar126" type="Marker3D" parent="Vida/Pontos" unique_id=1547534081]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.855764, 0, -5.400154)
+metadata/tipo = "brincar"
+metadata/anims = ["Cheer", "Idle", "Jump_Full_Short"]
+metadata/min = 0.6
+metadata/max = 3.0
+
+[node name="Brincar127" type="Marker3D" parent="Vida/Pontos" unique_id=602758299]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2240453, 0, -7.9841104)
+metadata/tipo = "brincar"
+metadata/anims = ["Cheer", "Idle", "Jump_Full_Short"]
+metadata/min = 0.6
+metadata/max = 3.0
+
+[node name="Brincar128" type="Marker3D" parent="Vida/Pontos" unique_id=1041487976]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9204938, 0, -13.39521)
+metadata/tipo = "brincar"
+metadata/anims = ["Cheer", "Idle", "Jump_Full_Short"]
+metadata/min = 0.6
+metadata/max = 3.0
+
+[node name="Banca129" type="Marker3D" parent="Vida/Pontos" unique_id=1353016848]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, -8.1)
+metadata/tipo = "banca"
+metadata/olhar = Vector3(14.9, 0, -9)
+metadata/anims = ["Interact", "PickUp", "Use_Item", "Idle"]
+metadata/min = 6.0
+metadata/max = 15.0
+metadata/emotes = ["?", "nota", "...", "coracao"]
+metadata/emote_chance = 0.3
+metadata/peso = 1.5
+
+[node name="Banca130" type="Marker3D" parent="Vida/Pontos" unique_id=648073615]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, -9.9)
+metadata/tipo = "banca"
+metadata/olhar = Vector3(14.9, 0, -9)
+metadata/anims = ["Interact", "PickUp", "Use_Item", "Idle"]
+metadata/min = 6.0
+metadata/max = 15.0
+metadata/emotes = ["?", "nota", "...", "coracao"]
+metadata/emote_chance = 0.3
+metadata/peso = 1.5
+
+[node name="Banca131" type="Marker3D" parent="Vida/Pontos" unique_id=1895220123]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, -2.1)
+metadata/tipo = "banca"
+metadata/olhar = Vector3(14.9, 0, -3)
+metadata/anims = ["Interact", "PickUp", "Use_Item", "Idle"]
+metadata/min = 6.0
+metadata/max = 15.0
+metadata/emotes = ["?", "nota", "...", "coracao"]
+metadata/emote_chance = 0.3
+metadata/peso = 1.5
+
+[node name="Banca132" type="Marker3D" parent="Vida/Pontos" unique_id=335896348]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, -3.9)
+metadata/tipo = "banca"
+metadata/olhar = Vector3(14.9, 0, -3)
+metadata/anims = ["Interact", "PickUp", "Use_Item", "Idle"]
+metadata/min = 6.0
+metadata/max = 15.0
+metadata/emotes = ["?", "nota", "...", "coracao"]
+metadata/emote_chance = 0.3
+metadata/peso = 1.5
+
+[node name="Banca133" type="Marker3D" parent="Vida/Pontos" unique_id=1442113729]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, 3.9)
+metadata/tipo = "banca"
+metadata/olhar = Vector3(14.9, 0, 3)
+metadata/anims = ["Interact", "PickUp", "Use_Item", "Idle"]
+metadata/min = 6.0
+metadata/max = 15.0
+metadata/emotes = ["?", "nota", "...", "coracao"]
+metadata/emote_chance = 0.3
+metadata/peso = 1.5
+
+[node name="Banca134" type="Marker3D" parent="Vida/Pontos" unique_id=2129857437]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, 2.1)
+metadata/tipo = "banca"
+metadata/olhar = Vector3(14.9, 0, 3)
+metadata/anims = ["Interact", "PickUp", "Use_Item", "Idle"]
+metadata/min = 6.0
+metadata/max = 15.0
+metadata/emotes = ["?", "nota", "...", "coracao"]
+metadata/emote_chance = 0.3
+metadata/peso = 1.5
+
+[node name="Banca135" type="Marker3D" parent="Vida/Pontos" unique_id=820261829]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, 9.9)
+metadata/tipo = "banca"
+metadata/olhar = Vector3(14.9, 0, 9)
+metadata/anims = ["Interact", "PickUp", "Use_Item", "Idle"]
+metadata/min = 6.0
+metadata/max = 15.0
+metadata/emotes = ["?", "nota", "...", "coracao"]
+metadata/emote_chance = 0.3
+metadata/peso = 1.5
+
+[node name="Banca136" type="Marker3D" parent="Vida/Pontos" unique_id=519696820]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, 8.1)
+metadata/tipo = "banca"
+metadata/olhar = Vector3(14.9, 0, 9)
+metadata/anims = ["Interact", "PickUp", "Use_Item", "Idle"]
+metadata/min = 6.0
+metadata/max = 15.0
+metadata/emotes = ["?", "nota", "...", "coracao"]
+metadata/emote_chance = 0.3
+metadata/peso = 1.5
+
+[node name="Loja137" type="Marker3D" parent="Vida/Pontos" unique_id=514856767]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.143668, 0, -16.899998)
+metadata/tipo = "loja"
+metadata/peso = 1.3
+
+[node name="Loja138" type="Marker3D" parent="Vida/Pontos" unique_id=1055461285]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.9, 0, -12.975109)
+metadata/tipo = "loja"
+metadata/peso = 1.3
+
+[node name="Casa139" type="Marker3D" parent="Vida/Pontos" unique_id=749558009]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.9, 0, -5.693679)
+metadata/tipo = "casa"
+
+[node name="Loja140" type="Marker3D" parent="Vida/Pontos" unique_id=1750910399]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.900002, 0, 11.475998)
+metadata/tipo = "loja"
+metadata/peso = 1.3
+
+[node name="Loja141" type="Marker3D" parent="Vida/Pontos" unique_id=1714800002]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.375109, 0, 16.9)
+metadata/tipo = "loja"
+metadata/peso = 1.3
+
+[node name="Casa142" type="Marker3D" parent="Vida/Pontos" unique_id=1027633858]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.0936785, 0, 16.9)
+metadata/tipo = "casa"
+
+[node name="Loja143" type="Marker3D" parent="Vida/Pontos" unique_id=129823375]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.075997, 0, 16.900002)
+metadata/tipo = "loja"
+metadata/peso = 1.3
+
+[node name="Taverna144" type="Marker3D" parent="Vida/Pontos" unique_id=42860926]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.125998, 0, 15.300001)
+metadata/tipo = "taverna"
+metadata/anims = Array[String](["Cheer", "Idle", "Interact", "Cheer"])
+metadata/min = 8.0
+metadata/max = 20.0
+metadata/emotes = ["nota", "nota", "...", "coracao"]
+metadata/emote_chance = 0.4
+metadata/horas = [15.0, 24.0]
+metadata/peso = 1.2
+
+[node name="Taverna145" type="Marker3D" parent="Vida/Pontos" unique_id=1079672457]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.425998, 0, 14.200002)
+metadata/tipo = "taverna"
+metadata/anims = Array[String](["Cheer", "Idle", "Interact", "Cheer"])
+metadata/min = 8.0
+metadata/max = 20.0
+metadata/emotes = ["nota", "nota", "...", "coracao"]
+metadata/emote_chance = 0.4
+metadata/horas = [15.0, 24.0]
+metadata/peso = 1.2
+
+[node name="Taverna146" type="Marker3D" parent="Vida/Pontos" unique_id=497842614]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.725997, 0, 15.300001)
+metadata/tipo = "taverna"
+metadata/anims = Array[String](["Cheer", "Idle", "Interact", "Cheer"])
+metadata/min = 8.0
+metadata/max = 20.0
+metadata/emotes = ["nota", "nota", "...", "coracao"]
+metadata/emote_chance = 0.4
+metadata/horas = [15.0, 24.0]
+metadata/peso = 1.2
+
+[node name="Taverna147" type="Marker3D" parent="Vida/Pontos" unique_id=222895109]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.025997, 0, 14.200002)
+metadata/tipo = "taverna"
+metadata/anims = Array[String](["Cheer", "Idle", "Interact", "Cheer"])
+metadata/min = 8.0
+metadata/max = 20.0
+metadata/emotes = ["nota", "nota", "...", "coracao"]
+metadata/emote_chance = 0.4
+metadata/horas = [15.0, 24.0]
+metadata/peso = 1.2
+
+[node name="Casa148" type="Marker3D" parent="Vida/Pontos" unique_id=145732380]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.208532, 0, 16.9)
+metadata/tipo = "casa"
+
+[node name="Loja149" type="Marker3D" parent="Vida/Pontos" unique_id=642001781]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.475998, 0, -4.900001)
+metadata/tipo = "loja"
+metadata/peso = 1.3
+
+[node name="Loja150" type="Marker3D" parent="Vida/Pontos" unique_id=2143836744]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.175823, 0, -4.900001)
+metadata/tipo = "loja"
+metadata/peso = 1.3
+
+[node name="Casa151" type="Marker3D" parent="Vida/Pontos" unique_id=2038590169]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.43024, 0, 4.9)
+metadata/tipo = "casa"
+
+[node name="Casa152" type="Marker3D" parent="Vida/Pontos" unique_id=449677181]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.285374, 0, 4.9)
+metadata/tipo = "casa"
+
+[node name="Casa153" type="Marker3D" parent="Vida/Pontos" unique_id=1477028769]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36.566803, 0, 4.9)
+metadata/tipo = "casa"
+
+[node name="Casa154" type="Marker3D" parent="Vida/Pontos" unique_id=2049858880]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.624893, 0, -4.9)
+metadata/tipo = "casa"
+
+[node name="Casa155" type="Marker3D" parent="Vida/Pontos" unique_id=1172160496]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.624893, 0, 4.9)
+metadata/tipo = "casa"
+
+[node name="Casa156" type="Marker3D" parent="Vida/Pontos" unique_id=1381668164]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.9, 0, 32.624893)
+metadata/tipo = "casa"
+
+[node name="Casa157" type="Marker3D" parent="Vida/Pontos" unique_id=1907254636]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9, 0, 31.83024)
+metadata/tipo = "casa"
+
+[node name="Casa158" type="Marker3D" parent="Vida/Pontos" unique_id=1499297979]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9, 0, 38.31702)
+metadata/tipo = "casa"
+
+[node name="Casa159" type="Marker3D" parent="Vida/Pontos" unique_id=709978674]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.9, 0, -35.949387)
+metadata/tipo = "casa"
+
+[node name="Casa160" type="Marker3D" parent="Vida/Pontos" unique_id=972301670]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.9000006, 0, -28.667957)
+metadata/tipo = "casa"
+
+[node name="Casa161" type="Marker3D" parent="Vida/Pontos" unique_id=2062958897]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.831556, 0, -47)
+metadata/tipo = "casa"
+
+[node name="Casa162" type="Marker3D" parent="Vida/Pontos" unique_id=558613611]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36.99112, 0, -46.999996)
+metadata/tipo = "casa"
+
+[node name="Casa163" type="Marker3D" parent="Vida/Pontos" unique_id=674277901]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.750248, 0, -43)
+metadata/tipo = "casa"
+
+[node name="Casa164" type="Marker3D" parent="Vida/Pontos" unique_id=978994831]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.81219, 0, -43.000004)
+metadata/tipo = "casa"
+
+[node name="Casa165" type="Marker3D" parent="Vida/Pontos" unique_id=2013029860]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34.29897, 0, -43)
+metadata/tipo = "casa"
+
+[node name="Casa166" type="Marker3D" parent="Vida/Pontos" unique_id=1978150303]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46.999996, 0, -42.880524)
+metadata/tipo = "casa"
+
+[node name="Casa167" type="Marker3D" parent="Vida/Pontos" unique_id=986536690]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43, 0, -25.012665)
+metadata/tipo = "casa"
+
+[node name="Casa168" type="Marker3D" parent="Vida/Pontos" unique_id=906673121]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.0054035, 0, -47)
+metadata/tipo = "casa"
+
+[node name="Casa169" type="Marker3D" parent="Vida/Pontos" unique_id=2075907459]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.33188, 0, -46.999996)
+metadata/tipo = "casa"
+
+[node name="Casa170" type="Marker3D" parent="Vida/Pontos" unique_id=434407673]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48.06905, 0, -46.999996)
+metadata/tipo = "casa"
+
+[node name="Casa171" type="Marker3D" parent="Vida/Pontos" unique_id=505291890]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.856538, 0, -43.000004)
+metadata/tipo = "casa"
+
+[node name="Casa172" type="Marker3D" parent="Vida/Pontos" unique_id=2010375462]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.137968, 0, -43)
+metadata/tipo = "casa"
+
+[node name="Casa173" type="Marker3D" parent="Vida/Pontos" unique_id=1954223906]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.787752, 0, -43.000004)
+metadata/tipo = "casa"
+
+[node name="Casa174" type="Marker3D" parent="Vida/Pontos" unique_id=1550347677]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33.437534, 0, -43)
+metadata/tipo = "casa"
+
+[node name="Casa175" type="Marker3D" parent="Vida/Pontos" unique_id=840811375]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47, 0, 22.86286)
+metadata/tipo = "casa"
+
+[node name="Casa176" type="Marker3D" parent="Vida/Pontos" unique_id=490288938]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47, 0, 38.148285)
+metadata/tipo = "casa"
+
+[node name="Casa177" type="Marker3D" parent="Vida/Pontos" unique_id=427861468]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43.000004, 0, 22.348776)
+metadata/tipo = "casa"
+
+[node name="Casa178" type="Marker3D" parent="Vida/Pontos" unique_id=878048182]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43.000004, 0, 30.99856)
+metadata/tipo = "casa"
+
+[node name="Casa179" type="Marker3D" parent="Vida/Pontos" unique_id=705245862]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43.000004, 0, 38.279987)
+metadata/tipo = "casa"
+
+[node name="Casa180" type="Marker3D" parent="Vida/Pontos" unique_id=1424896161]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.506323, 0, 43.000004)
+metadata/tipo = "casa"
+
+[node name="Casa181" type="Marker3D" parent="Vida/Pontos" unique_id=1500963593]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.4194, 0, 43.000004)
+metadata/tipo = "casa"
+
+[node name="Casa182" type="Marker3D" parent="Vida/Pontos" unique_id=825851673]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.791822, 0, 43.000004)
+metadata/tipo = "casa"
+
+[node name="Casa183" type="Marker3D" parent="Vida/Pontos" unique_id=2110443854]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.999996, 0, -10.224892)
+metadata/tipo = "casa"
+
+[node name="Casa184" type="Marker3D" parent="Vida/Pontos" unique_id=413089944]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47, 0, -17.655188)
+metadata/tipo = "casa"
+
+[node name="Casa185" type="Marker3D" parent="Vida/Pontos" unique_id=1013511503]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.999996, 0, -37.277203)
+metadata/tipo = "casa"
+
+[node name="Casa186" type="Marker3D" parent="Vida/Pontos" unique_id=1703658558]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.874676, 0, 46.999996)
+metadata/tipo = "casa"
+
+[node name="Casa187" type="Marker3D" parent="Vida/Pontos" unique_id=892291920]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.52446, 0, 46.999996)
+metadata/tipo = "casa"
+
+[node name="Casa188" type="Marker3D" parent="Vida/Pontos" unique_id=1844894729]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.427753, 0, 43.000004)
+metadata/tipo = "casa"
+
+[node name="Casa189" type="Marker3D" parent="Vida/Pontos" unique_id=372899552]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30.168531, 0, 43.000004)
+metadata/tipo = "casa"
+
+[node name="Casa190" type="Marker3D" parent="Vida/Pontos" unique_id=1497143914]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.999996, 0, 8.856539)
+metadata/tipo = "casa"
+
+[node name="Casa191" type="Marker3D" parent="Vida/Pontos" unique_id=2085357653]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.999996, 0, 33.32173)
+metadata/tipo = "casa"
+
+[node name="Casa192" type="Marker3D" parent="Vida/Pontos" unique_id=852774383]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.999996, 0, 40.60316)
+metadata/tipo = "casa"
+
+[node name="Casa193" type="Marker3D" parent="Vida/Pontos" unique_id=1223514109]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 0, 18.708498)
+metadata/tipo = "casa"
+
+[node name="Casa194" type="Marker3D" parent="Vida/Pontos" unique_id=319306210]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 0, 28.209389)
+metadata/tipo = "casa"
+
+[node name="Casa195" type="Marker3D" parent="Vida/Pontos" unique_id=1311023718]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.3058605, 0, -24)
+metadata/tipo = "casa"
+
+[node name="Casa196" type="Marker3D" parent="Vida/Pontos" unique_id=626824067]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26, 0, 18.083904)
+metadata/tipo = "casa"
+
+[node name="Casa197" type="Marker3D" parent="Vida/Pontos" unique_id=2059906215]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33, 0, -19.083904)
+metadata/tipo = "casa"
+
+[node name="Casa198" type="Marker3D" parent="Vida/Pontos" unique_id=1542728821]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 0, -20.30586)
+metadata/tipo = "casa"
+
+[node name="Pombos" type="Node3D" parent="." unique_id=1703270418]
+
+[node name="BandoPraca" type="Node3D" parent="Pombos" unique_id=977034610]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -11.5)
+script = ExtResource("653_owajm")
+quantidade = 10
+raio = 4.0
+
+[node name="BandoFeira" type="Node3D" parent="Pombos" unique_id=300906802]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 0, -6)
+script = ExtResource("653_owajm")
+quantidade = 6
+raio = 2.6
+
+[node name="BandoPortaDaPadaria" type="Node3D" parent="Pombos" unique_id=607451324]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.4, 0, -3.6)
+script = ExtResource("653_owajm")
+quantidade = 5
+raio = 2.0
+
+[node name="BandoPracaSul" type="Node3D" parent="Pombos" unique_id=1001949390]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 12)
+script = ExtResource("653_owajm")
+quantidade = 8
+raio = 3.5
+
 [editable path="People/Padeiro"]
 [editable path="People/Bras"]
 [editable path="People/Garoto"]
+[editable path="Crowd/Vendedor2"]
+[editable path="Crowd/Vendedor3"]
+[editable path="Crowd/Vendedor4"]
 [editable path="CenaTico/Fogueirinha/Fogo"]

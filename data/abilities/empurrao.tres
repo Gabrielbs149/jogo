@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="Ability" format=3]
+
+[ext_resource type="Script" path="res://combat/ability.gd" id="1_ability"]
+
+[resource]
+script = ExtResource("1_ability")
+title = "Empurrão"
+defesa = 0
+description = "Um empurrão de barriga. Padeiro tem peso."
+dnd_note = ""
+kind = 0
+shape = 0
+roll = 0
+save = 0
+range_m = 2.2
+radius_m = 0
+cooldown = 3.0
+windup = 0.35
+dice_count = 1
+dice_sides = 4
+bonus = 1
+hits = 1
+advantage = false
+sneak_dice = 0
+status_title = ""
+status_time = 0
+buff_ac = 0
+bless_die = 0
+invisible = false
+mark_dice = 0
+frighten = false
+expose = false
+projectile = false
+vfx_color = Color(1, 0.8, 0.6, 1)
+ap_cost = 0
+status_turns = 1

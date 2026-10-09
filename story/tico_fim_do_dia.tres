@@ -8,6 +8,7 @@ texto = "# Fim do primeiro dia (D059): o Tico volta com a comida e os dois divid
 # As linhas COMIDA e EXTRAS (entre chaves) viram as falas do que aconteceu no dia (world/quests/prologo_tico.gd).
 # Câmeras (Plano1..Plano5), marcas, a Tika, o pão e a fogueirinha ficam no nó CenaTico da fase Arandu.
 [tela preta 1.2]
+[hora: 19.6]
 [esconde: Rato]
 [esconde: PedacoDaTika]
 [mostra: Fogueirinha]
@@ -66,6 +67,7 @@ Tico: \"Boa noite, patrimônio da família.\"
 [câmera: Plano4 6]
 [pausa 2.5]
 [tela preta 2.5]
+[hora: 22.5]
 [para som]
 > A fogueirinha estala até virar brasa.
 > Lá longe, perto da muralha, uma carroça coberta passa sem fazer barulho.

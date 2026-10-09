@@ -6,6 +6,7 @@
 ## Decisões fechadas
 - **Começo calmo e pequeno**, e cada herói começa num lugar diferente (`Game.START_LEVELS`) (D019).
 - **Arandu** (`levels/arandu/`): começo do Tico, cidade natal dele, **sem inimigos**; o portão norte leva a Ethera (D019, D027, refeita na D041).
+- **Arandu viva (D060):** passantes com rotina, moradores com horário, bichos, pombos, pregões e o ciclo do dia (`Vida`, `Morador`, `Bicho`, `Pombos`, `CicloDoDia`); arena de rua para brigas (`levels/arenas/arandu_rua.tscn`).
 - **Primeiro dia em Arandu (D059):** área pequena: o beco do Tico (barraco com marquise), a rua do portão, a praça da fonte; pontos: Seu Brás na esquina, padaria, celeiro (bico dos caixotes), banca de frutas (briga) e o **beco lateral** (fechado por um muro, ao sul do beco do Tico). As janelas acesas e as lanternas guiam de noite. Peças montadas por `tools/art/montar_prologo.gd`.
 - **Ruínas de Ethera** (`levels/ethera/`): acampamento com fogueira ao sul, heróis esperando pelo caminho, grupos de inimigos e as ruínas no centro com o **Último Guardião** (D013, D018, D022).
 - **Arena de Ethera** (`levels/arenas/ethera_arena.tscn`): onde todas as lutas de Ethera acontecem (D022).

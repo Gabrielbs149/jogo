@@ -9,6 +9,7 @@ texto = "# 1ª Cena do Tico: o rato (pedido do Gabriel em 07/10: \"o Tico oferec
 # As falas são proposta; mude à vontade (as linhas sem colchete são só anotação e não aparecem).
 # Câmeras (Plano1..Plano5), marcas, a Tika, o rato, a fogueirinha ficam no nó CenaTico da fase Arandu.
 [tela preta 0]
+[hora: 21]
 [esconde: Tika]
 [esconde: PedacoDaTika]
 [mostra: Rato]
@@ -73,7 +74,9 @@ Tika senta do lado dele (ou fica ali), e os dois comem olhando o fogo.
 [fica: Tico Lie_Idle]
 [coloca: Tika TikaAcordando]
 [anima: Tika Idle]
+[hora: 6.4]
 > O rato não deu nem pra um.
-> Os dois dormem do jeito que dá. A fome acorda antes deles.
+> Os dois dormem do jeito que dá.
+> De manhã, a fome acorda antes deles.
 
 "

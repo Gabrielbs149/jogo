@@ -1,0 +1,58 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://combat/combatant.gd" id="c_script"]
+[ext_resource type="Script" path="res://combat/ai_brain.gd" id="brain"]
+[ext_resource type="Script" path="res://actors/shared/combatant_animator.gd" id="animator"]
+[ext_resource type="PackedScene" path="res://assets/kits/kaykit/personagens/Barbarian.glb" id="model"]
+[ext_resource type="Script" path="res://combat/ability.gd" id="a_script"]
+[ext_resource type="Resource" path="res://data/abilities/rolo_de_massa.tres" id="ab_rolo"]
+[ext_resource type="Resource" path="res://data/abilities/saco_de_farinha.tres" id="ab_farinha"]
+[ext_resource type="Resource" path="res://data/abilities/empurrao.tres" id="ab_empurrao"]
+[ext_resource type="Script" path="res://actors/enemies/padeiro/padeiro_visual.gd" id="visual"]
+
+[sub_resource type="CapsuleShape3D" id="Capsule_body"]
+radius = 0.42
+height = 1.5
+
+[node name="PadeiroFurioso" type="CharacterBody3D"]
+script = ExtResource("c_script")
+display_name = "Padeiro furioso"
+battle_lines = PackedStringArray("Vem cá, lagartixa! Ninguém rouba o meu pão!", "A farinha subiu. A minha paciência desceu.", "Sabe quanto custa uma bandeja?!", "Eu acordo às quatro da manhã pra isso?!")
+team = 1
+max_hp = 20
+armor_class = 11
+attack_bonus = 3
+spell_dc = 11
+dex_save = 0
+con_save = 2
+wis_save = 0
+move_speed = 4.2
+abilities = Array[ExtResource("a_script")]([ExtResource("ab_rolo"), ExtResource("ab_farinha"), ExtResource("ab_empurrao")])
+color = Color(0.95, 0.85, 0.7, 1)
+aggro_radius = 9.0
+is_boss = false
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("Capsule_body")
+
+[node name="Model" parent="." instance=ExtResource("model")]
+transform = Transform3D(-0.62, 0, 0, 0, 0.62, 0, 0, 0, -0.62, 0, 0, 0)
+
+[node name="Visual" type="Node" parent="."]
+script = ExtResource("visual")
+
+[node name="AIBrain" type="Node" parent="."]
+script = ExtResource("brain")
+
+[node name="Animator" type="Node" parent="."]
+script = ExtResource("animator")
+idle = &"Idle"
+walk = &"Walking_A"
+run = &"Running_A"
+ability_animations = Array[StringName]([&"1H_Melee_Attack_Chop", &"Throw", &"Unarmed_Melee_Attack_Punch_A"])
+dodge = &"Dodge_Backward"
+hit = &"Hit_A"
+down = &"Death_A"
+walk_reference_speed = 2.4
+run_reference_speed = 4.5

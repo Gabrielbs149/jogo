@@ -175,6 +175,16 @@ func _command(body: String) -> bool:
 						node.look_at(at, Vector3.UP)
 		"na mao":
 			_attach_to_hand(_find(words[0]) as Node3D if words.size() > 0 else null, _find(words[1]) as Node3D if words.size() > 1 else hero)
+		"hora":
+			# o relógio do jogo (D060): a luz muda junto (use com a tela preta)
+			if words.size() > 0 and words[0].is_valid_float():
+				var ciclo := stage.get_node_or_null("CicloDoDia") if stage else null
+				if ciclo:
+					ciclo.call("jump_to", float(words[0]), words.size() > 1)
+				else:
+					Game.hora = float(words[0])
+					if words.size() > 1:
+						Game.dia += 1
 		"fim":
 			return false
 		_:

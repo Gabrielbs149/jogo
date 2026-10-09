@@ -1,12 +1,13 @@
 class_name PrologoTico
 extends Missao
 ## O primeiro dia jogável do Tico com a Tika em Arandu (D059), depois da cena do rato (D029):
-##   A. a fome acorda os dois no meio da noite; a Tika chama o Tico e vai esperar na boca do beco;
+##   A. de manhã (D060: o tempo passa), a fome acorda os dois; a Tika chama o Tico e vai esperar na boca do beco;
 ##   B. na saída do beco ela conversa (3–4 respostas curtas, guardadas em "prologo.tika_resposta") e fica guardando o
 ##      papelão; saindo do beco aparece a rua e o objetivo "Conseguir comida para os dois";
 ##   C/D. a comida sai da padaria (MissaoPadaria), do bico do carregador (BicoCaixas) ou de onde der; no caminho tem a
 ##        briga da feira (BrigaFeira);
-##   E. de volta ao barraco, os dois dividem a comida (cena curta, montada conforme o que você fez) e dormem.
+##   E. de volta ao barraco com comida: o jantar é de noite (D060). Chegando cedo, a Tika guarda para o jantar e dá
+##      para esperar o sol baixar com ela; os dois dividem a comida (cena montada conforme o que você fez) e dormem.
 ## A Tika ainda não some aqui: isso fica para depois (D059). Estado em Game.flags ("prologo.etapa": "", "acordou",
 ## "conversou", "saiu", "fim"), então vale com o jogo salvo. Falas *(proposta)* em docs/gdd/01-historia.md.
 
@@ -29,6 +30,8 @@ extends Missao
 @export var fita: Interactable
 ## Plano fixo do barraco para o acordar (o beco é estreito demais para a câmera por cima do ombro).
 @export var plano_acordar: Camera3D
+## A partir dessa hora já é hora do jantar (antes, a Tika guarda a comida e dá para esperar com ela).
+@export var hora_do_jantar: float = 18.0
 ## Saiu do beco: o Tico está a mais que isso (m) do papelão.
 @export var raio_beco: float = 7.5
 ## A Tika puxa conversa quando o Tico chega a essa distância dela na boca do beco.
@@ -37,6 +40,8 @@ extends Missao
 const TIKA := "Tika"
 const RESPOSTAS: Array[String] = ["banquete", "juntos", "rato", "duvida"]
 const CENA_FIM := "res://story/tico_fim_do_dia.tres"
+
+var _was_sleeping: bool = true
 
 
 func _setup() -> void:
@@ -78,6 +83,10 @@ func _process(_delta: float) -> void:
 				_left_alley()
 	falar_tika.enabled = etapa() in ["acordou", "saiu", "fim"] and not tika.is_walking()
 	_update_marks()
+	# depois do primeiro dia: de noite ela dorme, de dia fica sentada no barraco
+	if etapa() == "fim" and _sleeping() != _was_sleeping:
+		_was_sleeping = _sleeping()
+		tika.play(&"Lie_Idle" if _was_sleeping else &"Sit_Floor_Idle")
 
 
 ## Começa (ou continua, com o jogo salvo) do ponto em que parou.
@@ -105,7 +114,7 @@ func _place_tika() -> void:
 			tika.play(&"Idle")
 		"fim":
 			tika.place_at(tika_sentada)
-			tika.play(&"Lie_Idle")
+			tika.play(&"Lie_Idle" if _sleeping() else &"Sit_Floor_Idle")
 		_:
 			tika.place_at(tika_sentada)
 			tika.play(&"Sit_Floor_Idle")
@@ -129,8 +138,8 @@ func _wake_up() -> void:
 	await _wait(1.0)
 	var d := _hud.dialogue
 	await d.say(TIKA, "Tico. Tico! Acorda.")
-	await d.say("Tico", "Mmmf... já é de manhã?")
-	await d.say(TIKA, "Não. Ainda é noite. Mas a minha barriga não sabe disso.")
+	await d.say("Tico", "Mmmf... só mais cinco minutos.")
+	await d.say(TIKA, "O sol já tá na sua cara faz um tempão. E a minha barriga não espera nem um minuto.")
 	d.close()
 	if animator:
 		animator.act(&"Lie_StandUp")
@@ -211,12 +220,17 @@ func _on_tika() -> void:
 		"acordou":
 			_talk(_conversa_saida, tika)
 		"saiu":
-			if Game.has_item("comida"):
+			if Game.has_item("comida") and Game.hora >= hora_do_jantar:
 				_end_of_day()
+			elif Game.has_item("comida"):
+				_talk(_too_early, tika)
 			else:
 				_talk(_still_hungry, tika)
 		"fim":
-			_hud.show_story("A Tika ronca baixinho, enrolada no papelão. Melhor não acordar.")
+			if _sleeping():
+				_hud.show_story("A Tika ronca baixinho, enrolada no papelão. Melhor não acordar.")
+			else:
+				_talk(_next_days, tika)
 
 
 ## A fita roxa no beco lateral: o Tico guarda para devolver no jantar.
@@ -227,6 +241,73 @@ func _take_ribbon() -> void:
 	Audio.play("pegar_comida", -10.0, 0.2)
 	_hud.toast("Achou: uma fita roxa, meio desbotada")
 	_hud.show_story("É a fita da Tika. Ela jurou que o vento levou. O vento, pelo jeito, mora no beco do lado.")
+
+
+## Voltou com comida antes de escurecer: a Tika guarda para o jantar. Dá para esperar o sol baixar com ela.
+func _too_early() -> void:
+	var d := _hud.dialogue
+	Emote.play(tika, "coracao")
+	await d.say(TIKA, "COMIDA! Você conseguiu! ...Ei, tira a mão daí, isso é pro jantar.")
+	await d.say(TIKA, "Se a gente comer agora, de noite a barriga reclama de novo. Eu conheço ela.")
+	var pick: int = await d.choose(TIKA, "Ainda tem sol. Vai ficar aqui comigo ou vai dar uma volta?", [
+		"Ficar aqui e esperar o sol baixar com você",
+		"Vou dar mais uma volta pela cidade",
+	])
+	if pick == 0:
+		await d.say(TIKA, "Então senta. A gente fica vendo o povo passar e inventando a vida deles.")
+		_wait_evening.call_deferred()
+	else:
+		await d.say(TIKA, "Volta antes de escurecer. E não come nada no caminho, eu vou saber.")
+
+
+## Os dois sentam no barraco e o tempo passa até o anoitecer (tela escura, o relógio corre), e vem o jantar.
+func _wait_evening() -> void:
+	_busy = true
+	_hud.begin_talk()
+	await Transition.cover(0.8)
+	var hero := _level.player
+	var animator := hero.get_node_or_null("Animator") as CombatantAnimator
+	var seat := _level.get_node_or_null("CenaTico/TicoSentado") as Node3D
+	if seat:
+		hero.global_transform = seat.global_transform
+		hero.reset_physics_interpolation()
+	if animator:
+		animator.hold(&"Sit_Floor_Idle")
+	tika.place_at(tika_sentada)
+	tika.play(&"Sit_Floor_Idle")
+	if plano_acordar:
+		plano_acordar.make_current()
+	await Transition.uncover(0.8)
+	# o sol vai baixando com os dois sentados (uns segundos de verdade)
+	var from := Game.hora
+	var to := maxf(hora_do_jantar + 0.6, from)
+	var steps := 40
+	for i: int in steps:
+		if _level.ciclo:
+			_level.ciclo.jump_to(lerpf(from, to, float(i + 1) / steps))
+		else:
+			Game.hora = lerpf(from, to, float(i + 1) / steps)
+		await _wait(0.1)
+	if animator:
+		animator.release()
+	var rig := _level.get_node_or_null("CameraRig") as ThirdPersonCamera
+	if rig:
+		rig.camera.make_current()
+	_hud.end_talk()
+	_busy = false
+	_end_of_day()
+
+
+## Depois do primeiro dia (o resto da história ainda não foi escrito): de dia ela fica no barraco.
+func _next_days() -> void:
+	var d := _hud.dialogue
+	await d.say(TIKA, String(["Hoje eu tô com preguiça até de ter fome.",
+		"Vai dar uma volta, Tico. Depois me conta o que viu.",
+		"Ainda tô pensando naquela gente nova perto da muralha..."][randi() % 3]))
+
+
+func _sleeping() -> bool:
+	return Game.hora >= 21.0 or Game.hora < 6.0
 
 
 func _still_hungry() -> void:
@@ -287,6 +368,11 @@ func _food_lines() -> PackedStringArray:
 		"padaria/intimidou":
 			lines.append("Tika: \"Por que o padeiro tava gritando o seu nome da porta?\"")
 			lines.append("Tico: \"Ele gosta de mim.\"")
+		"padaria/brigou":
+			lines.append("Tika: \"Por que você tá com farinha até na orelha?\"")
+			lines.append("Tico: \"O padeiro e eu tivemos uma... conversa.\"")
+			lines.append("Tika: \"Com o rolo de massa?\"")
+			lines.append("Tico: \"Ele falou mais alto.\"")
 		"padaria/roubou":
 			lines.append("Tika: \"Você tá com farinha no capuz.\"")
 			lines.append("[pausa 0.8]")
@@ -298,6 +384,12 @@ func _food_lines() -> PackedStringArray:
 				lines.append("Tika: \"O meu burro de carga.\"")
 			else:
 				lines.append("Tika: \"Nem vou perguntar de onde veio.\"")
+	if Game.flag("padaria.briga", "") == "perdeu":
+		lines.append("Tika: \"...Que olho roxo é esse?\"")
+		lines.append("Tico: \"Escorreguei.\"")
+		lines.append("Tika: \"Num pão?\"")
+		lines.append("[pausa 0.8]")
+		lines.append("Tico: \"...Num padeiro.\"")
 	if Game.flag("comida.extra", "") != "":
 		lines.append("Tika: \"E ainda tem mais? A gente tá rico?\"")
 		lines.append("Tico: \"Por uma noite.\"")

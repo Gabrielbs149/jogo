@@ -12,3 +12,10 @@ Baixados de https://poly.pizza por `tools/art/baixar_polypizza.py`. CC0 = domín
 - **Zsky** (CC-BY 3.0): Low-Poly-Outdoor-Garden-Decorations
 - **iPoly3D** (CC0 1.0): Medieval-Torture-Devices, Signs-pack
 - **madtrollstudio** (CC-BY 3.0): Animal-Kit
+
+## Do acervo (D043)
+- Quaternius (CC0 1.0): Shiba Inu — res://assets/kits/polypizza/Animated-Animal-Pack/Shiba_Inu.glb
+- Quaternius (CC0 1.0): Husky — res://assets/kits/polypizza/Animated-Animal-Pack/Husky.glb
+- Quaternius (CC0 1.0): Donkey — res://assets/kits/polypizza/Animated-Animal-Pack/Donkey.glb
+- Quaternius (CC0 1.0): Rat — res://assets/kits/polypizza/Animated-Enemies/Rat.glb
+- Kenney (CC0 1.0): Rolling Pin — res://assets/kits/polypizza/Food-Kit/Rolling_Pin.glb

@@ -44,6 +44,10 @@ var companions: Array[Combatant] = []
 ## Heróis encontrados no caminho que ainda não entraram no grupo.
 var waiting: Array[Combatant] = []
 var ready_to_play: bool = false
+## Uma cena (Roteiro) está tocando: o relógio para (D060).
+var em_cena: bool = false
+## O tempo que passa (D060), se a fase tiver um nó CicloDoDia.
+var ciclo: CicloDoDia
 ## Grupos de inimigos do mapa que ainda não foram vencidos.
 var encounters: Array[Encounter] = []
 var _calm_time: float = 0.0
@@ -76,7 +80,8 @@ func _ready() -> void:
 	_auto_collision()
 	if editing:
 		return  # o editor mostra a fase de dia (a noite mexe em materiais que não podem ir para o arquivo)
-	if noite:
+	ciclo = get_node_or_null("CicloDoDia") as CicloDoDia
+	if noite and ciclo == null:
 		set_night(true)
 	_hide_far_details()
 	# voltando de uma luta: no mesmo lugar do mapa, com a vida que sobrou
@@ -101,6 +106,7 @@ func _ready() -> void:
 	_camera.yaw = start.basis.get_euler().y
 	_camera.snap()
 	_hud.setup(player, controller)
+	_hud.show_clock(ciclo != null)
 	_hud.watch(player)
 	_hud.continue_pressed.connect(func() -> void: _camera.capture(true))
 	for id: String in Game.party.duplicate():
@@ -187,6 +193,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## Troca o dia pela noite (e volta): céu, luar, neblina e brilho. O dia de antes fica guardado para voltar igual.
 func set_night(on: bool) -> void:
+	if ciclo:
+		# com o tempo passando (D060), "noite" é pular o relógio para 22h (e "dia" para o meio-dia)
+		_night = on
+		ciclo.jump_to(22.0 if on else 12.0)
+		return
 	var env_node := get_node_or_null("WorldEnvironment") as WorldEnvironment
 	var sun := get_node_or_null("Sun") as DirectionalLight3D
 	if env_node == null or sun == null or on == _night:
@@ -234,9 +245,14 @@ func set_night(on: bool) -> void:
 	sun.light_volumetric_fog_energy = 0.4
 
 
+## Só as janelas (e o brilho da fumaça): o CicloDoDia cuida da luz dos postes sozinho.
+func night_windows(on: bool) -> void:
+	_night_details(on, false)
+
+
 ## De noite: janelas acesas em 7 de cada 10 casas (as outras já dormem), postes um pouco mais fortes, e fumaça e
 ## água sem brilho próprio (de dia elas não recebem luz; de noite ficariam brilhando no escuro). O fogo continua aceso.
-func _night_details(on: bool) -> void:
+func _night_details(on: bool, lights: bool = true) -> void:
 	if on:
 		var lit := StandardMaterial3D.new()
 		lit.albedo_color = Color(1.0, 0.78, 0.45)
@@ -260,7 +276,7 @@ func _night_details(on: bool) -> void:
 						if mat and mat.resource_name in ["MI_WindowGlass", "Windows"]:
 							mesh.set_surface_override_material(k, lit if awake else dark)
 							_night_windows.append([mesh, k])
-		for found: Node in find_children("*", "OmniLight3D", true, false):
+		for found: Node in (find_children("*", "OmniLight3D", true, false) if lights else []):
 			var light := found as OmniLight3D
 			if light.omni_range < 5.0:
 				continue  # fogo e velas já brilham o bastante de perto; o reforço é para postes e lanternas
@@ -346,11 +362,13 @@ func play_cutscene(roteiro: Roteiro) -> void:
 		controller.enabled = false
 	_hud.visible = false
 	_camera.capture(false)
+	em_cena = true
 	var cutscene := (load(CUTSCENE) as PackedScene).instantiate() as CutscenePlayer
 	cutscene.stage = self
 	cutscene.hero = player
 	add_child(cutscene)
 	await cutscene.play(roteiro)
+	em_cena = false
 	cutscene.queue_free()
 	_hud.visible = true
 

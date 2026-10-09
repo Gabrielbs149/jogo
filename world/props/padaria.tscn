@@ -176,7 +176,7 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -1, 0, -5)
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1, 0, -5)
 
 [node name="Porta" parent="." instance=ExtResource("6_Door_1_Round")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.53, 0, -4.65)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2.45, 0, -4.88)
 
 [node name="Wall_Plaster_Window_Wide_Flat3" parent="." instance=ExtResource("2_Wall_Plaster_W")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 3, 0, -5)
@@ -325,7 +325,7 @@ mesh = SubResource("BoxMesh_13")
 material_override = SubResource("StandardMaterial3D_14")
 
 [node name="BalcaoArmario" parent="." instance=ExtResource("21_Cabinet")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 0, -1.1)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -3.5, 0, 2.4)
 
 [node name="PaoBalcao" parent="." instance=ExtResource("22_pao")]
 transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -3.4, 1.03, -1.25)
@@ -457,7 +457,7 @@ transform = Transform3D(0.6119, 0, 0.5154, 0, 0.8, 0, -0.5154, 0, 0.6119, 3.5, 0
 transform = Transform3D(0.136, 0, 0.7884, 0, 0.8, 0, -0.7884, 0, 0.136, 3.15, 0, 2.6)
 
 [node name="Barril" parent="." instance=ExtResource("28_Barrel")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.35, 0, 0.7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.45, 0, 4.25)
 
 [node name="Banquinho" parent="." instance=ExtResource("29_Stool")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 0, 1.6)

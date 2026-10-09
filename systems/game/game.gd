@@ -68,8 +68,13 @@ var items: Array[String] = []
 var objective: String = ""
 ## Nome da missão do objetivo (aparece pequeno em cima dele: "FOME"). Vazio = "OBJETIVO".
 var objective_title: String = ""
+## Relógio do jogo (D060): hora do dia (0..24, com fração) e qual dia é. CicloDoDia anda com ele.
+var hora: float = 9.0
+var dia: int = 1
 
 signal objective_changed(text: String)
+## Virou o dia (meia-noite).
+signal day_changed(dia: int)
 
 
 func _ready() -> void:
@@ -100,6 +105,8 @@ func new_game(hero_id: String) -> void:
 	items.clear()
 	objective = ""
 	objective_title = ""
+	hora = 9.0
+	dia = 1
 	prologue_pending = true
 	testing = false
 	Transition.go(start_level(hero_id))
@@ -139,6 +146,8 @@ func save_game(level_path: String, where: Transform3D) -> bool:
 		"itens": items,
 		"objetivo": objective,
 		"objetivo_titulo": objective_title,
+		"hora": hora,
+		"dia": dia,
 		"fase": level_path,
 		"posicao": [where.origin.x, where.origin.y, where.origin.z],
 		"giro": where.basis.get_euler().y,
@@ -186,6 +195,8 @@ func continue_game(change: bool = true) -> bool:
 	items.assign((data.get("itens", []) as Array).map(func(v: Variant) -> String: return String(v)))
 	objective = String(data.get("objetivo", ""))
 	objective_title = String(data.get("objetivo_titulo", ""))
+	hora = float(data.get("hora", 9.0))
+	dia = int(data.get("dia", 1))
 	hero_hp = int(data.get("vida", -1))
 	battle = {}
 	pending_story = ""
@@ -222,6 +233,16 @@ func start_battle(data: Dictionary, from_scene: String, from: Transform3D, hp: i
 
 ## Volta da arena para o mapa. Venceu: no mesmo lugar, com a vida que sobrou. Perdeu: do começo da fase, vida cheia.
 func end_battle(victory: bool, hp: int) -> void:
+	# briga na cidade (D060, o padeiro): ninguém morre; quem perde volta para o mesmo lugar, machucado
+	if bool(battle.get("nao_letal", false)):
+		flags["luta." + String(battle.get("id", ""))] = "venceu" if victory else "perdeu"
+		hero_hp = hp if victory else 3
+		pending_story = String(battle.get("after_text" if victory else "texto_derrota", ""))
+		returning = true
+		battle = {}
+		get_tree().paused = false
+		Transition.go(return_scene)
+		return
 	if victory:
 		defeated.append(String(battle.get("id", "")))
 		hero_hp = hp
@@ -300,6 +321,21 @@ func remove_item(item: String) -> void:
 
 
 ## Objetivo que aparece no canto da tela. Vazio = nenhum.
+## Anda o relógio (em horas). Passando da meia-noite, vira o dia.
+func advance_time(hours: float) -> void:
+	hora += hours
+	while hora >= 24.0:
+		hora -= 24.0
+		dia += 1
+		day_changed.emit(dia)
+
+
+## "07:40"
+func clock_text() -> String:
+	var minutes := int(roundf(hora * 60.0)) % (24 * 60)
+	return "%02d:%02d" % [minutes / 60, minutes % 60]
+
+
 func set_objective(text: String, title: String = "") -> void:
 	objective = text
 	objective_title = title
