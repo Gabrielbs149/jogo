@@ -61,6 +61,9 @@ var _action_target: Combatant
 var _action_on: bool = false
 var _cam_eye := Vector3.ZERO
 var _cam_look := Vector3.ZERO
+## Plano fixo da cena do golpe (D053): calculado uma vez, com corte seco (a câmera não passeia em volta do herói).
+var _shot_eye := Vector3.ZERO
+var _shot_look := Vector3.ZERO
 ## Adagas psíquicas do Tico (D051): uma em cada mão, e um par na frente da câmera na primeira pessoa.
 var _daggers: Array[AdagaPsiquica] = []
 var _view_rig: Node3D
@@ -331,8 +334,8 @@ func _player_action(index: int) -> void:
 					_fx.sparks(t.global_position + Vector3.UP * high, AdagaPsiquica.PURPLE, 20 if crit else 12)
 	for r: Dictionary in results:
 		var t := r["target"] as Combatant
-		if r["kind"] in ["miss", "save"] and is_instance_valid(t) and t != player and not fumble:
-			t.dodged.emit()  # o inimigo desvia
+		if r["kind"] in ["miss", "save"] and is_instance_valid(t) and t != player and not fumble and not t.is_boss:
+			t.dodged.emit()  # o inimigo desvia (o chefe não: a esquiva dele salta para fora do plano)
 		if r["kind"] == "crit":
 			_shake = 0.3
 			_hud.flash(Color(1.0, 0.82, 0.35), 0.35)
@@ -344,10 +347,10 @@ func _player_action(index: int) -> void:
 	await _wait(0.6)
 	for dagger: AdagaPsiquica in _daggers:
 		dagger.trail(false)
+	_action_cam(null)
 	if melee and player.is_active():
 		await _return_home(player)
-	_action_cam(null)
-	await _wait(0.2)
+	await _wait(0.1)
 
 
 ## O anel do dano (D050: um desafio só, claro e bonito). Rajada (vários golpes, investida) = um anel por golpe,
@@ -800,31 +803,15 @@ func _update_view(delta: float) -> void:
 	var eye: Vector3
 	var look: Vector3
 	if _action_on:
-		# câmera da ação: atrás e ao lado do herói, olhando para ele e o alvo
-		var focus_other := _action_target != null and is_instance_valid(_action_target) and _action_target != player
-		var other: Vector3 = _action_target.global_position if focus_other else _look
-		var to := other - player.global_position
-		to.y = 0.0
-		var f := to.normalized() if to.length() > 0.1 else Vector3.FORWARD
-		var side := f.cross(Vector3.UP)
-		var boss := focus_other and _action_target.is_boss
-		if focus_other:
-			# de lado, os dois de perfil: o herói à esquerda, o alvo à direita
-			var mid := player.global_position.lerp(other, 0.5)
-			var spread := Vector2(player.global_position.x, player.global_position.z).distance_to(Vector2(other.x, other.z))
-			eye = mid + side * (2.2 + spread * 0.55 + (2.0 if boss else 0.0)) - f * 0.9 + Vector3.UP * (1.0 if not boss else 1.9)
-			look = mid + Vector3.UP * (1.2 if boss else 0.5)
-		else:
-			# o herói sozinho (defender, poção): de frente, meio de lado
-			eye = player.global_position + f * 2.2 + side * 1.0 + Vector3.UP * 0.9
-			look = player.global_position + Vector3.UP * 0.55
+		eye = _shot_eye
+		look = _shot_look
 	else:
 		var ahead := _look - player.global_position
 		ahead.y = 0.0
 		var forward := ahead.normalized() if ahead.length() > 0.1 else Vector3.FORWARD
 		eye = player.global_position + Vector3.UP * eye_height - forward * eye_back
 		look = _look
-	var k := clampf(delta * 7.0, 0.0, 1.0)
+	var k := 1.0 if _action_on else clampf(delta * 7.0, 0.0, 1.0)
 	_cam_eye = _cam_eye.lerp(eye, k)
 	_cam_look = _cam_look.lerp(look, k)
 	var shaken := _cam_eye
@@ -834,12 +821,37 @@ func _update_view(delta: float) -> void:
 	_camera.look_at_from_position(shaken, _cam_look)
 
 
+## O plano da cena do golpe, fixo: de lado e um pouco à frente do herói (vê o rosto e as adagas, não as costas),
+## enquadrando o lugar do impacto. O herói sozinho (defender, poção): de frente, meio de lado.
+func _frame_shot(on: Combatant) -> void:
+	var home := player.global_position
+	var other := on != player and is_instance_valid(on)
+	var to := (on.global_position - home) if other else (_look - home)
+	to.y = 0.0
+	var f := to.normalized() if to.length() > 0.1 else Vector3.FORWARD
+	var side := f.cross(Vector3.UP)
+	if not other:
+		_shot_eye = home + f * 2.2 + side * 1.0 + Vector3.UP * 0.9
+		_shot_look = home + Vector3.UP * 0.55
+		return
+	var boss := on.is_boss
+	var impact := on.global_position - f * (2.2 if boss else 1.3)  # onde o herói para e golpeia
+	_shot_eye = impact + side * (3.8 if boss else 2.2) + f * (1.6 if boss else 1.25) + Vector3.UP * (2.0 if boss else 0.9)
+	_shot_look = impact.lerp(on.global_position, 0.3) + Vector3.UP * (1.2 if boss else 0.45)
+
+
 ## Liga a câmera da ação mostrando o herói (on = alvo do golpe, ou o próprio herói) ou volta para os olhos dele (null).
 func _action_cam(on: Combatant) -> void:
 	if not first_person or _camera == null:
 		return
 	_action_on = on != null
 	_action_target = on
+	if _action_on:
+		_frame_shot(on)
+	# corte seco nos dois sentidos (nada de a câmera dar a volta)
+	var eye := _shot_eye if _action_on else player.global_position + Vector3.UP * eye_height
+	_cam_eye = eye
+	_cam_look = _shot_look if _action_on else _look
 	var mode := GeometryInstance3D.SHADOW_CASTING_SETTING_ON if _action_on else GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
 	for found: Node in player.find_children("*", "GeometryInstance3D", true, false):
 		(found as GeometryInstance3D).cast_shadow = mode
