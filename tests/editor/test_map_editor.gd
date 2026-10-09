@@ -55,6 +55,57 @@ func _click(editor: MapEditor, at: Vector2, button: MouseButton = MOUSE_BUTTON_L
 		editor.call("_on_mouse_button", event)
 
 
+func test_clicking_picks_what_you_see_not_the_collision_box() -> void:
+	# o vendedor fica dentro da caixa de colisão da banca: antes o clique pegava a banca
+	var editor := await _open(Game.ARANDU)
+	var seller := editor.level.get_node("Crowd/Vendedor2") as Node3D
+	(editor.get("_camera") as EditorCamera).focus(seller.global_position, 6.0)
+	await wait_physics_frames(3)
+	var cam: Camera3D = editor.get("_camera").camera
+	var picked: Node3D = editor.call("_pick", cam.unproject_position(seller.global_position + Vector3(0, 0.9, 0)), false)
+	assert_eq(picked, seller, "o clique pega o vendedor, não a banca")
+
+
+func test_houses_show_their_interior_and_save_it_apart() -> void:
+	var editor := await _open(Game.ARANDU)
+	var tavern := editor.level.get_node("Buildings/Taverna") as Node3D
+	(editor.get("_camera") as EditorCamera).focus(tavern.global_position, 20.0)
+	await wait_until(func() -> bool: return (tavern.get_node("Interior") as Node).get_child_count() > 0, 3.0)
+	var inside := (tavern.get_node("Interior") as Node).get_child(0) as Node3D
+	assert_not_null(inside, "a casa perto da câmera mostra o interior")
+	var piece: Node3D = null
+	for child: Node in inside.get_children():
+		if child is Node3D and child.scene_file_path != "":
+			piece = child as Node3D
+			break
+	assert_true(editor.items().has(piece), "os móveis do interior são peças do editor")
+	var before := piece.position
+	editor.select_nodes([piece])
+	editor.move_selection(Vector3(1, 0, 0))
+	var dir := "user://teste_interiores/"
+	assert_eq(editor.save_interiors(dir), 1, "só o interior mexido é gravado")
+	var saved := (load(dir.path_join(String(inside.get_meta("_editor_interior")).get_file())) as PackedScene).instantiate() as Node3D
+	assert_almost_eq((saved.get_node(NodePath(piece.name)) as Node3D).position.x, before.x + 1.0, 0.01, "a mudança foi para a cena do interior")
+	saved.free()
+	assert_eq(editor.save(OUT), OK)
+	assert_false(FileAccess.get_file_as_string(OUT).contains('parent="Buildings/Taverna/Interior/'), "o interior não entra no arquivo da fase")
+	for file: String in DirAccess.get_files_at(dir):
+		DirAccess.remove_absolute(dir.path_join(file))
+
+
+func test_roofs_come_off_and_go_back() -> void:
+	var editor := await _open(Game.ARANDU)
+	editor.toggle_roofs()
+	var hidden: Array = editor.get("_roof_hidden")
+	assert_gt(hidden.size(), 20, "H tira os telhados")
+	var roof := hidden[0] as Node3D
+	assert_false(roof.visible)
+	assert_eq(editor.save(OUT), OK)
+	assert_false(roof.visible, "continua sem telhado depois de salvar")
+	editor.toggle_roofs()
+	assert_true(roof.visible, "H de novo põe de volta")
+
+
 func test_clicking_again_picks_the_piece_underneath() -> void:
 	var editor := await _open(Game.ARANDU)
 	var spot := Vector3(150, 0, 150)

@@ -65,6 +65,16 @@ var _cycle_index: int = 0
 var _right_pos: Vector2
 var _under_menu: PopupMenu
 var _under_list: Array[Node3D] = []
+## Interiores das casas (D062): carregam quando a câmera chega perto (como no jogo) e dá para mexer neles; ao salvar,
+## cada interior mexido volta para a cena dele (levels/arandu/interiores/...).
+var _interiors: Array[Node3D] = []
+var _interior_dirty: Dictionary = {}
+var _interior_check: float = 0.0
+## Clique pelo desenho de verdade (triângulos da malha), não pela caixa de colisão: guarda a malha de triângulos.
+var _tri_cache: Dictionary = {}
+## H: sem telhado (e sem o andar de cima) para ver e mexer dentro das casas.
+var _roofless: bool = false
+var _roof_hidden: Array[Node3D] = []
 var _dragging: bool = false
 var _boxing: bool = false
 var _drag_hit: Vector3
@@ -223,6 +233,7 @@ func _build_ui() -> void:
 	_grid_pick.item_selected.connect(func(i: int) -> void: set_grid(GRIDS[i]))
 	row.add_child(_grid_pick)
 	_tool_button(row, "Vista de cima", "T", func() -> void: _camera.toggle_top_view())
+	_tool_button(row, "Sem telhado", "H: tira os telhados e o andar de cima, para ver e mexer dentro das casas", toggle_roofs)
 	_tool_button(row, "Propriedades da fase", "Nome, música, sol e céu da fase", func() -> void: select_nodes([level]))
 	row.add_child(VSeparator.new())
 	_tool_button(row, "▶ Testar", "Joga a fase como está agora, sem salvar (F2 lá volta para cá)", test_level)
@@ -428,9 +439,9 @@ func _update_hints() -> void:
 			[["Del"], "apaga"], [["Ctrl", "D"], "duplica"], [["X"], "separa as partes"], [["Alt"], "+ clique: pega uma parte"],
 			[["Clique"], "de novo: a de baixo"], [["Esc"], "solta"]]
 	else:
-		list = [[["Clique"], "escolhe uma peça (de novo: a de baixo)"], [["Botão dir."], "parado: lista do que tem ali"], [["Arrastar"], "escolhe várias"],
-			[["W", "A", "S", "D"], "anda"], [["Botão dir."], "arrastando: gira a câmera"],
-			[["Roda"], "aproxima"], [["G"], "grade %s" % ("ligada" if snap else "desligada")], [["T"], "de cima"], [["Ctrl", "Z"], "desfaz"]]
+		list = [[["Clique"], "escolhe (de novo: a de baixo)"], [["Botão dir."], "lista o que tem ali / gira"], [["Arrastar"], "escolhe várias"],
+			[["W", "A", "S", "D"], "anda"], [["G"], "grade %s" % ("ligada" if snap else "desligada")], [["T"], "de cima"],
+			[["H"], "sem telhado"], [["Ctrl", "Z"], "desfaz"]]
 	for entry: Array in list:
 		var item := HBoxContainer.new()
 		item.add_theme_constant_override("separation", 3)
@@ -474,6 +485,10 @@ func open_level(path: String, source: String = "") -> void:
 		if (found as Camera3D).current:
 			_level_cameras.append(found as Camera3D)
 	_world.add_child(level)
+	_interiors.clear()
+	_interior_dirty.clear()
+	_roofless = false
+	_roof_hidden.clear()
 	_camera.camera.make_current()  # a câmera do jogo (CameraRig) vem marcada como atual e roubava a vista
 	level_path = path
 	Game.edit_level = path
@@ -498,6 +513,7 @@ func save(path: String = "") -> Error:
 		return err
 	if path == level_path:
 		dirty = false
+		save_interiors()
 		var promoted := promote_acervo(path)
 		_toast_text("Salvo em %s%s" % [path, ("  (%d modelo(s) do acervo copiados para o projeto)" % promoted) if promoted > 0 else ""])
 	_update_status()
@@ -560,8 +576,14 @@ func _write(path: String) -> Error:
 	for cam: Camera3D in _level_cameras:
 		if is_instance_valid(cam):
 			cam.current = true
+	for node: Node3D in _roof_hidden:
+		if is_instance_valid(node):
+			node.visible = true  # o telhado escondido (H) não pode ir escondido para o arquivo
 	var packed := PackedScene.new()
 	var err := packed.pack(level)
+	for node: Node3D in _roof_hidden:
+		if is_instance_valid(node):
+			node.visible = false
 	_camera.camera.make_current()
 	_camera.camera.make_current.call_deferred()  # a troca de câmera da fase também chega um quadro depois
 	if hud:
@@ -700,8 +722,11 @@ func place(key: String, at: Vector3, yaw: float = 0.0, size: float = 1.0) -> Nod
 	var scene := load(String(entry["key"])) as PackedScene
 	var piece := scene.instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node3D
 	var parent := _container_for(entry)
+	var room := _interior_at(at)
+	if room:
+		parent = room  # dentro de uma casa: a peça é do interior dela (vai para a cena do interior)
 	parent.add_child(piece, true)
-	piece.owner = level
+	piece.owner = _home(parent)
 	piece.global_transform = Transform3D(Basis(Vector3.UP, yaw).scaled(Vector3.ONE * size * float(entry["escala"])), at)
 	if not String(entry["key"]).begins_with(EditorLibrary.PROPS) and _kit_collides(entry, piece):
 		piece.add_to_group("colisao_auto", true)  # a fase dá colisão do formato da peça
@@ -1056,6 +1081,8 @@ func _on_key(event: InputEventKey) -> void:
 			set_grid(GRIDS[i])
 		KEY_T:
 			_camera.toggle_top_view()
+		KEY_H:
+			toggle_roofs()
 		KEY_F:
 			if not selection.is_empty():
 				var box := _bounds(selection[0])
@@ -1116,7 +1143,7 @@ func delete_selection() -> void:
 	for node: Node3D in selection:
 		if node == level:
 			continue
-		if node.owner != level:
+		if node.owner != _home(node):
 			_toast_text("%s é parte de dentro de outra peça: apague a peça inteira" % node.name)
 			continue
 		nodes.append(node)
@@ -1142,17 +1169,21 @@ func duplicate_selection() -> void:
 		if node == level:
 			continue
 		var paths := _owned_paths(node)
+		var home := _home(node)
 		var editable: Array[NodePath] = []
 		for inner: Node in node.find_children("*", "", true, false):
-			if level.is_editable_instance(inner):
+			if home.is_editable_instance(inner):
 				editable.append(node.get_path_to(inner))
 		var copy := node.duplicate() as Node3D
+		for inside: Node in copy.find_children("*", "", true, false):
+			if inside.has_meta("_editor_interior"):
+				inside.free()  # o interior carregado da casa não vai junto: a cópia carrega o dela quando chegar perto
 		if copy.get("encounter_id") is String:
 			copy.set("encounter_id", "")  # grupo novo: vencer um não some com o outro
 		node.get_parent().add_child(copy, true)
 		_restore_owned(copy, paths)
 		for rel: NodePath in editable:
-			level.set_editable_instance(copy.get_node(rel), true)
+			home.set_editable_instance(copy.get_node(rel), true)
 		# a cópia vai para o lado, encostada na original (largura da pegada), já na grade
 		var box := _bounds(node)
 		var right := _camera.ground_axes()[1]
@@ -1229,6 +1260,7 @@ func redo() -> void:
 
 
 func _push(entry: Dictionary) -> void:
+	_touch_interiors(entry)
 	_undo.append(entry)
 	_redo.clear()
 	if _undo.size() > 300:
@@ -1236,6 +1268,7 @@ func _push(entry: Dictionary) -> void:
 
 
 func _apply(entry: Dictionary, backwards: bool) -> void:
+	_touch_interiors(entry)
 	var nodes: Array = entry.get("nodes", [])
 	match entry["kind"]:
 		"xf":
@@ -1281,7 +1314,7 @@ func separate_selection() -> void:
 	var parts := {"nodes": [], "parents": [], "indexes": [], "owned": []}
 	var made: Array[Node3D] = []
 	for node: Node3D in selection.duplicate():
-		if node == level or node.owner != level or node.scene_file_path == "":
+		if node == level or node.owner != _home(node) or node.scene_file_path == "":
 			continue
 		var models: Array[Node3D] = []
 		var rest: Array[Node] = []
@@ -1301,7 +1334,7 @@ func separate_selection() -> void:
 			var piece := (load(model.scene_file_path) as PackedScene).instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node3D
 			piece.name = model.name
 			parent.add_child(piece, true)
-			piece.owner = level
+			piece.owner = _home(parent)
 			piece.global_transform = model.global_transform
 			if collide:
 				piece.add_to_group("colisao_auto", true)
@@ -1310,14 +1343,14 @@ func separate_selection() -> void:
 			var base := Node3D.new()
 			base.name = String(node.name) + "Base"
 			parent.add_child(base, true)
-			base.owner = level
+			base.owner = _home(parent)
 			base.global_transform = node.global_transform
 			if collide:
 				base.add_to_group("colisao_auto", true)
 			for child: Node in rest:
 				var copy := child.duplicate()
 				base.add_child(copy, true)
-				_take_over(copy)
+				_take_over(copy, _home(parent))
 			made.append(base)
 		(whole["nodes"] as Array).append(node)
 		(whole["parents"] as Array).append(parent)
@@ -1339,9 +1372,9 @@ func separate_selection() -> void:
 
 
 ## A cópia passa a ser da fase, com malha, material e forma próprios (os de antes moravam dentro do arquivo da peça).
-func _take_over(node: Node) -> void:
+func _take_over(node: Node, home: Node = null) -> void:
 	for found: Node in [node] + node.find_children("*", "", true, false):
-		found.owner = level
+		found.owner = home if home else level
 		for prop: String in ["mesh", "material_override", "shape"]:
 			var value: Variant = found.get(prop)
 			if value is Resource and (value as Resource).resource_path.contains("::"):
@@ -1351,28 +1384,31 @@ func _take_over(node: Node) -> void:
 ## Nó de dentro de uma peça (um inimigo dentro do grupo, a fala dentro do morador): para a mudança
 ## ser salva, a peça de fora vira "editável" (no Godot: Filhos editáveis).
 func _mark_edited(node: Node) -> void:
+	var home := _home(node)
 	var outer := node.owner
-	while outer and outer != level:
-		level.set_editable_instance(outer, true)
+	while outer and outer != home and outer != level:
+		home.set_editable_instance(outer, true)
 		outer = outer.owner
 
 
 ## Caminhos (relativos) dos nós desta peça que pertencem à fase; refeito quando a peça volta (desfazer).
 func _owned_paths(node: Node) -> Array[NodePath]:
 	var paths: Array[NodePath] = []
-	if node.owner == level:
+	var home := _home(node)
+	if node.owner == home:
 		paths.append(NodePath("."))
 	for inner: Node in node.find_children("*", "", true, false):
-		if inner.owner == level:
+		if inner.owner == home:
 			paths.append(node.get_path_to(inner))
 	return paths
 
 
 func _restore_owned(node: Node, paths: Array) -> void:
+	var home := _home(node)
 	for path: NodePath in paths:
 		var inner := node.get_node_or_null(path)
 		if inner:
-			inner.owner = level
+			inner.owner = home
 
 
 func _free_orphans() -> void:
@@ -1398,6 +1434,11 @@ func items() -> Array[Node3D]:
 					result.append(inner as Node3D)
 		else:
 			result.append(child as Node3D)
+	for inside: Node3D in _interiors:
+		if is_instance_valid(inside) and inside.is_inside_tree():
+			for inner: Node in inside.get_children():
+				if inner is Node3D:
+					result.append(inner as Node3D)
 	return result
 
 
@@ -1421,6 +1462,8 @@ func _item_of(node: Node) -> Node3D:
 	var current := node
 	while current and current != level:
 		var parent := current.get_parent()
+		if parent is Node3D and _interiors.has(parent):
+			return current as Node3D  # peça de dentro de uma casa
 		if parent == level:
 			return null if SYSTEM.has(String(current.name)) or _is_group(current) else current as Node3D
 		if _is_group(parent):
@@ -1430,6 +1473,29 @@ func _item_of(node: Node) -> Node3D:
 
 
 func _pick(screen: Vector2, deep: bool) -> Node3D:
+	var under := pieces_under(screen, 1)
+	if under.is_empty():
+		return _pick_rough(screen, deep)
+	var best := under[0]
+	if deep:
+		var cam := _camera.camera
+		var from := cam.project_ray_origin(screen)
+		var dir := cam.project_ray_normal(screen)
+		var inner_best: Node3D = null
+		var inner_d := INF
+		for inner: Node in best.get_children():
+			if inner is Node3D:
+				var d := _mesh_distance(inner as Node3D, from, dir)
+				if d < inner_d:
+					inner_best = inner as Node3D
+					inner_d = d
+		if inner_best:
+			return inner_best
+	return best
+
+
+## O clique de antes (colisão e caixa): fica para quando o raio não passa por nenhum desenho.
+func _pick_rough(screen: Vector2, deep: bool) -> Node3D:
 	var cam := _camera.camera
 	var from := cam.project_ray_origin(screen)
 	var dir := cam.project_ray_normal(screen)
@@ -1475,6 +1541,9 @@ func pieces_under(screen: Vector2, limit: int = 14) -> Array[Node3D]:
 	var space := get_world_3d().direct_space_state
 	var found: Dictionary = {}
 	var exclude: Array[RID] = []
+	# o chão (e o que não é peça) tapa o que está atrás dele
+	var wall := INF
+	var hit_items: Dictionary = {}
 	for k: int in 32:
 		var query := PhysicsRayQueryParameters3D.create(from, from + dir * 2000.0, 1 | 2 | 4)
 		query.exclude = exclude
@@ -1483,24 +1552,180 @@ func pieces_under(screen: Vector2, limit: int = 14) -> Array[Node3D]:
 			break
 		exclude.append(hit["rid"])
 		var item := _item_of(hit["collider"] as Node)
-		if item and not found.has(item):
-			found[item] = from.distance_to(hit["position"])
+		if item == null:
+			wall = from.distance_to(hit["position"])
+			break
+		hit_items[item] = from.distance_to(hit["position"])
+	# cada peça pelo desenho dela (o que se vê é o que se pega); quem não tem desenho (marca, luz) vale pela caixa
 	for item: Node3D in items():
-		if found.has(item):
-			continue
 		var box := _bounds(item)
 		if box.get_longest_axis_size() > 40.0:
 			continue
 		var at: Variant = box.intersects_ray(from, dir)
-		if at != null:
-			found[item] = from.distance_to(at)
-		elif box.has_point(from):
-			found[item] = 0.0
+		if at == null and not box.has_point(from) and not hit_items.has(item):
+			continue
+		var d := _mesh_distance(item, from, dir)
+		if d == INF:
+			if not item.find_children("*", "MeshInstance3D", true, false).is_empty() and not item is MeshInstance3D:
+				continue  # o raio passa pela caixa mas não encosta no desenho
+			if item is CollisionObject3D:
+				continue  # colisão solta (a da cama do interior): não se vê, não se clica
+			# marca, luz, começo: vale pela caixa, mas perde para o que se vê no mesmo lugar
+			d = (0.0 if at == null else from.distance_to(at)) + 1.0
+		if d <= wall + 0.05:
+			found[item] = d
 	var list: Array[Node3D] = []
 	for item: Variant in found.keys():
 		list.append(item as Node3D)
 	list.sort_custom(func(a: Node3D, b: Node3D) -> bool: return float(found[a]) < float(found[b]))
 	return list.slice(0, limit)
+
+
+## Distância (m) do olho até o primeiro triângulo da peça que o raio encosta; INF se não encosta em nenhum.
+func _mesh_distance(item: Node3D, from: Vector3, dir: Vector3) -> float:
+	var best := INF
+	var meshes: Array[Node] = item.find_children("*", "MeshInstance3D", true, false)
+	if item is MeshInstance3D:
+		meshes.append(item)
+	var home := _home(item)
+	for found: Node in meshes:
+		var mi := found as MeshInstance3D
+		if mi.mesh == null or not mi.is_visible_in_tree():
+			continue
+		if not _interiors.is_empty() and _home(mi) != home:
+			continue  # os móveis do interior não são a casa
+		var box := mi.global_transform * mi.get_aabb()
+		if box.intersects_ray(from, dir) == null and not box.has_point(from):
+			continue
+		var tri: TriangleMesh = _tri_cache.get(mi.mesh)
+		if tri == null:
+			tri = mi.mesh.generate_triangle_mesh()
+			if tri == null:
+				continue
+			_tri_cache[mi.mesh] = tri
+		var inv := mi.global_transform.affine_inverse()
+		var hit := tri.intersect_ray(inv * from, (inv.basis * dir).normalized())
+		if hit.is_empty():
+			continue
+		best = minf(best, from.distance_to(mi.global_transform * (hit["position"] as Vector3)))
+	return best
+
+
+# --- interiores das casas ---------------------------------------------------------------------
+
+## A casa (ou peça) dona do nó: o interior em que ele está, ou a fase.
+func _home(node: Node) -> Node:
+	var current := node
+	while current:
+		if current is Node3D and _interiors.has(current):
+			return current
+		current = current.get_parent()
+	return level
+
+
+## O interior da casa em que o ponto está (pela pegada da casa), ou null.
+func _interior_at(at: Vector3) -> Node3D:
+	for inside: Node3D in _interiors:
+		if not is_instance_valid(inside) or not inside.is_inside_tree():
+			continue
+		var building := inside.get_parent().get_parent() as Node3D
+		if building == null or not building.has_meta("celulas"):
+			continue
+		var cells: Vector2i = building.get_meta("celulas")
+		var local := building.global_transform.affine_inverse() * at
+		if absf(local.x) <= cells.x and absf(local.z) <= cells.y:
+			return inside
+	return null
+
+
+## Carrega o interior das casas perto da câmera (e não descarrega: o que você mexeu fica).
+func _load_near_interiors(delta: float) -> void:
+	_interior_check -= delta
+	if _interior_check > 0.0 or level == null:
+		return
+	_interior_check = 0.5
+	var center := _camera.global_position
+	for found: Node in level.find_children("Interior", "", true, false):
+		var loader := found as InteriorSobDemanda
+		if loader == null or loader.cena == "" or loader.get_child_count() > 0:
+			continue
+		if loader.global_position.distance_to(center) > 45.0:
+			continue
+		load_interior(loader)
+
+
+func load_interior(loader: InteriorSobDemanda) -> Node3D:
+	var scene := load(loader.cena) as PackedScene
+	if scene == null:
+		return null
+	var inside := scene.instantiate(PackedScene.GEN_EDIT_STATE_MAIN) as Node3D
+	inside.set_meta("_editor_interior", loader.cena)
+	loader.add_child(inside)  # sem dono: não entra no arquivo da fase
+	_interiors.append(inside)
+	return inside
+
+
+## Grava cada interior mexido na cena dele (ou numa pasta dada, nos testes). Devolve quantos gravou.
+func save_interiors(to_dir: String = "") -> int:
+	var count := 0
+	for inside: Node3D in _interiors:
+		if not is_instance_valid(inside) or not _interior_dirty.has(inside):
+			continue
+		var path := String(inside.get_meta("_editor_interior"))
+		if to_dir != "":
+			path = to_dir.path_join(path.get_file())
+			DirAccess.make_dir_recursive_absolute(to_dir)
+		var packed := PackedScene.new()
+		if packed.pack(inside) == OK and ResourceSaver.save(packed, path) == OK:
+			count += 1
+			_interior_dirty.erase(inside)
+			if to_dir == "":
+				packed.take_over_path(path)
+	return count
+
+
+func _touch_interiors(entry: Dictionary) -> void:
+	var nodes: Array = []
+	nodes.append_array(entry.get("nodes", []))
+	nodes.append_array(selection)
+	for key: String in ["whole", "parts"]:
+		if entry.has(key):
+			nodes.append_array((entry[key] as Dictionary).get("nodes", []))
+	if entry.get("object") is Node:
+		nodes.append(entry["object"])
+	for key: String in ["parents"]:
+		nodes.append_array(entry.get(key, []))
+	for node: Variant in nodes:
+		if node is Node and is_instance_valid(node):
+			var home := _home(node as Node)
+			if home != level:
+				_interior_dirty[home] = true
+
+
+## H: tira os telhados e o andar de cima das casas (para ver e mexer dentro); de novo, põe de volta.
+func toggle_roofs() -> void:
+	_roofless = not _roofless
+	if not _roofless:
+		for node: Node3D in _roof_hidden:
+			if is_instance_valid(node):
+				node.visible = true
+		_roof_hidden.clear()
+		_toast_text("Telhados de volta")
+		return
+	var group := level.get_node_or_null("Buildings")
+	if group == null:
+		return
+	for building: Node in group.get_children():
+		for part: Node in building.get_children():
+			var piece := part as Node3D
+			if piece == null or not piece.visible or piece is InteriorSobDemanda or piece is Light3D:
+				continue
+			var lower := String(piece.name).to_lower()
+			if lower.begins_with("roof") or lower.begins_with("telhado") or lower.contains("chimney") or lower.contains("chamine") \
+					or _bounds(piece).position.y > 2.6:
+				piece.visible = false
+				_roof_hidden.append(piece)
+	_toast_text("Sem telhado: dá para ver e mexer dentro das casas (H põe de volta)")
 
 
 ## Menu do clique direito: tudo que está embaixo do mouse; passar por cima pisca a peça, clicar escolhe.
@@ -1585,6 +1810,7 @@ func _bounds(node: Node3D) -> AABB:
 # --- desenho: grade, pegada, seleção e etiquetas ------------------------------------------------
 
 func _process(_delta: float) -> void:
+	_load_near_interiors(_delta)
 	var mesh := _lines.mesh as ImmediateMesh
 	mesh.clear_surfaces()
 	mesh.surface_begin(Mesh.PRIMITIVE_LINES)
@@ -1848,7 +2074,7 @@ func _build_inspector(other: Node = null) -> void:
 		_inspector.add_child(actions)
 	var name_edit := LineEdit.new()
 	name_edit.text = node.name
-	name_edit.editable = node.owner == level
+	name_edit.editable = node.owner == _home(node)
 	name_edit.text_submitted.connect(func(text: String) -> void:
 		set_prop(node, "name", text.strip_edges().validate_node_name(), false)
 		name_edit.text = node.name

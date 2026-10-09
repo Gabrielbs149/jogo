@@ -105,6 +105,11 @@ func _move(delta: float) -> void:
 		return
 	var step := to.normalized() * minf(speed * delta, to.length())
 	global_position += step
+	# pés no chão (degrau da praça, calçada): um raio para baixo, só em quem não está pendurado em nada
+	var from := global_position + Vector3.UP * 0.6
+	var hit := get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(from, from + Vector3.DOWN * 2.0, 1))
+	if not hit.is_empty():
+		global_position.y = (hit["position"] as Vector3).y
 	rotation.y = lerp_angle(rotation.y, atan2(-to.x, -to.z), minf(1.0, delta * 6.0))
 	if _player_anim:
 		_play("run" if speed > velocidade * 1.5 and _anims.has("run") else ("gallop" if speed > velocidade * 1.5 and _anims.has("gallop") else "walk"))

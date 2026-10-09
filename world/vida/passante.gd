@@ -30,6 +30,7 @@ var _yield_time: float = 0.0
 var _talk_beat: float = 0.0
 var _body: AnimatableBody3D
 var _repath: float = 0.0
+var _grounded: bool = false
 
 
 func _ready() -> void:
@@ -60,6 +61,8 @@ func start(at_home: bool) -> void:
 func _physics_process(delta: float) -> void:
 	if vida == null:
 		return
+	if not _grounded and visible:
+		_snap_ground()
 	match estado:
 		Estado.EM_CASA:
 			_timer -= delta
@@ -67,6 +70,7 @@ func _physics_process(delta: float) -> void:
 				_timer = 20.0
 				if _awake():
 					global_position = casa
+					_snap_ground()
 					visible = true
 					_body.process_mode = Node.PROCESS_MODE_INHERIT
 					_choose_next()
@@ -125,6 +129,20 @@ func _walk(delta: float) -> void:
 	else:
 		global_position += to.normalized() * move
 		_turn_to(to, delta * 8.0)
+	_snap_ground()
+
+
+## Pés no chão: o mapa de navegação fica uns 0,5 m acima do chão, e quem andava na altura dele flutuava. Um raio
+## para baixo acha o chão (ou o assoalho da casa) embaixo de onde a pessoa está.
+func _snap_ground() -> void:
+	var from := global_position + Vector3.UP * 0.9
+	var query := PhysicsRayQueryParameters3D.create(from, from + Vector3.DOWN * 3.0, 1)
+	if _body:
+		query.exclude = [_body.get_rid()]
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if not hit.is_empty():
+		global_position.y = (hit["position"] as Vector3).y
+		_grounded = true
 
 
 func _turn_to(dir: Vector3, weight: float) -> void:
