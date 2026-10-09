@@ -64,6 +64,14 @@ func stop_music(fade: float = FADE) -> void:
 	play_music("", fade)
 
 
+## Abaixa a música durante as conversas (D059), para as falas e o ambiente terem espaço. false = volta.
+func duck_music(on: bool) -> void:
+	var player := _music[_music_on]
+	if not player.playing:
+		return
+	create_tween().tween_property(player, "volume_db", -7.0 if on else 0.0, 0.6)
+
+
 ## Som de ambiente em laço (vento, fogo...). Vazio = desliga.
 func play_ambient(ambient_name: String) -> void:
 	if ambient_name == _ambient_name:
@@ -147,7 +155,14 @@ func _stream(folder: String, sound: String) -> AudioStream:
 	for ext: String in [".ogg", ".mp3", ".wav"]:
 		var path := DIR + folder + "/" + sound + ext
 		if ResourceLoader.exists(path):
-			return load(path) as AudioStream
+			var stream := load(path) as AudioStream
+			# música e ambiente em .wav (os gerados em tools/audio) tocam em laço, como os .ogg
+			if stream is AudioStreamWAV and folder != "sfx":
+				var wav := stream as AudioStreamWAV
+				wav.loop_mode = AudioStreamWAV.LOOP_FORWARD
+				wav.loop_begin = 0
+				wav.loop_end = int(wav.get_length() * wav.mix_rate)
+			return stream
 	push_warning("Audio: não achei %s/%s" % [folder, sound])
 	return null
 
