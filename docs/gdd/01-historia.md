@@ -8,13 +8,15 @@
 ## Decisões fechadas
 - A história do jogo é a temporada "A Noite Sem Nome" / Plano do Fogo da campanha (D013).
 - Todo jogo novo abre com o **prólogo** escrito pelo Gabriel (`story/prologo.tres`) e depois a cena do herói escolhido (D025).
-- **Tico-Lirou** começa em **Arandu**, onde vivia como mendigo (D019). A cena de abertura dele é a do **rato assado** dividido com a Tika (D029); depois, a Tika some e ele sai atrás dela.
+- **Tico-Lirou** começa em **Arandu**, onde vivia como mendigo (D019). A cena de abertura dele é a do **rato assado** dividido com a Tika (D029); depois vem **o primeiro dia jogável com ela** (D059). A Tika some só depois, quando o jogador já conhecer os dois.
 - **Tika-Muro foi levada** por gente de Cindralight para alimentar uma forja (texto do Gabriel, 06/10). Por isso ela não está no acampamento de Ethera.
 - **Ruínas de Ethera** é o capítulo jogável hoje: o selo partido e o **Último Guardião** como chefe (D013, D022).
 - Ritmo calmo, focado em história: o mundo se conta por objetos para examinar e pessoas para conversar (D009, no que continua valendo).
 
 ## Em aberto
-- **1ª missão do Tico: Fome (D040).** Ele acorda sem a Tika e com fome; a padaria de Arandu fica na rua do leste. "Caminho 1 — Pedir" (texto do Gabriel): o dono não dá comida de graça; dá para conversar, convencer, fazer um pequeno favor ("Tem uma entrega que preciso fazer. Leva isso até aquela casa." — a casa da viúva, perto do portão do norte), intimidar ou roubar. Falas do padeiro e da viúva *(proposta)* em `world/quests/missao_padaria.gd`.
+- **Primeiro dia (D059):** a fome acorda o Tico e a Tika; a Tika espera na boca do beco e manda ele arrumar "comida para os dois"; caminhos: padaria (D040), bico do carregador, (roubar); no caminho, a briga da banca de frutas (garoto Pipo × vendedor); de volta, jantar no barraco, a Tika quer ver "a gente nova perto da muralha, no portão do leste" e os dois dormem. Falas *(proposta)* em `world/quests/prologo_tico.gd`, `bico_caixas.gd`, `briga_feira.gd`, `conversa_mendigo.gd` e `story/tico_fim_do_dia.tres`. A carroça coberta e a gente nova perto da muralha são uma deixa *(proposta)* para Cindralight.
+- [A DEFINIR] **Quando e como a Tika some** depois do primeiro dia (texto do Gabriel: "Certo dia, Tico acorda e não vê Tika do seu lado...").
+- **1ª missão do Tico: Fome (D040).** (Antes da D059: ele acordava sem a Tika.) a padaria de Arandu fica na rua do leste. "Caminho 1 — Pedir" (texto do Gabriel): o dono não dá comida de graça; dá para conversar, convencer, fazer um pequeno favor ("Tem uma entrega que preciso fazer. Leva isso até aquela casa." — a casa da viúva, perto do portão do norte), intimidar ou roubar. Falas do padeiro e da viúva *(proposta)* em `world/quests/missao_padaria.gd`.
 - [A DEFINIR] **Outros caminhos da fome** (o texto do Gabriel é o "Caminho 1"): quais são os outros?
 - [A DEFINIR] **Consequências** de intimidar ou roubar o padeiro mais adiante na história?
 - [A DEFINIR] **Tom:** quanto de humor (o Tico e a Tika brincam) e quanto de drama (sequestro, astros caçando o grupo)? Algo como "aventura leve com momentos tristes"?
