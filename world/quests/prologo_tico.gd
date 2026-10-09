@@ -228,7 +228,7 @@ func _on_tika() -> void:
 				_talk(_still_hungry, tika)
 		"fim":
 			if _sleeping():
-				_hud.show_story("A Tika ronca baixinho, enrolada no papelão. Melhor não acordar.")
+				_hud.show_thought("A Tika tá roncando. Melhor não acordar.")
 			else:
 				_talk(_next_days, tika)
 
@@ -240,7 +240,7 @@ func _take_ribbon() -> void:
 	fita.visible = false
 	Audio.play("pegar_comida", -10.0, 0.2)
 	_hud.toast("Achou: uma fita roxa, meio desbotada")
-	_hud.show_story("É a fita da Tika. Ela jurou que o vento levou. O vento, pelo jeito, mora no beco do lado.")
+	_hud.show_thought("A fita da Tika! Ela jurou que o vento tinha levado.")
 
 
 ## Voltou com comida antes de escurecer: a Tika guarda para o jantar. Dá para esperar o sol baixar com ela.

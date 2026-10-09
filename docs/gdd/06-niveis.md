@@ -6,6 +6,7 @@
 ## Decisões fechadas
 - **Começo calmo e pequeno**, e cada herói começa num lugar diferente (`Game.START_LEVELS`) (D019).
 - **Arandu** (`levels/arandu/`): começo do Tico, cidade natal dele, **sem inimigos**; o portão norte leva a Ethera (D019, D027, refeita na D041).
+- **Beco do Tico (D062):** o canto dos dois é feito sob medida: barraco de lona remendada, cama de palha em cima do papelão da caixa de sabão, cantinho da Tika, varal, lenha, fogueirinha com roda de pedra, prateleira, lanterna, chão de terra batida e o desenho de giz da Tika *(proposta)*. Montado por `tools/art/montar_beco.gd` (depois do `montar_prologo.gd`).
 - **Casas de entrar (D061):** todas as casas e lojas de Arandu têm porta aberta e interior mobiliado (cenas em `levels/arandu/interiores/`, carregadas de perto); lojas: taverna, empório, capela, sapataria, conselho, estalagem, ferraria, alfaiate, boticário e a padaria refeita. Atrações na praça: malabarista, músico, mural de avisos.
 - **Arandu viva (D060):** passantes com rotina, moradores com horário, bichos, pombos, pregões e o ciclo do dia (`Vida`, `Morador`, `Bicho`, `Pombos`, `CicloDoDia`); arena de rua para brigas (`levels/arenas/arandu_rua.tscn`).
 - **Primeiro dia em Arandu (D059):** área pequena: o beco do Tico (barraco com marquise), a rua do portão, a praça da fonte; pontos: Seu Brás na esquina, padaria, celeiro (bico dos caixotes), banca de frutas (briga) e o **beco lateral** (fechado por um muro, ao sul do beco do Tico). As janelas acesas e as lanternas guiam de noite. Peças montadas por `tools/art/montar_prologo.gd`.

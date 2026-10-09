@@ -97,9 +97,10 @@ func test_examining_turns_tico_and_shows_a_thought() -> void:
 	var fire := _level.get_node("TicoCorner/OlharFogueira") as Interactable
 	fire.interact(_level.player)
 	await wait_physics_frames(2)
-	var story := _level.get_node("HUD").get("_story") as Control
-	assert_true(story.visible)
-	assert_string_contains((_level.get_node("HUD").get("_story_text") as Label).text, "rabo")
+	var thought := _level.get_node("HUD").get("_thought") as Label
+	assert_true(thought.visible, "pensa em legenda, sem caixa")
+	assert_string_contains(thought.text, "rabo")
+	assert_false((_level.get_node("HUD").get("_prompt_box") as Control).visible, "o F Examinar sai enquanto ele pensa")
 
 
 func test_the_combat_hud_stays_out_of_the_way_in_town() -> void:

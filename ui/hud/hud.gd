@@ -98,6 +98,7 @@ func _ready() -> void:
 	%PauseOptions.pressed.connect(func() -> void:
 		%Pause.hide()
 		_options.open())
+	_make_thought()
 	_options.closed.connect(func() -> void:
 		if get_tree().paused:
 			_pause.show()
@@ -260,6 +261,58 @@ func show_story(text: String) -> void:
 	_story_tween.tween_callback(_story.hide)
 
 
+## O que o herói pensa ao examinar uma coisa (D062): uma linha em legenda embaixo, sem caixa, no lugar do "F Examinar",
+## que some enquanto o pensamento está na tela. Fica mais tempo na tela quanto maior o texto.
+func show_thought(text: String) -> void:
+	if text == "":
+		return
+	_thought.text = text
+	_thought.show()
+	_thought.modulate.a = 0.0
+	_prompt_box.hide()
+	if _thought_tween:
+		_thought_tween.kill()
+	_thought_tween = create_tween()
+	_thought_tween.tween_property(_thought, "modulate:a", 1.0, 0.2)
+	_thought_tween.tween_interval(clampf(1.2 + text.length() * 0.045, 2.5, 5.5))
+	_thought_tween.tween_property(_thought, "modulate:a", 0.0, 0.4)
+	_thought_tween.tween_callback(func() -> void:
+		_thought.hide()
+		_prompt_box.visible = _near != null and is_instance_valid(_near) and not _modal)
+
+
+func thinking() -> bool:
+	return _thought != null and _thought.visible
+
+
+func _make_thought() -> void:
+	_thought = Label.new()
+	_thought.name = "Pensamento"
+	_thought.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$Root.add_child(_thought)
+	_thought.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_thought.offset_left = -470.0
+	_thought.offset_right = 470.0
+	_thought.offset_top = -200.0
+	_thought.offset_bottom = -140.0
+	_thought.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_thought.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_thought.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	_thought.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_thought.add_theme_font_size_override("font_size", 25)
+	_thought.add_theme_color_override("font_color", Color(1.0, 0.95, 0.85))
+	_thought.add_theme_color_override("font_outline_color", Color(0.07, 0.04, 0.02, 0.9))
+	_thought.add_theme_constant_override("outline_size", 9)
+	_thought.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.45))
+	_thought.add_theme_constant_override("shadow_offset_y", 3)
+	_thought.hide()
+
+
+var _thought: Label
+var _thought_tween: Tween
+var _near: Interactable
+
+
 ## O relógio do dia no canto (D060): só nas fases com o tempo passando.
 func show_clock(on: bool) -> void:
 	if on and _clock == null:
@@ -283,6 +336,10 @@ func hide_hints() -> void:
 	if _story_tween:
 		_story_tween.kill()
 	_story.hide()
+	if _thought_tween:
+		_thought_tween.kill()
+	if _thought:
+		_thought.hide()
 	_tips.hide()
 
 
@@ -473,8 +530,9 @@ func _status_names(c: Combatant) -> String:
 
 
 func _on_interactable(node: Interactable) -> void:
+	_near = node
 	_prompt.text = node.prompt_text if node else ""
-	_prompt_box.visible = node != null
+	_prompt_box.visible = node != null and not thinking()
 
 
 func _answer_recruit(yes: bool) -> void:

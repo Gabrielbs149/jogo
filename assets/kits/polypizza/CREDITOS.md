@@ -19,3 +19,10 @@ Baixados de https://poly.pizza por `tools/art/baixar_polypizza.py`. CC0 = domín
 - Quaternius (CC0 1.0): Donkey — res://assets/kits/polypizza/Animated-Animal-Pack/Donkey.glb
 - Quaternius (CC0 1.0): Rat — res://assets/kits/polypizza/Animated-Enemies/Rat.glb
 - Kenney (CC0 1.0): Rolling Pin — res://assets/kits/polypizza/Food-Kit/Rolling_Pin.glb
+- Hunter Paramore (CC-BY 3.0): Candle Lantern — res://assets/kits/polypizza/Witch-cottage-pack/Candle_Lantern.glb
+- Quaternius (CC0 1.0): Pot — res://assets/kits/polypizza/Survival-Pack/Pot.glb
+- Quaternius (CC0 1.0): Can — res://assets/kits/polypizza/Survival-Pack/Can.glb
+- Kay Lousberg (CC0 1.0): Candle Melted — res://assets/kits/polypizza/Halloween-Bits/Candle_Melted.glb
+- Quaternius (CC0 1.0): Pallet Broken — res://assets/kits/polypizza/Post-Apocolypse-Pack/Pallet_Broken.glb
+- MiniPoly (CC0 1.0): Old Bottle — res://assets/kits/polypizza/Bottles/Old_Bottle.glb
+- Zsky (CC-BY 3.0): Flower Pot — res://assets/kits/polypizza/Low-Poly-Outdoor-Garden-Decorations/Flower_Pot_2.glb

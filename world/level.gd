@@ -513,7 +513,7 @@ func _on_used(_by: Combatant, what: Interactable) -> void:
 	match what.action:
 		Interactable.Action.READ:
 			turn_toward(player, what.global_position)  # examinar: o herói vira para a coisa (D059)
-			_hud.show_story(what.text)
+			_hud.show_thought(what.text)  # e pensa uma linha, em legenda (D062)
 		Interactable.Action.REST:
 			if in_combat():
 				_hud.toast("Não dá para descansar com inimigos por perto")
