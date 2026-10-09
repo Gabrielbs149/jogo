@@ -152,10 +152,12 @@ func test_the_street_fight_starts_when_you_come_close_and_you_can_walk_away() ->
 	var fight := _level.get_node("Missoes/BrigaFeira") as BrigaFeira
 	assert_eq(fight.estado(), "")
 	await _put_hero(fight.vendedor.global_position + Vector3(-6.0, 0.1, 0.0))
+	await wait_until(func() -> bool: return fight.estado() == "brigando", 3.0)
 	assert_eq(fight.estado(), "brigando")
 	await wait_until(func() -> bool: return fight.intervir.enabled, 3.0)
 	assert_true(fight.intervir.enabled)
 	await _put_hero(fight.vendedor.global_position + Vector3(-40.0, 0.1, 0.0))
+	await wait_until(func() -> bool: return fight.falar_garoto.enabled, 3.0)
 	assert_eq(Game.flag("feira.jeito"), "ignorou", "seguiu andando: a história continua igual")
 	assert_true(fight.falar_garoto.enabled)
 
