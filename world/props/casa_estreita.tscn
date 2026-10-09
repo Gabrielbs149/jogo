@@ -11,9 +11,14 @@
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Wall_Plaster_WoodGrid.gltf" id="9_Wall_Plaster_W"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Roof_RoundTiles_4x6.gltf" id="10_Roof_RoundTile"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Roof_Front_Brick4.gltf" id="11_Roof_Front_Bri"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/vila/Prop_Vine1.gltf" id="12_Prop_Vine1"]
 
 
 [node name="Casa_estreita" type="Node3D" groups=["colisao_auto"]]
+metadata/celulas = Vector2i(2, 3)
+metadata/porta = 0
+metadata/andares = 2
+metadata/frente = ""
 
 [node name="Floor_Brick" parent="." instance=ExtResource("1_Floor_Brick")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -2)
@@ -27,8 +32,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 2)
 [node name="Wall_Plaster_Door_Round" parent="." instance=ExtResource("2_Wall_Plaster_D")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -1, 0, -3)
 
-[node name="Door_1_Round" parent="." instance=ExtResource("3_Door_1_Round")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -0.47, 0, -2.9)
+[node name="Porta" parent="." instance=ExtResource("3_Door_1_Round")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45, 0, -2.64)
 
 [node name="Wall_Plaster_Straight" parent="." instance=ExtResource("4_Wall_Plaster_S")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 3)
@@ -155,3 +160,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.24, 3)
 
 [node name="Roof_Front_Brick42" parent="." instance=ExtResource("11_Roof_Front_Bri")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 6.24, -3)
+
+[node name="Trepadeira" parent="." instance=ExtResource("12_Prop_Vine1")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1.95, 0, -3.12)

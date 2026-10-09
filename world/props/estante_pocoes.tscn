@@ -1,0 +1,102 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://assets/materials/tabuas.tres" id="1_tabuas"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Potion_1.gltf" id="2_Potion_1"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Potion_2.gltf" id="3_Potion_2"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Potion_4.gltf" id="4_Potion_4"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/SmallBottle.gltf" id="5_SmallBottle"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
+size = Vector3(0.06, 2.28, 0.42)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2"]
+size = Vector3(1.6, 2.28, 0.03)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.3, 0.19, 0.11, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(1.6, 0.05, 0.42)
+
+[node name="Estante_pocoes" type="Node3D" groups=["colisao_auto"]]
+
+[node name="Lado" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 1.14, 0)
+mesh = SubResource("BoxMesh_1")
+material_override = ExtResource("1_tabuas")
+
+[node name="Lado2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 1.14, 0)
+mesh = SubResource("BoxMesh_1")
+material_override = ExtResource("1_tabuas")
+
+[node name="Fundo" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.14, 0.195)
+mesh = SubResource("BoxMesh_2")
+material_override = SubResource("StandardMaterial3D_3")
+
+[node name="Tabua" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("1_tabuas")
+
+[node name="Tabua2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.68, 0)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("1_tabuas")
+
+[node name="Tabua3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.28, 0)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("1_tabuas")
+
+[node name="Tabua4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.88, 0)
+mesh = SubResource("BoxMesh_4")
+material_override = ExtResource("1_tabuas")
+
+[node name="Pocao" parent="." instance=ExtResource("2_Potion_1")]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, -0.62, 0.705, -0.02)
+
+[node name="Pocao2" parent="." instance=ExtResource("3_Potion_2")]
+transform = Transform3D(0.829, 0, 0.3505, 0, 0.9, 0, -0.3505, 0, 0.829, -0.31, 0.705, -0.02)
+
+[node name="Pocao3" parent="." instance=ExtResource("4_Potion_4")]
+transform = Transform3D(0.627, 0, 0.6456, 0, 0.9, 0, -0.6456, 0, 0.627, 0, 0.705, -0.02)
+
+[node name="Pocao4" parent="." instance=ExtResource("5_SmallBottle")]
+transform = Transform3D(0.3261, 0, 0.8388, 0, 0.9, 0, -0.8388, 0, 0.3261, 0.31, 0.705, -0.02)
+
+[node name="Pocao5" parent="." instance=ExtResource("2_Potion_1")]
+transform = Transform3D(-0.0263, 0, 0.8996, 0, 0.9, 0, -0.8996, 0, -0.0263, 0.62, 0.705, -0.02)
+
+[node name="Pocao6" parent="." instance=ExtResource("3_Potion_2")]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, -0.62, 1.305, -0.02)
+
+[node name="Pocao7" parent="." instance=ExtResource("4_Potion_4")]
+transform = Transform3D(0.829, 0, 0.3505, 0, 0.9, 0, -0.3505, 0, 0.829, -0.31, 1.305, -0.02)
+
+[node name="Pocao8" parent="." instance=ExtResource("5_SmallBottle")]
+transform = Transform3D(0.627, 0, 0.6456, 0, 0.9, 0, -0.6456, 0, 0.627, 0, 1.305, -0.02)
+
+[node name="Pocao9" parent="." instance=ExtResource("2_Potion_1")]
+transform = Transform3D(0.3261, 0, 0.8388, 0, 0.9, 0, -0.8388, 0, 0.3261, 0.31, 1.305, -0.02)
+
+[node name="Pocao10" parent="." instance=ExtResource("2_Potion_1")]
+transform = Transform3D(-0.0263, 0, 0.8996, 0, 0.9, 0, -0.8996, 0, -0.0263, 0.62, 1.305, -0.02)
+
+[node name="Pocao11" parent="." instance=ExtResource("4_Potion_4")]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, -0.62, 1.905, -0.02)
+
+[node name="Pocao12" parent="." instance=ExtResource("5_SmallBottle")]
+transform = Transform3D(0.829, 0, 0.3505, 0, 0.9, 0, -0.3505, 0, 0.829, -0.31, 1.905, -0.02)
+
+[node name="Pocao13" parent="." instance=ExtResource("2_Potion_1")]
+transform = Transform3D(0.627, 0, 0.6456, 0, 0.9, 0, -0.6456, 0, 0.627, 0, 1.905, -0.02)
+
+[node name="Pocao14" parent="." instance=ExtResource("2_Potion_1")]
+transform = Transform3D(0.3261, 0, 0.8388, 0, 0.9, 0, -0.8388, 0, 0.3261, 0.31, 1.905, -0.02)
+
+[node name="Pocao15" parent="." instance=ExtResource("3_Potion_2")]
+transform = Transform3D(-0.0263, 0, 0.8996, 0, 0.9, 0, -0.8996, 0, -0.0263, 0.62, 1.905, -0.02)

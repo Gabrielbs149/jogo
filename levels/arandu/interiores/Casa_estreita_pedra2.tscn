@@ -1,0 +1,72 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://world/props/estante_pocoes.tscn" id="1_6vqm6"]
+[ext_resource type="PackedScene" path="res://world/props/estante_livros.tscn" id="2_edwsy"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Cauldron.gltf" id="3_b0tgf"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/BookStand.gltf" id="4_i8rid"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Peg_Rack.gltf" id="5_xugqh"]
+[ext_resource type="PackedScene" path="res://world/props/morador.tscn" id="6_x1gl2"]
+[ext_resource type="Script" path="res://world/vida/morador.gd" id="7_nbbo1"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ffq6x"]
+size = Vector3(0.94, 0.8, 0.92)
+
+[node name="InteriorCasa_estreita_pedra2" type="Node3D" unique_id=161584217]
+
+[node name="EstantePocoes" parent="." unique_id=1075063349 instance=ExtResource("1_6vqm6")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -1.42, 0, -0.8919511)
+
+[node name="EstantePocoes2" parent="." unique_id=1519066480 instance=ExtResource("1_6vqm6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.10907142, 0, 2.42)
+
+[node name="EstanteLivros" parent="." unique_id=836667702 instance=ExtResource("2_edwsy")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -1.42, 0, 1.4563547)
+
+[node name="Caldeirao" parent="." unique_id=1037169479 instance=ExtResource("3_b0tgf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0, 0.6)
+
+[node name="Colisao" type="StaticBody3D" parent="." unique_id=1643518100]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.19999999, 0.4, 0.6)
+
+[node name="@CollisionShape3D@471" type="CollisionShape3D" parent="Colisao" unique_id=298073629]
+shape = SubResource("BoxShape3D_ffq6x")
+
+[node name="Atril" parent="." unique_id=411929730 instance=ExtResource("4_i8rid")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -1.37, 0, 0.30113444)
+
+[node name="Peg_Rack2" parent="." unique_id=1445846314 instance=ExtResource("5_xugqh")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -1.64, 1.7, 0.388)
+
+[node name="BrilhoDoCaldeirao" type="OmniLight3D" parent="." unique_id=1345235736]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 1.1, 0.6)
+light_color = Color(0.45, 1, 0.55, 1)
+light_energy = 0.8
+omni_range = 3.0
+
+[node name="Morador" parent="." unique_id=1223243649 instance=ExtResource("6_x1gl2")]
+transform = Transform3D(-0.80901706, 0, 0.5877852, 0, 1, 0, -0.5877852, 0, -0.80901706, -0.6, 0, -0.4)
+script = ExtResource("7_nbbo1")
+de = 8.0
+ate = 20.0
+gestos = Array[String](["Use_Item", "Interact", "Idle"])
+troca = Vector2(6, 14)
+emotes = Array[String](["?", "...", "nota"])
+
+[node name="Figure" parent="Morador" index="0"]
+animacao = "Use_Item"
+cor_roupa = 0.35
+sem_chapeu = true
+
+[node name="Talk" parent="Morador" index="2"]
+prompt_text = "Falar"
+text = "— Chá pra tosse, unguento pra frieira, xarope pra saudade. Esse último ainda não funciona."
+
+[node name="Luz" type="OmniLight3D" parent="." unique_id=1554055736]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.1
+distance_fade_enabled = true
+distance_fade_begin = 32.0
+omni_range = 5.7
+
+[editable path="Morador"]

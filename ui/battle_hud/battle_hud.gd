@@ -77,7 +77,9 @@ func setup(arena: BattleArena) -> void:
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.add_theme_font_size_override("font_size", 17)
 		button.text = _ability_label(i, 0)
-		button.tooltip_text = ability.description
+		# a descrição aparece dentro da caixa de texto (a dica flutuante cobria a pergunta)
+		button.mouse_entered.connect(func() -> void: _hover_info(ability.description))
+		button.mouse_exited.connect(func() -> void: _hover_info(""))
 		button.pressed.connect(_choose.bind(i))
 		_actions.add_child(button)
 		_buttons.append(button)
@@ -91,6 +93,9 @@ func setup(arena: BattleArena) -> void:
 		button.focus_mode = Control.FOCUS_NONE
 		button.add_theme_font_size_override("font_size", 13)
 		button.text = "%s %s" % [action["key"], action["title"]]
+		var action_id := int(action["id"])
+		button.mouse_entered.connect(func() -> void: _hover_info(_extra_info(action_id)))
+		button.mouse_exited.connect(func() -> void: _hover_info(""))
 		button.pressed.connect(_choose.bind(int(action["id"])))
 		extra_row.add_child(button)
 		_extra_buttons[int(action["id"])] = button
@@ -208,7 +213,6 @@ func refresh() -> void:
 		var button := _extra_buttons.get(int(action["id"])) as Button
 		if button:
 			button.disabled = not _choosing or not _arena.can_use_extra(int(action["id"]))
-			button.tooltip_text = String(action["info"])
 			if int(action["id"]) == BattleArena.POTION:
 				button.text = "%s Poção ×%d" % [action["key"], _arena.potions]
 	for key: Variant in _enemy_rows.keys():
@@ -259,7 +263,32 @@ func choose_action() -> int:
 
 ## Escreve na caixa de texto, letra por letra, com o nome de quem fala na plaquinha. Volta quando terminar de escrever
 ## (e mais `hold` segundos para dar tempo de ler). Texto entre ** fica em vermelho (grito, como no Look Outside).
+## Passando o mouse num golpe ou ação: a descrição aparece embaixo da fala, dentro da caixa (vazio = some).
+func _hover_info(info: String) -> void:
+	if info == "":
+		if _hover_base != "":
+			_says.text = _hover_base
+			_hover_base = ""
+		return
+	if _hover_base == "":
+		_hover_base = _says.text
+	_says.text = _hover_base + "
+
+[font_size=15][color=#d9bd8f]" + info + "[/color][/font_size]"
+
+
+func _extra_info(id: int) -> String:
+	for action: Dictionary in _arena.extra_actions():
+		if int(action["id"]) == id:
+			return String(action["info"])
+	return ""
+
+
+var _hover_base: String = ""
+
+
 func say(speaker: String, text: String, hold: float = 0.0) -> void:
+	_hover_base = ""
 	_speaker.text = speaker if speaker != "" else "Luta"
 	%SpeakerTag.modulate.a = 1.0 if speaker != "" else 0.55
 	var shown := text

@@ -26,13 +26,27 @@
 [ext_resource type="PackedScene" path="res://world/props/meio_pao.tscn" id="24_meio_pao"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Table_Large.gltf" id="25_Table_Large"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Bag.gltf" id="26_Bag"]
-[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Shelf_Simple.gltf" id="27_Shelf_Simple"]
+[ext_resource type="PackedScene" path="res://world/props/estante_paes.tscn" id="27_estante_paes"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Barrel.gltf" id="28_Barrel"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Stool.gltf" id="29_Stool"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/FarmCrate_Empty.gltf" id="30_FarmCrate_Empt"]
 [ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Bench.gltf" id="31_Bench"]
 [ext_resource type="PackedScene" path="res://world/props/lanterna.tscn" id="32_lanterna"]
 [ext_resource type="FontFile" path="res://assets/fonts/cinzel.ttf" id="33_cinzel"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Baked-Goods/Pie_Apple.glb" id="34_Pie_Apple"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Baked-Goods/Pie_Cherry.glb" id="35_Pie_Cherry"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Baked-Goods/Cinnamon_Roll.glb" id="36_Cinnamon_Roll"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Coin_Pile.gltf" id="37_Coin_Pile"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/CandleStick.gltf" id="38_CandleStick"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Baked-Goods/Croissant.glb" id="39_Croissant"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Baked-Goods/Muffin.glb" id="40_Muffin"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Baked-Goods/Cookie.glb" id="41_Cookie"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Baked-Goods/Baguette.glb" id="42_Baguette"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Chandelier.gltf" id="43_Chandelier"]
+[ext_resource type="FontFile" path="res://assets/fonts/lato.ttf" id="44_lato"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Pot_1.gltf" id="45_Pot_1"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/natureza/Flower_3_Group.gltf" id="46_Flower_3_Group"]
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Baked-Goods/Bread.glb" id="47_Bread"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_1"]
 size = Vector3(1.6, 1, 1.2)
@@ -91,6 +105,82 @@ roughness = 0.8
 
 [sub_resource type="BoxMesh" id="BoxMesh_15"]
 size = Vector3(1.3, 0.5, 0.06)
+
+[sub_resource type="BoxMesh" id="BoxMesh_16"]
+size = Vector3(0.05, 0.95, 1.25)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_17"]
+albedo_color = Color(0.12, 0.13, 0.12, 1)
+roughness = 0.95
+
+[sub_resource type="BoxMesh" id="BoxMesh_18"]
+size = Vector3(0.04, 1.05, 1.35)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_19"]
+albedo_color = Color(0.45, 0.28, 0.15, 1)
+roughness = 0.95
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_20"]
+top_radius = 0.08
+bottom_radius = 0.08
+height = 0.75
+radial_segments = 8
+
+[sub_resource type="BoxMesh" id="BoxMesh_21"]
+size = Vector3(0.05, 1.7, 0.05)
+
+[sub_resource type="BoxMesh" id="BoxMesh_22"]
+size = Vector3(0.32, 0.03, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_23"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.98, 0.92, 0.35)
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_24"]
+size = Vector2(0.025, 0.025)
+material = SubResource("StandardMaterial3D_23")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_25"]
+emission_shape = 3
+emission_box_extents = Vector3(0.6, 0.15, 0.35)
+direction = Vector3(0, 1, 0)
+spread = 60.0
+initial_velocity_min = 0.03
+initial_velocity_max = 0.1
+gravity = Vector3(0, 0.02, 0)
+scale_min = 0.5
+scale_max = 1.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_26"]
+albedo_color = Color(0.95, 0.9, 0.78, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_27"]
+albedo_color = Color(0.72, 0.18, 0.15, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_28"]
+size = Vector3(0.32, 0.03, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_29"]
+size = Vector3(1.92, 0.12, 0.03)
+
+[sub_resource type="BoxMesh" id="BoxMesh_30"]
+size = Vector3(1.4, 0.24, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_31"]
+size = Vector3(1.3, 0.04, 0.22)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_32"]
+albedo_color = Color(0.3, 0.2, 0.12, 1)
+roughness = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_33"]
+size = Vector3(0.6, 0.9, 0.03)
 
 [node name="Padaria" type="Node3D" groups=["colisao_auto"]]
 
@@ -176,7 +266,7 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -1, 0, -5)
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1, 0, -5)
 
 [node name="Porta" parent="." instance=ExtResource("6_Door_1_Round")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2.45, 0, -4.88)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.55, 0, -4.64)
 
 [node name="Wall_Plaster_Window_Wide_Flat3" parent="." instance=ExtResource("2_Wall_Plaster_W")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 3, 0, -5)
@@ -375,77 +465,11 @@ transform = Transform3D(0.5526, 0, 0.2337, 0, 0.6, 0, -0.2337, 0, 0.5526, 0, 0.9
 [node name="MassaMesa" parent="." instance=ExtResource("22_pao")]
 transform = Transform3D(1.9107, 0, 0.591, 0, 2, 0, -0.591, 0, 1.9107, 0.6, 1, 2)
 
-[node name="Prateleira" parent="." instance=ExtResource("27_Shelf_Simple")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1.4, 0.85, 4.69)
+[node name="EstantePao" parent="." instance=ExtResource("27_estante_paes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 0, 4.45)
 
-[node name="PaoPrateleira" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(1.4701, 0, 0.298, 0, 1.5, 0, -0.298, 0, 1.4701, 1.05, 1, 4.52)
-
-[node name="PaoPrateleira2" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(0.5435, 0, 1.3981, 0, 1.5, 0, -1.3981, 0, 0.5435, 1.4, 1, 4.52)
-
-[node name="PaoPrateleira3" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(-0.8828, 0, 1.2127, 0, 1.5, 0, -1.2127, 0, -0.8828, 1.75, 1, 4.52)
-
-[node name="Prateleira2" parent="." instance=ExtResource("27_Shelf_Simple")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2.8, 0.85, 4.69)
-
-[node name="PaoPrateleira4" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(1.4701, 0, 0.298, 0, 1.5, 0, -0.298, 0, 1.4701, 2.45, 1, 4.52)
-
-[node name="PaoPrateleira5" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(0.5435, 0, 1.3981, 0, 1.5, 0, -1.3981, 0, 0.5435, 2.8, 1, 4.52)
-
-[node name="PaoPrateleira6" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(-0.8828, 0, 1.2127, 0, 1.5, 0, -1.2127, 0, -0.8828, 3.15, 1, 4.52)
-
-[node name="Prateleira3" parent="." instance=ExtResource("27_Shelf_Simple")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1.4, 1.35, 4.69)
-
-[node name="PaoPrateleira7" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(0.5435, 0, 1.3981, 0, 1.5, 0, -1.3981, 0, 0.5435, 1.05, 1.5, 4.52)
-
-[node name="PaoPrateleira8" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(-0.8828, 0, 1.2127, 0, 1.5, 0, -1.2127, 0, -0.8828, 1.4, 1.5, 4.52)
-
-[node name="PaoPrateleira9" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(-1.4974, 0, -0.0876, 0, 1.5, 0, 0.0876, 0, -1.4974, 1.75, 1.5, 4.52)
-
-[node name="Prateleira4" parent="." instance=ExtResource("27_Shelf_Simple")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2.8, 1.35, 4.69)
-
-[node name="PaoPrateleira10" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(0.5435, 0, 1.3981, 0, 1.5, 0, -1.3981, 0, 0.5435, 2.45, 1.5, 4.52)
-
-[node name="PaoPrateleira11" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(-0.8828, 0, 1.2127, 0, 1.5, 0, -1.2127, 0, -0.8828, 2.8, 1.5, 4.52)
-
-[node name="PaoPrateleira12" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(-1.4974, 0, -0.0876, 0, 1.5, 0, 0.0876, 0, -1.4974, 3.15, 1.5, 4.52)
-
-[node name="Prateleira5" parent="." instance=ExtResource("27_Shelf_Simple")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1.4, 1.85, 4.69)
-
-[node name="PaoPrateleira13" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(-0.8828, 0, 1.2127, 0, 1.5, 0, -1.2127, 0, -0.8828, 1.05, 2, 4.52)
-
-[node name="PaoPrateleira14" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(-1.4974, 0, -0.0876, 0, 1.5, 0, 0.0876, 0, -1.4974, 1.4, 2, 4.52)
-
-[node name="PaoPrateleira15" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(-0.7354, 0, -1.3074, 0, 1.5, 0, 1.3074, 0, -0.7354, 1.75, 2, 4.52)
-
-[node name="Prateleira6" parent="." instance=ExtResource("27_Shelf_Simple")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 2.8, 1.85, 4.69)
-
-[node name="PaoPrateleira16" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(-0.8828, 0, 1.2127, 0, 1.5, 0, -1.2127, 0, -0.8828, 2.45, 2, 4.52)
-
-[node name="PaoPrateleira17" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(-1.4974, 0, -0.0876, 0, 1.5, 0, 0.0876, 0, -1.4974, 2.8, 2, 4.52)
-
-[node name="PaoPrateleira18" parent="." instance=ExtResource("22_pao")]
-transform = Transform3D(-0.7354, 0, -1.3074, 0, 1.5, 0, 1.3074, 0, -0.7354, 3.15, 2, 4.52)
+[node name="EstantePao2" parent="." instance=ExtResource("27_estante_paes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.95, 0, 4.45)
 
 [node name="Farinha" parent="." instance=ExtResource("26_Bag")]
 transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 3.3, 0, 2)
@@ -542,6 +566,379 @@ double_sided = false
 
 [node name="PaoPlaca" parent="." instance=ExtResource("22_pao")]
 transform = Transform3D(2.2, 0, 0, 0, 2.2, 0, 0, 0, 2.2, 1, 3.1, -5.2)
+
+[node name="Torta" parent="." instance=ExtResource("34_Pie_Apple")]
+transform = Transform3D(0.2484, 0, 0.0768, 0, 0.26, 0, -0.0768, 0, 0.2484, -2, 0.98, -1.15)
+
+[node name="Torta2" parent="." instance=ExtResource("35_Pie_Cherry")]
+transform = Transform3D(0.0942, 0, 0.2423, 0, 0.26, 0, -0.2423, 0, 0.0942, 0.05, 0.98, -1.2)
+
+[node name="Rolinho" parent="." instance=ExtResource("36_Cinnamon_Roll")]
+transform = Transform3D(0.28, 0, 0, 0, 0.28, 0, 0, 0, 0.28, -0.95, 0.98, -1.28)
+
+[node name="Rolinho2" parent="." instance=ExtResource("36_Cinnamon_Roll")]
+transform = Transform3D(0.1513, 0, 0.2356, 0, 0.28, 0, -0.2356, 0, 0.1513, -0.81, 0.98, -1.28)
+
+[node name="Rolinho3" parent="." instance=ExtResource("36_Cinnamon_Roll")]
+transform = Transform3D(-0.1165, 0, 0.2546, 0, 0.28, 0, -0.2546, 0, -0.1165, -0.95, 0.98, -1.12)
+
+[node name="Rolinho4" parent="." instance=ExtResource("36_Cinnamon_Roll")]
+transform = Transform3D(-0.2772, 0, 0.0395, 0, 0.28, 0, -0.0395, 0, -0.2772, -0.81, 0.98, -1.12)
+
+[node name="Moedas" parent="." instance=ExtResource("37_Coin_Pile")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 1.5, 0.98, -0.98)
+
+[node name="Vela" parent="." instance=ExtResource("38_CandleStick")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 0.98, -1)
+
+[node name="MesaVitrine" parent="." instance=ExtResource("25_Table_Large")]
+transform = Transform3D(0.62, 0, 0, 0, 0.95, 0, 0, 0, 0.75, -2.2, 0, -3.15)
+
+[node name="Doce" parent="." instance=ExtResource("34_Pie_Apple")]
+transform = Transform3D(0.24, 0, 0, 0, 0.24, 0, 0, 0, 0.24, -2.95, 0.78, -3.3)
+
+[node name="Doce2" parent="." instance=ExtResource("39_Croissant")]
+transform = Transform3D(0.2065, 0, 0.1739, 0, 0.27, 0, -0.1739, 0, 0.2065, -2.47, 0.78, -3.3)
+
+[node name="Doce3" parent="." instance=ExtResource("40_Muffin")]
+transform = Transform3D(0.0459, 0, 0.2661, 0, 0.27, 0, -0.2661, 0, 0.0459, -1.99, 0.78, -3.3)
+
+[node name="Doce4" parent="." instance=ExtResource("39_Croissant")]
+transform = Transform3D(-0.1363, 0, 0.2331, 0, 0.27, 0, -0.2331, 0, -0.1363, -1.51, 0.78, -3.3)
+
+[node name="Doce5" parent="." instance=ExtResource("35_Pie_Cherry")]
+transform = Transform3D(-0.2261, 0, 0.0804, 0, 0.24, 0, -0.0804, 0, -0.2261, -2.95, 0.78, -3)
+
+[node name="Doce6" parent="." instance=ExtResource("40_Muffin")]
+transform = Transform3D(-0.2528, 0, -0.0947, 0, 0.27, 0, 0.0947, 0, -0.2528, -2.47, 0.78, -3)
+
+[node name="Doce7" parent="." instance=ExtResource("36_Cinnamon_Roll")]
+transform = Transform3D(-0.1373, 0, -0.244, 0, 0.28, 0, 0.244, 0, -0.1373, -1.99, 0.78, -3)
+
+[node name="Doce8" parent="." instance=ExtResource("41_Cookie")]
+transform = Transform3D(0.056, 0, -0.2947, 0, 0.3, 0, 0.2947, 0, 0.056, -1.51, 0.78, -3)
+
+[node name="Baguete" parent="." instance=ExtResource("42_Baguette")]
+transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, -3.75, 0.2, -1.8)
+
+[node name="Baguete2" parent="." instance=ExtResource("42_Baguette")]
+transform = Transform3D(0.436, 0, 0.1113, 0, 0.45, 0, -0.1113, 0, 0.436, -3.75, 0.23, -1.92)
+
+[node name="Baguete3" parent="." instance=ExtResource("42_Baguette")]
+transform = Transform3D(0.3949, 0, 0.2157, 0, 0.45, 0, -0.2157, 0, 0.3949, -3.75, 0.26, -2.04)
+
+[node name="BarrilBaguete" parent="." instance=ExtResource("28_Barrel")]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, -3.6, 0, -1.9)
+
+[node name="Lustre" parent="." instance=ExtResource("43_Chandelier")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 3.05, -2.7)
+
+[node name="Lustre2" parent="." instance=ExtResource("43_Chandelier")]
+transform = Transform3D(0.829, 0, 0.3505, 0, 0.9, 0, -0.3505, 0, 0.829, 0.3, 3.05, 2.2)
+
+[node name="Luz" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 2.2, -2.7)
+light_color = Color(1, 0.8, 0.55, 1)
+light_energy = 1.5
+omni_range = 7
+distance_fade_enabled = true
+distance_fade_begin = 30.0
+distance_fade_length = 10.0
+
+[node name="Luz2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 2.2, 2.2)
+light_color = Color(1, 0.8, 0.55, 1)
+light_energy = 1.3
+omni_range = 6.5
+distance_fade_enabled = true
+distance_fade_begin = 30.0
+distance_fade_length = 10.0
+
+[node name="Lousa" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.66, 1.75, -3.2)
+mesh = SubResource("BoxMesh_16")
+material_override = SubResource("StandardMaterial3D_17")
+
+[node name="LousaMoldura" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.67, 1.75, -3.2)
+mesh = SubResource("BoxMesh_18")
+material_override = ExtResource("20_tabuas")
+
+[node name="Cardapio" type="Label3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -3.625, 1.75, -3.2)
+pixel_size = 0.0028
+text = "PÃO DO DIA
+
+Filão ....... 2 cobres
+Broa ........ 1 cobre
+Torta ....... 5 cobres
+Rosca ...... 3 cobres
+
+FIADO: NÃO"
+font = ExtResource("44_lato")
+font_size = 34
+modulate = Color(0.95, 0.95, 0.9, 1)
+outline_size = 0
+double_sided = false
+
+[node name="Lenha" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -1.45, 0.08, 4)
+mesh = SubResource("CylinderMesh_20")
+material_override = SubResource("StandardMaterial3D_19")
+
+[node name="Lenha2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -1.28, 0.08, 4)
+mesh = SubResource("CylinderMesh_20")
+material_override = SubResource("StandardMaterial3D_19")
+
+[node name="Lenha3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -1.11, 0.08, 4)
+mesh = SubResource("CylinderMesh_20")
+material_override = SubResource("StandardMaterial3D_19")
+
+[node name="Lenha4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -1.5, 0.23, 4)
+mesh = SubResource("CylinderMesh_20")
+material_override = SubResource("StandardMaterial3D_19")
+
+[node name="Lenha5" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -1.33, 0.23, 4)
+mesh = SubResource("CylinderMesh_20")
+material_override = SubResource("StandardMaterial3D_19")
+
+[node name="Lenha6" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -1.16, 0.23, 4)
+mesh = SubResource("CylinderMesh_20")
+material_override = SubResource("StandardMaterial3D_19")
+
+[node name="Lenha7" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -1.55, 0.38, 4)
+mesh = SubResource("CylinderMesh_20")
+material_override = SubResource("StandardMaterial3D_19")
+
+[node name="PaCabo" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9928, -0.1197, 0, 0.1173, 0.973, -0.1987, 0.0238, 0.1972, 0.9801, -3.75, 0.9, 3.4)
+mesh = SubResource("BoxMesh_21")
+material_override = ExtResource("20_tabuas")
+
+[node name="PaPa" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.995, 0, 0.0998, 0, 1, 0, -0.0998, 0, 0.995, -3.65, 0.08, 3.55)
+mesh = SubResource("BoxMesh_22")
+material_override = ExtResource("20_tabuas")
+
+[node name="PoeiraDeFarinha" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 1.05, 2.2)
+amount = 40
+lifetime = 4.0
+process_material = SubResource("ParticleProcessMaterial_25")
+draw_pass_1 = SubResource("QuadMesh_24")
+
+[node name="Ganchos2" parent="." instance=ExtResource("18_Peg_Rack")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -3.67, 1.7, 2.4)
+
+[node name="Panela" parent="." instance=ExtResource("45_Pot_1")]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, -3.55, 1.45, 2.1)
+
+[node name="Balde" parent="." instance=ExtResource("19_Bucket_Wooden_")]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, -3.55, 1.35, 2.7)
+
+[node name="Toldo" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, -3.8, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_26")
+
+[node name="Toldo2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, -3.48, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_27")
+
+[node name="Toldo3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, -3.16, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_26")
+
+[node name="Toldo4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, -2.84, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_27")
+
+[node name="Toldo5" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, -2.52, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_26")
+
+[node name="Toldo6" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, -2.2, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_27")
+
+[node name="ToldoFranja" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 2.2, -5.95)
+mesh = SubResource("BoxMesh_29")
+material_override = SubResource("StandardMaterial3D_27")
+
+[node name="Floreira" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.95, -5.3)
+mesh = SubResource("BoxMesh_30")
+material_override = ExtResource("20_tabuas")
+
+[node name="Terra" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.08, -5.3)
+mesh = SubResource("BoxMesh_31")
+material_override = SubResource("StandardMaterial3D_32")
+
+[node name="Flores" parent="." instance=ExtResource("46_Flower_3_Group")]
+transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, -3.45, 1.08, -5.3)
+
+[node name="Flores2" parent="." instance=ExtResource("46_Flower_3_Group")]
+transform = Transform3D(0.3135, 0, 0.3228, 0, 0.45, 0, -0.3228, 0, 0.3135, -3, 1.08, -5.3)
+
+[node name="Flores3" parent="." instance=ExtResource("46_Flower_3_Group")]
+transform = Transform3D(-0.0131, 0, 0.4498, 0, 0.45, 0, -0.4498, 0, -0.0131, -2.55, 1.08, -5.3)
+
+[node name="Toldo7" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, -1.8, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_26")
+
+[node name="Toldo8" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, -1.48, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_27")
+
+[node name="Toldo9" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, -1.16, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_26")
+
+[node name="Toldo10" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, -0.84, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_27")
+
+[node name="Toldo11" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, -0.52, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_26")
+
+[node name="Toldo12" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, -0.2, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_27")
+
+[node name="ToldoFranja2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 2.2, -5.95)
+mesh = SubResource("BoxMesh_29")
+material_override = SubResource("StandardMaterial3D_27")
+
+[node name="Floreira2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.95, -5.3)
+mesh = SubResource("BoxMesh_30")
+material_override = ExtResource("20_tabuas")
+
+[node name="Terra2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1.08, -5.3)
+mesh = SubResource("BoxMesh_31")
+material_override = SubResource("StandardMaterial3D_32")
+
+[node name="Flores4" parent="." instance=ExtResource("46_Flower_3_Group")]
+transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, -1.45, 1.08, -5.3)
+
+[node name="Flores5" parent="." instance=ExtResource("46_Flower_3_Group")]
+transform = Transform3D(0.3135, 0, 0.3228, 0, 0.45, 0, -0.3228, 0, 0.3135, -1, 1.08, -5.3)
+
+[node name="Flores6" parent="." instance=ExtResource("46_Flower_3_Group")]
+transform = Transform3D(-0.0131, 0, 0.4498, 0, 0.45, 0, -0.4498, 0, -0.0131, -0.55, 1.08, -5.3)
+
+[node name="Toldo13" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, 2.2, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_26")
+
+[node name="Toldo14" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, 2.52, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_27")
+
+[node name="Toldo15" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, 2.84, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_26")
+
+[node name="Toldo16" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, 3.16, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_27")
+
+[node name="Toldo17" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, 3.48, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_26")
+
+[node name="Toldo18" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9287, 0.3709, 0, -0.3709, 0.9287, 3.8, 2.42, -5.48)
+mesh = SubResource("BoxMesh_28")
+material_override = SubResource("StandardMaterial3D_27")
+
+[node name="ToldoFranja3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 2.2, -5.95)
+mesh = SubResource("BoxMesh_29")
+material_override = SubResource("StandardMaterial3D_27")
+
+[node name="Floreira3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.95, -5.3)
+mesh = SubResource("BoxMesh_30")
+material_override = ExtResource("20_tabuas")
+
+[node name="Terra3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1.08, -5.3)
+mesh = SubResource("BoxMesh_31")
+material_override = SubResource("StandardMaterial3D_32")
+
+[node name="Flores7" parent="." instance=ExtResource("46_Flower_3_Group")]
+transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, 2.55, 1.08, -5.3)
+
+[node name="Flores8" parent="." instance=ExtResource("46_Flower_3_Group")]
+transform = Transform3D(0.3135, 0, 0.3228, 0, 0.45, 0, -0.3228, 0, 0.3135, 3, 1.08, -5.3)
+
+[node name="Flores9" parent="." instance=ExtResource("46_Flower_3_Group")]
+transform = Transform3D(-0.0131, 0, 0.4498, 0, 0.45, 0, -0.4498, 0, -0.0131, 3.45, 1.08, -5.3)
+
+[node name="CavaleteA" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9801, 0.0492, 0.1925, 0, 0.9689, -0.2474, -0.1987, 0.2425, 0.9496, 2.55, 0.48, -6)
+mesh = SubResource("BoxMesh_33")
+material_override = SubResource("StandardMaterial3D_17")
+
+[node name="CavaleteB" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.9801, -0.0492, 0.1925, 0, 0.9689, 0.2474, -0.1987, -0.2425, 0.9496, 2.55, 0.48, -5.62)
+mesh = SubResource("BoxMesh_33")
+material_override = ExtResource("20_tabuas")
+
+[node name="CavaleteTexto" type="Label3D" parent="."]
+transform = Transform3D(-0.9801, -0.0492, -0.1925, 0, 0.9689, -0.2474, 0.1987, -0.2425, -0.9496, 2.53, 0.52, -6.06)
+pixel_size = 0.0032
+text = "PÃO
+QUENTE!"
+font = ExtResource("33_cinzel")
+font_size = 40
+modulate = Color(0.98, 0.95, 0.85, 1)
+outline_size = 0
+double_sided = false
+
+[node name="BancoFora" parent="." instance=ExtResource("31_Bench")]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, -1.6, 0, -5.6)
+
+[node name="CestaFora" parent="." instance=ExtResource("26_Bag")]
+transform = Transform3D(0.5265, 0, 0.2877, 0, 0.6, 0, -0.2877, 0, 0.5265, -1.9, 0.38, -5.6)
+
+[node name="PaoFora" parent="." instance=ExtResource("47_Bread")]
+transform = Transform3D(0.32, 0, 0, 0, 0.32, 0, 0, 0, 0.32, -1.35, 0.4, -5.6)
+
+[node name="PaoFora2" parent="." instance=ExtResource("47_Bread")]
+transform = Transform3D(0.2641, 0, 0.1807, 0, 0.32, 0, -0.1807, 0, 0.2641, -1.15, 0.4, -5.6)
+
+[node name="PaoFora3" parent="." instance=ExtResource("47_Bread")]
+transform = Transform3D(0.116, 0, 0.2983, 0, 0.32, 0, -0.2983, 0, 0.116, -0.95, 0.4, -5.6)
 
 [node name="PontoBalcao" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0, -0.35)

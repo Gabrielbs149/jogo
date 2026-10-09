@@ -1,0 +1,35 @@
+[gd_scene format=3]
+
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
+size = Vector3(2.2, 0.015, 1.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
+albedo_color = Color(0.75, 0.62, 0.35, 1)
+roughness = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_3"]
+size = Vector3(1.95, 0.02, 1.25)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4"]
+albedo_color = Color(0.22, 0.38, 0.2, 1)
+roughness = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_5"]
+size = Vector3(0.7, 0.024, 0.7)
+
+[node name="Tapete_verde" type="Node3D"]
+
+[node name="Borda" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.008, 0)
+mesh = SubResource("BoxMesh_1")
+material_override = SubResource("StandardMaterial3D_2")
+
+[node name="Meio" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.012, 0)
+mesh = SubResource("BoxMesh_3")
+material_override = SubResource("StandardMaterial3D_4")
+
+[node name="Losango" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, 0.7071, 0, 0.013, 0)
+mesh = SubResource("BoxMesh_5")
+material_override = SubResource("StandardMaterial3D_2")

@@ -251,6 +251,49 @@ def rotina():
     save("musica/rotina.wav", loop, -11.0)
 
 
+def taverna():
+    """Música do bardo da taverna (D061): alaúde animado em ré maior, 6/8, 112 bpm (laço de ~34 s)."""
+    bpm = 112
+    beat = 60.0 / bpm / 2.0  # colcheia
+    chords = [("D3", ["A3", "D4", "F#4"]), ("G2", ["D3", "G3", "B3"]), ("A2", ["E3", "A3", "C#4"]), ("D3", ["A3", "D4", "F#4"]),
+              ("B2", ["F#3", "B3", "D4"]), ("G2", ["D3", "G3", "B3"]), ("A2", ["E3", "A3", "C#4"]), ("D3", ["A3", "D4", "F#4"])]
+    tune = ["F#4", "E4", "D4", "A4", None, "F#4", "G4", "F#4", "E4", "D4", None, "B3", "A3", "C#4", "E4", "A4", "G4", "E4",
+            "F#4", "A4", "D5", "A4", "F#4", "D4", "B4", "A4", "F#4", "D4", "E4", "F#4", "G4", "F#4", "E4", "C#4", "E4", "A4",
+            "B4", "A4", "G4", "F#4", "E4", "D4", "D4", None, "A3", "D4", None, None]
+    extra = {"F#3": 185.0, "F#4": 369.99, "C#4": 277.18, "B2": 123.47, "A4": 440.0, "B4": 493.88, "D5": 587.33, "G4": 392.0}
+    notes = dict(NOTE)
+    notes.update(extra)
+    bar = 6 * beat
+    total = len(chords) * 2 * bar + 2.0
+    out = np.zeros(int(total * RATE))
+
+    def put(signal, at, gain):
+        i = max(0, int(at * RATE))
+        end = min(len(out), i + len(signal))
+        out[i:end] += signal[: end - i] * gain
+
+    for rep in range(2):
+        for c, (bass, upper) in enumerate(chords):
+            t0 = (rep * len(chords) + c) * bar
+            put(pluck(notes[bass], 1.8, 0.4, 0.996), t0, 0.8)
+            for k, note in enumerate([upper[0], upper[1], upper[2], upper[1], upper[2], upper[1]]):
+                put(pluck(notes[note], 0.9, 0.55, 0.993), t0 + k * beat + rng.normal(0, 0.005), 0.32)
+    for k, note in enumerate(tune):
+        if note:
+            put(pluck(notes[note] * 2, 0.8, 0.7, 0.992), 2 * len(chords) * bar * 0.5 + k * beat * 2 - len(chords) * bar, 0.0)
+    # a melodia toca nas duas voltas
+    for rep in range(2):
+        for k, note in enumerate(tune):
+            if note:
+                put(pluck(notes[note] * 2, 0.8, 0.7, 0.992), rep * len(chords) * bar + k * beat + rng.normal(0, 0.006), 0.36)
+    room = np.zeros_like(out)
+    for dly, g in [(0.023, 0.3), (0.051, 0.2), (0.087, 0.12)]:
+        k = int(dly * RATE)
+        room[k:] += out[:-k] * g
+    mix = shape(out + room, lambda f: lowpass(f, 5000, 2) * (f > 60))
+    save("musica/taverna.wav", loop_crossfade(mix, 1.5), -6.0)
+
+
 if __name__ == "__main__":
     cidade()
     for i in range(4):
@@ -262,3 +305,4 @@ if __name__ == "__main__":
     for i in range(3):
         pegar_comida(i)
     rotina()
+    taverna()

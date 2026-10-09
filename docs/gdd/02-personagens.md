@@ -65,6 +65,7 @@ Cena de abertura (D029, falas *(proposta)*): beco, fogueirinha, rato espetado as
 
 ## Moradores de Arandu *(proposta)*
 Padeiro, dono da padaria (Barbarian, atrás do balcão, D040), viúva na porta da Casa da Viúva (Mage, recebe a encomenda; antes era a padeira da praça), vendedor de frutas (Barbarian com caneco), guarda do portão (Knight com espada: "lá fora as estrelas andam estranhas"), criança que chama o Tico de "moço-planta" (Rogue). Mais figurantes sem fala pela cidade (D027).
+Lojas (D061, falas *(proposta)*): taverneiro do Caneco Torto, bardo, Ferraz do Empório, padre da capela, sapateiro, conselheiros, estalajadeira, alfaiate, boticária; moradores em casa (de dia) e dormindo (de noite); malabarista e músico de rua na praça.
 Do primeiro dia (D059): **Seu Brás**, mendigo que conhece o Tico, sentado na esquina perto do beco (Rogue_Hooded); **o carregador** do celeiro da cidade, de pé torcido, paga com o próprio almoço (Barbarian); **Pipo**, garoto que pega uma maçã para a irmã com febre (Rogue pequeno); o **vendedor de frutas** passa a ter falas (perdeu três frutas na semana, o aluguel da banca dobrou).
 
 ## Inimigos (capítulo de Ethera)

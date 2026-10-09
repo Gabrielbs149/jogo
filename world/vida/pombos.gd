@@ -83,8 +83,10 @@ func _update_ground(b: Dictionary, delta: float) -> void:
 			b["timer"] = randf_range(0.8, 4.0)
 			var angle := randf() * TAU
 			b["target"] = Vector3(cos(angle), 0, sin(angle)) * randf_range(0.2, raio)
-	for wing: Node3D in b["wings"]:
-		wing.rotation.z = 0.0
+	# no chão as asas ficam dobradas para trás, ao longo do corpo
+	var wings: Array = b["wings"]
+	(wings[0] as Node3D).rotation = Vector3(0, -1.35, 0)
+	(wings[1] as Node3D).rotation = Vector3(0, 1.35, 0)
 
 
 func _take_off(from: Vector3) -> void:
@@ -118,8 +120,8 @@ func _update_air(delta: float) -> void:
 		b["phase"] = float(b["phase"]) + delta * 22.0
 		var flap := sin(float(b["phase"])) * 1.1
 		var wings: Array = b["wings"]
-		(wings[0] as Node3D).rotation.z = flap
-		(wings[1] as Node3D).rotation.z = -flap
+		(wings[0] as Node3D).rotation = Vector3(0, 0, flap)
+		(wings[1] as Node3D).rotation = Vector3(0, 0, -flap)
 		(b["body"] as Node3D).rotation.x = -0.15
 
 

@@ -1,0 +1,80 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Workbench.gltf" id="1_vf0q0"]
+[ext_resource type="PackedScene" path="res://world/props/estante_tecidos.tscn" id="2_t06p0"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Dummy.gltf" id="3_brldl"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Stool.gltf" id="4_n6wwy"]
+[ext_resource type="PackedScene" path="res://world/props/morador.tscn" id="5_rgb45"]
+[ext_resource type="Script" path="res://world/vida/morador.gd" id="6_yecw8"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0udqg"]
+size = Vector3(1.98, 0.9, 0.97999996)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fngwu"]
+size = Vector3(0.54, 1.9, 0.76)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bp3h4"]
+size = Vector3(0.54, 1.9, 0.76)
+
+[node name="InteriorCasa_estreita" type="Node3D" unique_id=292586732]
+
+[node name="Bancada" parent="." unique_id=1703361637 instance=ExtResource("1_vf0q0")]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -0.24212745, 0, 2.12)
+
+[node name="Colisao" type="StaticBody3D" parent="." unique_id=166609496]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.24212742, 0.45, 2.12)
+
+[node name="@CollisionShape3D@443" type="CollisionShape3D" parent="Colisao" unique_id=143825694]
+shape = SubResource("BoxShape3D_0udqg")
+
+[node name="EstanteTecidos" parent="." unique_id=98210395 instance=ExtResource("2_t06p0")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -1.42, 0, 0.34986848)
+
+[node name="Manequim" parent="." unique_id=1172449252 instance=ExtResource("3_brldl")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.34, 0, -0.027961768)
+
+[node name="Colisao2" type="StaticBody3D" parent="." unique_id=196100513]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3399999, 0.95, -0.02796176)
+
+[node name="@CollisionShape3D@444" type="CollisionShape3D" parent="Colisao2" unique_id=1494671355]
+shape = SubResource("BoxShape3D_fngwu")
+
+[node name="Manequim2" parent="." unique_id=1006239949 instance=ExtResource("3_brldl")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.34, 0, -1.8787122)
+
+[node name="Colisao3" type="StaticBody3D" parent="." unique_id=1196848523]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3399999, 0.95, -1.878712)
+
+[node name="@CollisionShape3D@445" type="CollisionShape3D" parent="Colisao3" unique_id=1906895483]
+shape = SubResource("BoxShape3D_bp3h4")
+
+[node name="Banquinho" parent="." unique_id=578301945 instance=ExtResource("4_n6wwy")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.39, 0, -1.1117998)
+
+[node name="Morador" parent="." unique_id=1073023918 instance=ExtResource("5_rgb45")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.2, 0, 0.2)
+script = ExtResource("6_yecw8")
+de = 8.0
+ate = 18.0
+gestos = Array[String](["Use_Item", "Interact", "Idle"])
+troca = Vector2(6, 12)
+emotes = Array[String](["?", "nota"])
+
+[node name="Figure" parent="Morador" index="0"]
+personagem = "Mage"
+animacao = "Use_Item"
+cor_roupa = 0.82
+
+[node name="Talk" parent="Morador" index="2"]
+prompt_text = "Falar"
+text = "— Um capuz desses? Furado assim? Me dá aqui que eu remendo. ...Não, de graça não."
+
+[node name="Luz" type="OmniLight3D" parent="." unique_id=1018627017]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.1
+distance_fade_enabled = true
+distance_fade_begin = 32.0
+omni_range = 5.7
+
+[editable path="Morador"]

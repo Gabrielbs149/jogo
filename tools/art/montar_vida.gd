@@ -43,6 +43,7 @@ func _run() -> void:
 	_vendors()
 	_animals()
 	_pigeons()
+	_attractions()
 	var packed := PackedScene.new()
 	print("pack ", packed.pack(level), " save ", ResourceSaver.save(packed, LEVEL))
 	quit()
@@ -117,7 +118,8 @@ func _spots(vida: Node3D) -> void:
 				add.call("banca", s.global_position + front * 1.9 + side * k, {"olhar": s.global_position, "anims": ["Interact", "PickUp", "Use_Item", "Idle"],
 					"min": 6.0, "max": 15.0, "emotes": ["?", "nota", "...", "coracao"], "emote_chance": 0.3, "peso": 1.5})
 	# portas: lojas (entram e saem) e casas (onde dormem)
-	var shops := ["Padaria", "Ferreiro", "Sapateiro", "Estalagem", "Taverna", "Capela", "CasaDoMercador", "CasaDoConselho", "Alfaiate"]
+	var shops := ["Padaria", "Ferreiro", "Sapateiro", "Estalagem", "Taverna", "Capela", "CasaDoMercador", "CasaDoConselho",
+		"Casa_estreita", "Casa_estreita_pedra2"]  # as duas últimas são o alfaiate e o boticário (D061)
 	for building: Node in level.get_node("Buildings").get_children():
 		var b := building as Node3D
 		if b == null or absf(b.global_position.x) > INNER or absf(b.global_position.z) > INNER:
@@ -147,7 +149,8 @@ func _door(b: Node3D) -> Vector3:
 	var first := true
 	for found: Node in b.find_children("*", "MeshInstance3D", true, false):
 		var mesh := found as MeshInstance3D
-		if mesh.mesh == null:
+		# só a casa: móveis e gente de dentro (D061) não mudam onde fica a porta
+		if mesh.mesh == null or not mesh.is_inside_tree() or b.get_node_or_null("Interior") and b.get_node("Interior").is_ancestor_of(mesh):
 			continue
 		var local := (inv * mesh.global_transform) * mesh.get_aabb()
 		box = local if first else box.merge(local)
@@ -333,6 +336,107 @@ func _pigeons() -> void:
 		flock.global_position = spec[1]
 		flock.set("raio", spec[2])
 		flock.set("quantidade", spec[3])
+
+
+# --- atrações da praça (D061) -------------------------------------------------------------------------
+
+## O malabarista e o músico de rua perto da fonte, e o mural de avisos da cidade (F lê).
+func _attractions() -> void:
+	var holder := _child(level, "Atracoes") as Node3D
+	holder.global_position = Vector3.ZERO
+	for child: Node in holder.get_children():
+		holder.remove_child(child)
+		child.free()
+	# malabarista ao sul da fonte, virado para a praça
+	var juggler := _street_person(holder, "Malabarista", Vector3(-4.2, 0, 8.6), Vector3(0, 0, -1), "Rogue", 0.95,
+		["Cheer", "Idle", "Cheer"], 10.0, 18.0, ["Olha a bolinha!", "Três bolas, nenhuma no chão!", "Uma moedinha pro artista?", "Aplausos, gente!"],
+		"— Malabarismo é fácil: é só não deixar nada cair. Igual a vida. ...Igual a vida não, a vida derruba.")
+	var balls := Node3D.new()
+	balls.name = "Bolinhas"
+	balls.set_script(load("res://world/vida/malabarista.gd"))
+	juggler.add_child(balls)
+	balls.owner = level
+	balls.position = Vector3(0, 1.0, -0.35)
+	# músico de rua do lado da fonte (o alaúde da taverna, mais baixinho)
+	var musician := _street_person(holder, "Musico", Vector3(7.6, 0, 3.4), Vector3(-1, 0, -0.3), "Mage", 0.35,
+		["Cheer", "Interact", "Cheer", "Idle"], 9.0, 17.0, [], "— Uma canção pela Lua? Ela anda tão quieta ultimamente.")
+	musician.set("emotes", _strings(["nota", "nota", "nota", "coracao"]))
+	musician.set("troca", Vector2(3.0, 6.0))
+	var music := AudioStreamPlayer3D.new()
+	music.name = "Musica"
+	musician.add_child(music)
+	music.owner = level
+	music.stream = load("res://assets/audio/musica/taverna.wav")
+	music.autoplay = true
+	music.unit_size = 2.5
+	music.max_distance = 22.0
+	music.volume_db = -12.0
+	music.bus = &"Musica"
+	# mural de avisos na beira norte da praça
+	var board := Node3D.new()
+	board.name = "Mural"
+	holder.add_child(board)
+	board.owner = level
+	board.global_transform = Transform3D(Basis(Vector3.UP, PI), Vector3(-12.0, 0, -15.8))  # a frente (-Z) olha para a praça
+	var wood := load("res://assets/materials/tabuas.tres") as Material
+	var parts := [[Vector3(1.8, 1.2, 0.08), Vector3(0, 1.6, 0), wood], [Vector3(0.12, 2.4, 0.12), Vector3(-0.85, 1.2, 0.02), wood],
+		[Vector3(0.12, 2.4, 0.12), Vector3(0.85, 1.2, 0.02), wood], [Vector3(2.0, 0.08, 0.3), Vector3(0, 2.3, 0.05), wood]]
+	for spec: Array in parts:
+		var mesh := MeshInstance3D.new()
+		var box := BoxMesh.new()
+		box.size = spec[0]
+		mesh.mesh = box
+		mesh.material_override = spec[2]
+		board.add_child(mesh)
+		mesh.owner = level
+		mesh.position = spec[1]
+	var paper := StandardMaterial3D.new()
+	paper.albedo_color = Color(0.93, 0.89, 0.78)
+	for k: int in 6:
+		var sheet := MeshInstance3D.new()
+		var box := BoxMesh.new()
+		box.size = Vector3(rng.randf_range(0.3, 0.42), rng.randf_range(0.32, 0.45), 0.01)
+		sheet.mesh = box
+		sheet.material_override = paper
+		board.add_child(sheet)
+		sheet.owner = level
+		sheet.position = Vector3(-0.6 + (k % 3) * 0.6 + rng.randf_range(-0.05, 0.05), 1.85 - (k / 3) * 0.5, -0.05)
+		sheet.rotation.z = rng.randf_range(-0.12, 0.12)
+	var read := Node3D.new()
+	read.name = "Ler"
+	read.set_script(load("res://world/interactable.gd"))
+	board.add_child(read)
+	read.owner = level
+	read.position = Vector3(0, 1.4, -0.4)
+	read.set("action", 0)
+	read.set("prompt_text", "Ler o mural de avisos")
+	read.set("text", "MURAL DE AVISOS DE ARANDU\n\n• Procura-se gato malhado, atende por \"Senhor Bigode\". Recompensa: gratidão.\n• O Conselho lembra: é proibido dormir na fonte. Sim, você.\n• Achou uma bandeja de padaria? Devolva. O padeiro sabe quem foi.\n• Gente nova acampada perto do portão do leste. O Conselho pede calma e portas trancadas.\n• Aposta de dados na taverna toda noite. (O Bren não trapaceia. — Bren)")
+
+
+## Uma pessoa de rua fixa (Morador) com pregão: o Figurante, a colisão e o "Falar".
+func _street_person(parent: Node3D, person_name: String, at: Vector3, look: Vector3, model: String, hue: float, gestures: Array,
+		from: float, to: float, cries: Array, line: String) -> Node3D:
+	var person := (load("res://world/props/morador.tscn") as PackedScene).instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node3D
+	person.name = person_name
+	parent.add_child(person)
+	person.owner = level
+	person.global_transform = Transform3D(Basis(Vector3.UP, atan2(-look.x, -look.z)), at)
+	var fig := person.get_node("Figure")
+	fig.set("personagem", model)
+	fig.set("cor_roupa", hue)
+	fig.set("sem_chapeu", model != "Mage")
+	fig.set("animacao", String(gestures[0]))
+	var talk := person.get_node("Talk")
+	talk.set("prompt_text", "Falar")
+	talk.set("text", line)
+	person.set_script(load("res://world/vida/morador.gd"))
+	person.set("de", from)
+	person.set("ate", to)
+	person.set("gestos", _strings(gestures))
+	person.set("pregao", _strings(cries))
+	person.set("emotes", _strings(["nota", "!"]))
+	level.set_editable_instance(person, true)
+	return person
 
 
 # --- ajudantes ----------------------------------------------------------------------------------------
