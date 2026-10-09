@@ -1588,12 +1588,28 @@ func _mesh_distance(item: Node3D, from: Vector3, dir: Vector3) -> float:
 	if item is MeshInstance3D:
 		meshes.append(item)
 	var home := _home(item)
+	# gente (Figurante): a malha com esqueleto não serve para o raio (a dos modelos da Quaternius fica em cm dentro da
+	# armadura); vale uma caixa do tamanho da pessoa
+	var people: Array[Node] = item.find_children("*", "Node3D", true, false).filter(func(n: Node) -> bool: return n is Figurante)
+	if item is Figurante:
+		people.append(item)
+	for person: Node in people:
+		var fig := person as Node3D
+		if not fig.is_visible_in_tree() or (not _interiors.is_empty() and _home(fig) != home):
+			continue
+		var size := fig.global_basis.get_scale()
+		var box := AABB(fig.global_position - Vector3(0.38 * size.x, 0.0, 0.38 * size.z), Vector3(0.76 * size.x, 2.3 * size.y, 0.76 * size.z))
+		var at: Variant = box.intersects_ray(from, dir)
+		if at != null:
+			best = minf(best, from.distance_to(at))
 	for found: Node in meshes:
 		var mi := found as MeshInstance3D
 		if mi.mesh == null or not mi.is_visible_in_tree():
 			continue
 		if not _interiors.is_empty() and _home(mi) != home:
 			continue  # os móveis do interior não são a casa
+		if not people.is_empty() and people.any(func(f: Node) -> bool: return f.is_ancestor_of(mi)):
+			continue  # já contou pela caixa da pessoa
 		var box := mi.global_transform * mi.get_aabb()
 		if box.intersects_ray(from, dir) == null and not box.has_point(from):
 			continue
