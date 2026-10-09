@@ -47,8 +47,8 @@ func _run() -> void:
 	# coisas para examinar no barraco (F): o herói vira para a coisa e lê um pensamento curto
 	var corner := level.get_node("TicoCorner")
 	var look := corner.get_node("Look")
-	look.set("prompt_text", "Examinar o papelão")
-	look.set("text", "O papelão onde o Tico e a Tika dormem. Já foi caixa de sabão; ainda tem um cheirinho de limpo, de tão velho.")
+	look.set("prompt_text", "Examinar a cama")
+	look.set("text", "A cama dos dois: palha dentro de um saco de farinha, em cima do papelão de uma caixa de sabão, que ainda tem um cheirinho de limpo, de tão velho. A colcha é de retalho, e nenhum retalho combina com o outro.")
 	var fire := cena.get_node("Fogueirinha") as Node3D
 	# a brasa da fogueirinha apagada: um pouco de luz quente no barraco (de noite o beco é um breu)
 	var ember := fire.get_node_or_null("Brasa") as OmniLight3D
