@@ -48,7 +48,7 @@ func _run() -> void:
 	var corner := level.get_node("TicoCorner")
 	var look := corner.get_node("Look")
 	look.set("prompt_text", "Examinar a cama")
-	look.set("text", "A cama dos dois: palha dentro de um saco de farinha, em cima do papelão de uma caixa de sabão, que ainda tem um cheirinho de limpo, de tão velho. A colcha é de retalho, e nenhum retalho combina com o outro.")
+	look.set("text", "Palha, saco de farinha e papelão. É dura, mas é nossa.")
 	var fire := cena.get_node("Fogueirinha") as Node3D
 	# a brasa da fogueirinha apagada: um pouco de luz quente no barraco (de noite o beco é um breu)
 	var ember := fire.get_node_or_null("Brasa") as OmniLight3D
@@ -63,11 +63,11 @@ func _run() -> void:
 	ember.omni_range = 3.2
 	ember.shadow_enabled = false
 	_examine(corner, "OlharFogueira", fire.global_position + Vector3(0, 0.4, 0), "Examinar a fogueirinha",
-		"Cinza morna da fogueira de ontem. Do rato, sobrou o rabo. A Tika jura que nunca comeu o rabo. A Tika já comeu o rabo.")
+		"Cinza fria. Do rato, só sobrou o rabo.")
 	_examine(corner, "OlharCaixote", (corner.get_node("Crate1") as Node3D).global_position + Vector3(0, 0.6, 0), "Examinar o caixote",
-		"O cofre da família: uma colher torta, um botão de latão e um toco de vela. O botão é da Tika. A vela também. A colher é dos dois.")
+		"Nosso cofre: uma colher torta, um botão e um toco de vela.")
 	_examine(corner, "OlharCaneca", (corner.get_node("Cup") as Node3D).global_position + Vector3(0, 0.3, 0), "Examinar a caneca",
-		"A caneca da Tika. Ninguém bebe nela, nem a Tika: ela diz que é de enfeite. É o único enfeite do barraco.")
+		"A caneca da Tika. Ninguém bebe nela: ela diz que é enfeite.")
 	# o prólogo
 	var holder := level.get_node("Missoes")
 	var quest := _child(holder, "PrologoTico", false)
@@ -221,11 +221,11 @@ func _side_alley() -> Node3D:
 	lamp.light_energy = 0.7
 	lamp.omni_range = 4.5
 	_examine(alley, "OlharBarril", Vector3(-7.9, 0.9, -48.45), "Examinar o barril",
-		"Água de chuva com gosto de telhado. Já matou a sede do Tico mais vezes do que ele gosta de admitir.")
+		"Água de chuva. Tem gosto de telhado.")
 	_examine(alley, "OlharCaixotes", Vector3(-12.0, 0.9, -48.5), "Examinar os caixotes",
-		"Caixotes de maçã, vazios. Alguém já passou por aqui antes, e foi mais rápido.")
+		"Vazios. Alguém chegou antes.")
 	_examine(alley, "OlharGato", Vector3(-11.5, 1.0, -48.45), "Examinar o gato",
-		"Um gato dormindo em cima do caixote. Ele abre um olho, avalia o Tico como comida e fecha de novo. Respeito mútuo.")
+		"Ele abre um olho, me mede e volta a dormir.")
 	# a fita: um laço roxo pequeno no chão, entre o caixote alto e a parede da casa
 	var ribbon := _child(alley, "Fita") as Node3D
 	ribbon.set_script(load("res://world/interactable.gd"))

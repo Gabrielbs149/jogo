@@ -35,6 +35,17 @@ func test_the_corner_has_its_pieces() -> void:
 	assert_eq(String(look.get("prompt_text")), "Examinar a cama")
 
 
+func test_the_scene_props_have_unique_names() -> void:
+	# o roteiro acha as coisas pelo nome ([na mão: Rato]); o rato que anda pela cidade se chamava "Rato" também e era
+	# ele que ia parar gigante na fogueira e na mão do Tico
+	for prop: String in ["Rato", "Tika", "Fogueirinha", "PedacoDaTika", "PaoDoTico", "MeioPaoTico", "MeioPaoTika",
+			"EspetoNoFogo", "TicoDeitado", "TicoSentado", "TikaAcordando", "TikaSentada"]:
+		var found := _level.find_children(prop, "", true, false)
+		assert_eq(found.size(), 1, "só um nó chamado %s na fase" % prop)
+		if found.size() > 0:
+			assert_true(String(found[0].get_path()).contains("CenaTico"), "%s é o da cena" % prop)
+
+
 func test_the_bed_has_no_collision() -> void:
 	# o Tico deita na marca TicoDeitado: se a cama tivesse colisão, ele seria empurrado para fora
 	var bed := _level.get_node("TicoCorner/Barraco/CamaTico") as Node3D

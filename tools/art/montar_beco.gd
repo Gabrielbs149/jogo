@@ -107,11 +107,11 @@ func _run() -> void:
 
 	# --- coisas para examinar (F)
 	_examine("OlharDesenho", FUNDO + Vector3(0.25, 0.8, 3.2), "Examinar o desenho",
-		"Um desenho de giz da Tika: os dois de mão dada, um sol e uma casa com fumaça saindo da chaminé. A casa ela fez maior que a do sapateiro.")
+		"A Tika desenhou a gente. E uma casa, com fumaça na chaminé.")
 	_examine("OlharVaral", FUNDO + Vector3(1.6, 1.4, LARGURA - 0.35), "Examinar o varal",
-		"A roupa dos dois secando. Secando é jeito de dizer: no beco o sol só entra ao meio-dia, e mesmo assim de passagem.")
+		"Nossa roupa. Aqui o sol quase não entra.")
 	_examine("OlharLanterna", FUNDO + Vector3(1.23, 1.3, FRENTE - 0.2), "Examinar a lanterna",
-		"Lanterna de vela achada no lixo do empório, com um vidro rachado. A vela dura uma noite, se ninguém abrir a porta dela para ver se ainda está acesa.")
+		"Vela pela metade. Dá pra mais uma noite.")
 	var packed := PackedScene.new()
 	print("pack ", packed.pack(level), " save ", ResourceSaver.save(packed, LEVEL))
 	quit()
@@ -200,8 +200,10 @@ func _examine(node_name: String, at: Vector3, prompt: String, text: String) -> v
 func _close_back(corner: Node3D) -> void:
 	var wall := "res://assets/kits/quaternius/vila/Wall_UnevenBrick_Straight.gltf"
 	for spec: Array in [["MuroVaoSul", -60.0, 0.56], ["MuroVaoNorte", -55.24, 0.2]]:
-		var node := _scene(String(spec[0]), wall, Transform3D(Basis(Vector3.UP, PI / 2.0).scaled(Vector3(float(spec[2]), 1.0, 1.0)),
-			Vector3(-12.7, 0.0, float(spec[1]))))
+		# a escala é no comprimento do muro (o x dele, antes de girar); escalar depois de girar encolhia a grossura e
+		# deixava o pedaço com 2 m, entrando na parede do fundo (as duas faces brigavam e a textura piscava)
+		var basis := Basis(Vector3.UP, PI / 2.0) * Basis.from_scale(Vector3(float(spec[2]), 1.0, 1.0))
+		var node := _scene(String(spec[0]), wall, Transform3D(basis, Vector3(-12.7, 0.0, float(spec[1]))))
 		node.add_to_group("colisao_auto", true)
 
 

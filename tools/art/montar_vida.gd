@@ -292,7 +292,10 @@ func _animals() -> void:
 	_animal(animals, "Shiba", PP + "Animated-Animal-Pack/Shiba_Inu.glb", 0.17, Vector3(3.0, 0, 6.0), 2, 12.0, 1.2)
 	_animal(animals, "Husky", PP + "Animated-Animal-Pack/Husky.glb", 0.17, Vector3(7.0, 0, -22.0), 2, 10.0, 1.3)
 	_animal(animals, "Burro", PP + "Animated-Animal-Pack/Donkey.glb", 0.3, Vector3(60.0, 0, -22.0), 0, 3.0, 0.6)
-	var rat := _animal(animals, "Rato", PP + "Animated-Enemies/Rat.glb", 0.22, Vector3(-9.6, 0, -48.7), 1, 2.0, 1.4)
+	# NÃO chamar de "Rato": o roteiro da cena do rato acha as coisas pelo nome ([na mão: Rato]) e pegava este, que ia
+	# parar gigante na fogueira e depois na mão do Tico, voando atrás dele
+	_remove("Animals/Rato")
+	var rat := _animal(animals, "Ratazana", PP + "Animated-Enemies/Rat.glb", 0.22, Vector3(-9.6, 0, -48.7), 1, 2.0, 1.4)
 	rat.set("velocidade", 1.4)
 	var cat := _animal(animals, "GatoPreguica", "res://world/props/gato.tscn", 1.0, Vector3(5.0, 0, -15.6), 3, 1.5, 0.35)
 	cat.set("dorme", true)

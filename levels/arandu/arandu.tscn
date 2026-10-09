@@ -1026,7 +1026,7 @@ shape = SubResource("BoxShape3D_02u00")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 0.6, -57.987137)
 script = ExtResource("inter")
 prompt_text = "Examinar a cama"
-text = "A cama dos dois: palha dentro de um saco de farinha, em cima do papelão de uma caixa de sabão, que ainda tem um cheirinho de limpo, de tão velho. A colcha é de retalho, e nenhum retalho combina com o outro."
+text = "Palha, saco de farinha e papelão. É dura, mas é nossa."
 
 [node name="Blanket" type="MeshInstance3D" parent="TicoCorner" unique_id=607289289]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.9, 0.02, -58.237137)
@@ -1050,65 +1050,65 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -12.
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.724999, 0.4, -57.771317)
 script = ExtResource("inter")
 prompt_text = "Examinar a fogueirinha"
-text = "Cinza morna da fogueira de ontem. Do rato, sobrou o rabo. A Tika jura que nunca comeu o rabo. A Tika já comeu o rabo."
+text = "Cinza fria. Do rato, só sobrou o rabo."
 
 [node name="OlharCaixote" type="Node3D" parent="TicoCorner" unique_id=383583189]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.95, 0.6, -56.33714)
 script = ExtResource("inter")
 prompt_text = "Examinar o caixote"
-text = "O cofre da família: uma colher torta, um botão de latão e um toco de vela. O botão é da Tika. A vela também. A colher é dos dois."
+text = "Nosso cofre: uma colher torta, um botão e um toco de vela."
 
 [node name="OlharCaneca" type="Node3D" parent="TicoCorner" unique_id=1135095415]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 1.4649999, -56.91)
 script = ExtResource("inter")
 prompt_text = "Examinar a caneca"
-text = "A caneca da Tika. Ninguém bebe nela, nem a Tika: ela diz que é de enfeite. É o único enfeite do barraco."
+text = "A caneca da Tika. Ninguém bebe nela: ela diz que é enfeite."
 
-[node name="Barraco" type="Node3D" parent="TicoCorner" unique_id=192627969]
+[node name="Barraco" type="Node3D" parent="TicoCorner" unique_id=982357787]
 
-[node name="Lona" parent="TicoCorner/Barraco" unique_id=1469249547 instance=ExtResource("13_j72at")]
+[node name="Lona" parent="TicoCorner/Barraco" unique_id=1640852641 instance=ExtResource("13_j72at")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.6, 0, -60.5)
 
-[node name="CamaTico" parent="TicoCorner/Barraco" unique_id=537892816 instance=ExtResource("14_p6hgq")]
+[node name="CamaTico" parent="TicoCorner/Barraco" unique_id=506272529 instance=ExtResource("14_p6hgq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.9, 0, -58.237137)
 
-[node name="CamaTika" parent="TicoCorner/Barraco" unique_id=1727037548 instance=ExtResource("15_sdiug")]
+[node name="CamaTika" parent="TicoCorner/Barraco" unique_id=1294478246 instance=ExtResource("15_sdiug")]
 transform = Transform3D(0.9393727, 0, 0.3428978, 0, 1, 0, -0.3428978, 0, 0.9393727, -9.95, 0, -57.287136)
 
-[node name="Assento" parent="TicoCorner/Barraco" unique_id=1110601529 instance=ExtResource("16_ygknx")]
+[node name="Assento" parent="TicoCorner/Barraco" unique_id=1371458166 instance=ExtResource("16_ygknx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.2, 0, -58.421314)
 
-[node name="Varal" parent="TicoCorner/Barraco" unique_id=892359583 instance=ExtResource("17_jpt2j")]
+[node name="Varal" parent="TicoCorner/Barraco" unique_id=480614044 instance=ExtResource("17_jpt2j")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.6, 0, -55.33)
 
-[node name="Lenha" parent="TicoCorner/Barraco" unique_id=334870207 instance=ExtResource("18_vg1n1")]
+[node name="Lenha" parent="TicoCorner/Barraco" unique_id=2058840720 instance=ExtResource("18_vg1n1")]
 transform = Transform3D(0.99680173, 0, 0.07991469, 0, 1, 0, -0.07991469, 0, 0.99680173, -12.450001, 0, -60.18)
 
-[node name="Cinzas" parent="TicoCorner/Barraco" unique_id=1111439104 instance=ExtResource("19_4ugmc")]
+[node name="Cinzas" parent="TicoCorner/Barraco" unique_id=272470465 instance=ExtResource("19_4ugmc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.724999, 0, -57.771317)
 
-[node name="Prateleira" parent="TicoCorner/Barraco" unique_id=1037636791 instance=ExtResource("20_rfcu5")]
+[node name="Prateleira" parent="TicoCorner/Barraco" unique_id=1687343712 instance=ExtResource("20_rfcu5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.6, 0, -57.39)
 
-[node name="Estaca" type="StaticBody3D" parent="TicoCorner/Barraco" unique_id=932346957]
+[node name="Estaca" type="StaticBody3D" parent="TicoCorner/Barraco" unique_id=308890204]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.370001, 1, -57.75)
 
-[node name="@CollisionShape3D@172" type="CollisionShape3D" parent="TicoCorner/Barraco/Estaca" unique_id=2066604783]
+[node name="@CollisionShape3D@172" type="CollisionShape3D" parent="TicoCorner/Barraco/Estaca" unique_id=1892030451]
 shape = SubResource("CylinderShape3D_vxw1a")
 
-[node name="MuroVaoSul" parent="TicoCorner/Barraco" unique_id=1623726102 groups=["colisao_auto"] instance=ExtResource("13_614qq")]
-transform = Transform3D(-2.4478377e-08, 0, 0.56, 0, 1, 0, -1, 0, -4.371139e-08, -12.7, 0, -60)
+[node name="MuroVaoSul" parent="TicoCorner/Barraco" unique_id=114135 groups=["colisao_auto"] instance=ExtResource("13_614qq")]
+transform = Transform3D(-2.4478377e-08, 0, 1, 0, 1, 0, -0.56, 0, -4.371139e-08, -12.7, 0, -60)
 
-[node name="MuroVaoNorte" parent="TicoCorner/Barraco" unique_id=134410762 groups=["colisao_auto"] instance=ExtResource("13_614qq")]
-transform = Transform3D(-8.742278e-09, 0, 0.2, 0, 1, 0, -1, 0, -4.371139e-08, -12.7, 0, -55.24)
+[node name="MuroVaoNorte" parent="TicoCorner/Barraco" unique_id=9734041 groups=["colisao_auto"] instance=ExtResource("13_614qq")]
+transform = Transform3D(-8.742278e-09, 0, 1, 0, 1, 0, -0.2, 0, -4.371139e-08, -12.7, 0, -55.24)
 
-[node name="VelaNaPrateleira" parent="TicoCorner/Barraco" unique_id=2020429428 instance=ExtResource("21_q1o0k")]
+[node name="VelaNaPrateleira" parent="TicoCorner/Barraco" unique_id=1170946725 instance=ExtResource("21_q1o0k")]
 transform = Transform3D(0.19005819, 0, 0, 0, 0.19005819, 0, 0, 0, 0.19005819, -12.5, 1.165, -57.29)
 
 [node name="Garrafa" parent="TicoCorner/Barraco" unique_id=574499478 instance=ExtResource("22_fd77n")]
 transform = Transform3D(0.1292687, 0, 0.054653935, 0, 0.14034761, 0, -0.054653935, 0, 0.1292687, -12.48, 1.165, -57.12)
 
-[node name="Florzinha" parent="TicoCorner/Barraco" unique_id=576491537 instance=ExtResource("23_7k23p")]
+[node name="Florzinha" parent="TicoCorner/Barraco" unique_id=1908122320 instance=ExtResource("23_7k23p")]
 transform = Transform3D(0.10789903, 0, 0, 0, 0.10789903, 0, 0, 0, 0.10789903, -12.5, 1.2767864, -56.69)
 
 [node name="Panela" parent="TicoCorner/Barraco" unique_id=1730623047 instance=ExtResource("24_j5mp4")]
@@ -1120,71 +1120,71 @@ transform = Transform3D(0.18823653, 0, 0, 0, 0.18823653, 0, 0, 0, 0.18823653, -1
 [node name="PaleteVelho" parent="TicoCorner/Barraco" unique_id=142769638 instance=ExtResource("27_nda1h")]
 transform = Transform3D(-4.371139e-08, -0.9489846, 0.31532237, 0, 0.31532237, 0.9489846, -1, 4.1481435e-08, -1.3783178e-08, -7.6000004, 0, -55.22)
 
-[node name="Sacos" parent="TicoCorner/Barraco" unique_id=771711496 instance=ExtResource("72_2oqiw")]
+[node name="Sacos" parent="TicoCorner/Barraco" unique_id=1935079491 instance=ExtResource("72_2oqiw")]
 transform = Transform3D(0.921061, 0, 0.38941833, 0, 1, 0, -0.38941833, 0, 0.921061, -8.400001, 0, -55.5)
 
-[node name="Balde" parent="TicoCorner/Barraco" unique_id=1427404442 instance=ExtResource("26_oqo87")]
+[node name="Balde" parent="TicoCorner/Barraco" unique_id=2040404784 instance=ExtResource("26_oqo87")]
 transform = Transform3D(0.4535961, 0, 0.8912074, 0, 1, 0, -0.8912074, 0, 0.4535961, -9.400001, 0, -60.15)
 
 [node name="Lanterna" parent="TicoCorner/Barraco" unique_id=1323499012 instance=ExtResource("30_x0oh2")]
 transform = Transform3D(0.23931627, 0, 0, 0, 0.23931627, 0, 0, 0, 0.23931627, -11.370001, 1.4688792, -57.75)
 
-[node name="LuzLanterna" type="OmniLight3D" parent="TicoCorner/Barraco" unique_id=1750639366]
+[node name="LuzLanterna" type="OmniLight3D" parent="TicoCorner/Barraco" unique_id=173513171]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.370001, 1.5888792, -57.75)
 light_color = Color(1, 0.66, 0.34, 1)
 light_energy = 0.55
 shadow_enabled = true
 omni_range = 3.4
 
-[node name="TocoDeVela" parent="TicoCorner/Barraco" unique_id=1317353334 instance=ExtResource("21_q1o0k")]
+[node name="TocoDeVela" parent="TicoCorner/Barraco" unique_id=862680516 instance=ExtResource("21_q1o0k")]
 transform = Transform3D(0.11086728, 0, 0, 0, 0.11086728, 0, 0, 0, 0.11086728, -12.07, 0.5622377, -56.23714)
 
-[node name="Chao" type="MeshInstance3D" parent="TicoCorner/Barraco" unique_id=273028882]
+[node name="Chao" type="MeshInstance3D" parent="TicoCorner/Barraco" unique_id=1261639028]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.150001, 0.012, -57.8)
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_p6hgq")
 
-[node name="Giz" type="Decal" parent="TicoCorner/Barraco" unique_id=691722237]
+[node name="Giz" type="Decal" parent="TicoCorner/Barraco" unique_id=915345398]
 transform = Transform3D(0, 1, 0, 0, 0, -1, -1, 0, 0, -12.68, 0.74, -57.3)
 size = Vector3(1.2, 0.5, 0.6)
 texture_albedo = ExtResource("33_wd36l")
 cull_mask = 1
 
-[node name="UmidadeFundo" type="Decal" parent="TicoCorner/Barraco" unique_id=832277737]
+[node name="UmidadeFundo" type="Decal" parent="TicoCorner/Barraco" unique_id=1806229099]
 transform = Transform3D(0, 1, 0, 0, 0, -1, -1, 0, 0, -12.68, 0.35, -57.8)
 size = Vector3(4, 0.5, 0.7)
 texture_albedo = ExtResource("34_su4gm")
 cull_mask = 1
 
-[node name="UmidadeViuva" type="Decal" parent="TicoCorner/Barraco" unique_id=1691098359]
+[node name="UmidadeViuva" type="Decal" parent="TicoCorner/Barraco" unique_id=437161630]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -9.6, 0.35, -60.54)
 size = Vector3(6, 0.5, 0.7)
 texture_albedo = ExtResource("34_su4gm")
 cull_mask = 1
 
-[node name="UmidadeSapateiro" type="Decal" parent="TicoCorner/Barraco" unique_id=1194761284]
+[node name="UmidadeSapateiro" type="Decal" parent="TicoCorner/Barraco" unique_id=800639390]
 transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, -9.6, 0.3, -55.08)
 size = Vector3(6, 0.5, 0.6)
 texture_albedo = ExtResource("34_su4gm")
 cull_mask = 1
 
-[node name="OlharDesenho" type="Node3D" parent="TicoCorner/Barraco" unique_id=1777876628]
+[node name="OlharDesenho" type="Node3D" parent="TicoCorner/Barraco" unique_id=1558259034]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.35, 0.8, -57.3)
 script = ExtResource("inter")
 prompt_text = "Examinar o desenho"
-text = "Um desenho de giz da Tika: os dois de mão dada, um sol e uma casa com fumaça saindo da chaminé. A casa ela fez maior que a do sapateiro."
+text = "A Tika desenhou a gente. E uma casa, com fumaça na chaminé."
 
-[node name="OlharVaral" type="Node3D" parent="TicoCorner/Barraco" unique_id=1179844506]
+[node name="OlharVaral" type="Node3D" parent="TicoCorner/Barraco" unique_id=67543342]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 1.4, -55.45)
 script = ExtResource("inter")
 prompt_text = "Examinar o varal"
-text = "A roupa dos dois secando. Secando é jeito de dizer: no beco o sol só entra ao meio-dia, e mesmo assim de passagem."
+text = "Nossa roupa. Aqui o sol quase não entra."
 
-[node name="OlharLanterna" type="Node3D" parent="TicoCorner/Barraco" unique_id=1576312966]
+[node name="OlharLanterna" type="Node3D" parent="TicoCorner/Barraco" unique_id=1206040918]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.370001, 1.3, -57.98)
 script = ExtResource("inter")
 prompt_text = "Examinar a lanterna"
-text = "Lanterna de vela achada no lixo do empório, com um vidro rachado. A vela dura uma noite, se ninguém abrir a porta dela para ver se ainda está acesa."
+text = "Vela pela metade. Dá pra mais uma noite."
 
 [node name="People" type="Node3D" parent="." unique_id=1560292177]
 
@@ -3693,31 +3693,31 @@ script = ExtResource("inter")
 action = 4
 prompt_text = "Largar o caixote"
 
-[node name="Carroca" parent="Props/BicoCeleiro" unique_id=1375999407 instance=ExtResource("41_n6gni")]
+[node name="Carroca" parent="Props/BicoCeleiro" unique_id=874430418 instance=ExtResource("41_n6gni")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.4, 0, -50.6)
 
-[node name="PosteCarroca" parent="Props/BicoCeleiro" unique_id=49255255 instance=ExtResource("26_e6kd3")]
+[node name="PosteCarroca" parent="Props/BicoCeleiro" unique_id=1408639276 instance=ExtResource("26_e6kd3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.4, 0, -52)
 
-[node name="LanternaGalpao" parent="Props/BicoCeleiro" unique_id=1527703731 instance=ExtResource("34_rx60w")]
+[node name="LanternaGalpao" parent="Props/BicoCeleiro" unique_id=1471755276 instance=ExtResource("34_rx60w")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 31.4, 1.9, -58.3)
 
 [node name="CaixoteCarroca0" parent="Props/BicoCeleiro" unique_id=504997077 instance=ExtResource("92_ob378")]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 24.9, 0, -50)
 
-[node name="CaixoteGalpao0" parent="Props/BicoCeleiro" unique_id=917684570 instance=ExtResource("92_ob378")]
+[node name="CaixoteGalpao0" parent="Props/BicoCeleiro" unique_id=1793833726 instance=ExtResource("92_ob378")]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 31.2, 0, -57.7)
 
-[node name="CaixoteCarroca1" parent="Props/BicoCeleiro" unique_id=295101067 instance=ExtResource("92_ob378")]
+[node name="CaixoteCarroca1" parent="Props/BicoCeleiro" unique_id=1509666797 instance=ExtResource("92_ob378")]
 transform = Transform3D(0.4844562, 0, 0.12370198, 0, 0.5, 0, -0.12370198, 0, 0.4844562, 24.9, 0, -49.45)
 
-[node name="CaixoteGalpao1" parent="Props/BicoCeleiro" unique_id=870424764 instance=ExtResource("92_ob378")]
+[node name="CaixoteGalpao1" parent="Props/BicoCeleiro" unique_id=89015247 instance=ExtResource("92_ob378")]
 transform = Transform3D(0.4900333, 0, -0.099334665, 0, 0.5, 0, 0.099334665, 0, 0.4900333, 31.75, 0, -57.7)
 
-[node name="CaixoteCarroca2" parent="Props/BicoCeleiro" unique_id=65217434 instance=ExtResource("92_ob378")]
+[node name="CaixoteCarroca2" parent="Props/BicoCeleiro" unique_id=841372674 instance=ExtResource("92_ob378")]
 transform = Transform3D(0.43879128, 0, 0.23971277, 0, 0.5, 0, -0.23971277, 0, 0.43879128, 24.9, 0.47, -50)
 
-[node name="CaixoteGalpao2" parent="Props/BicoCeleiro" unique_id=11271807 instance=ExtResource("92_ob378")]
+[node name="CaixoteGalpao2" parent="Props/BicoCeleiro" unique_id=478253066 instance=ExtResource("92_ob378")]
 transform = Transform3D(0.4605305, 0, -0.19470917, 0, 0.5, 0, 0.19470917, 0, 0.4605305, 31.2, 0.47, -57.7)
 
 [node name="Animals" type="Node3D" parent="." unique_id=415257563]
@@ -3946,14 +3946,14 @@ velocidade = 0.6
 [node name="Modelo" parent="Animals/Burro" unique_id=1396825944 instance=ExtResource("102_vb8fo")]
 transform = Transform3D(-0.3, 0, -2.6226834e-08, 0, 0.3, 0, 2.6226834e-08, 0, -0.3, 0, 0, 0)
 
-[node name="Rato" type="Node3D" parent="Animals" unique_id=780468669]
+[node name="Ratazana" type="Node3D" parent="Animals" unique_id=780468669]
 transform = Transform3D(0.9625661, 0, -0.27104706, 0, 1, 0, 0.27104706, 0, 0.9625661, -9.6, 0, -48.7)
 script = ExtResource("96_ev8jd")
 jeito = 1
 raio = 2.0
 velocidade = 1.4
 
-[node name="Modelo" parent="Animals/Rato" unique_id=309479939 instance=ExtResource("103_emv2g")]
+[node name="Modelo" parent="Animals/Ratazana" unique_id=309479939 instance=ExtResource("103_emv2g")]
 transform = Transform3D(-0.22, 0, -1.9233012e-08, 0, 0.22, 0, 1.9233012e-08, 0, -0.22, 0, 0, 0)
 
 [node name="GatoPreguica" type="Node3D" parent="Animals" unique_id=1119570469]
@@ -10738,7 +10738,7 @@ amount_ratio = 0.35
 amount_ratio = 0.35
 
 [node name="Light" parent="CenaTico/Fogueirinha/Fogo" index="3" unique_id=702279728]
-light_energy = 1.0028018
+light_energy = 0.92246777
 omni_range = 3.0
 base_energy = 0.9
 
@@ -10792,15 +10792,15 @@ transform = Transform3D(-0.9334492, 0, 0.35870957, 0, 1, 0, -0.35870957, 0, -0.9
 [node name="TikaSentada" type="Marker3D" parent="CenaTico" unique_id=2053877738]
 transform = Transform3D(-0.7071065, 0, 0.70710707, 0, 1, 0, -0.70710707, 0, -0.7071065, 0.95000076, 0, -0.9499998)
 
-[node name="PaoDoTico" parent="CenaTico" unique_id=1431940210 instance=ExtResource("637_6ogb1")]
+[node name="PaoDoTico" parent="CenaTico" unique_id=1744091734 instance=ExtResource("637_6ogb1")]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0.3, 0)
 visible = false
 
-[node name="MeioPaoTico" parent="CenaTico" unique_id=452186848 instance=ExtResource("638_mp1mj")]
+[node name="MeioPaoTico" parent="CenaTico" unique_id=362524564 instance=ExtResource("638_mp1mj")]
 transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0.3, 0)
 visible = false
 
-[node name="MeioPaoTika" parent="CenaTico" unique_id=1394492291 instance=ExtResource("638_mp1mj")]
+[node name="MeioPaoTika" parent="CenaTico" unique_id=539912573 instance=ExtResource("638_mp1mj")]
 transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0.3, 0)
 visible = false
 
@@ -10816,19 +10816,19 @@ omni_range = 4.5
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.9, 0.9, -48.45)
 script = ExtResource("inter")
 prompt_text = "Examinar o barril"
-text = "Água de chuva com gosto de telhado. Já matou a sede do Tico mais vezes do que ele gosta de admitir."
+text = "Água de chuva. Tem gosto de telhado."
 
 [node name="OlharCaixotes" type="Node3D" parent="BecoLateral" unique_id=1966379345]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0.9, -48.5)
 script = ExtResource("inter")
 prompt_text = "Examinar os caixotes"
-text = "Caixotes de maçã, vazios. Alguém já passou por aqui antes, e foi mais rápido."
+text = "Vazios. Alguém chegou antes."
 
 [node name="OlharGato" type="Node3D" parent="BecoLateral" unique_id=1094117205]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 1, -48.45)
 script = ExtResource("inter")
 prompt_text = "Examinar o gato"
-text = "Um gato dormindo em cima do caixote. Ele abre um olho, avalia o Tico como comida e fecha de novo. Respeito mútuo."
+text = "Ele abre um olho, me mede e volta a dormir."
 
 [node name="Fita" type="Node3D" parent="BecoLateral" unique_id=379795803]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0.03, -49.6)
@@ -10849,28 +10849,28 @@ mesh = SubResource("BoxMesh_r1gup")
 [node name="Parte2" type="MeshInstance3D" parent="BecoLateral/Fita/Laco" unique_id=1483893782]
 mesh = SubResource("BoxMesh_4v1ux")
 
-[node name="Muro0" parent="BecoLateral" unique_id=1610638039 groups=["colisao_auto"] instance=ExtResource("13_614qq")]
+[node name="Muro0" parent="BecoLateral" unique_id=1525946088 groups=["colisao_auto"] instance=ExtResource("13_614qq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.3, 0, -47.75)
 
-[node name="Muro1" parent="BecoLateral" unique_id=969612866 groups=["colisao_auto"] instance=ExtResource("13_614qq")]
+[node name="Muro1" parent="BecoLateral" unique_id=835960680 groups=["colisao_auto"] instance=ExtResource("13_614qq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.3, 0, -47.75)
 
-[node name="Muro2" parent="BecoLateral" unique_id=918698151 groups=["colisao_auto"] instance=ExtResource("13_614qq")]
+[node name="Muro2" parent="BecoLateral" unique_id=1517377684 groups=["colisao_auto"] instance=ExtResource("13_614qq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.3, 0, -47.75)
 
-[node name="Barril" parent="BecoLateral" unique_id=1336650311 instance=ExtResource("27_5fv7g")]
+[node name="Barril" parent="BecoLateral" unique_id=425666591 instance=ExtResource("27_5fv7g")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.9, 0, -48.45)
 
-[node name="Balde" parent="BecoLateral" unique_id=507495544 instance=ExtResource("26_oqo87")]
+[node name="Balde" parent="BecoLateral" unique_id=1921020856 instance=ExtResource("26_oqo87")]
 transform = Transform3D(0.8253356, 0, 0.5646425, 0, 1, 0, -0.5646425, 0, 0.8253356, -9.3, 0, -48.35)
 
-[node name="Caixote" parent="BecoLateral" unique_id=1937252889 instance=ExtResource("33_ca5o6")]
+[node name="Caixote" parent="BecoLateral" unique_id=250148323 instance=ExtResource("33_ca5o6")]
 transform = Transform3D(0.9553365, 0, 0.29552022, 0, 1, 0, -0.29552022, 0, 0.9553365, -11.5, 0, -48.45)
 
-[node name="CaixoteAlto" parent="BecoLateral" unique_id=1731985079 instance=ExtResource("36_1j2ax")]
+[node name="CaixoteAlto" parent="BecoLateral" unique_id=1287605146 instance=ExtResource("36_1j2ax")]
 transform = Transform3D(0.9800666, 0, -0.19866933, 0, 1, 0, 0.19866933, 0, 0.9800666, -12.6, 0, -48.5)
 
-[node name="Gato" parent="BecoLateral" unique_id=811243403 instance=ExtResource("74_b68sd")]
+[node name="Gato" parent="BecoLateral" unique_id=787217137 instance=ExtResource("74_b68sd")]
 transform = Transform3D(-0.58850116, 0, 0.80849636, 0, 1, 0, -0.80849636, 0, -0.58850116, -11.5, 0.66, -48.45)
 
 [node name="AmbienteCamadas" type="Node3D" parent="." unique_id=2094907088]
