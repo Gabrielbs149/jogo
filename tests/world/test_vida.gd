@@ -42,6 +42,25 @@ func test_people_walk_around_and_go_home_at_night() -> void:
 	assert_eq(String(person.ponto.get("tipo", "")), "casa")
 
 
+func test_people_walk_on_the_ground() -> void:
+	# o mapa de navegação fica ~0,5 m acima do chão: quem andava na altura dele flutuava
+	await _open(10.0)
+	var vida := _level.get_node("Vida") as Vida
+	await wait_seconds(2.0)
+	var space := _level.get_world_3d().direct_space_state
+	var checked := 0
+	for p: Passante in vida.people:
+		if not p.visible:
+			continue
+		var from := p.global_position + Vector3.UP * 0.9
+		var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(from, from + Vector3.DOWN * 3.0, 1))
+		if hit.is_empty():
+			continue
+		assert_almost_eq(p.global_position.y, (hit["position"] as Vector3).y, 0.12, "%s com os pés no chão" % p.name)
+		checked += 1
+	assert_gt(checked, 5)
+
+
 func test_residents_keep_their_hours() -> void:
 	await _open(12.0)
 	var seller := _level.get_node("Crowd/Vendedor2") as Morador
