@@ -2,7 +2,9 @@ class_name MissaoPadaria
 extends Node
 ## Primeira missão do Tico em Arandu (D040), "Caminho 1 — Pedir" do Gabriel: o Tico acorda com fome; o dono da
 ## padaria não dá comida de graça. Dá para conversar, convencer (Persuasão), fazer um favor (levar uma encomenda
-## até a casa da viúva), intimidar (Intimidação) ou roubar (Furtividade). Os testes rolam o d20 como no D&D 5.5.
+## até a casa da viúva), intimidar (Intimidação) ou roubar (Furtividade). Os testes rolam o d20 na tela (D&D 5.5).
+## D058: o padeiro anda pela padaria (PadeiroIA). Só dá para falar com ele quando está atendendo no balcão; só dá
+## para roubar (pegar um pão do balcão, sem conversa) quando ele está de costas, trabalhando.
 ## Tudo fica em Game.flags ("padaria.*"), então vale com o jogo salvo. Falas: *(proposta)* em docs/gdd/01-historia.md.
 
 ## Atrás do balcão: conversa com o padeiro.
@@ -12,6 +14,10 @@ extends Node
 ## Marcas no mundo ("!" sobre o padeiro, seta sobre a viúva).
 @export var marca_padeiro: Node3D
 @export var marca_viuva: Node3D
+## O jeito do padeiro andar e atender (D058).
+@export var ia: PadeiroIA
+## No balcão, do lado dos fregueses: "Pegar um pão" (só com ele de costas).
+@export var roubo: Interactable
 
 const PADEIRO := "Padeiro"
 const VIUVA := "Viúva"
@@ -41,8 +47,19 @@ func _ready() -> void:
 		return
 	padeiro.used.connect(func(_by: Combatant, _w: Interactable) -> void: _talk(_padeiro))
 	viuva.used.connect(func(_by: Combatant, _w: Interactable) -> void: _talk(_viuva))
+	if roubo:
+		roubo.used.connect(func(by: Combatant, _w: Interactable) -> void: _steal_at_counter(by))
 	_level.play_started.connect(_start)
 	_update_marks()
+
+
+func _process(_delta: float) -> void:
+	if ia == null:
+		return
+	# falar só com ele atendendo; roubar só com ele de costas (e enquanto o Tico ainda está com fome)
+	padeiro.enabled = ia.attending() or _busy
+	if roubo:
+		roubo.enabled = not _busy and ia.back_turned() and estado() in ["", "expulso"] and Game.flag("padaria.comecou", false)
 
 
 func estado() -> String:
@@ -73,7 +90,11 @@ func _talk(fn: Callable) -> void:
 	if _hud == null:
 		_hud = _level.get_node("HUD") as GameHUD
 	_hud.begin_talk()
+	if ia:
+		ia.hold(true)
 	await fn.call()
+	if ia:
+		ia.hold(false)
 	_hud.end_talk()
 	_busy = false
 	_update_marks()
@@ -114,8 +135,6 @@ func _padeiro() -> void:
 			ids.append("convencer")
 		options.append("Intimidar  [Intimidação]")
 		ids.append("intimidar")
-		options.append("Roubar um pão  [Furtividade]")
-		ids.append("roubar")
 		options.append("Ir embora")
 		ids.append("sair")
 		var index: int = await d.choose(PADEIRO, "E então?", options)
@@ -152,10 +171,7 @@ func _padeiro() -> void:
 					return
 				await d.say(PADEIRO, "Um lagartinho me ameaçando? FORA da minha padaria!")
 				_set_estado("expulso")
-				Game.set_objective("Arrumar o que comer. O padeiro te expulsou; ainda dá para tentar a sorte no balcão.")
-				return
-			"roubar":
-				await _steal(CD_ROUBAR)
+				Game.set_objective("Arrumar o que comer. O padeiro te expulsou; ainda dá para pegar um pão quando ele virar as costas.")
 				return
 			"sair":
 				await d.say(PADEIRO, "Isso. Vai.")
@@ -163,25 +179,83 @@ func _padeiro() -> void:
 
 
 func _expelled() -> void:
-	var d := _hud.dialogue
-	var pick := await d.choose(PADEIRO, "Já falei: FORA!", ["Ir embora", "Esperar ele se distrair e pegar um pão  [Furtividade, mais difícil]"])
-	if pick == 1:
-		await _steal(CD_ROUBAR_EXPULSO)
+	await _hud.dialogue.say(PADEIRO, "Já falei: FORA!")
 
 
-## Roubar do balcão. Devolve true se conseguiu.
-func _steal(dc: int) -> bool:
-	var d := _hud.dialogue
-	await d.say("", "O Tico espera o padeiro se virar para o forno...")
+## Roubar do balcão (D058): sem conversa. O d20 rola na tela; deu certo, o Tico come; deu errado, o padeiro vira, grita
+## e expulsa. Depois de expulso dá para tentar de novo, mais difícil.
+func _steal_at_counter(by: Combatant) -> void:
+	if _busy or (ia and not ia.back_turned()):
+		return
+	_busy = true
+	if _hud == null:
+		_hud = _level.get_node("HUD") as GameHUD
+	var dc := CD_ROUBAR_EXPULSO if estado() == "expulso" else CD_ROUBAR
 	if await _check("Furtividade", dc):
-		await d.say("", "...e um pão some do balcão sem fazer barulho.")
 		Game.set_flag("padaria.jeito", "roubou")
-		await _eat("O Tico sai da padaria com o pão escondido debaixo do capuz.")
-		return true
-	await d.say(PADEIRO, "EI! Larga isso, ladrão! FORA!")
-	_set_estado("expulso")
-	Game.set_objective("Arrumar o que comer. O padeiro te pegou no flagra e te expulsou.")
-	return false
+		_hide_one_bread()
+		_hud.toast("Um pão some do balcão sem fazer barulho")
+		await get_tree().create_timer(1.6).timeout
+		await _eat_quiet("O Tico come o pão escondido debaixo do capuz")
+	else:
+		if ia:
+			ia.look_at_thief(by.global_position, 3.5)
+		_shout("EI! LADRÃO! FORA!")
+		Audio.play("qte_errou", -2.0)
+		_set_estado("expulso")
+		Game.set_objective("Arrumar o que comer. O padeiro te pegou no flagra; espera ele virar as costas de novo.")
+	_busy = false
+	_update_marks()
+	_level.save_here(false)
+
+
+## O grito do padeiro em cima da cabeça dele (sem caixa de conversa).
+func _shout(text: String) -> void:
+	var baker := padeiro.get_parent() as Node3D
+	var label := Label3D.new()
+	label.text = text
+	label.font = load("res://assets/fonts/cinzel.ttf")
+	label.font_size = 64
+	label.outline_size = 14
+	label.modulate = Color(1, 0.45, 0.35)
+	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	label.no_depth_test = true
+	label.fixed_size = true
+	label.pixel_size = 0.0011
+	baker.add_child(label)
+	label.position = Vector3(0, 2.3, 0)
+	var tween := label.create_tween()
+	tween.tween_property(label, "position:y", 2.6, 2.2)
+	tween.parallel().tween_property(label, "modulate:a", 0.0, 0.6).set_delay(1.6)
+	tween.tween_callback(label.queue_free)
+
+
+## Some um pão do balcão (o mais perto do lugar de pegar).
+func _hide_one_bread() -> void:
+	var best: Node3D = null
+	var best_d := INF
+	for found: Node in _level.find_children("PaoBalcao*", "", true, false):
+		var bread := found as Node3D
+		if bread and bread.visible and roubo:
+			var dist := bread.global_position.distance_to(roubo.global_position)
+			if dist < best_d:
+				best_d = dist
+				best = bread
+	if best:
+		best.visible = false
+
+
+## Come sem conversa (roubo): só avisos na tela.
+func _eat_quiet(text: String) -> void:
+	_set_estado("feito")
+	_hud.toast(text)
+	Game.set_objective("")
+	await get_tree().create_timer(1.8).timeout
+	Audio.play("vitoria", -8.0)
+	_hud.toast("Missão concluída: Fome")
+	if _level.player:
+		_level.player.rest()
+		Game.hero_hp = -1
 
 
 # --- viúva --------------------------------------------------------------------------------------
@@ -212,9 +286,9 @@ func _check(skill: String, dc: int) -> bool:
 	var total := roll + bonus
 	var ok := roll == 20 or (roll != 1 and total >= dc)
 	Game.set_flag("padaria.ultimo_teste", {"pericia": skill, "d20": roll, "total": total, "cd": dc})
+	# o d20 rolando na tela, como na luta (D058)
+	await _hud.roll_check(_level.player, skill, roll, bonus, dc, ok)
 	Audio.play("qte_perfeito" if ok else "qte_errou", -6.0)
-	await _hud.dialogue.say("", "[color=#ffd9a0]%s[/color]   d20 [b]%d[/b] %+d = [b]%d[/b]   contra CD %d   %s" % [
-		skill, roll, bonus, total, dc, "[color=#9be37a]conseguiu[/color]" if ok else "[color=#ff8a70]falhou[/color]"])
 	return ok
 
 

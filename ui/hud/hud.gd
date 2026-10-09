@@ -151,6 +151,20 @@ func log_line(line: String) -> void:
 	_log_panel.show()
 
 
+## Teste de perícia com o d20 rolando na tela (D058), como na luta. Volta quando o dado termina de mostrar.
+func roll_check(who: Combatant, skill: String, roll: int, bonus: int, dc: int, ok: bool) -> void:
+	if _dice == null:
+		_dice = DiceRoller.new()
+		_dice.set_anchors_preset(Control.PRESET_FULL_RECT)
+		add_child(_dice)
+	var die := {"by": who, "rolls": [roll], "kept": roll, "mod": bonus, "total": roll + bonus, "vs": dc, "vs_name": "CD",
+		"skill": skill, "verdict": "ACERTOU" if ok else "ERROU"}
+	await _dice.roll([die] as Array[Dictionary], get_viewport().get_visible_rect().size * Vector2(0.5, 0.36))
+
+
+var _dice: DiceRoller
+
+
 func toast(text: String) -> void:
 	_toast.text = text
 	var width := _toast.get_combined_minimum_size().x

@@ -200,16 +200,18 @@ house("casa", "Casa", 3, 3, 1, ["Wall_Plaster"], "Roof_RoundTiles_6x6", "Roof_Fr
 
 
 def padaria():
-    """Padaria de verdade (D040), 3x3 células (6 x 6 m), dá para entrar: vitrines com venezianas abertas, porta aberta,
-    placa pendurada, balcão com pães, prateleiras de pão na parede do fundo, forno de tijolo aceso com chaminé,
-    sacos de farinha e barris. Frente (porta) em -Z. Atrás do balcão há uma passagem estreita (lado +X) para os fundos."""
+    """Padaria de verdade (D040; maior na D058): 4x5 células (8 x 10 m), dá para entrar. Fachada com três vitrines e a porta
+    aberta; o balcão atravessa a loja e separa os fregueses (frente) da cozinha (fundos): forno de tijolo aceso, mesa de
+    sovar com farinha, prateleiras de pão. O padeiro anda entre os pontos (Marker3D "Ponto*", a frente do marcador é -Z):
+    atende no balcão, vira de costas no forno, na mesa e nas prateleiras. "PontoRoubo" é onde se pega um pão do balcão."""
     s = Scene("Padaria", groups=AUTO)
-    hw = hd = 3.0
-    for i in range(3):
-        for j in range(3):
+    hw, hd = 4.0, 5.0
+    for i in range(4):
+        for j in range(5):
             s.piece("vila/Floor_WoodDark", (-hw + 1.0 + i * 2.0, 0, -hd + 1.0 + j * 2.0))
-    # fachada: vitrine, porta (aberta para dentro), vitrine
-    for i, kind in enumerate(("vitrine", "porta", "vitrine")):
+    # fachada: vitrine, vitrine, porta (aberta para dentro), vitrine
+    door_x = 1.0
+    for i, kind in enumerate(("vitrine", "vitrine", "porta", "vitrine")):
         x = -hw + 1.0 + i * 2.0
         if kind == "porta":
             s.piece("vila/Wall_Plaster_Door_Round", (x, 0, -hd), math.pi)
@@ -218,82 +220,91 @@ def padaria():
             s.piece("vila/Wall_Plaster_Window_Wide_Flat", (x, 0, -hd), math.pi)
             s.piece("vila/Window_Wide_Flat1", (x, 0, -hd), math.pi)
             s.piece("vila/WindowShutters_Wide_Flat_Open", (x, 0, -hd), math.pi)
-    # fundos de tijolo (o forno encosta) e laterais com uma janela perto da frente
-    for i in range(3):
+    # fundos de tijolo e laterais com janelas
+    for i in range(4):
         s.piece("vila/Wall_UnevenBrick_Straight", (-hw + 1.0 + i * 2.0, 0, hd), 0.0)
-    for j in range(3):
+    for j in range(5):
         z = -hd + 1.0 + j * 2.0
         for sign, rot in ((1, math.pi / 2), (-1, -math.pi / 2)):
-            if j == 0:
+            if j in (0, 3):
                 s.piece("vila/Wall_Plaster_Window_Wide_Round", (sign * hw, 0, z), rot)
                 s.piece("vila/Window_Wide_Round1", (sign * hw, 0, z), rot)
             else:
                 s.piece("vila/Wall_Plaster_Straight", (sign * hw, 0, z), rot)
     for cx, cz in ((hw, hd), (-hw, hd), (hw, -hd), (-hw, -hd)):
         s.piece("vila/Corner_Exterior_Wood", (cx, 0, cz))
-    s.piece("vila/Roof_RoundTiles_6x6", (0, WALL_H, 0))
-    s.piece("vila/Roof_Front_Brick6", (0, WALL_H, hd))
-    s.piece("vila/Roof_Front_Brick6", (0, WALL_H, -hd), math.pi)
+    s.piece("vila/Roof_RoundTiles_8x10", (0, WALL_H, 0))
+    s.piece("vila/Roof_Front_Brick8", (0, WALL_H, hd))
+    s.piece("vila/Roof_Front_Brick8", (0, WALL_H, -hd), math.pi)
     # forno de tijolo no canto do fundo à esquerda, aceso, com a chaminé saindo pelo telhado
     brick = s.mat("tijolo_vermelho")
-    ox, oz = -1.85, 2.1
-    s.mesh("Forno", s.box((1.5, 1.0, 1.1)), brick, (ox, 0.5, oz))
-    s.mesh("FornoCupula", s.sub("SphereMesh", ("cupula",), "radius = 0.75\nheight = 1.1\nradial_segments = 20\nrings = 10"), brick, (ox, 1.0, oz), scale=(1.0, 0.75, 0.75))
-    s.mesh("FornoBoca", s.box((0.62, 0.42, 0.06)), s.color((0.06, 0.025, 0.015), 0.95), (ox, 0.62, oz - 0.53))
-    s.mesh("Brasa", s.box((0.5, 0.06, 0.04)), s.color((0.9, 0.3, 0.08), 0.8, ((1.0, 0.35, 0.08), 3.0)), (ox, 0.44, oz - 0.57))
-    s.mesh("FornoArco", s.box((0.78, 0.1, 0.12)), s.mat("arenito"), (ox, 0.88, oz - 0.55))
-    s.mesh("FornoBase", s.box((0.78, 0.08, 0.14)), s.mat("arenito"), (ox, 0.38, oz - 0.55))
-    s.scene("FogoDoForno", "res://assets/vfx/fogo.tscn", (ox, 0.44, oz - 0.6), 0.0, 0.16)
+    ox, oz = -2.7, 4.1
+    s.mesh("Forno", s.box((1.6, 1.0, 1.2)), brick, (ox, 0.5, oz))
+    s.mesh("FornoCupula", s.sub("SphereMesh", ("cupula",), "radius = 0.8\nheight = 1.15\nradial_segments = 20\nrings = 10"), brick, (ox, 1.0, oz), scale=(1.0, 0.75, 0.75))
+    s.mesh("FornoBoca", s.box((0.62, 0.42, 0.06)), s.color((0.06, 0.025, 0.015), 0.95), (ox, 0.62, oz - 0.58))
+    s.mesh("Brasa", s.box((0.5, 0.06, 0.04)), s.color((0.9, 0.3, 0.08), 0.8, ((1.0, 0.35, 0.08), 3.0)), (ox, 0.44, oz - 0.62))
+    s.mesh("FornoArco", s.box((0.78, 0.1, 0.12)), s.mat("arenito"), (ox, 0.88, oz - 0.6))
+    s.mesh("FornoBase", s.box((0.78, 0.08, 0.14)), s.mat("arenito"), (ox, 0.38, oz - 0.6))
+    s.scene("FogoDoForno", "res://assets/vfx/fogo.tscn", (ox, 0.44, oz - 0.65), 0.0, 0.16)
     s.mesh("Cano", s.cyl(0.18, 0.2, 2.2, 12), brick, (ox, 2.4, oz + 0.1))
     s.piece("vila/Prop_Chimney", (ox, WALL_H + 0.4, oz + 0.1), name="Chamine")
-    s.piece("objetos/Peg_Rack", (ox + 1.25, 1.6, hd - 0.33), math.pi, name="Ganchos")
-    # balcão: mesa grande + armário, com a passagem estreita do lado +X para trás do balcão
+    s.piece("objetos/Peg_Rack", (ox + 1.4, 1.6, hd - 0.33), math.pi, name="Ganchos")
+    s.piece("objetos/Bucket_Wooden_1", (ox + 1.1, 0, oz - 0.3), name="BaldeForno")
+    # balcão atravessando a loja (x de -4 até 1.7); a passagem para os fundos fica à direita (x 2.5 a 4)
     wood = s.mat("tabuas")
-    s.mesh("Balcao", s.box((2.6, 0.92, 0.62)), wood, (-1.05, 0.46, -0.3))
-    s.mesh("BalcaoTampo", s.box((2.75, 0.06, 0.78)), s.color((0.42, 0.26, 0.15), 0.7), (-1.05, 0.95, -0.3))
-    s.mesh("BalcaoRodape", s.box((2.62, 0.1, 0.64)), s.color((0.25, 0.15, 0.09), 0.8), (-1.05, 0.05, -0.3))
-    s.piece("objetos/Cabinet", (1.11, 0, -0.3), name="BalcaoArmario")
-    for k, x in enumerate((-2.1, -1.65, -1.2, -0.35, 0.05)):
-        s.scene("PaoBalcao", "res://world/props/pao.tscn", (x, 1.03, -0.45 + (k % 2) * 0.18), 0.4 * k, 1.6)
-    s.piece("objetos/Bucket_Wooden_1", (-0.8, 0.98, -0.1), name="Cesto")
+    cz = -1.1
+    s.mesh("Balcao", s.box((5.7, 0.92, 0.7)), wood, (-1.15, 0.46, cz))
+    s.mesh("BalcaoTampo", s.box((5.85, 0.06, 0.86)), s.color((0.42, 0.26, 0.15), 0.7), (-1.15, 0.95, cz))
+    s.mesh("BalcaoRodape", s.box((5.72, 0.1, 0.72)), s.color((0.25, 0.15, 0.09), 0.8), (-1.15, 0.05, cz))
+    s.piece("objetos/Cabinet", (2.1, 0, cz), name="BalcaoArmario")
+    for k, x in enumerate((-3.4, -3.0, -2.55, -1.8, -1.35, 0.3, 0.75)):
+        s.scene("PaoBalcao", "res://world/props/pao.tscn", (x, 1.03, cz - 0.15 + (k % 2) * 0.18), 0.4 * k, 1.6)
+    s.piece("objetos/Bucket_Wooden_1", (-0.6, 0.98, cz + 0.2), name="Cesto")
     for k in range(3):
-        s.scene("PaoCesto", "res://world/props/pao.tscn", (-0.85 + k * 0.07, 1.23, -0.12 + (k % 2) * 0.06), 0.9 * k, (1.4, 1.4, 1.4))
-    s.piece("objetos/Table_Plate", (1.05, 1.0, -0.3), name="Prato")
-    s.scene("MeioPao", "res://world/props/meio_pao.tscn", (1.05, 1.04, -0.3), 0.6, 1.6)
+        s.scene("PaoCesto", "res://world/props/pao.tscn", (-0.65 + k * 0.07, 1.23, cz + 0.18 + (k % 2) * 0.06), 0.9 * k, (1.4, 1.4, 1.4))
+    s.piece("objetos/Table_Plate", (1.2, 1.0, cz), name="Prato")
+    s.scene("MeioPao", "res://world/props/meio_pao.tscn", (1.2, 1.04, cz), 0.6, 1.6)
+    # mesa de sovar no meio da cozinha, com farinha e massa
+    s.piece("objetos/Table_Large", (0.3, 0, 2.2), math.pi / 2, name="MesaSovar")
+    s.piece("objetos/Bag", (0.0, 0.95, 2.3), 0.4, 0.6, name="FarinhaMesa")
+    s.scene("MassaMesa", "res://world/props/pao.tscn", (0.6, 1.0, 2.0), 0.3, 2.0)
     # prateleiras de pão na parede do fundo (direita)
     for level, y in enumerate((0.85, 1.35, 1.85)):
-        for x in (0.75, 1.95):
+        for x in (1.4, 2.8):
             s.piece("objetos/Shelf_Simple", (x, y, hd - 0.31), math.pi, name="Prateleira")
             for k in range(3):
                 s.scene("PaoPrateleira", "res://world/props/pao.tscn", (x - 0.35 + k * 0.35, y + 0.15, hd - 0.48), 0.2 + k + level, 1.5)
-    # farinha, barris, banquinho
-    for k, (x, z) in enumerate(((-0.55, 2.3), (-0.05, 2.45), (-0.35, 1.85))):
+    # sacos de farinha, barris, banquinho
+    for k, (x, z) in enumerate(((3.3, 2.0), (3.5, 2.5), (3.15, 2.6))):
         s.piece("objetos/Bag", (x, 0, z), 0.7 * k, 0.8, name="Farinha")
-    s.piece("objetos/Barrel", (2.25, 0, 0.9), name="Barril")
-    s.piece("objetos/Stool", (0.4, 0, 0.7), name="Banquinho")
-    # lado dos fregueses: caixotes de pão embaixo das vitrines e um barril com cesto perto da porta
-    for x in (-2.0, 2.0):
-        s.piece("objetos/FarmCrate_Empty", (x, 0.55, -2.35), math.pi, name="Caixote")
-        s.piece("objetos/Barrel", (x, 0, -2.35), name="BarrilVitrine")
+    s.piece("objetos/Barrel", (3.35, 0, 0.7), name="Barril")
+    s.piece("objetos/Stool", (-1.6, 0, 1.6), name="Banquinho")
+    # lado dos fregueses: caixotes de pão embaixo das vitrines e um banco de espera
+    for x in (-3.0, -1.0, 3.0):
+        s.piece("objetos/FarmCrate_Empty", (x, 0.55, -4.35), math.pi, name="Caixote")
+        s.piece("objetos/Barrel", (x, 0, -4.35), name="BarrilVitrine")
         for k in range(3):
-            s.scene("PaoVitrine", "res://world/props/pao.tscn", (x - 0.2 + k * 0.2, 0.68, -2.35), 1.0 + k, 1.5)
-    # luz de dentro (duas lanternas nas laterais) e lanterna na porta
+            s.scene("PaoVitrine", "res://world/props/pao.tscn", (x - 0.2 + k * 0.2, 0.68, -4.35), 1.0 + k, 1.5)
+    s.piece("objetos/Bench", (-3.4, 0, -2.6), math.pi / 2, name="BancoEspera")
+    # luz de dentro (lanternas nas laterais, na frente e no fundo) e na porta
     for sign in (1, -1):
-        s.scene("LanternaDentro", "res://world/props/lanterna.tscn", (sign * (hw - 0.33), 2.0, 0.6), -sign * math.pi / 2)
-    s.scene("LanternaPorta", "res://world/props/lanterna.tscn", (1.2, 2.3, -hd - 0.12), 0.0)
-    # placa pendurada na frente: braço de madeira, duas correntes, tábua com "Padaria" dos dois lados e um pão em cima
-    s.mesh("PlacaBraco", s.box((0.08, 0.08, 1.0)), wood, (-1.15, 2.85, -hd - 0.55))
-    for x in (-1.4, -0.9):
-        s.mesh("PlacaCorrente", s.box((0.02, 0.32, 0.02)), s.color((0.2, 0.18, 0.16), 0.6), (x, 2.66, -hd - 0.95))
-    s.mesh("Placa", s.box((0.95, 0.5, 0.06)), wood, (-1.15, 2.25, -hd - 0.95))
+        for z in (-2.5, 2.5):
+            s.scene("LanternaDentro", "res://world/props/lanterna.tscn", (sign * (hw - 0.33), 2.0, z), -sign * math.pi / 2)
+    s.scene("LanternaPorta", "res://world/props/lanterna.tscn", (door_x + 1.2, 2.3, -hd - 0.12), 0.0)
+    # placa presa na parede, em cima da porta (sem braço para fora: a padaria cabe no quarteirão)
+    px = door_x
+    s.mesh("Placa", s.box((1.3, 0.5, 0.06)), wood, (px, 2.78, -hd - 0.16))
     font = s.ext_res("FontFile", "res://assets/fonts/cinzel.ttf")
-    for side, rot in ((-1, math.pi), (1, 0.0)):
-        s.node(s.unique("PlacaTexto"), "Label3D", ".", "transform = " + xf((-1.15, 2.22, -hd - 0.95 + side * 0.035), rot),
-               "pixel_size = 0.004", 'text = "Padaria"', 'font = ExtResource("%s")' % font, "font_size = 48",
-               "modulate = Color(0.25, 0.13, 0.06, 1)", "outline_size = 0", "double_sided = false")
-    s.scene("PaoPlaca", "res://world/props/pao.tscn", (-1.15, 2.54, -hd - 0.95), 0.0, 2.2)
+    s.node(s.unique("PlacaTexto"), "Label3D", ".", "transform = " + xf((px, 2.76, -hd - 0.2), math.pi),
+           "pixel_size = 0.0042", 'text = "Padaria"', 'font = ExtResource("%s")' % font, "font_size = 48",
+           "modulate = Color(0.25, 0.13, 0.06, 1)", "outline_size = 0", "double_sided = false")
+    s.scene("PaoPlaca", "res://world/props/pao.tscn", (px, 3.1, -hd - 0.2), 0.0, 2.2)
+    # pontos do padeiro (a frente do marcador é -Z): balcão olhando os fregueses; o resto de costas para eles
+    for name, pos, rot in (("PontoBalcao", (-1.4, 0, -0.35), 0.0), ("PontoForno", (ox, 0, oz - 1.25), math.pi),
+                           ("PontoMesa", (0.3, 0, 1.15), math.pi), ("PontoPrateleira", (2.1, 0, hd - 1.15), math.pi),
+                           ("PontoRoubo", (-3.0, 0, cz - 0.75), 0.0)):
+        s.node(name, "Marker3D", ".", "transform = " + xf(pos, rot))
     s.save("padaria")
-
 
 padaria()
 
