@@ -355,6 +355,7 @@ func _player_action(index: int) -> void:
 		dagger.trail(false)
 	if rush and player.is_active():
 		player.transform = _homes[player]  # no corte ele já está no lugar (ninguém vê ele voltando de costas)
+		player.reset_physics_interpolation()
 	_action_cam(null)
 	if melee and player.is_active() and not rush:
 		await _return_home(player)
@@ -861,6 +862,7 @@ func _action_cam(on: Combatant) -> void:
 	_cam_eye = eye
 	_cam_look = _shot_look if _action_on else _look
 	_camera.look_at_from_position(_cam_eye, _cam_look)  # já neste quadro (senão aparece um quadro de dentro do herói)
+	_camera.reset_physics_interpolation()
 	var mode := GeometryInstance3D.SHADOW_CASTING_SETTING_ON if _action_on else GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
 	for found: Node in player.find_children("*", "GeometryInstance3D", true, false):
 		(found as GeometryInstance3D).cast_shadow = mode
