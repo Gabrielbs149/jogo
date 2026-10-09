@@ -36,20 +36,23 @@ func test_a_good_player_beats_two_beetles() -> void:
 	assert_eq(arena.alive_enemies().size(), 0)
 
 
-func test_first_strike_goes_first_with_an_extra_action_point() -> void:
+func test_first_strike_goes_first() -> void:
 	var arena := _arena(PackedStringArray([BEETLE, BEETLE, BEETLE]), true)
 	await wait_until(func() -> bool: return arena.order.size() > 0, 10.0)
 	assert_eq(arena.order[0], arena.player, "você começa")
-	assert_eq(arena.ap, arena.start_ap + 1)
 
 
-func test_abilities_cost_action_points() -> void:
+## D052: o ataque é sempre livre; a habilidade usada fica alguns turnos recarregando.
+func test_abilities_recharge_after_use() -> void:
 	var arena := _arena(PackedStringArray([BEETLE]))
 	await wait_until(func() -> bool: return arena.order.size() > 0, 10.0)
-	arena.ap = 2
-	assert_true(arena.can_afford(0), "ataque não custa")
-	assert_true(arena.can_afford(1), "Bote das sombras: 2 PA")
-	assert_false(arena.can_afford(2), "Espinhos: 3 PA")
+	arena.recharge.clear()
+	assert_true(arena.can_afford(0), "ataque sempre livre")
+	assert_eq(arena.player.abilities[0].recharge_turns(), 0)
+	assert_eq(arena.player.abilities[2].recharge_turns(), 3, "Espinhos: 3 turnos")
+	arena.recharge[2] = 2
+	assert_false(arena.can_afford(2), "recarregando")
+	assert_true(arena.can_afford(1))
 
 
 ## D048: o d20 vem com as faces para aparecer na tela, e o golpe com tempo multiplica o dano já rolado.
@@ -91,14 +94,9 @@ func test_posture_breaks_and_the_enemy_loses_a_turn() -> void:
 	var beetle := arena.enemies[0]
 	arena.call("_add_posture", beetle, beetle.posture_limit())
 	assert_true(beetle.quebrado, "postura cheia quebra")
-	arena.ritmo = 3
-	arena.call("_after_grade", "fraco")
-	assert_eq(arena.ritmo, 0, "errar zera o ritmo")
-	arena.call("_after_grade", "perfeito")
-	assert_eq(arena.ritmo, 1)
 
 
-## D050: ações do meio da luta. Defender dá CA e PA; a poção cura e acaba; do chefe não dá para fugir.
+## D050: ações do meio da luta. Defender dá CA; a poção cura e acaba; do chefe não dá para fugir.
 func test_extra_actions() -> void:
 	# sem o piloto automático: a luta fica parada esperando você escolher (primeiro golpe = você começa)
 	Game.chosen = "tico"
@@ -108,10 +106,8 @@ func test_extra_actions() -> void:
 	add_child_autofree(arena)
 	await wait_until(func() -> bool: return arena.get_node("BattleHUD").get("_choosing"), 20.0)
 	var ac := arena.player.current_ac()
-	arena.ap = 2
 	await arena.call("_extra_action", BattleArena.DEFEND)
 	assert_eq(arena.player.current_ac(), ac + 2, "defendendo: +2 CA")
-	assert_eq(arena.ap, 3, "+1 PA")
 	arena.player.hp = 5
 	assert_true(arena.can_use_extra(BattleArena.POTION))
 	await arena.call("_extra_action", BattleArena.POTION)
@@ -139,3 +135,14 @@ func test_tico_fights_with_psychic_daggers() -> void:
 	var dagger := daggers[0] as AdagaPsiquica
 	assert_gt(dagger.blade_length, 0.3, "a lâmina tem tamanho de adaga")
 	assert_true(dagger.has_node("Lamina"), "a lâmina foi montada")
+
+
+## D055: o veredito do dado é do ponto de vista de quem joga (verde = bom para você).
+func test_dice_verdict_is_from_the_player_view() -> void:
+	var view := func(d: Dictionary, enemy: bool) -> Array: return DiceRoller._player_view(d, enemy)
+	assert_eq(view.call({"kept": 15, "verdict": "ACERTOU"}, false), ["ACERTOU", true], "você acerta: verde")
+	assert_eq(view.call({"kept": 5, "verdict": "ERROU"}, false), ["ERROU", false], "você erra: vermelho")
+	assert_eq(view.call({"kept": 4, "verdict": "FALHOU", "save": "DES"}, true), ["ACERTOU", true], "Espinhos: o inimigo não resiste = verde")
+	assert_eq(view.call({"kept": 18, "verdict": "PASSOU", "save": "DES"}, true), ["RESISTIU", false], "o inimigo resiste = vermelho")
+	assert_eq(view.call({"kept": 15, "verdict": "ACERTOU"}, true), ["TE ACERTOU", false], "o inimigo acerta você = vermelho")
+	assert_eq(view.call({"kept": 6, "verdict": "ERROU"}, true), ["ESCAPOU", true], "o inimigo erra = verde")

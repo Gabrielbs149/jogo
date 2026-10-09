@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" path="res://actors/tico_lirou/tico_lirou_humanoide.glb" id="1_model"]
 [ext_resource type="AnimationLibrary" path="res://assets/kits/kaykit/animacoes/humanoide.res" id="2_anims"]
 [ext_resource type="Script" path="res://actors/shared/arm_rest.gd" id="3_arm"]
+[ext_resource type="AnimationLibrary" path="res://actors/tico_lirou/golpes_tico.res" id="4_golpes"]
 
 [node name="TicoLirou" type="Node3D"]
 
@@ -12,7 +13,8 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Mesh"]
 root_node = NodePath("..")
 libraries = {
-&"": ExtResource("2_anims")
+&"": ExtResource("2_anims"),
+&"tico": ExtResource("4_golpes")
 }
 
 [node name="ArmRest" type="SkeletonModifier3D" parent="Mesh/TicoRig/GeneralSkeleton"]

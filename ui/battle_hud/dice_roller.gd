@@ -121,10 +121,9 @@ func _draw() -> void:
 			if kept and nat == 1:
 				_cracks(pos, size_px * scale)
 		if not spinning:
-			var verdict := String(d.get("verdict", ""))
-			var good := verdict in ["ACERTOU", "CRÍTICO!", "FALHOU"] if not enemy_roll else verdict in ["ERROU", "FALHA", "PASSOU"]
-			if bool(d.has("save")) and enemy_roll == false:
-				good = verdict == "FALHOU"
+			var view := _player_view(d, enemy_roll)
+			var verdict: String = view[0]
+			var good: bool = view[1]
 			var sum := "%d + %d = %d   contra %s %d" % [int(d["kept"]), int(d["mod"]), int(d["total"]), d["vs_name"], int(d["vs"])]
 			var who := ("%s · salv. %s" % [by.display_name, d["save"]]) if d.has("save") else by.display_name
 			var cx := x0 + i * column
@@ -135,11 +134,7 @@ func _draw() -> void:
 			plate.set_corner_radius_all(8)
 			draw_style_box(plate, Rect2(cx - 170, _center.y + size_px + 12, 340, 74))
 			_text(font, Vector2(cx, _center.y + size_px + 34), sum, 19, Color(1, 0.95, 0.88, settle))
-			if int(d["kept"]) == 20 and not enemy_roll:
-				verdict = "CRÍTICO!"
-			elif int(d["kept"]) == 1:
-				verdict = "FALHA CRÍTICA!" if not d.has("save") else verdict
-			var big := 44 if int(d["kept"]) in [1, 20] else 32
+			var big := 44 if int(d["kept"]) in [1, 20] and not d.has("save") else 32
 			var verdict_color := Color(1.0, 0.85, 0.3) if verdict == "CRÍTICO!" else (Color(0.55, 1.0, 0.6) if good else Color(1.0, 0.55, 0.5))
 			_text(font, Vector2(cx, _center.y + size_px + 70 + (big - 32) * 0.5), verdict, big,
 				Color(verdict_color, settle))
@@ -201,3 +196,31 @@ func _cracks(at: Vector2, r: float) -> void:
 		for p: Vector2 in line:
 			pts.append(at + p * r)
 		draw_polyline(pts, red, 3.0, true)
+
+
+## O veredito sempre do ponto de vista de quem joga (D055): verde = bom para você, vermelho = ruim, e o texto diz o que
+## aconteceu com você ou com o seu golpe. Devolve [texto, bom].
+## - seu ataque: ACERTOU / CRÍTICO! / ERROU / FALHA CRÍTICA!
+## - sua habilidade que o inimigo resiste (salvamento): ACERTOU (ele falhou) / RESISTIU (ele passou)
+## - ataque do inimigo em você: TE ACERTOU / GOLPE CRÍTICO! / ESCAPOU / ELE TROPEÇOU
+static func _player_view(d: Dictionary, enemy_roll: bool) -> Array:
+	var kept := int(d["kept"])
+	var verdict := String(d.get("verdict", ""))
+	if d.has("save"):
+		# quem rola é quem resiste: se ele é inimigo, falhar é bom para você
+		var failed := verdict in ["FALHOU", "FALHA"]
+		if enemy_roll:
+			return ["ACERTOU" if failed else "RESISTIU", failed]
+		return ["NÃO RESISTIU" if failed else "RESISTIU", not failed]
+	var hit := verdict in ["ACERTOU", "CRÍTICO!"]
+	if not enemy_roll:
+		if kept == 20:
+			return ["CRÍTICO!", true]
+		if kept == 1:
+			return ["FALHA CRÍTICA!", false]
+		return ["ACERTOU" if hit else "ERROU", hit]
+	if kept == 20:
+		return ["GOLPE CRÍTICO!", false]
+	if kept == 1:
+		return ["ELE TROPEÇOU", true]
+	return ["TE ACERTOU" if hit else "ESCAPOU", not hit]

@@ -324,3 +324,65 @@ func _sparkles(amount: int, life: float, burst: bool) -> CPUParticles3D:
 	p.mesh = dot
 	add_child(p)
 	return p
+
+
+## Fora da luta (D057): as adagas ficam guardadas e aparecem quando o herói ataca (botão esquerdo no mapa). Ele corta em
+## X com elas (rastro e brilho) e, alguns segundos depois do último golpe, elas somem de novo.
+static func equip_for_field(hero: Combatant) -> void:
+	var daggers := attach_to(hero)
+	if daggers.is_empty():
+		return
+	for d: AdagaPsiquica in daggers:
+		d.visible = false
+	var animator := hero.get_node_or_null("Animator")
+	if animator:
+		var list: Array[StringName] = []
+		list.assign(animator.get("ability_animations"))
+		if not list.is_empty():
+			list[0] = &"tico/Corte_X"
+		animator.set("ability_animations", list)
+	var state := {"last": 0.0}
+	hero.ability_used.connect(func(index: int) -> void:
+		if index != 0:
+			return
+		state["last"] = Time.get_ticks_msec() / 1000.0
+		_field_strike(hero, daggers, state))
+
+
+static func _field_strike(hero: Combatant, daggers: Array[AdagaPsiquica], state: Dictionary) -> void:
+	var arm_rest := hero.find_children("*", "SkeletonModifier3D", true, false)
+	for m: Node in arm_rest:
+		(m as SkeletonModifier3D).active = false  # o golpe já põe os braços no lugar
+	for d: AdagaPsiquica in daggers:
+		if not d.visible:
+			d.visible = true
+			d.materialize()
+		d.flare(0.5)
+		d.trail(true)
+	await hero.get_tree().create_timer(0.45).timeout
+	for d: AdagaPsiquica in daggers:
+		if is_instance_valid(d):
+			d.trail(false)
+	await hero.get_tree().create_timer(0.3).timeout
+	if is_instance_valid(hero):
+		for m: Node in arm_rest:
+			if is_instance_valid(m):
+				(m as SkeletonModifier3D).active = true
+	# guarda depois de um tempo sem atacar
+	var mine: float = state["last"]
+	await hero.get_tree().create_timer(2.5).timeout
+	if not is_instance_valid(hero) or float(state["last"]) != mine:
+		return
+	for d: AdagaPsiquica in daggers:
+		if is_instance_valid(d) and d.visible:
+			d.vanish()
+
+
+## Some: encolhe e solta brilhinhos.
+func vanish() -> void:
+	flare(0.3)
+	var tween := create_tween()
+	tween.tween_property(self, "scale", Vector3.ONE * 0.01, 0.2).set_ease(Tween.EASE_IN)
+	await tween.finished
+	visible = false
+	scale = Vector3.ONE
