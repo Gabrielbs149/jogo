@@ -1,0 +1,165 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://world/props/altar.tscn" id="1_rgquh"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Banner_1.gltf" id="2_mg0xs"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/CandleStick_Stand.gltf" id="3_c2p03"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Bench.gltf" id="4_wrm4o"]
+[ext_resource type="PackedScene" path="res://world/props/morador.tscn" id="5_lxdp4"]
+[ext_resource type="Script" path="res://world/vida/morador.gd" id="6_7muov"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lvyhy"]
+size = Vector3(2.18, 0.5, 0.38)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7ehsh"]
+size = Vector3(2.18, 0.5, 0.38)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tx648"]
+size = Vector3(2.18, 0.5, 0.38)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_attge"]
+size = Vector3(2.18, 0.5, 0.38)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_6atrh"]
+size = Vector3(2.18, 0.5, 0.38)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_apib1"]
+size = Vector3(2.18, 0.5, 0.38)
+
+[node name="InteriorCapela" type="Node3D" unique_id=2128945039]
+
+[node name="Altar" parent="." unique_id=1579130077 instance=ExtResource("1_rgquh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.21)
+
+[node name="Banner_12" parent="." unique_id=1743096591 instance=ExtResource("2_mg0xs")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1.164, 2.7, 3.64)
+
+[node name="Banner_13" parent="." unique_id=681423517 instance=ExtResource("2_mg0xs")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.0864, 2.7, 3.64)
+
+[node name="Castical" parent="." unique_id=243127052 instance=ExtResource("3_c2p03")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1.6, 0, 3.04)
+
+[node name="Castical2" parent="." unique_id=955818949 instance=ExtResource("3_c2p03")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.6, 0, 3.04)
+
+[node name="Banco" parent="." unique_id=1649617024 instance=ExtResource("4_wrm4o")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, -1.4, 0, 0.9)
+
+[node name="Colisao" type="StaticBody3D" parent="." unique_id=1849201096]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0.25, 0.9)
+
+[node name="@CollisionShape3D@456" type="CollisionShape3D" parent="Colisao" unique_id=1592514586]
+shape = SubResource("BoxShape3D_lvyhy")
+
+[node name="Banco2" parent="." unique_id=96112788 instance=ExtResource("4_wrm4o")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 1.4, 0, 0.9)
+
+[node name="Colisao2" type="StaticBody3D" parent="." unique_id=1376761260]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 0.25, 0.9)
+
+[node name="@CollisionShape3D@457" type="CollisionShape3D" parent="Colisao2" unique_id=1297407670]
+shape = SubResource("BoxShape3D_7ehsh")
+
+[node name="Banco3" parent="." unique_id=90106119 instance=ExtResource("4_wrm4o")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, -1.4, 0, -0.35)
+
+[node name="Colisao3" type="StaticBody3D" parent="." unique_id=1821185549]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0.25, -0.35)
+
+[node name="@CollisionShape3D@458" type="CollisionShape3D" parent="Colisao3" unique_id=1653443587]
+shape = SubResource("BoxShape3D_tx648")
+
+[node name="Banco4" parent="." unique_id=1029155857 instance=ExtResource("4_wrm4o")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 1.4, 0, -0.35)
+
+[node name="Colisao4" type="StaticBody3D" parent="." unique_id=673119418]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 0.25, -0.35)
+
+[node name="@CollisionShape3D@459" type="CollisionShape3D" parent="Colisao4" unique_id=716558151]
+shape = SubResource("BoxShape3D_attge")
+
+[node name="Banco5" parent="." unique_id=1557342653 instance=ExtResource("4_wrm4o")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, -1.4, 0, -1.6)
+
+[node name="Colisao5" type="StaticBody3D" parent="." unique_id=626883159]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0.25, -1.6)
+
+[node name="@CollisionShape3D@460" type="CollisionShape3D" parent="Colisao5" unique_id=1832904387]
+shape = SubResource("BoxShape3D_6atrh")
+
+[node name="Banco6" parent="." unique_id=283584729 instance=ExtResource("4_wrm4o")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 1.4, 0, -1.6)
+
+[node name="Colisao6" type="StaticBody3D" parent="." unique_id=1043192141]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 0.25, -1.6)
+
+[node name="@CollisionShape3D@461" type="CollisionShape3D" parent="Colisao6" unique_id=2030808116]
+shape = SubResource("BoxShape3D_apib1")
+
+[node name="Morador" parent="." unique_id=1523791552 instance=ExtResource("5_lxdp4")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 2.14)
+script = ExtResource("6_7muov")
+de = 6.0
+ate = 20.0
+gestos = Array[String](["Idle", "Interact", "Idle"])
+troca = Vector2(8, 16)
+emotes = Array[String](["...", "..."])
+
+[node name="Figure" parent="Morador" index="0"]
+personagem = "Mage"
+cor_roupa = 0.62
+
+[node name="Talk" parent="Morador" index="2"]
+prompt_text = "Falar"
+text = "— A Lua chama quem pode suportar, menino. Senta um pouco. Ninguém aqui pergunta de onde você veio."
+
+[node name="Morador2" parent="." unique_id=486990770 instance=ExtResource("5_lxdp4")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1.4, 0.35, 0.25)
+script = ExtResource("6_7muov")
+de = 8.0
+ate = 12.0
+gestos = Array[String](["Sit_Chair_Idle"])
+troca = Vector2(6, 14)
+emotes = Array[String](["...", "gota"])
+olha = false
+
+[node name="Figure" parent="Morador2" index="0"]
+animacao = "Sit_Chair_Idle"
+cor_roupa = 0.15
+sem_chapeu = true
+
+[node name="Talk" parent="Morador2" index="2"]
+prompt_text = "Falar"
+text = "— Shh. Tô rezando pela minha filha."
+
+[node name="Morador3" parent="." unique_id=1669223192 instance=ExtResource("5_lxdp4")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.4, 0.35, -1)
+script = ExtResource("6_7muov")
+de = 15.0
+ate = 19.0
+gestos = Array[String](["Sit_Chair_Idle"])
+troca = Vector2(6, 14)
+emotes = Array[String](["..."])
+olha = false
+
+[node name="Figure" parent="Morador3" index="0"]
+personagem = "Barbarian"
+animacao = "Sit_Chair_Idle"
+cor_roupa = 0.7
+sem_chapeu = true
+
+[node name="Talk" parent="Morador3" index="2"]
+prompt_text = "Falar"
+text = "— Desde que as estrelas ficaram esquisitas, a capela vive cheia."
+
+[node name="Luz" type="OmniLight3D" parent="." unique_id=1330926666]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.1
+distance_fade_enabled = true
+distance_fade_begin = 32.0
+omni_range = 7.6
+
+[editable path="Morador"]
+[editable path="Morador2"]
+[editable path="Morador3"]

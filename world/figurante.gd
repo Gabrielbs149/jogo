@@ -24,6 +24,23 @@ const SLOTS: Array[StringName] = [&"handslot_l", &"handslot_r"]
 		_hide_props()
 ## A animação começa num ponto diferente em cada pessoa (ninguém mexe igual ao lado).
 @export var deslocamento: float = 0.0
+## Variedade (D060): a roupa troca de cor (giro de matiz 0..1; -1 = a cor original), sem chapéu/capacete, sem capa.
+@export_range(-1.0, 1.0) var cor_roupa: float = -1.0:
+	set(value):
+		cor_roupa = value
+		_dress()
+@export var sem_chapeu: bool = false:
+	set(value):
+		sem_chapeu = value
+		_dress()
+@export var sem_capa: bool = false:
+	set(value):
+		sem_capa = value
+		_dress()
+
+const TINT_SHADER := "res://assets/shaders/roupa_tingida.gdshader"
+## Material tingido por (textura, cor): várias pessoas da mesma cor dividem o mesmo.
+static var _tints: Dictionary = {}
 
 var _model: Node3D
 var _player: AnimationPlayer
@@ -49,7 +66,39 @@ func _rebuild() -> void:
 	var found := _model.find_children("*", "AnimationPlayer", true, false)
 	_player = found[0] as AnimationPlayer if not found.is_empty() else null
 	_hide_props()
+	_dress()
 	_play()
+
+
+## Animação que está tocando (para quem anima por fora, como a Rotina e o Passante).
+func player() -> AnimationPlayer:
+	return _player
+
+
+func _dress() -> void:
+	if _model == null:
+		return
+	for found: Node in _model.find_children("*", "MeshInstance3D", true, false):
+		var mesh := found as MeshInstance3D
+		var part := String(mesh.name)
+		if part.ends_with("_Hat") or part.ends_with("_Helmet"):
+			mesh.visible = not sem_chapeu
+		elif part.ends_with("_Cape"):
+			mesh.visible = not sem_capa
+		if cor_roupa < 0.0:
+			mesh.material_override = null
+			continue
+		var base := mesh.mesh.surface_get_material(0) as StandardMaterial3D if mesh.mesh and mesh.mesh.get_surface_count() > 0 else null
+		if base == null or base.albedo_texture == null:
+			continue
+		var key := "%s|%.2f" % [base.albedo_texture.resource_path, cor_roupa]
+		if not _tints.has(key):
+			var mat := ShaderMaterial.new()
+			mat.shader = load(TINT_SHADER)
+			mat.set_shader_parameter("albedo_tex", base.albedo_texture)
+			mat.set_shader_parameter("hue_shift", cor_roupa)
+			_tints[key] = mat
+		mesh.material_override = _tints[key]
 
 
 func _hide_props() -> void:
@@ -65,7 +114,11 @@ func _play() -> void:
 	if _player == null or not _player.has_animation(animacao):
 		return
 	_player.get_animation(animacao).loop_mode = Animation.LOOP_LINEAR
-	_player.play(animacao)
+	# já estava mexendo (troca no meio do jogo, D060): passa de uma animação para a outra devagar, do começo
+	var was_playing := _player.is_playing() and not Engine.is_editor_hint()
+	_player.play(animacao, 0.25 if was_playing else -1.0)
+	if was_playing:
+		return
 	var length := _player.current_animation_length
 	if length > 0.0:
 		_player.seek(fmod(deslocamento if deslocamento > 0.0 else randf() * length, length), true)

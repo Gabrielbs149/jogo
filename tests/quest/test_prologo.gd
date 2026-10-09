@@ -46,6 +46,7 @@ func _put_hero(at: Vector3) -> void:
 	_level.player.global_position = at
 	_level.player.reset_physics_interpolation()
 	await wait_physics_frames(3)
+	await wait_frames(2)  # com a cidade cheia, um quadro de tela roda vários passos de física
 
 
 func _after_the_alley() -> Dictionary:
@@ -84,6 +85,7 @@ func test_leaving_the_alley_shows_the_street_and_starts_the_food_quest() -> void
 	await _open({"prologo.etapa": "conversou"})
 	await _put_hero(Vector3(-3.0, 0.1, -55.0))
 	await wait_until(func() -> bool: return _prologue.etapa() == "saiu", 3.0)
+	await wait_frames(2)
 	assert_true(Game.flag("comida.comecou", false))
 	assert_eq(Game.objective, "Conseguir comida para os dois.")
 	assert_eq(Game.objective_title, "Fome")
@@ -151,6 +153,7 @@ func test_the_street_fight_starts_when_you_come_close_and_you_can_walk_away() ->
 	assert_eq(fight.estado(), "")
 	await _put_hero(fight.vendedor.global_position + Vector3(-6.0, 0.1, 0.0))
 	assert_eq(fight.estado(), "brigando")
+	await wait_until(func() -> bool: return fight.intervir.enabled, 3.0)
 	assert_true(fight.intervir.enabled)
 	await _put_hero(fight.vendedor.global_position + Vector3(-40.0, 0.1, 0.0))
 	assert_eq(Game.flag("feira.jeito"), "ignorou", "seguiu andando: a história continua igual")
@@ -209,7 +212,8 @@ func test_bringing_food_back_ends_the_day_and_tika_stays() -> void:
 	Game.set_flag("comida.de", "padaria")
 	Game.set_flag("padaria.jeito", "roubou")
 	Game.set_flag("comida.o_que", "um pão escondido debaixo do capuz")
-	await wait_physics_frames(2)
+	_level.ciclo.jump_to(19.0)  # o jantar é de noite (D060)
+	await wait_until(func() -> bool: return _prologue.marca_tika.visible, 3.0)
 	assert_true(_prologue.marca_tika.visible, "seta em cima da Tika: é com ela")
 	_prologue.falar_tika.interact(_level.player)
 	await wait_until(func() -> bool: return not _prologue._busy, 20.0)
@@ -217,6 +221,23 @@ func test_bringing_food_back_ends_the_day_and_tika_stays() -> void:
 	assert_false(Game.has_item("comida"))
 	assert_eq(Game.objective, "")
 	assert_true(_prologue.tika.visible, "a Tika não some no primeiro dia")
+
+
+## D060: voltando com comida antes de escurecer, a Tika guarda para o jantar; dá para esperar o sol baixar com ela.
+func test_coming_back_early_waits_for_the_evening() -> void:
+	await _open(_after_the_alley())
+	Game.add_item("comida")
+	Game.set_flag("comida.de", "bico")
+	Game.set_flag("comida.o_que", "um pão de milho e uma linguiça")
+	_level.ciclo.jump_to(11.0)
+	_answer([1])  # dar mais uma volta
+	await _prologue._talk(_prologue._too_early, _prologue.tika)
+	assert_eq(_prologue.etapa(), "saiu", "ainda não jantaram")
+	assert_true(Game.has_item("comida"), "ela guardou")
+	_answer([0])  # esperar com ela
+	await _prologue._talk(_prologue._too_early, _prologue.tika)
+	await wait_until(func() -> bool: return _prologue.etapa() == "fim", 15.0)
+	assert_gt(Game.hora, 18.0, "o sol baixou")
 
 
 func test_continuing_a_save_in_the_middle_puts_tika_in_the_right_place() -> void:

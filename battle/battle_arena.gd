@@ -242,6 +242,8 @@ func _run() -> void:
 		return
 	await _wait(1.6 if victory else 1.8)
 	var text := ("Sobrou %d de %d PV." % [player.hp, player.max_hp]) if victory else "Você volta para o começo da fase, com a vida cheia."
+	if not victory and Game.battle.has("texto_derrota"):
+		text = String(Game.battle["texto_derrota"])
 	await _hud.show_result(victory, text)
 	Game.end_battle(victory, player.hp)
 

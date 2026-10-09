@@ -1,0 +1,131 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Bed_Twin1.gltf" id="1_2mn3u"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Nightstand_Shelf.gltf" id="2_e7qfj"]
+[ext_resource type="PackedScene" path="res://world/props/lareira.tscn" id="3_nvhsg"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Mug.gltf" id="4_7mlh7"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/CandleStick.gltf" id="5_iq28n"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Chest_Wood.gltf" id="6_a4qqp"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Crate_Wooden.gltf" id="7_gbpst"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Shelf_Simple.gltf" id="8_qmlhl"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Pot_1.gltf" id="9_hwgn5"]
+[ext_resource type="PackedScene" path="res://world/props/lanterna.tscn" id="10_atys2"]
+[ext_resource type="PackedScene" path="res://world/props/morador.tscn" id="11_qhi5t"]
+[ext_resource type="Script" path="res://world/vida/morador.gd" id="12_c331b"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_js5le"]
+size = Vector3(1.84, 0.8, 2.39)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nk44w"]
+size = Vector3(0.66, 1.2, 0.35999998)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_iip3d"]
+size = Vector3(0.71999997, 0.7, 1.24)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_oiil7"]
+size = Vector3(0.86, 0.9, 0.82)
+
+[node name="InteriorCasa_pedra4" type="Node3D" unique_id=1608028703]
+
+[node name="Cama" parent="." unique_id=197555494 instance=ExtResource("1_2mn3u")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.68, 0, 1.41)
+
+[node name="Colisao" type="StaticBody3D" parent="." unique_id=1069828056]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.68, 0.4, 1.41)
+
+[node name="@CollisionShape3D@827" type="CollisionShape3D" parent="Colisao" unique_id=1874499249]
+shape = SubResource("BoxShape3D_js5le")
+
+[node name="Criado" parent="." unique_id=642235846 instance=ExtResource("2_e7qfj")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.67, 0, 2.43)
+
+[node name="Colisao2" type="StaticBody3D" parent="." unique_id=990845594]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.66999996, 0.6, 2.43)
+
+[node name="@CollisionShape3D@828" type="CollisionShape3D" parent="Colisao2" unique_id=1182355332]
+shape = SubResource("BoxShape3D_nk44w")
+
+[node name="Lareira" parent="." unique_id=458938332 instance=ExtResource("3_nvhsg")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -1.18, 0, 0.99475706)
+
+[node name="Mug2" parent="." unique_id=1036639554 instance=ExtResource("4_7mlh7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0.82, -0.5)
+
+[node name="CandleStick2" parent="." unique_id=1960810744 instance=ExtResource("5_iq28n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.82, -0.45)
+
+[node name="Bau" parent="." unique_id=1437152585 instance=ExtResource("6_a4qqp")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.25, 0, -0.71747917)
+
+[node name="Colisao3" type="StaticBody3D" parent="." unique_id=1106568731]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 0.35, -0.7174792)
+
+[node name="@CollisionShape3D@830" type="CollisionShape3D" parent="Colisao3" unique_id=215017734]
+shape = SubResource("BoxShape3D_iip3d")
+
+[node name="Caixote" parent="." unique_id=504997077 instance=ExtResource("7_gbpst")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.18, 0, -1.8229501)
+
+[node name="Colisao4" type="StaticBody3D" parent="." unique_id=1870923244]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.18, 0.45, -1.8229501)
+
+[node name="@CollisionShape3D@831" type="CollisionShape3D" parent="Colisao4" unique_id=1841511422]
+shape = SubResource("BoxShape3D_oiil7")
+
+[node name="Shelf_Simple2" parent="." unique_id=1691819530 instance=ExtResource("8_qmlhl")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -1.64, 1.55, -0.39382696)
+
+[node name="Pot_12" parent="." unique_id=1646638536 instance=ExtResource("9_hwgn5")]
+transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, -1.64, 1.6, 0)
+
+[node name="Lanterna" parent="." unique_id=1403090715 instance=ExtResource("10_atys2")]
+transform = Transform3D(1, 0, 1.7484555e-07, 0, 1, 0, -1.7484555e-07, 0, 1, -0.551902, 2, 2.64)
+
+[node name="Morador" parent="." unique_id=1229199030 instance=ExtResource("11_qhi5t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0, 0.35)
+script = ExtResource("12_c331b")
+de = 7.0
+ate = 21.0
+gestos = Array[String](["Idle", "Interact", "Use_Item"])
+troca = Vector2(6, 14)
+emotes = Array[String](["...", "nota", "?"])
+
+[node name="Figure" parent="Morador" index="0"]
+personagem = "Barbarian"
+cor_roupa = 0.3
+sem_chapeu = true
+
+[node name="Talk" parent="Morador" index="2"]
+prompt_text = "Falar"
+text = "— Quer sopa? ...Brincadeira. Não tem sopa."
+
+[node name="Morador2" parent="." unique_id=1879508541 instance=ExtResource("11_qhi5t")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.68, 0.55, 1.41)
+script = ExtResource("12_c331b")
+de = 21.0
+ate = 7.0
+gestos = Array[String](["Lie_Idle"])
+troca = Vector2(30, 60)
+emotes = Array[String](["zz", "zz", "zz"])
+olha = false
+
+[node name="Figure" parent="Morador2" index="0"]
+personagem = "Barbarian"
+animacao = "Lie_Idle"
+cor_roupa = 0.3
+sem_chapeu = true
+
+[node name="Talk" parent="Morador2" index="2"]
+prompt_text = "Falar"
+text = "— Zzz... só mais cinco minutos..."
+
+[node name="Luz" type="OmniLight3D" parent="." unique_id=1939235718]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 0.75
+distance_fade_enabled = true
+distance_fade_begin = 32.0
+omni_range = 5.7
+
+[editable path="Morador"]
+[editable path="Morador2"]

@@ -1,0 +1,98 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Anvil.gltf" id="1_np45l"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Workbench.gltf" id="2_xcty0"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/WeaponStand.gltf" id="3_gidwd"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Whetstone.gltf" id="4_khnl8"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Barrel.gltf" id="5_cli0a"]
+[ext_resource type="PackedScene" path="res://world/props/estante_ferramentas.tscn" id="6_1206v"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Crate_Metal.gltf" id="7_i8vey"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Peg_Rack.gltf" id="8_wyxr0"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fxa03"]
+size = Vector3(1.0400001, 0.56, 0.35999998)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rjqmw"]
+size = Vector3(0.97999996, 0.9, 1.98)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0ligy"]
+size = Vector3(1.34, 1.1, 0.94)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nbvgh"]
+size = Vector3(0.86, 1.2, 1.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_j1ivo"]
+size = Vector3(0.66, 0.9, 0.66)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0c7gx"]
+size = Vector3(0.84, 0.9, 0.84)
+
+[node name="InteriorFerreiro" type="Node3D" unique_id=2041172062]
+
+[node name="Bigorna" parent="." unique_id=940146811 instance=ExtResource("1_np45l")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -2.2, 0, 1)
+
+[node name="Colisao" type="StaticBody3D" parent="." unique_id=476813011]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.28, 1)
+
+[node name="@CollisionShape3D@512" type="CollisionShape3D" parent="Colisao" unique_id=923780800]
+shape = SubResource("BoxShape3D_fxa03")
+
+[node name="Bancada" parent="." unique_id=1703361637 instance=ExtResource("2_xcty0")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 3.12, 0, 0.524)
+
+[node name="Colisao2" type="StaticBody3D" parent="." unique_id=410949293]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.12, 0.45, 0.524)
+
+[node name="@CollisionShape3D@513" type="CollisionShape3D" parent="Colisao2" unique_id=993971220]
+shape = SubResource("BoxShape3D_rjqmw")
+
+[node name="Armas" parent="." unique_id=1403553712 instance=ExtResource("3_gidwd")]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 1.47, 0, 3.14)
+
+[node name="Colisao3" type="StaticBody3D" parent="." unique_id=665702757]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.47, 0.55, 3.14)
+
+[node name="@CollisionShape3D@514" type="CollisionShape3D" parent="Colisao3" unique_id=1618363104]
+shape = SubResource("BoxShape3D_0ligy")
+
+[node name="Rebolo" parent="." unique_id=488087946 instance=ExtResource("4_khnl8")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 3.18, 0, 2.1018512)
+
+[node name="Colisao4" type="StaticBody3D" parent="." unique_id=1629173658]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.18, 0.6, 2.1018512)
+
+[node name="@CollisionShape3D@515" type="CollisionShape3D" parent="Colisao4" unique_id=1277998156]
+shape = SubResource("BoxShape3D_nbvgh")
+
+[node name="Barril" parent="." unique_id=1335974545 instance=ExtResource("5_cli0a")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -3.28, 0, 0.44933525)
+
+[node name="Colisao5" type="StaticBody3D" parent="." unique_id=1354625871]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2800002, 0.45, 0.44933525)
+
+[node name="@CollisionShape3D@516" type="CollisionShape3D" parent="Colisao5" unique_id=1647311776]
+shape = SubResource("BoxShape3D_j1ivo")
+
+[node name="EstanteFerramentas" parent="." unique_id=1022215156 instance=ExtResource("6_1206v")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 3.42, 0, -1.5245472)
+
+[node name="CaixaMetal" parent="." unique_id=1661201450 instance=ExtResource("7_i8vey")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -3.19, 0, 1.2760683)
+
+[node name="Colisao6" type="StaticBody3D" parent="." unique_id=1770075049]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19, 0.45, 1.2760684)
+
+[node name="@CollisionShape3D@517" type="CollisionShape3D" parent="Colisao6" unique_id=481351205]
+shape = SubResource("BoxShape3D_0c7gx")
+
+[node name="Peg_Rack2" parent="." unique_id=1445846314 instance=ExtResource("8_wyxr0")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 3.64, 1.7, -1.176)
+
+[node name="Luz" type="OmniLight3D" parent="." unique_id=1160471846]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.1
+distance_fade_enabled = true
+distance_fade_begin = 32.0
+omni_range = 7.6

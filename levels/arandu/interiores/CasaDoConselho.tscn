@@ -1,0 +1,177 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Table_Large.gltf" id="1_wgsv6"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Chair_1.gltf" id="2_0jbhp"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Bookcase_2.gltf" id="3_4gidv"]
+[ext_resource type="PackedScene" path="res://world/props/estante_livros.tscn" id="4_udihl"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Chest_Wood.gltf" id="5_r2owy"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/BookStand.gltf" id="6_gvg2e"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Banner_1.gltf" id="7_p1nm0"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Scroll_1.gltf" id="8_vnehj"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Book_Stack_1.gltf" id="9_xdnh3"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/CandleStick_Triple.gltf" id="10_6b70s"]
+[ext_resource type="PackedScene" path="res://world/props/morador.tscn" id="11_e5ckd"]
+[ext_resource type="Script" path="res://world/vida/morador.gd" id="12_jw5o8"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pmmjn"]
+size = Vector3(2.79, 0.8, 1.0400001)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ffjrn"]
+size = Vector3(2.79, 0.8, 1.0400001)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tuo3q"]
+size = Vector3(0.54, 1.1, 0.54)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nofx8"]
+size = Vector3(0.54, 1.1, 0.54)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_njgxu"]
+size = Vector3(0.54, 1.1, 0.54)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ydtmf"]
+size = Vector3(0.54, 1.1, 0.54)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_e7cu0"]
+size = Vector3(0.38, 2.5, 1.4200001)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_kmfmf"]
+size = Vector3(0.71999997, 0.7, 1.24)
+
+[node name="InteriorCasaDoConselho" type="Node3D" unique_id=532645956]
+
+[node name="Mesa" parent="." unique_id=141175383 instance=ExtResource("1_wgsv6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.4)
+
+[node name="Colisao" type="StaticBody3D" parent="." unique_id=800473005]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0.4)
+
+[node name="@CollisionShape3D@428" type="CollisionShape3D" parent="Colisao" unique_id=406327154]
+shape = SubResource("BoxShape3D_pmmjn")
+
+[node name="Mesa2" parent="." unique_id=849021531 instance=ExtResource("1_wgsv6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
+
+[node name="Colisao2" type="StaticBody3D" parent="." unique_id=915058309]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.74999994)
+
+[node name="@CollisionShape3D@429" type="CollisionShape3D" parent="Colisao2" unique_id=1529235923]
+shape = SubResource("BoxShape3D_ffjrn")
+
+[node name="Cadeira" parent="." unique_id=1823877450 instance=ExtResource("2_0jbhp")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1, 0, 1.25)
+
+[node name="Colisao3" type="StaticBody3D" parent="." unique_id=393952810]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.99999994, 0.55, 1.25)
+
+[node name="@CollisionShape3D@430" type="CollisionShape3D" parent="Colisao3" unique_id=156879109]
+shape = SubResource("BoxShape3D_tuo3q")
+
+[node name="Cadeira2" parent="." unique_id=1743942929 instance=ExtResource("2_0jbhp")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1, 0, 1.25)
+
+[node name="Colisao4" type="StaticBody3D" parent="." unique_id=1286234223]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.55, 1.25)
+
+[node name="@CollisionShape3D@431" type="CollisionShape3D" parent="Colisao4" unique_id=224591998]
+shape = SubResource("BoxShape3D_nofx8")
+
+[node name="Cadeira3" parent="." unique_id=720736702 instance=ExtResource("2_0jbhp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -1.6)
+
+[node name="Colisao5" type="StaticBody3D" parent="." unique_id=1906046647]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.99999994, 0.55, -1.5999999)
+
+[node name="@CollisionShape3D@432" type="CollisionShape3D" parent="Colisao5" unique_id=72486542]
+shape = SubResource("BoxShape3D_njgxu")
+
+[node name="Cadeira4" parent="." unique_id=1160117553 instance=ExtResource("2_0jbhp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -1.6)
+
+[node name="Colisao6" type="StaticBody3D" parent="." unique_id=626793971]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.55, -1.5999999)
+
+[node name="@CollisionShape3D@433" type="CollisionShape3D" parent="Colisao6" unique_id=2019677370]
+shape = SubResource("BoxShape3D_ydtmf")
+
+[node name="Estante" parent="." unique_id=689350519 instance=ExtResource("3_4gidv")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.42, 0, -0.87876683)
+
+[node name="Colisao7" type="StaticBody3D" parent="." unique_id=383214859]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.42, 1.25, -0.8787668)
+
+[node name="@CollisionShape3D@434" type="CollisionShape3D" parent="Colisao7" unique_id=1799903427]
+shape = SubResource("BoxShape3D_e7cu0")
+
+[node name="EstanteLivros" parent="." unique_id=401276786 instance=ExtResource("4_udihl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.02268971, 0, 3.42)
+
+[node name="Bau" parent="." unique_id=1437152585 instance=ExtResource("5_r2owy")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.25, 0, 1.227203)
+
+[node name="Colisao8" type="StaticBody3D" parent="." unique_id=1211355401]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25, 0.35, 1.227203)
+
+[node name="@CollisionShape3D@436" type="CollisionShape3D" parent="Colisao8" unique_id=557867159]
+shape = SubResource("BoxShape3D_kmfmf")
+
+[node name="Atril" parent="." unique_id=411929730 instance=ExtResource("6_gvg2e")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.37, 0, 3.159084)
+
+[node name="Banner_12" parent="." unique_id=1743096591 instance=ExtResource("7_p1nm0")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 2.7, 3.64)
+
+[node name="Scroll_12" parent="." unique_id=1337618347 instance=ExtResource("8_vnehj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.82, 0.3)
+
+[node name="Book_Stack_12" parent="." unique_id=379310957 instance=ExtResource("9_xdnh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0.82, -0.7)
+
+[node name="CandleStick_Triple2" parent="." unique_id=759291790 instance=ExtResource("10_6b70s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.82, -0.2)
+
+[node name="Morador" parent="." unique_id=843633646 instance=ExtResource("11_e5ckd")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1, 0, 1.25)
+script = ExtResource("12_jw5o8")
+de = 9.0
+ate = 17.0
+gestos = Array[String](["Idle", "Interact"])
+troca = Vector2(8, 16)
+emotes = Array[String](["...", "?"])
+
+[node name="Figure" parent="Morador" index="0"]
+personagem = "Knight"
+
+[node name="Talk" parent="Morador" index="2"]
+prompt_text = "Falar"
+text = "— O conselho está reunido. Assunto: a gente nova acampada perto da muralha. ...Não é da sua conta, pequeno."
+
+[node name="Morador2" parent="." unique_id=2010426288 instance=ExtResource("11_e5ckd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.4, -1.6)
+script = ExtResource("12_jw5o8")
+de = 10.0
+ate = 16.0
+gestos = Array[String](["Sit_Chair_Idle"])
+troca = Vector2(6, 14)
+emotes = Array[String](["...", "gota"])
+olha = false
+
+[node name="Figure" parent="Morador2" index="0"]
+personagem = "Mage"
+animacao = "Sit_Chair_Idle"
+cor_roupa = 0.55
+sem_chapeu = true
+
+[node name="Talk" parent="Morador2" index="2"]
+prompt_text = "Falar"
+text = "— Ordem do dia: o preço da farinha, o poço da praça e... de novo os mendigos. Sempre os mendigos."
+
+[node name="Luz" type="OmniLight3D" parent="." unique_id=707802136]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 1.1
+distance_fade_enabled = true
+distance_fade_begin = 32.0
+omni_range = 7.6
+
+[editable path="Morador"]
+[editable path="Morador2"]

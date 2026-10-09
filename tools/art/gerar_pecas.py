@@ -142,11 +142,17 @@ def tree(file, title, kit_path, scale, trunk_r=0.35, trunk_h=4.0):
 WALL_H = 3.12
 
 
-def house(file, title, w, d, floors, walls, roof, gable, door_cell=None, chimney=True, door=True):
-    """w x d células de 2 m. walls: estilo de parede por andar ('Wall_Plaster', 'Wall_UnevenBrick', 'Wall_Plaster_WoodGrid')."""
-    s = Scene(title, groups=AUTO)
-    hw, hd = float(w), float(d)
+def house(file, title, w, d, floors, walls, roof, gable, door_cell=None, chimney=True, door=True, front="", extra=None):
+    """w x d células de 2 m. walls: estilo de parede por andar ('Wall_Plaster', 'Wall_UnevenBrick', 'Wall_Plaster_WoodGrid').
+    D061: dá para entrar: a porta fica aberta, encostada na parede de dentro, e o tamanho vai nos metadados ("celulas",
+    "porta") para o montar_interiores.gd mobiliar cada casa. front="arcos": a frente do térreo é toda em arcos abertos
+    (oficina). Venezianas abertas e trepadeira mudam de casa para casa (sorteio pelo nome do arquivo)."""
     door_cell = w // 2 if door_cell is None else door_cell
+    s = Scene(title, groups=AUTO, props=["metadata/celulas = Vector2i(%d, %d)" % (w, d), "metadata/porta = %d" % door_cell,
+                                         "metadata/andares = %d" % len(walls), 'metadata/frente = "%s"' % front])
+    hw, hd = float(w), float(d)
+    luck = sum(ord(c) for c in file)
+    shutters = luck % 3 != 0
     for f, style in enumerate(walls):
         y = f * WALL_H
         grid = style.endswith("WoodGrid")
@@ -161,14 +167,22 @@ def house(file, title, w, d, floors, walls, roof, gable, door_cell=None, chimney
                     for k in range(w):
                         s.piece("vila/Floor_WoodDark", (-hw + 1.0 + k * 2.0, y, -hd + 1.0 + j * 2.0))
             front_door = door and f == 0 and i == door_cell
-            if front_door:
+            if f == 0 and front == "arcos":
+                s.piece("vila/Wall_Arch", (x, y, -hd), math.pi)
+            elif front_door:
                 s.piece("vila/" + base + "_Door_Round", (x, y, -hd), math.pi)
-                s.piece("vila/Door_1_Round", (x + 0.53, y, -hd + 0.1), math.pi)
+                # a folha aberta para dentro, encostada na parede ao lado do vão (do lado que tem parede)
+                if door_cell < w - 1:
+                    s.piece("vila/Door_1_Round", (x + 0.55, y, -hd + 0.36), 0.0, name="Porta")
+                else:
+                    s.piece("vila/Door_1_Round", (x - 0.55, y, -hd + 0.36), math.pi, name="Porta")
             elif grid:
                 s.piece("vila/Wall_Plaster_WoodGrid", (x, y, -hd), math.pi)
             else:
                 s.piece("vila/" + base + "_Window_Wide_Round", (x, y, -hd), math.pi)
                 s.piece("vila/Window_Wide_Round1", (x, y, -hd), math.pi)
+                if shutters:
+                    s.piece("vila/WindowShutters_Wide_Round_Open", (x, y, -hd), math.pi, name="Veneziana")
             back = "Wall_Plaster_WoodGrid" if grid else base + ("_Window_Wide_Round" if (i % 2 == 1 and f > 0) else "_Straight")
             s.piece("vila/" + back, (x, y, hd), 0.0)
             if back.endswith("Window_Wide_Round"):
@@ -182,6 +196,8 @@ def house(file, title, w, d, floors, walls, roof, gable, door_cell=None, chimney
                 elif side_window:
                     s.piece("vila/" + base + "_Window_Wide_Round", (sign * hw, y, z), rot)
                     s.piece("vila/Window_Wide_Round1", (sign * hw, y, z), rot)
+                    if shutters and f == 0:
+                        s.piece("vila/WindowShutters_Wide_Round_Open", (sign * hw, y, z), rot, name="Veneziana")
                 else:
                     s.piece("vila/" + base + "_Straight", (sign * hw, y, z), rot)
         for cx, cz in ((hw, hd), (-hw, hd), (hw, -hd), (-hw, -hd)):
@@ -193,10 +209,22 @@ def house(file, title, w, d, floors, walls, roof, gable, door_cell=None, chimney
         s.piece("vila/" + gable, (0, top, -hd), math.pi)
     if chimney:
         s.piece("vila/Prop_Chimney", (hw - 1.2, top + 0.6, hd - 1.6))
+    # trepadeira subindo por uma das quinas da frente (em metade das casas)
+    if luck % 2 == 0 and front != "arcos":
+        side = 1 if luck % 4 == 0 else -1
+        s.piece("vila/Prop_Vine%d" % (1 + luck % 3 * 3 if luck % 3 != 2 else 5), (side * (hw - 0.05), 0, -hd - 0.12), math.pi, name="Trepadeira")
+    if extra:
+        extra(s)
     s.save(file)
 
 
 house("casa", "Casa", 3, 3, 1, ["Wall_Plaster"], "Roof_RoundTiles_6x6", "Roof_Front_Brick6")
+
+
+def interior_light(s, pos, energy=0.9, rng=4.5, color=(1.0, 0.68, 0.38)):
+    s.node(s.unique("Luz"), "OmniLight3D", ".", "transform = " + xf(pos), "light_color = Color(%g, %g, %g, 1)" % color,
+           "light_energy = %g" % energy, "omni_range = %g" % rng, "distance_fade_enabled = true", "distance_fade_begin = 30.0",
+           "distance_fade_length = 10.0")
 
 
 def padaria():
@@ -215,7 +243,8 @@ def padaria():
         x = -hw + 1.0 + i * 2.0
         if kind == "porta":
             s.piece("vila/Wall_Plaster_Door_Round", (x, 0, -hd), math.pi)
-            s.piece("vila/Door_1_Round", (x + 0.53, 0, -hd + 0.35), -math.pi / 2, name="Porta")
+            # a folha da porta aberta, encostada na parede de dentro (D060: o vão fica livre para gente passar)
+            s.piece("vila/Door_1_Round", (x + 0.55, 0, -hd + 0.36), 0.0, name="Porta")
         else:
             s.piece("vila/Wall_Plaster_Window_Wide_Flat", (x, 0, -hd), math.pi)
             s.piece("vila/Window_Wide_Flat1", (x, 0, -hd), math.pi)
@@ -256,7 +285,9 @@ def padaria():
     s.mesh("Balcao", s.box((5.7, 0.92, 0.7)), wood, (-1.15, 0.46, cz))
     s.mesh("BalcaoTampo", s.box((5.85, 0.06, 0.86)), s.color((0.42, 0.26, 0.15), 0.7), (-1.15, 0.95, cz))
     s.mesh("BalcaoRodape", s.box((5.72, 0.1, 0.72)), s.color((0.25, 0.15, 0.09), 0.8), (-1.15, 0.05, cz))
-    s.piece("objetos/Cabinet", (2.1, 0, cz), name="BalcaoArmario")
+    # o armário fica encostado na parede do fundo: a passagem do balcão para a cozinha (x 1,8 a 4) fica livre (D060:
+    # o padeiro precisa sair correndo atrás de ladrão)
+    s.piece("objetos/Cabinet", (-3.5, 0, 2.4), math.pi / 2, name="BalcaoArmario")
     for k, x in enumerate((-3.4, -3.0, -2.55, -1.8, -1.35, 0.3, 0.75)):
         s.scene("PaoBalcao", "res://world/props/pao.tscn", (x, 1.03, cz - 0.15 + (k % 2) * 0.18), 0.4 * k, 1.6)
     s.piece("objetos/Bucket_Wooden_1", (-0.6, 0.98, cz + 0.2), name="Cesto")
@@ -268,16 +299,13 @@ def padaria():
     s.piece("objetos/Table_Large", (0.3, 0, 2.2), math.pi / 2, name="MesaSovar")
     s.piece("objetos/Bag", (0.0, 0.95, 2.3), 0.4, 0.6, name="FarinhaMesa")
     s.scene("MassaMesa", "res://world/props/pao.tscn", (0.6, 1.0, 2.0), 0.3, 2.0)
-    # prateleiras de pão na parede do fundo (direita)
-    for level, y in enumerate((0.85, 1.35, 1.85)):
-        for x in (1.4, 2.8):
-            s.piece("objetos/Shelf_Simple", (x, y, hd - 0.31), math.pi, name="Prateleira")
-            for k in range(3):
-                s.scene("PaoPrateleira", "res://world/props/pao.tscn", (x - 0.35 + k * 0.35, y + 0.15, hd - 0.48), 0.2 + k + level, 1.5)
+    # estantes cheias de pão na parede do fundo (direita), onde o padeiro vai buscar (D061)
+    for x in (1.25, 2.95):
+        s.scene("EstantePao", "res://world/props/estante_paes.tscn", (x, 0, hd - 0.55), 0.0, 1.0)
     # sacos de farinha, barris, banquinho
     for k, (x, z) in enumerate(((3.3, 2.0), (3.5, 2.5), (3.15, 2.6))):
         s.piece("objetos/Bag", (x, 0, z), 0.7 * k, 0.8, name="Farinha")
-    s.piece("objetos/Barrel", (3.35, 0, 0.7), name="Barril")
+    s.piece("objetos/Barrel", (3.45, 0, 4.25), name="Barril")
     s.piece("objetos/Stool", (-1.6, 0, 1.6), name="Banquinho")
     # lado dos fregueses: caixotes de pão embaixo das vitrines e um banco de espera
     for x in (-3.0, -1.0, 3.0):
@@ -299,6 +327,76 @@ def padaria():
            "pixel_size = 0.0042", 'text = "Padaria"', 'font = ExtResource("%s")' % font, "font_size = 48",
            "modulate = Color(0.25, 0.13, 0.06, 1)", "outline_size = 0", "double_sided = false")
     s.scene("PaoPlaca", "res://world/props/pao.tscn", (px, 3.1, -hd - 0.2), 0.0, 2.2)
+    # --- D061: a padaria de verdade (antes era "exemplo ruim") ---------------------------------------------
+    bg = "Baked-Goods/"
+    # no balcão: tortas, rolinhos de canela, croissants, um sininho e o pote de moedas
+    s.glb(bg + "Pie_Apple", (-2.0, 0.98, cz - 0.05), 0.3, 0.26, name="Torta")
+    s.glb(bg + "Pie_Cherry", (0.05, 0.98, cz - 0.1), 1.2, 0.26, name="Torta")
+    for k in range(4):
+        s.glb(bg + "Cinnamon_Roll", (-0.95 + (k % 2) * 0.14, 0.98, cz - 0.18 + (k // 2) * 0.16), k, 0.28, name="Rolinho")
+    s.piece("objetos/Coin_Pile", (1.5, 0.98, cz + 0.12), 0.0, 0.8, name="Moedas")
+    s.piece("objetos/CandleStick", (-3.6, 0.98, cz + 0.1), 0.0, 1.0, name="Vela")
+    # vitrine dos fregueses: mesa baixa cheia de doces, no meio da loja
+    s.piece("objetos/Table_Large", (-2.2, 0, -3.15), 0.0, (0.62, 0.95, 0.75), name="MesaVitrine")
+    vit_y = 0.78
+    for k, (item, sc) in enumerate((("Pie_Apple", 0.24), ("Croissant", 0.27), ("Muffin", 0.27), ("Croissant", 0.27), ("Pie_Cherry", 0.24),
+                                    ("Muffin", 0.27), ("Cinnamon_Roll", 0.28), ("Cookie", 0.3))):
+        s.glb(bg + item, (-2.95 + (k % 4) * 0.48, vit_y, -3.3 + (k // 4) * 0.3), 0.7 * k, sc, name="Doce")
+    for k in range(3):
+        s.glb(bg + "Baguette", (-3.75, 0.2 + k * 0.03, -1.8 - k * 0.12), 0.25 * k, 0.45, name="Baguete")
+    s.piece("objetos/Barrel", (-3.6, 0, -1.9), 0.0, 0.7, name="BarrilBaguete")
+    # luz: dois lustres de vela (fregueses e cozinha)
+    s.piece("objetos/Chandelier", (-1.0, 3.05, -2.7), 0.0, 1.0, name="Lustre")
+    s.piece("objetos/Chandelier", (0.3, 3.05, 2.2), 0.4, 0.9, name="Lustre")
+    interior_light(s, (-1.0, 2.2, -2.7), 1.5, 7.0, (1.0, 0.8, 0.55))
+    interior_light(s, (0.3, 2.2, 2.2), 1.3, 6.5, (1.0, 0.8, 0.55))
+    # lousa do cardápio na parede da esquerda
+    board_x = -hw + 0.34
+    s.mesh("Lousa", s.box((0.05, 0.95, 1.25)), s.color((0.12, 0.13, 0.12), 0.95), (board_x, 1.75, -3.2))
+    s.mesh("LousaMoldura", s.box((0.04, 1.05, 1.35)), wood, (board_x - 0.01, 1.75, -3.2))
+    s.node("Cardapio", "Label3D", ".", "transform = " + xf((board_x + 0.035, 1.75, -3.2), math.pi / 2),
+           "pixel_size = 0.0028", 'text = "PÃO DO DIA\n\nFilão ....... 2 cobres\nBroa ........ 1 cobre\nTorta ....... 5 cobres\nRosca ...... 3 cobres\n\nFIADO: NÃO"',
+           'font = ExtResource("%s")' % s.ext_res("FontFile", "res://assets/fonts/lato.ttf"), "font_size = 34",
+           "modulate = Color(0.95, 0.95, 0.9, 1)", "outline_size = 0", "double_sided = false")
+    # lenha empilhada do lado do forno e a pá de forno encostada
+    log_mat = s.color((0.45, 0.28, 0.15), 0.95)
+    for k in range(7):
+        row, col = divmod(k, 3)
+        s.mesh("Lenha", s.cyl(0.08, 0.08, 0.75, 8), log_mat, (ox + 1.25 + col * 0.17 - row * 0.05, 0.08 + row * 0.15, oz - 0.1), (math.pi / 2, 0, 0))
+    s.mesh("PaCabo", s.box((0.05, 1.7, 0.05)), wood, (ox - 1.05, 0.9, oz - 0.7), (0.2, 0, 0.12))
+    s.mesh("PaPa", s.box((0.32, 0.03, 0.4)), wood, (ox - 0.95, 0.08, oz - 0.55), (0.0, 0.1, 0.0))
+    # farinha no ar em cima da mesa de sovar (poeirinha subindo devagar)
+    dust_mat = s.sub("StandardMaterial3D", ("poeira",), "transparency = 1\nshading_mode = 0\nalbedo_color = Color(1, 0.98, 0.92, 0.35)\nbillboard_mode = 3\nparticles_anim_h_frames = 1\nparticles_anim_v_frames = 1")
+    dust_mesh = s.sub("QuadMesh", ("poeira_q",), "size = Vector2(0.025, 0.025)\nmaterial = SubResource(\"%s\")" % dust_mat)
+    dust_proc = s.sub("ParticleProcessMaterial", ("poeira_p",), "emission_shape = 3\nemission_box_extents = Vector3(0.6, 0.15, 0.35)\ndirection = Vector3(0, 1, 0)\nspread = 60.0\ninitial_velocity_min = 0.03\ninitial_velocity_max = 0.1\ngravity = Vector3(0, 0.02, 0)\nscale_min = 0.5\nscale_max = 1.4")
+    s.node("PoeiraDeFarinha", "GPUParticles3D", ".", "transform = " + xf((0.3, 1.05, 2.2)), "amount = 40", "lifetime = 4.0",
+           'process_material = SubResource("%s")' % dust_proc, 'draw_pass_1 = SubResource("%s")' % dust_mesh)
+    # panelas e utensílios pendurados na parede da cozinha
+    s.piece("objetos/Peg_Rack", (-hw + 0.33, 1.7, 2.4), math.pi / 2, name="Ganchos")
+    s.piece("objetos/Pot_1", (-hw + 0.45, 1.45, 2.1), 0.0, 0.6, name="Panela")
+    s.piece("objetos/Bucket_Wooden_1", (-hw + 0.45, 1.35, 2.7), 0.0, 0.6, name="Balde")
+    # --- fachada: toldos listrados em cima das vitrines, floreiras e o cavalete "Pão quente!" -----------
+    cream, red = s.color((0.95, 0.9, 0.78), 0.9), s.color((0.72, 0.18, 0.15), 0.9)
+    for i, kind in enumerate(("vitrine", "vitrine", "porta", "vitrine")):
+        x = -hw + 1.0 + i * 2.0
+        if kind == "porta":
+            continue
+        for k in range(6):
+            s.mesh("Toldo", s.box((0.32, 0.03, 1.0)), cream if k % 2 == 0 else red, (x - 0.8 + k * 0.32, 2.42, -hd - 0.48), (-0.38, 0, 0))
+        s.mesh("ToldoFranja", s.box((1.92, 0.12, 0.03)), red, (x, 2.2, -hd - 0.95))
+        s.mesh("Floreira", s.box((1.4, 0.24, 0.3)), wood, (x, 0.95, -hd - 0.3))
+        s.mesh("Terra", s.box((1.3, 0.04, 0.22)), s.color((0.3, 0.2, 0.12), 1.0), (x, 1.08, -hd - 0.3))
+        for k in range(3):
+            s.piece("natureza/Flower_3_Group", (x - 0.45 + k * 0.45, 1.08, -hd - 0.3), 0.8 * k, 0.45, name="Flores")
+    s.mesh("CavaleteA", s.box((0.6, 0.9, 0.03)), s.color((0.12, 0.13, 0.12), 0.95), (door_x + 1.55, 0.48, -hd - 1.0), (0.25, 0.2, 0))
+    s.mesh("CavaleteB", s.box((0.6, 0.9, 0.03)), wood, (door_x + 1.55, 0.48, -hd - 0.62), (-0.25, 0.2, 0))
+    s.node("CavaleteTexto", "Label3D", ".", "transform = " + xf((door_x + 1.53, 0.52, -hd - 1.06), (0.25, math.pi + 0.2, 0)),
+           "pixel_size = 0.0032", 'text = "PÃO\nQUENTE!"', 'font = ExtResource("%s")' % s.ext_res("FontFile", "res://assets/fonts/cinzel.ttf"),
+           "font_size = 40", "modulate = Color(0.98, 0.95, 0.85, 1)", "outline_size = 0", "double_sided = false")
+    s.piece("objetos/Bench", (door_x - 2.6, 0, -hd - 0.6), 0.0, 0.7, name="BancoFora")
+    s.piece("objetos/Bag", (door_x - 2.9, 0.38, -hd - 0.6), 0.5, 0.6, name="CestaFora")
+    for k in range(3):
+        s.glb(bg + "Bread", (door_x - 2.35 + k * 0.2, 0.4, -hd - 0.6), 0.6 * k, 0.32, name="PaoFora")
     # pontos do padeiro (a frente do marcador é -Z): balcão olhando os fregueses; o resto de costas para eles
     for name, pos, rot in (("PontoBalcao", (-1.4, 0, -0.35), 0.0), ("PontoForno", (ox, 0, oz - 1.25), math.pi),
                            ("PontoMesa", (0.3, 0, 1.15), math.pi), ("PontoPrateleira", (2.1, 0, hd - 1.15), math.pi),
@@ -374,15 +472,26 @@ def _barracks(s):
     s.piece("objetos/Banner_1", (1.4, 0, -3.4), math.pi, 1.0, name="Estandarte")
 
 
-building("estalagem", "Estalagem", "Fantasy_Inn", "Estalagem", (2.2, 2.6, -6.3))
-building("ferreiro", "Ferreiro", "Blacksmith", "Ferreiro", (0.5, 2.6, -5.2), _forge)
+# D061: a estalagem e o ferreiro eram modelos inteiriços (sem interior); agora são casas de entrar, do mesmo porte
+house("estalagem", "Estalagem", 4, 6, 2, ["Wall_UnevenBrick", "Wall_Plaster_WoodGrid"], "Roof_RoundTiles_8x12", "Roof_Front_Brick8", 1,
+      extra=lambda s: sign(s, "Estalagem", (1.2, 2.7, -6.0), 0.0, 1.3))
+
+
+def _forge_inside(s):
+    """A forja do ferreiro (fogo, coifa, chaminé saindo pelo telhado) no fundo da oficina."""
+    sign(s, "Ferreiro", (2.4, 2.7, -4.0), 0.0, 1.2)
+    s.scene("Forja", "res://world/props/forja.tscn", (-2.2, 0, 2.9), 0.0, 1.0)
+
+
+house("ferreiro", "Ferreiro", 4, 4, 1, ["Wall_UnevenBrick"], "Roof_RoundTiles_8x8", "Roof_Front_Brick8", 1, front="arcos",
+      extra=_forge_inside)
 building("estabulo", "Estabulo", "Fantasy_Stable", "Estábulo", (4.5, 2.4, -4.0), _stable)
 building("moinho", "Moinho", "Mill", None, extra=_mill)
 building("serraria", "Serraria", "Fantasy_Sawmill")
 building("guarita", "Guarita", "Fantasy_Barracks", None, extra=_barracks)
 building("torre_sino", "Torre_sino", "Bell_Tower")
-building("casa_enxaimel", "Casa_enxaimel", "Fantasy_House_2")
-building("casa_enxaimel2", "Casa_enxaimel2", "Fantasy_House_3")
+house("casa_enxaimel", "Casa_enxaimel", 3, 3, 2, ["Wall_UnevenBrick", "Wall_Plaster_WoodGrid"], "Roof_RoundTiles_6x6", "Roof_Front_Brick6", 1)
+house("casa_enxaimel2", "Casa_enxaimel2", 3, 4, 2, ["Wall_Plaster", "Wall_Plaster_WoodGrid"], "Roof_RoundTiles_6x8", "Roof_Front_Brick6", 1)
 
 # poço de pedra com telhado (praças menores) e carroça
 s = Scene("Poco_telhado", groups=AUTO)
@@ -647,6 +756,128 @@ s.save("tocha")
 s = Scene("Luz", "OmniLight3D", ["light_color = Color(1, 0.8, 0.55, 1)", "light_energy = 2.0", "omni_range = 8.0"])
 s.save("luz")
 
+# --- peças de interior (D061): a frente de cada uma é -Z, o fundo (+Z) encosta na parede ------------------
+s = Scene("Lareira", groups=AUTO)
+stone, brick, wood = s.mat("arenito"), s.mat("tijolo_vermelho"), s.mat("tabuas")
+s.mesh("Base", s.box((1.7, 0.35, 0.9)), stone, (0, 0.175, 0))
+s.mesh("Fundo", s.box((1.7, 1.5, 0.3)), brick, (0, 1.1, 0.3))
+s.mesh("LadoE", s.box((0.25, 0.85, 0.6)), brick, (-0.72, 0.77, -0.05))
+s.mesh("LadoD", s.box((0.25, 0.85, 0.6)), brick, (0.72, 0.77, -0.05))
+s.mesh("Arco", s.box((1.7, 0.3, 0.62)), stone, (0, 1.32, -0.04))
+s.mesh("Prateleira", s.box((1.9, 0.08, 0.36)), wood, (0, 1.52, -0.12))
+s.mesh("Coifa", s.box((1.2, 1.4, 0.45)), brick, (0, 2.25, 0.2))
+s.mesh("Brasas", s.box((0.9, 0.06, 0.4)), s.color((0.85, 0.28, 0.07), 0.8, ((1.0, 0.35, 0.08), 3.0)), (0, 0.38, -0.05))
+s.scene("Fogo", "res://assets/vfx/fogo.tscn", (0, 0.38, -0.05), 0.0, 0.22)
+s.piece("objetos/Cauldron", (0.25, 0.35, -0.08), 0.0, 0.45, name="Panela")
+s.piece("objetos/CandleStick", (-0.6, 1.56, -0.12), 0.0, 1.0, name="Vela")
+s.piece("objetos/Vase_4", (0.55, 1.56, -0.12), 0.0, 0.5, name="Pote")
+interior_light(s, (0, 0.8, -0.7), 1.1, 4.0, (1.0, 0.55, 0.25))
+s.save("lareira")
+
+s = Scene("Forja", groups=AUTO)
+stone, brick = s.mat("arenito"), s.mat("tijolo_vermelho")
+s.mesh("Base", s.box((1.8, 0.9, 1.3)), brick, (0, 0.45, 0))
+s.mesh("Borda", s.box((1.9, 0.12, 1.4)), stone, (0, 0.95, 0))
+s.mesh("Carvao", s.box((1.1, 0.08, 0.7)), s.color((0.9, 0.25, 0.05), 0.8, ((1.0, 0.3, 0.05), 4.0)), (0, 1.0, -0.1))
+s.scene("Fogo", "res://assets/vfx/fogo.tscn", (0, 1.0, -0.1), 0.0, 0.3)
+s.mesh("Coifa", s.box((1.7, 0.9, 1.2)), brick, (0, 2.6, 0.1))
+s.mesh("Cano", s.box((0.7, 3.6, 0.7)), brick, (0, 4.8, 0.3))
+s.piece("objetos/Bucket_Metal", (1.25, 0, -0.3), 0.0, 1.0, name="Balde")
+interior_light(s, (0, 1.4, -0.9), 2.2, 7.0, (1.0, 0.45, 0.15))
+s.save("forja")
+
+s = Scene("Balcao", groups=AUTO)
+wood = s.mat("tabuas")
+s.mesh("Corpo", s.box((2.4, 0.92, 0.7)), wood, (0, 0.46, 0))
+s.mesh("Tampo", s.box((2.55, 0.06, 0.84)), s.color((0.42, 0.26, 0.15), 0.7), (0, 0.95, 0))
+s.mesh("Rodape", s.box((2.42, 0.1, 0.72)), s.color((0.25, 0.15, 0.09), 0.8), (0, 0.05, 0))
+for k in range(3):
+    s.mesh("Painel", s.box((0.6, 0.55, 0.02)), s.color((0.33, 0.2, 0.11), 0.8), (-0.75 + k * 0.75, 0.48, -0.36))
+s.save("balcao")
+
+for file, title, rgb, edge in (("tapete", "Tapete", (0.55, 0.16, 0.12), (0.8, 0.6, 0.25)), ("tapete_azul", "Tapete_azul", (0.18, 0.25, 0.45), (0.85, 0.75, 0.5)),
+                               ("tapete_verde", "Tapete_verde", (0.22, 0.38, 0.2), (0.75, 0.62, 0.35))):
+    s = Scene(title)
+    s.mesh("Borda", s.box((2.2, 0.015, 1.5)), s.color(edge, 1.0), (0, 0.008, 0))
+    s.mesh("Meio", s.box((1.95, 0.02, 1.25)), s.color(rgb, 1.0), (0, 0.012, 0))
+    s.mesh("Losango", s.box((0.7, 0.024, 0.7)), s.color(edge, 1.0), (0, 0.013, 0), (0, math.pi / 4, 0))
+    s.save(file)
+
+s = Scene("Altar", groups=AUTO)
+stone = s.mat("arenito")
+s.mesh("Pedra", s.box((1.8, 1.0, 0.8)), stone, (0, 0.5, 0))
+s.mesh("Toalha", s.box((1.86, 0.03, 0.86)), s.color((0.92, 0.9, 0.82), 1.0), (0, 1.01, 0))
+s.mesh("Faixa", s.box((0.5, 0.55, 0.02)), s.color((0.55, 0.2, 0.55), 1.0), (0, 0.75, -0.42))
+for x in (-0.65, 0.65):
+    s.piece("objetos/CandleStick_Triple", (x, 1.02, 0.05), 0.0, 1.0, name="Candelabro")
+s.piece("objetos/Chalice", (0, 1.02, 0.0), 0.0, 1.2, name="Calice")
+s.piece("objetos/Book_5", (0.25, 1.03, -0.15), 0.4, 1.0, name="Livro")
+interior_light(s, (0, 1.6, -0.6), 0.9, 4.0, (1.0, 0.78, 0.5))
+s.save("altar")
+
+
+def shelf_unit(s, width=1.6, depth=0.42, levels=(0.08, 0.68, 1.28, 1.88)):
+    """Estante de tábuas (fundo encostado na parede, +Z); devolve as alturas de cima de cada prateleira."""
+    wood = s.mat("tabuas")
+    top = levels[-1] + 0.4
+    for x in (-width / 2, width / 2):
+        s.mesh("Lado", s.box((0.06, top, depth)), wood, (x, top / 2, 0))
+    s.mesh("Fundo", s.box((width, top, 0.03)), s.color((0.3, 0.19, 0.11), 0.9), (0, top / 2, depth / 2 - 0.015))
+    for y in levels:
+        s.mesh("Tabua", s.box((width, 0.05, depth)), wood, (0, y, 0))
+    return [y + 0.025 for y in levels]
+
+
+def shelf_goods(file, title, fill):
+    s = Scene(title, groups=AUTO)
+    tops = shelf_unit(s)
+    for level, y in enumerate(tops[1:] if fill != "paes" else tops):
+        fill_level(s, fill, level, y)
+    s.save(file)
+
+
+CLOTH = [(0.75, 0.2, 0.18), (0.2, 0.35, 0.7), (0.85, 0.7, 0.3), (0.3, 0.55, 0.3), (0.55, 0.3, 0.6), (0.9, 0.88, 0.8), (0.4, 0.25, 0.15)]
+
+
+def fill_level(s, fill, level, y):
+    if fill == "potes":
+        for k in range(4):
+            x = -0.6 + k * 0.4
+            if (k + level) % 3 == 0:
+                s.piece("objetos/Bottle_1", (x, y, -0.02), 0.3 * k, 1.0, name="Garrafa")
+            elif (k + level) % 3 == 1:
+                s.piece("objetos/Pot_1", (x, y, -0.02), 0.5 * k, 0.6, name="Pote")
+            else:
+                s.piece("objetos/Bag", (x, y, -0.02), 0.7 * k, 0.45, name="Saquinho")
+    elif fill == "pocoes":
+        for k in range(5):
+            x = -0.62 + k * 0.31
+            kind = ["Potion_1", "Potion_2", "Potion_4", "SmallBottle", "Potion_1"][(k + level) % 5]
+            s.piece("objetos/" + kind, (x, y, -0.02), 0.4 * k, 0.9, name="Pocao")
+    elif fill == "livros":
+        for k in range(3):
+            s.piece("objetos/BookGroup_Medium_%d" % (1 + (k + level) % 3), (-0.5 + k * 0.5, y, 0.0), 0.0, 1.0, name="Livros")
+    elif fill == "tecidos":
+        for k in range(5):
+            rgb = CLOTH[(k * 2 + level) % len(CLOTH)]
+            s.mesh("Tecido", s.cyl(0.11, 0.11, 0.38, 12), s.color(rgb, 1.0), (-0.6 + k * 0.3, y + 0.11, -0.02), (0, 0, math.pi / 2))
+    elif fill == "paes":
+        for k in range(5):
+            s.scene("Pao", "res://world/props/pao.tscn", (-0.62 + k * 0.31, y + 0.02, -0.04), 0.5 * k + level, 1.5)
+    elif fill == "ferramentas":
+        s.piece("objetos/Pickaxe_Bronze", (-0.4, y, 0.0), 0.0, 0.8, name="Picareta")
+        s.piece("objetos/Axe_Bronze", (0.0, y, 0.0), 0.0, 0.8, name="Machado")
+        s.piece("objetos/Chain_Coil", (0.45, y, 0.0), 0.0, 0.8, name="Corrente")
+
+
+shelf_goods("estante_potes", "Estante_potes", "potes")
+shelf_goods("estante_pocoes", "Estante_pocoes", "pocoes")
+shelf_goods("estante_livros", "Estante_livros", "livros")
+shelf_goods("estante_tecidos", "Estante_tecidos", "tecidos")
+shelf_goods("estante_paes", "Estante_paes", "paes")
+shelf_goods("estante_ferramentas", "Estante_ferramentas", "ferramentas")
+
+
 # --- pão (cena do Tico) --------------------------------------------------------------------------
 CRUST, CRUST_DARK, CRUMB = (0.78, 0.5, 0.22), (0.55, 0.3, 0.12), (0.95, 0.86, 0.66)
 
@@ -792,7 +1023,7 @@ s.glb(HB + "Post_Lantern", (0, 0, 0), math.pi, 0.9, name="Modelo")
 light_child(s, (0, 2.5, -0.95), 1.2, 6.0)
 s.save("poste_lanterna")
 # mais da vila medieval
-building("casa_pedra", "Casa_pedra", "Fantasy_House")
+house("casa_pedra", "Casa_pedra", 2, 3, 1, ["Wall_UnevenBrick"], "Roof_RoundTiles_4x6", "Roof_Front_Brick4", 0)
 pp_prop("gazebo", "Gazebo", MV + "Gazebo", K_MV)
 pp_prop("feno", "Feno", MV + "Hay", K_MV * 1.4, False)
 pp_prop("sacos", "Sacos", MV + "Bags", K_MV, False)

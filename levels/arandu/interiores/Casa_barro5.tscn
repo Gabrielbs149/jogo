@@ -1,0 +1,83 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Bed_Twin2.gltf" id="1_rtbjl"]
+[ext_resource type="PackedScene" path="res://world/props/lareira.tscn" id="2_tdn1i"]
+[ext_resource type="PackedScene" path="res://world/props/tapete_azul.tscn" id="3_5kstk"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Chest_Wood.gltf" id="4_30rvm"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Cabinet.gltf" id="5_20n0x"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Shelf_Simple.gltf" id="6_mfpts"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Pot_1.gltf" id="7_1ibsf"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Chandelier.gltf" id="8_neya4"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dbk4h"]
+size = Vector3(1.84, 0.8, 2.39)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_oynai"]
+size = Vector3(1.84, 0.8, 2.39)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_i866g"]
+size = Vector3(0.71999997, 0.7, 1.24)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cfhu7"]
+size = Vector3(0.32, 1, 1.32)
+
+[node name="InteriorCasa_barro5" type="Node3D" unique_id=1106263267]
+
+[node name="Cama2" parent="." unique_id=600846791 instance=ExtResource("1_rtbjl")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.68, 0, 1.41)
+
+[node name="Colisao" type="StaticBody3D" parent="." unique_id=75787911]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6800001, 0.4, 1.41)
+
+[node name="@CollisionShape3D@969" type="CollisionShape3D" parent="Colisao" unique_id=2043897595]
+shape = SubResource("BoxShape3D_dbk4h")
+
+[node name="Cama3" parent="." unique_id=88528398 instance=ExtResource("1_rtbjl")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.37, 0, 1.41)
+
+[node name="Colisao2" type="StaticBody3D" parent="." unique_id=2065958102]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.36999995, 0.4, 1.41)
+
+[node name="@CollisionShape3D@970" type="CollisionShape3D" parent="Colisao2" unique_id=1284137485]
+shape = SubResource("BoxShape3D_oynai")
+
+[node name="Lareira" parent="." unique_id=1367746760 instance=ExtResource("2_tdn1i")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -2.18, 0, -0.93946236)
+
+[node name="Tapete" parent="." unique_id=356068570 instance=ExtResource("3_5kstk")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, -0.2)
+
+[node name="Bau" parent="." unique_id=1437152585 instance=ExtResource("4_30rvm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.25, 0, 1.4684362)
+
+[node name="Colisao3" type="StaticBody3D" parent="." unique_id=938867554]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25, 0.35, 1.4684362)
+
+[node name="@CollisionShape3D@972" type="CollisionShape3D" parent="Colisao3" unique_id=1260510294]
+shape = SubResource("BoxShape3D_i866g")
+
+[node name="Armario" parent="." unique_id=2033535205 instance=ExtResource("5_20n0x")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.45, 0, -1.3888233)
+
+[node name="Colisao4" type="StaticBody3D" parent="." unique_id=445748659]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 0.5, -1.3888233)
+
+[node name="@CollisionShape3D@973" type="CollisionShape3D" parent="Colisao4" unique_id=244139775]
+shape = SubResource("BoxShape3D_cfhu7")
+
+[node name="Shelf_Simple2" parent="." unique_id=1691819530 instance=ExtResource("6_mfpts")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.64, 1.55, -0.9562902)
+
+[node name="Pot_12" parent="." unique_id=1646638536 instance=ExtResource("7_1ibsf")]
+transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, -2.64, 1.6, 0)
+
+[node name="Chandelier2" parent="." unique_id=1153137824 instance=ExtResource("8_neya4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05, -0.2)
+
+[node name="Luz" type="OmniLight3D" parent="." unique_id=760046877]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 0.75
+distance_fade_enabled = true
+distance_fade_begin = 32.0
+omni_range = 5.7

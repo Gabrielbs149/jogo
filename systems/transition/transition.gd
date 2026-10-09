@@ -20,6 +20,23 @@ func _ready() -> void:
 	add_child(_black)
 
 
+## Escurece a tela (sem trocar de cena) e espera. uncover() clareia de novo. Para pular tempo dentro da fase.
+func cover(seconds: float = OUT) -> void:
+	_black.mouse_filter = Control.MOUSE_FILTER_STOP
+	if seconds <= 0.0 or DisplayServer.get_name() == "headless":
+		_black.modulate.a = 1.0
+		return
+	await create_tween().tween_property(_black, "modulate:a", 1.0, seconds).finished
+
+
+func uncover(seconds: float = IN) -> void:
+	_black.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if seconds <= 0.0 or DisplayServer.get_name() == "headless":
+		_black.modulate.a = 0.0
+		return
+	await create_tween().tween_property(_black, "modulate:a", 0.0, seconds).finished
+
+
 ## Vai para outra cena escurecendo a tela. reload = recomeça a cena atual.
 func go(scene_path: String, reload: bool = false) -> void:
 	if busy:

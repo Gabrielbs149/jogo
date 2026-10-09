@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="Ability" format=3]
+
+[ext_resource type="Script" path="res://combat/ability.gd" id="1_ability"]
+
+[resource]
+script = ExtResource("1_ability")
+title = "Saco de farinha"
+defesa = 0
+description = "Um saco de farinha na cara: quem não desvia (salvamento de Destreza) fica sem enxergar direito e exposto."
+dnd_note = ""
+kind = 0
+shape = 0
+roll = 1
+save = 0
+range_m = 6.0
+radius_m = 0
+cooldown = 4.0
+windup = 0.6
+dice_count = 1
+dice_sides = 4
+bonus = 0
+hits = 1
+advantage = false
+sneak_dice = 0
+status_title = "Farinha nos olhos"
+status_time = 4
+buff_ac = 0
+bless_die = 0
+invisible = false
+mark_dice = 0
+frighten = false
+expose = true
+projectile = true
+vfx_color = Color(1, 1, 1, 1)
+ap_cost = 0
+status_turns = 1

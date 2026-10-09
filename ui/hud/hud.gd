@@ -260,6 +260,24 @@ func show_story(text: String) -> void:
 	_story_tween.tween_callback(_story.hide)
 
 
+## O relógio do dia no canto (D060): só nas fases com o tempo passando.
+func show_clock(on: bool) -> void:
+	if on and _clock == null:
+		_clock = RelogioHUD.new()
+		_clock.name = "Relogio"
+		$Root.add_child(_clock)
+		_clock.set_anchors_preset(Control.PRESET_TOP_LEFT)
+		_clock.position = Vector2(24, 24)
+		# as dicas de controle descem para baixo do relógio
+		_tips.offset_top += RelogioHUD.H + 10.0
+		_tips.offset_bottom += RelogioHUD.H + 10.0
+	if _clock:
+		_clock.visible = on
+
+
+var _clock: RelogioHUD
+
+
 ## Tira da tela, na hora, o painel de história e o cartão de dicas (uma cena começou por cima deles).
 func hide_hints() -> void:
 	if _story_tween:

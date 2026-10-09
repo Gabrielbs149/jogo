@@ -1,0 +1,149 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Bed_Twin2.gltf" id="1_ogoku"]
+[ext_resource type="PackedScene" path="res://world/props/lareira.tscn" id="2_ksqpv"]
+[ext_resource type="PackedScene" path="res://world/props/tapete_azul.tscn" id="3_wmbp7"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Chest_Wood.gltf" id="4_4i2kp"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Barrel.gltf" id="5_3ct8c"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Crate_Wooden.gltf" id="6_qyc41"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/CandleStick_Stand.gltf" id="7_6c8ia"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Shelf_Simple.gltf" id="8_d8abs"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Pot_1.gltf" id="9_1nbg3"]
+[ext_resource type="PackedScene" path="res://world/props/lanterna.tscn" id="10_wb6wp"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Chandelier.gltf" id="11_u6q8a"]
+[ext_resource type="PackedScene" path="res://world/props/morador.tscn" id="12_qcoae"]
+[ext_resource type="Script" path="res://world/vida/morador.gd" id="13_2r82q"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tcmly"]
+size = Vector3(1.84, 0.8, 2.39)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qjnpn"]
+size = Vector3(1.84, 0.8, 2.39)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ryib6"]
+size = Vector3(0.71999997, 0.7, 1.24)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lpeuh"]
+size = Vector3(0.66, 0.9, 0.66)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nypqw"]
+size = Vector3(0.86, 0.9, 0.82)
+
+[node name="InteriorCasa_enxaimel" type="Node3D" unique_id=1779469494]
+
+[node name="Cama2" parent="." unique_id=600846791 instance=ExtResource("1_ogoku")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.68, 0, 1.41)
+
+[node name="Colisao" type="StaticBody3D" parent="." unique_id=473337960]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6800001, 0.4, 1.41)
+
+[node name="@CollisionShape3D@697" type="CollisionShape3D" parent="Colisao" unique_id=743143695]
+shape = SubResource("BoxShape3D_tcmly")
+
+[node name="Cama3" parent="." unique_id=779829643 instance=ExtResource("1_ogoku")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.37, 0, 1.41)
+
+[node name="Colisao2" type="StaticBody3D" parent="." unique_id=904981129]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.36999995, 0.4, 1.41)
+
+[node name="@CollisionShape3D@698" type="CollisionShape3D" parent="Colisao2" unique_id=1735186137]
+shape = SubResource("BoxShape3D_qjnpn")
+
+[node name="Lareira" parent="." unique_id=916277388 instance=ExtResource("2_ksqpv")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -2.18, 0, -1.0014096)
+
+[node name="Tapete" parent="." unique_id=1276438208 instance=ExtResource("3_wmbp7")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, -0.2)
+
+[node name="Bau" parent="." unique_id=1437152585 instance=ExtResource("4_4i2kp")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.25, 0, -1.7270303)
+
+[node name="Colisao3" type="StaticBody3D" parent="." unique_id=1929567110]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.25, 0.35, -1.7270302)
+
+[node name="@CollisionShape3D@700" type="CollisionShape3D" parent="Colisao3" unique_id=559584703]
+shape = SubResource("BoxShape3D_ryib6")
+
+[node name="Barril" parent="." unique_id=1335974545 instance=ExtResource("5_3ct8c")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.28, 0, 0.8139396)
+
+[node name="Colisao4" type="StaticBody3D" parent="." unique_id=974810052]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2800002, 0.45, 0.8139396)
+
+[node name="@CollisionShape3D@701" type="CollisionShape3D" parent="Colisao4" unique_id=1540643710]
+shape = SubResource("BoxShape3D_lpeuh")
+
+[node name="Caixote" parent="." unique_id=504997077 instance=ExtResource("6_qyc41")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.18, 0, 1.7948897)
+
+[node name="Colisao5" type="StaticBody3D" parent="." unique_id=1977821200]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18, 0.45, 1.7948897)
+
+[node name="@CollisionShape3D@702" type="CollisionShape3D" parent="Colisao5" unique_id=2046931913]
+shape = SubResource("BoxShape3D_nypqw")
+
+[node name="Castical" parent="." unique_id=243127052 instance=ExtResource("7_6c8ia")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.265, 0, -0.311087)
+
+[node name="Shelf_Simple2" parent="." unique_id=1691819530 instance=ExtResource("8_d8abs")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.64, 1.55, 0.90566456)
+
+[node name="Pot_12" parent="." unique_id=1646638536 instance=ExtResource("9_1nbg3")]
+transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, -2.64, 1.6, 0)
+
+[node name="Lanterna" parent="." unique_id=649490463 instance=ExtResource("10_wb6wp")]
+transform = Transform3D(1, 0, 1.7484555e-07, 0, 1, 0, -1.7484555e-07, 0, 1, -1.6471689, 2, 2.64)
+
+[node name="Chandelier2" parent="." unique_id=1153137824 instance=ExtResource("11_u6q8a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.05, -0.2)
+
+[node name="Morador" parent="." unique_id=1769827277 instance=ExtResource("12_qcoae")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.75, 0.35, -1.05)
+script = ExtResource("13_2r82q")
+de = 7.0
+ate = 21.0
+gestos = Array[String](["Sit_Chair_Idle", "Sit_Chair_Idle", "Interact"])
+troca = Vector2(6, 14)
+emotes = Array[String](["...", "nota", "?"])
+olha = false
+
+[node name="Figure" parent="Morador" index="0"]
+personagem = "Barbarian"
+animacao = "Sit_Chair_Idle"
+cor_roupa = 0.5
+sem_chapeu = true
+
+[node name="Talk" parent="Morador" index="2"]
+prompt_text = "Falar"
+text = "— Ei! Isso aqui é casa de família, pequeno!"
+
+[node name="Morador2" parent="." unique_id=1009088184 instance=ExtResource("12_qcoae")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.68, 0.55, 1.41)
+script = ExtResource("13_2r82q")
+de = 21.0
+ate = 7.0
+gestos = Array[String](["Lie_Idle"])
+troca = Vector2(30, 60)
+emotes = Array[String](["zz", "zz", "zz"])
+olha = false
+
+[node name="Figure" parent="Morador2" index="0"]
+personagem = "Barbarian"
+animacao = "Lie_Idle"
+cor_roupa = 0.5
+sem_chapeu = true
+
+[node name="Talk" parent="Morador2" index="2"]
+prompt_text = "Falar"
+text = "— Zzz... só mais cinco minutos..."
+
+[node name="Luz" type="OmniLight3D" parent="." unique_id=1852619540]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 0.75
+distance_fade_enabled = true
+distance_fade_begin = 32.0
+omni_range = 5.7
+
+[editable path="Morador"]
+[editable path="Morador2"]

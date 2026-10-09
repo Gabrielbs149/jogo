@@ -23,21 +23,25 @@ func test_wheat_fields_have_wheat() -> void:
 	level.free()
 
 
-## D045: Arandu começa de noite (janelas acesas) e F3 volta para o dia igual ao de antes.
-func test_night_and_back_to_day() -> void:
+## D060: o tempo passa. Às 22h é noite (lua fraca, janelas acesas, postes acesos); ao meio-dia, dia (sol forte,
+## janelas apagadas, postes apagados). F3 (set_night) pula o relógio.
+func test_the_clock_makes_day_and_night() -> void:
+	Game.flags.clear()
+	Game.flags["prologo.etapa"] = "saiu"
+	Game.seen.assign([Game.ARANDU])
 	var level := (load(Game.ARANDU) as PackedScene).instantiate() as Level
-	assert_true(level.noite, "Arandu começa de noite")
-	level.noite = false
 	level.skip_intro = true
-	Level.editing = true  # só o cenário
 	add_child_autofree(level)
-	var env_node := level.get_node("WorldEnvironment") as WorldEnvironment
-	var day_env := env_node.environment
+	await wait_until(func() -> bool: return level.ready_to_play, 20.0)
+	assert_not_null(level.ciclo, "Arandu tem o relógio do dia")
 	var sun := level.get_node("Sun") as DirectionalLight3D
-	var day_energy := sun.light_energy
+	level.ciclo.jump_to(12.0)
+	var noon := sun.light_energy
+	assert_lt(level.ciclo.noite, 0.05, "meio-dia é dia")
 	level.set_night(true)
-	assert_ne(env_node.environment, day_env, "de noite o céu é outro")
-	assert_lt(sun.light_energy, day_energy, "a lua é mais fraca que o sol")
+	assert_almost_eq(Game.hora, 22.0, 0.01)
+	assert_gt(level.ciclo.noite, 0.95, "22h é noite")
+	assert_lt(sun.light_energy, noon, "a lua é mais fraca que o sol")
 	var lit := 0
 	for found: Node in level.get_node("Buildings").find_children("*", "MeshInstance3D", true, false):
 		var mesh := found as MeshInstance3D
@@ -47,6 +51,14 @@ func test_night_and_back_to_day() -> void:
 				lit += 1
 	assert_gt(lit, 50, "janelas acesas de noite")
 	level.set_night(false)
-	assert_eq(env_node.environment, day_env, "o dia volta igual")
-	assert_eq(sun.light_energy, day_energy)
-	Level.editing = false
+	assert_almost_eq(Game.hora, 12.0, 0.01)
+	assert_almost_eq(sun.light_energy, noon, 0.01, "o dia volta igual")
+
+
+func test_midnight_turns_the_day() -> void:
+	Game.hora = 23.9
+	Game.dia = 1
+	Game.advance_time(0.2)
+	assert_eq(Game.dia, 2)
+	assert_almost_eq(Game.hora, 0.1, 0.001)
+	assert_eq(Game.clock_text(), "00:06")

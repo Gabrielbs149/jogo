@@ -1,0 +1,110 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Bed_Twin1.gltf" id="1_mu02l"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Bed_Twin2.gltf" id="2_gvcht"]
+[ext_resource type="PackedScene" path="res://world/props/lareira.tscn" id="3_75c5p"]
+[ext_resource type="PackedScene" path="res://world/props/tapete_azul.tscn" id="4_247t4"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Chest_Wood.gltf" id="5_ef0h8"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Bookcase_2.gltf" id="6_v5v5e"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Barrel.gltf" id="7_ljvq0"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Crate_Wooden.gltf" id="8_f6lkx"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Shelf_Simple.gltf" id="9_yg513"]
+[ext_resource type="PackedScene" path="res://assets/kits/quaternius/objetos/Pot_1.gltf" id="10_16yng"]
+[ext_resource type="PackedScene" path="res://world/props/lanterna.tscn" id="11_g03n8"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dpdek"]
+size = Vector3(1.84, 0.8, 2.39)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_15ynr"]
+size = Vector3(1.84, 0.8, 2.39)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0vqo2"]
+size = Vector3(0.71999997, 0.7, 1.24)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nfeup"]
+size = Vector3(0.38, 2.5, 1.4200001)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_l8ixc"]
+size = Vector3(0.66, 0.9, 0.66)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ghde0"]
+size = Vector3(0.86, 0.9, 0.82)
+
+[node name="InteriorCasa_barro8" type="Node3D" unique_id=1109280647]
+
+[node name="Cama" parent="." unique_id=197555494 instance=ExtResource("1_mu02l")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.68, 0, 1.41)
+
+[node name="Colisao" type="StaticBody3D" parent="." unique_id=1366225204]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6800001, 0.4, 1.41)
+
+[node name="@CollisionShape3D@1129" type="CollisionShape3D" parent="Colisao" unique_id=1335694288]
+shape = SubResource("BoxShape3D_dpdek")
+
+[node name="Cama2" parent="." unique_id=600846791 instance=ExtResource("2_gvcht")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.37, 0, 1.41)
+
+[node name="Colisao2" type="StaticBody3D" parent="." unique_id=2120635526]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.36999995, 0.4, 1.41)
+
+[node name="@CollisionShape3D@1130" type="CollisionShape3D" parent="Colisao2" unique_id=806448601]
+shape = SubResource("BoxShape3D_15ynr")
+
+[node name="Lareira" parent="." unique_id=1488408018 instance=ExtResource("3_75c5p")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -2.18, 0, -0.8132812)
+
+[node name="Tapete" parent="." unique_id=956464871 instance=ExtResource("4_247t4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.2)
+
+[node name="Bau" parent="." unique_id=1437152585 instance=ExtResource("5_ef0h8")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.25, 0, -0.63831407)
+
+[node name="Colisao3" type="StaticBody3D" parent="." unique_id=1230306406]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.25, 0.35, -0.6383141)
+
+[node name="@CollisionShape3D@1132" type="CollisionShape3D" parent="Colisao3" unique_id=672785873]
+shape = SubResource("BoxShape3D_0vqo2")
+
+[node name="Estante" parent="." unique_id=689350519 instance=ExtResource("6_v5v5e")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.42, 0, 0.99971807)
+
+[node name="Colisao4" type="StaticBody3D" parent="." unique_id=183644897]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.42, 1.25, 0.99971807)
+
+[node name="@CollisionShape3D@1133" type="CollisionShape3D" parent="Colisao4" unique_id=627362150]
+shape = SubResource("BoxShape3D_nfeup")
+
+[node name="Barril" parent="." unique_id=1335974545 instance=ExtResource("7_ljvq0")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.28, 0, -2.1390045)
+
+[node name="Colisao5" type="StaticBody3D" parent="." unique_id=353791094]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2800002, 0.45, -2.1390047)
+
+[node name="@CollisionShape3D@1134" type="CollisionShape3D" parent="Colisao5" unique_id=442709582]
+shape = SubResource("BoxShape3D_l8ixc")
+
+[node name="Caixote" parent="." unique_id=504997077 instance=ExtResource("8_f6lkx")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.18, 0, -1.9031439)
+
+[node name="Colisao6" type="StaticBody3D" parent="." unique_id=437552275]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.18, 0.45, -1.9031439)
+
+[node name="@CollisionShape3D@1135" type="CollisionShape3D" parent="Colisao6" unique_id=241801299]
+shape = SubResource("BoxShape3D_ghde0")
+
+[node name="Shelf_Simple2" parent="." unique_id=1691819530 instance=ExtResource("9_yg513")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.64, 1.55, -1.0102234)
+
+[node name="Pot_12" parent="." unique_id=1646638536 instance=ExtResource("10_16yng")]
+transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, -2.64, 1.6, 0)
+
+[node name="Lanterna" parent="." unique_id=771413760 instance=ExtResource("11_g03n8")]
+transform = Transform3D(1, 0, 1.7484555e-07, 0, 1, 0, -1.7484555e-07, 0, 1, -1.1281148, 2, 2.64)
+
+[node name="Luz" type="OmniLight3D" parent="." unique_id=1010491462]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+light_color = Color(1, 0.72, 0.45, 1)
+light_energy = 0.75
+distance_fade_enabled = true
+distance_fade_begin = 32.0
+omni_range = 5.7

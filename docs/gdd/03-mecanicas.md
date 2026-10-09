@@ -4,6 +4,8 @@
 > Mexeu em número? Rode `tools/simulate_arena.gd` e registre o resultado em [decisoes.md](decisoes.md).
 
 ## Decisões fechadas
+- **O tempo passa (D060):** relógio do jogo (1 hora por minuto), dia e noite contínuos, gente e lojas com horário.
+- **Brigas na cidade (D060):** sem morte; perder deixa você machucado no mesmo lugar (`nao_letal` em Game.battle).
 - **Exploração em 3ª pessoa** com câmera atrás do ombro (D018). **Luta por turnos numa arena separada**, só com o seu personagem, com QTE (D022).
 - **Regras de D&D 5.5:** d20 + bônus contra CA (20 crítico, 1 erra), vantagem/desvantagem (2d20), salvamentos, ataque furtivo, Bênção, Marca do caçador, Amedrontado, Invisível. Efeitos duram **turnos** na arena (D018, D022).
 - **Recrutar:** os outros heróis esperam pela fase; F conversa e você decide se chama. Quem entra segue você, mas fica fora da luta (D018, D022).
