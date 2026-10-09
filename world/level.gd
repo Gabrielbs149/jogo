@@ -384,6 +384,8 @@ func _spawn_hero(id: String, where: Transform3D) -> Combatant:
 	var hero := Game.hero_scene(id).instantiate() as Combatant
 	hero.transform = where
 	add_child(hero)
+	if id == "tico":
+		AdagaPsiquica.equip_for_field(hero)  # D057: ataca com as adagas também fora da luta
 	return hero
 
 

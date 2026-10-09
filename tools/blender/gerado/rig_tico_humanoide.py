@@ -250,6 +250,139 @@ def _weights(mesh, rig) -> None:
     bpy.data.objects.remove(proxy)
 
 
+ARM_BONES = ("LeftUpperArm", "LeftLowerArm", "LeftHand", "RightUpperArm", "RightLowerArm", "RightHand")
+# poses de teste (direção do braço e do antebraço; frente = +Y antes de virar para o Godot): à frente, cruzado e para cima
+TEST_POSES = (
+    {"UpperArm": (0.15, 1.0, 0.0), "LowerArm": (0.0, 1.0, 0.05)},
+    {"UpperArm": (-0.1, 1.0, -0.1), "LowerArm": (-0.7, 0.7, -0.2)},
+    {"UpperArm": (0.9, 0.3, 0.3), "LowerArm": (0.5, 0.2, 0.85)},
+)
+
+
+def _posed_coords(mesh, rig, pose) -> "np.ndarray":
+    import numpy as np
+    bpy.context.view_layer.objects.active = rig
+    bpy.ops.object.mode_set(mode="POSE")
+    for pb in rig.pose.bones:
+        pb.rotation_mode = "QUATERNION"
+        pb.rotation_quaternion = (1, 0, 0, 0)
+    bpy.context.view_layer.update()
+    for side, out in (("Left", -1.0), ("Right", 1.0)):
+        for part in ("UpperArm", "LowerArm"):
+            pb = rig.pose.bones[side + part]
+            d = Vector(pose[part])
+            d.x *= -out if side == "Left" else out
+            d.x = abs(d.x) * (out if pose[part][0] >= 0 else -out)
+            cur = (pb.tail - pb.head).normalized()
+            q = cur.rotation_difference(d.normalized())
+            m = pb.matrix.to_3x3()
+            pb.rotation_quaternion = (m.inverted() @ q.to_matrix() @ m).to_quaternion() @ pb.rotation_quaternion
+            bpy.context.view_layer.update()
+    bpy.ops.object.mode_set(mode="OBJECT")
+    deps = bpy.context.evaluated_depsgraph_get()
+    ev = mesh.evaluated_get(deps)
+    tmp = ev.to_mesh()
+    co = np.empty(len(tmp.vertices) * 3)
+    tmp.vertices.foreach_get("co", co)
+    ev.to_mesh_clear()
+    for pb in rig.pose.bones:
+        pb.rotation_quaternion = (1, 0, 0, 0)
+    return co.reshape(-1, 3)
+
+
+def _split_arms(mesh, rig) -> None:
+    """D057: a malha do TRELLIS funde a mão/antebraço com a coxa e o braço com a lateral (onde encostavam no desenho).
+    Com o braço para a frente, essas faces de ligação esticam e "fica uma parte grudada". Aqui: nas poses de teste,
+    acha as faces que ligam braço e corpo e esticam; deixa cada vértice delas só de um lado (braço ou corpo) e descola
+    (rasga) a malha ali, tampando os dois lados do rasgo com a cor de volta."""
+    import bmesh
+    import numpy as np
+    arm_idx = {g.index for g in mesh.vertex_groups if g.name in ARM_BONES}
+    n = len(mesh.data.vertices)
+    arm_w = np.zeros(n)
+    for v in mesh.data.vertices:
+        for ge in v.groups:
+            if ge.group in arm_idx:
+                arm_w[v.index] += ge.weight
+    rest = np.empty(n * 3)
+    mesh.data.vertices.foreach_get("co", rest)
+    rest = rest.reshape(-1, 3)
+    polys = [list(p.vertices) for p in mesh.data.polygons]
+    bad = set()
+    for pose in TEST_POSES:
+        posed = _posed_coords(mesh, rig, pose)
+        for fi, idx in enumerate(polys):
+            w = arm_w[idx]
+            if w.max() < 0.5 or w.min() > 0.5:
+                continue  # não liga braço com corpo
+            lr = max(np.linalg.norm(rest[a] - rest[b]) for a, b in zip(idx, idx[1:] + idx[:1]))
+            lp = max(np.linalg.norm(posed[a] - posed[b]) for a, b in zip(idx, idx[1:] + idx[:1]))
+            if lp > lr * 1.8 and lp > 0.02 * K:
+                bad.add(fi)
+    region = {i for fi in bad for i in polys[fi]}
+    # cada vértice da região fica só de um lado
+    for i in region:
+        v = mesh.data.vertices[i]
+        arm_side = arm_w[i] >= 0.5
+        keep = [(ge.group, ge.weight) for ge in v.groups if (ge.group in arm_idx) == arm_side and ge.weight > 0.0]
+        total = sum(w for _, w in keep) or 1.0
+        for ge in list(v.groups):
+            mesh.vertex_groups[ge.group].remove([i])
+        for g, w in keep:
+            mesh.vertex_groups[g].add([i], w / total, "REPLACE")
+    # rasga: separa as arestas que ligam um vértice do braço a um do corpo dentro da região
+    bm = bmesh.new()
+    bm.from_mesh(mesh.data)
+    bm.verts.ensure_lookup_table()
+    seam = [e for e in bm.edges if e.verts[0].index in region and e.verts[1].index in region
+            and (arm_w[e.verts[0].index] >= 0.5) != (arm_w[e.verts[1].index] >= 0.5)]
+    # as faces que ligam os dois lados (as que esticam) somem; o resto descola ao longo da costura
+    straddle = [f for f in bm.faces if f.index in bad]
+    bmesh.ops.delete(bm, geom=straddle, context="FACES")
+    seam = [e for e in seam if e.is_valid]
+    bmesh.ops.split_edges(bm, edges=seam)
+    # tampa os buracos que abriram, com a cor média da borda
+    before = set(f.index for f in bm.faces)
+    bm.faces.ensure_lookup_table()
+    edges = [e for e in bm.edges if e.is_boundary]
+    res = bmesh.ops.holes_fill(bm, edges=edges, sides=0)
+    uv = bm.loops.layers.uv.active
+    for f in res["faces"]:
+        if uv is None:
+            break
+        border = [l for v in f.verts for l in v.link_loops if l.face not in res["faces"]]
+        if border:
+            avg = sum((l[uv].uv for l in border), Vector((0.0, 0.0))) / len(border)
+            for l in f.loops:
+                l[uv].uv = avg
+    # pedacinhos que ficaram soltos com o rasgo (ficariam boiando no ar): fora
+    bm.faces.ensure_lookup_table()
+    seen = set()
+    loose = []
+    for f in bm.faces:
+        if f in seen:
+            continue
+        stack = [f]
+        part = []
+        seen.add(f)
+        while stack:
+            x = stack.pop()
+            part.append(x)
+            for e in x.edges:
+                for y in e.link_faces:
+                    if y not in seen:
+                        seen.add(y)
+                        stack.append(y)
+        if len(part) < 40:
+            loose.extend(part)
+    bmesh.ops.delete(bm, geom=loose, context="FACES")
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
+    bm.to_mesh(mesh.data)
+    bm.free()
+    mesh.data.update()
+    print("braço descolado do corpo: %d faces que esticavam, %d tampas, %d pedacinhos soltos tirados" % (len(bad), len(res["faces"]), len(loose)))
+
+
 def main() -> None:
     bpy.ops.wm.open_mainfile(filepath=ROOT + P["blend"])
     scene = bpy.context.scene
@@ -302,6 +435,7 @@ def main() -> None:
     mesh.parent = rig
     arm_mod = mesh.modifiers.new("Armature", "ARMATURE")
     arm_mod.object = rig
+    _split_arms(mesh, rig)
 
     # volta ao tamanho real e vira 180°: no Godot o modelo olha para +Z, como os personagens do KayKit
     # (a cena do herói desvira)
