@@ -135,3 +135,14 @@ func test_tico_fights_with_psychic_daggers() -> void:
 	var dagger := daggers[0] as AdagaPsiquica
 	assert_gt(dagger.blade_length, 0.3, "a lâmina tem tamanho de adaga")
 	assert_true(dagger.has_node("Lamina"), "a lâmina foi montada")
+
+
+## D055: o veredito do dado é do ponto de vista de quem joga (verde = bom para você).
+func test_dice_verdict_is_from_the_player_view() -> void:
+	var view := func(d: Dictionary, enemy: bool) -> Array: return DiceRoller._player_view(d, enemy)
+	assert_eq(view.call({"kept": 15, "verdict": "ACERTOU"}, false), ["ACERTOU", true], "você acerta: verde")
+	assert_eq(view.call({"kept": 5, "verdict": "ERROU"}, false), ["ERROU", false], "você erra: vermelho")
+	assert_eq(view.call({"kept": 4, "verdict": "FALHOU", "save": "DES"}, true), ["ACERTOU", true], "Espinhos: o inimigo não resiste = verde")
+	assert_eq(view.call({"kept": 18, "verdict": "PASSOU", "save": "DES"}, true), ["RESISTIU", false], "o inimigo resiste = vermelho")
+	assert_eq(view.call({"kept": 15, "verdict": "ACERTOU"}, true), ["TE ACERTOU", false], "o inimigo acerta você = vermelho")
+	assert_eq(view.call({"kept": 6, "verdict": "ERROU"}, true), ["ESCAPOU", true], "o inimigo erra = verde")

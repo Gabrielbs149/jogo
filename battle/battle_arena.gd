@@ -299,14 +299,18 @@ func _player_action(index: int) -> void:
 		await _wait(0.18)
 	_action_cam(tgt)
 	await _wait(0.3)
-	if melee:
-		await _approach(player, tgt.global_position, 1.3 if not tgt.is_boss else 2.2)
-	for dagger: AdagaPsiquica in _daggers:
-		dagger.trail(true)
-		dagger.flare(0.6)
-	player.ability_used.emit(index)
-	Audio.play_at("golpe", player.global_position, -3.0)
-	await _wait(0.22)  # o golpe chega
+	var rush := melee and not _daggers.is_empty() and not fumble
+	if rush:
+		await _dagger_rush(tgt, ability)
+	else:
+		if melee:
+			await _approach(player, tgt.global_position, 1.3 if not tgt.is_boss else 2.2)
+		for dagger: AdagaPsiquica in _daggers:
+			dagger.trail(true)
+			dagger.flare(0.6)
+		player.ability_used.emit(index)
+		Audio.play_at("golpe", player.global_position, -3.0)
+		await _wait(0.22)  # o golpe chega
 	if fumble:
 		# 1 natural: tropeça (e diz isso)
 		player.dodged.emit()
@@ -344,11 +348,15 @@ func _player_action(index: int) -> void:
 		_add_posture(r["target"] as Combatant, int(r["amount"]) + (8 if _last_grade == "perfeito" else 0))
 	if ability.is_offensive():
 		player.remove_flag("invisible")
-	await _wait(0.6)
+	await _wait(0.3 if rush else 0.6)
+	if rush and player.is_active():
+		await _dagger_recoil(tgt)
 	for dagger: AdagaPsiquica in _daggers:
 		dagger.trail(false)
+	if rush and player.is_active():
+		player.transform = _homes[player]  # no corte ele já está no lugar (ninguém vê ele voltando de costas)
 	_action_cam(null)
-	if melee and player.is_active():
+	if melee and player.is_active() and not rush:
 		await _return_home(player)
 	await _wait(0.1)
 
@@ -852,6 +860,7 @@ func _action_cam(on: Combatant) -> void:
 	var eye := _shot_eye if _action_on else player.global_position + Vector3.UP * eye_height
 	_cam_eye = eye
 	_cam_look = _shot_look if _action_on else _look
+	_camera.look_at_from_position(_cam_eye, _cam_look)  # já neste quadro (senão aparece um quadro de dentro do herói)
 	var mode := GeometryInstance3D.SHADOW_CASTING_SETTING_ON if _action_on else GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
 	for found: Node in player.find_children("*", "GeometryInstance3D", true, false):
 		(found as GeometryInstance3D).cast_shadow = mode
@@ -953,3 +962,66 @@ func _final_blow() -> void:
 	_shake = 0.25
 	await get_tree().create_timer(0.7, true, false, true).timeout
 	Engine.time_scale = 1.0
+
+
+# ---------- o golpe completo do Tico (D056)
+
+## Agacha para tomar impulso, corre até perto do alvo, salta e cai cortando (Corte em X ou estocada); poeira na queda.
+## Volta quando o golpe chega (o resto do _player_action aplica o dano e o efeito).
+func _dagger_rush(tgt: Combatant, ability: Ability) -> void:
+	var animator := player.get_node_or_null("Animator")
+	var strike := &"tico/Estocada" if ability.shape == Ability.Shape.DASH else &"tico/Corte_X"
+	# 1) agacha (impulso)
+	if animator:
+		animator.call("act", &"tico/Bote", 1.3)
+	Audio.play_at("esquiva", player.global_position, -10.0)
+	await _wait(0.2)
+	# 2) corre
+	var from := player.global_position
+	var to := tgt.global_position
+	var dir := Vector3(to.x - from.x, 0.0, to.z - from.z)
+	var reach := 2.2 if tgt.is_boss else 1.3
+	var total := maxf(0.0, dir.length() - reach)
+	var flat := dir.normalized() if dir.length() > 0.01 else Vector3.FORWARD
+	var leap := minf(1.2, total)
+	var run_to := from + flat * (total - leap)
+	if animator and total - leap > 0.2:
+		animator.call("hold", &"Running_A")
+		var run := create_tween()
+		run.tween_property(player, "global_position", run_to, clampf((total - leap) / 9.0, 0.12, 0.35))
+		await run.finished
+	# 3) salta e já começa o corte no ar
+	if animator:
+		animator.call("act", strike, 1.25)
+	for dagger: AdagaPsiquica in _daggers:
+		dagger.trail(true)
+		dagger.flare(0.7)
+	Audio.play_at("golpe", player.global_position, -3.0)
+	var land := run_to + flat * leap
+	var jump := create_tween().set_parallel()
+	var air := 0.19
+	jump.tween_property(player, "global_position:x", land.x, air)
+	jump.tween_property(player, "global_position:z", land.z, air)
+	jump.tween_property(player, "global_position:y", from.y + 0.45, air * 0.5).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	jump.chain().tween_property(player, "global_position:y", from.y, air * 0.5).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+	await jump.finished
+	# 4) caiu: poeira e o golpe chega
+	_fx.sparks(player.global_position + Vector3.UP * 0.05, Color(0.75, 0.62, 0.48), 16)
+	_shake = maxf(_shake, 0.12)
+	await _wait(0.06)
+
+
+## Depois do golpe: salta para trás com a esquiva (cambalhota de volta), e a câmera corta.
+func _dagger_recoil(tgt: Combatant) -> void:
+	var animator := player.get_node_or_null("Animator")
+	if animator:
+		animator.call("act", &"Dodge_Backward", 1.3)
+	var back := player.global_position - (tgt.global_position - player.global_position).normalized() * 1.1
+	back.y = player.global_position.y
+	var hop := create_tween().set_parallel()
+	hop.tween_property(player, "global_position:x", back.x, 0.3).set_ease(Tween.EASE_OUT)
+	hop.tween_property(player, "global_position:z", back.z, 0.3).set_ease(Tween.EASE_OUT)
+	await hop.finished
+	await _wait(0.12)
+	if animator:
+		animator.call("release")

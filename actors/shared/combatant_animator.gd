@@ -89,6 +89,14 @@ func release() -> void:
 	_held = &""
 
 
+## Toca uma animação uma vez (sem prender), na velocidade dada. Usado pela arena para montar o golpe (D056).
+func act(anim: StringName, speed: float = 1.0) -> void:
+	_held = &""
+	_play_once(anim)
+	if _player:
+		_player.speed_scale = speed
+
+
 func _play_once(anim: StringName) -> void:
 	if anim == &"" or not _player.has_animation(anim):
 		return

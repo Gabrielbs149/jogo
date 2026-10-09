@@ -12,18 +12,26 @@ const FPS := 30.0
 
 ## Poses: braço -> [direção do braço, direção do antebraço, direção da lâmina] em (fora, cima, frente); "tronco":
 ## inclinação (graus, + = para a frente); "quadril": quanto o quadril vai para a frente (m). A lâmina é virada pelo pulso.
-const GUARDA := {"braco": [Vector3(0.38, -0.6, 0.5), Vector3(0.12, 0.3, 0.95), Vector3(0.15, 0.95, 0.3)], "tronco": 5.0}
-const GUARDA_INSPIRA := {"braco": [Vector3(0.4, -0.55, 0.52), Vector3(0.14, 0.38, 0.92), Vector3(0.18, 0.95, 0.25)], "tronco": 3.0}
-const PREPARA := {"braco": [Vector3(0.75, 0.4, -0.3), Vector3(0.35, 0.92, -0.15), Vector3(0.35, 0.45, -0.82)], "tronco": -8.0,
-	"quadril": -0.03}
-const CRUZA := {"braco": [Vector3(-0.02, -0.08, 1.0), Vector3(-0.78, -0.25, 0.55), Vector3(-0.55, -0.35, 0.75)], "tronco": 12.0,
-	"quadril": 0.08}
-const SEGUE := {"braco": [Vector3(0.62, -0.6, 0.42), Vector3(0.9, -0.3, 0.3), Vector3(0.88, -0.1, 0.45)], "tronco": 9.0,
-	"quadril": 0.06}
-const RECOLHE := {"braco": [Vector3(0.5, -0.3, -0.55), Vector3(0.15, 0.05, 0.98), Vector3(0.05, 0.25, 0.97)], "tronco": -4.0,
+## (D054, revisto quadro a quadro) "baixa": quanto o quadril abaixa (m), para agachar no impacto.
+const GUARDA := {"braco": [Vector3(0.5, -0.6, 0.45), Vector3(0.3, 0.05, 0.95), Vector3(0.3, 0.45, 0.85)], "tronco": 6.0}
+const GUARDA_INSPIRA := {"braco": [Vector3(0.52, -0.55, 0.47), Vector3(0.32, 0.1, 0.93), Vector3(0.32, 0.5, 0.82)], "tronco": 4.0}
+## preparo: os dois braços abertos e para cima, ao lado do corpo (nada atrás da cabeça), lâminas para trás
+const PREPARA := {"braco": [Vector3(0.92, 0.2, 0.35), Vector3(0.8, 0.45, 0.4), Vector3(0.55, 0.8, -0.2)], "tronco": -6.0,
+	"quadril": -0.02}
+## o X: os braços vêm para a frente e cruzam NA FRENTE do peito; lâminas para a frente e cruzadas (bem visíveis)
+const CRUZA := {"braco": [Vector3(0.18, -0.05, 1.0), Vector3(-0.42, -0.3, 0.86), Vector3(-0.45, -0.1, 0.88)], "tronco": 16.0,
+	"quadril": 0.16, "baixa": 0.06}
+## continuação curta: os braços abrem para fora na frente, lâminas para fora (não para o chão)
+const SEGUE := {"braco": [Vector3(0.42, -0.5, 0.76), Vector3(0.55, -0.32, 0.77), Vector3(0.58, 0.0, 0.82)], "tronco": 12.0,
+	"quadril": 0.14, "baixa": 0.05}
+const RECOLHE := {"braco": [Vector3(0.55, -0.25, -0.35), Vector3(0.2, 0.15, 0.96), Vector3(0.08, 0.3, 0.95)], "tronco": -4.0,
 	"quadril": -0.04}
-const ESTOCA := {"braco": [Vector3(0.14, 0.02, 1.0), Vector3(0.02, 0.06, 1.0), Vector3(0.02, 0.04, 1.0)], "tronco": 12.0,
-	"quadril": 0.12}
+const ESTOCA := {"braco": [Vector3(0.16, 0.0, 1.0), Vector3(0.04, 0.05, 1.0), Vector3(0.02, 0.05, 1.0)], "tronco": 14.0,
+	"quadril": 0.16, "baixa": 0.05}
+
+## agacha para tomar impulso: corpo baixo e para a frente, braços para trás, lâminas para cima
+const AGACHA := {"braco": [Vector3(0.62, -0.45, -0.45), Vector3(0.45, 0.2, 0.87), Vector3(0.35, 0.75, 0.55)], "tronco": 22.0,
+	"quadril": -0.05, "baixa": 0.11}
 
 var _sk: Skeleton3D
 var _idle: Animation
@@ -40,7 +48,8 @@ func _initialize() -> void:
 	_player = tico.find_children("*", "AnimationPlayer", true, false)[0] as AnimationPlayer
 	var lib := AnimationLibrary.new()
 	lib.add_animation(&"Guarda", _make([[0.0, GUARDA], [0.9, GUARDA_INSPIRA], [1.8, GUARDA]], true))
-	lib.add_animation(&"Corte_X", _make([[0.0, GUARDA], [0.13, PREPARA], [0.2, CRUZA], [0.28, SEGUE], [0.36, SEGUE], [0.6, GUARDA]], false))
+	lib.add_animation(&"Corte_X", _make([[0.0, GUARDA], [0.16, PREPARA], [0.24, CRUZA], [0.31, SEGUE], [0.36, SEGUE], [0.58, GUARDA]], false))
+	lib.add_animation(&"Bote", _make([[0.0, GUARDA], [0.14, AGACHA], [0.3, AGACHA]], false))
 	lib.add_animation(&"Estocada", _make([[0.0, GUARDA], [0.14, RECOLHE], [0.22, ESTOCA], [0.38, ESTOCA], [0.62, GUARDA]], false))
 	print("salvo ", ResourceSaver.save(lib, OUT))
 	quit()
@@ -89,7 +98,8 @@ func _mix(a: Dictionary, b: Dictionary, k: float) -> Dictionary:
 	for i: int in 3:
 		arm.append((a["braco"][i] as Vector3).normalized().slerp((b["braco"][i] as Vector3).normalized(), k))
 	return {"braco": arm, "tronco": lerpf(float(a.get("tronco", 0.0)), float(b.get("tronco", 0.0)), k),
-		"quadril": lerpf(float(a.get("quadril", 0.0)), float(b.get("quadril", 0.0)), k)}
+		"quadril": lerpf(float(a.get("quadril", 0.0)), float(b.get("quadril", 0.0)), k),
+		"baixa": lerpf(float(a.get("baixa", 0.0)), float(b.get("baixa", 0.0)), k)}
 
 
 func _apply(pose: Dictionary, time: float) -> void:
@@ -98,7 +108,7 @@ func _apply(pose: Dictionary, time: float) -> void:
 	var idle_len := _player.current_animation_length
 	_player.seek(fmod(time, idle_len), true)
 	var hips := _sk.find_bone("Hips")
-	_sk.set_bone_pose_position(hips, _sk.get_bone_pose_position(hips) + Vector3(0, 0, float(pose.get("quadril", 0.0))))
+	_sk.set_bone_pose_position(hips, _sk.get_bone_pose_position(hips) + Vector3(0, -float(pose.get("baixa", 0.0)), float(pose.get("quadril", 0.0))))
 	# tronco inclina (em volta do eixo de lado a lado do personagem)
 	var lean := deg_to_rad(float(pose.get("tronco", 0.0)))
 	_turn(_sk.find_bone("Spine"), Basis(Vector3.RIGHT, lean * 0.45))
