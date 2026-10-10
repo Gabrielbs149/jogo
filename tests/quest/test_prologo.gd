@@ -62,7 +62,7 @@ func test_a_new_game_wakes_tico_up_and_tika_waits_at_the_alley_exit() -> void:
 	assert_string_contains(Game.objective, "Tika")
 	assert_true(_level.controller.enabled, "depois de acordar, o controle volta")
 	assert_eq(String(_level.player.get_node("Animator").get("_held")), "", "o Tico não fica preso deitado")
-	await wait_until(func() -> bool: return not _prologue.tika.is_walking(), 10.0)
+	await wait_until(func() -> bool: return not _prologue.tika.is_walking() 			and _prologue.tika.global_position.distance_to(_prologue.tika_saida.global_position) < 0.1, 10.0)
 	assert_lt(_prologue.tika.global_position.distance_to(_prologue.tika_saida.global_position), 0.1, "ela foi até a boca do beco")
 	assert_true(_prologue.marca_tika.visible)
 
