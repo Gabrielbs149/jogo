@@ -109,9 +109,10 @@ emotes = Array[String](["nota", "..."])
 [node name="Figure" parent="Morador" index="0"]
 personagem = "Barbarian"
 animacao = "Interact"
-na_mao = "Mug"
 cor_roupa = 0.08
 sem_chapeu = true
+sem_capa = true
+oficio = "taverneiro"
 
 [node name="Talk" parent="Morador" index="2"]
 prompt_text = "Falar"
@@ -250,9 +251,9 @@ olha = false
 [node name="Figure" parent="Morador2" index="0"]
 personagem = "Barbarian"
 animacao = "Sit_Chair_Idle"
-na_mao = "Mug"
-cor_roupa = 0.55
+cor_roupa = 0.3
 sem_chapeu = true
+oficio = "freguês_taverna"
 
 [node name="Talk" parent="Morador2" index="2"]
 prompt_text = "Falar"
@@ -269,9 +270,11 @@ emotes = Array[String](["nota", "nota", "coracao", "..."])
 olha = false
 
 [node name="Figure" parent="Morador3" index="0"]
+personagem = "Barbarian"
 animacao = "Sit_Chair_Idle"
 cor_roupa = 0.3
 sem_chapeu = true
+oficio = "freguês_taverna"
 
 [node name="Talk" parent="Morador3" index="2"]
 prompt_text = "Falar"
@@ -288,11 +291,11 @@ emotes = Array[String](["nota", "nota", "coracao", "..."])
 olha = false
 
 [node name="Figure" parent="Morador4" index="0"]
-personagem = "Knight"
+personagem = "Barbarian"
 animacao = "Sit_Chair_Idle"
-na_mao = "Mug"
-cor_roupa = 0.78
+cor_roupa = 0.3
 sem_chapeu = true
+oficio = "freguês_taverna"
 
 [node name="Talk" parent="Morador4" index="2"]
 prompt_text = "Falar"
@@ -308,9 +311,10 @@ troca = Vector2(3, 7)
 emotes = Array[String](["nota", "nota", "nota"])
 
 [node name="Figure" parent="Morador5" index="0"]
-personagem = "Mage"
 animacao = "Cheer"
-cor_roupa = 0.92
+cor_roupa = 0.9
+saturacao_roupa = 1.2
+oficio = "bardo"
 
 [node name="Talk" parent="Morador5" index="2"]
 prompt_text = "Falar"

@@ -144,6 +144,9 @@ func _spawn() -> void:
 		fig.set("sem_chapeu", _rng.randf() < 0.45)
 		fig.set("sem_capa", _rng.randf() < 0.4)
 		fig.set("na_mao", "Mug" if model == "Barbarian" and _rng.randf() < 0.3 else "")
+		# ofício de rua (D063): dona de casa com cesto, lavrador de chapéu de palha, velho de cajado... com a cor sorteada
+		fig.set("oficio", "crianca" if kid else Oficios.RUA[_rng.randi() % Oficios.RUA.size()])
+		fig.set("cor_roupa", HUES[_rng.randi() % HUES.size()])
 		fig.set("animacao", "Idle")
 		person.vida = self
 		person.velocidade = _rng.randf_range(1.05, 1.5)

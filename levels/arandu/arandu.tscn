@@ -1194,7 +1194,9 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -6.0
 [node name="Figure" type="Node3D" parent="People/Viuva" unique_id=410822440]
 transform = Transform3D(0.62, 0, 0, 0, 0.62, 0, 0, 0, 0.62, 0, 0, 0)
 script = ExtResource("23_1wlkg")
-personagem = "Mage"
+brilho_roupa = 0.3
+saturacao_roupa = 0.1
+oficio = "viuva"
 
 [node name="Collision" type="StaticBody3D" parent="People/Viuva" unique_id=1231984832]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -1232,7 +1234,10 @@ transform = Transform3D(0.64, 0, 0, 0, 0.64, 0, 0, 0, 0.64, 0, 0, 0)
 script = ExtResource("23_1wlkg")
 personagem = "Barbarian"
 animacao = "Unarmed_Idle"
-na_mao = "Mug"
+cor_roupa = 0.55
+sem_chapeu = true
+sem_capa = true
+oficio = "feirante2"
 
 [node name="Collision" type="StaticBody3D" parent="People/Vendedor" unique_id=1238647943]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -1259,6 +1264,7 @@ script = ExtResource("23_1wlkg")
 personagem = "Knight"
 animacao = "2H_Melee_Idle"
 na_mao = "2H_Sword"
+oficio = "guarda"
 
 [node name="Collision" type="StaticBody3D" parent="People/Guarda" unique_id=1524492826]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.99, 0)
@@ -1287,6 +1293,8 @@ transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, 0, 0, 0)
 script = ExtResource("23_1wlkg")
 personagem = "Rogue"
 animacao = "Cheer"
+cor_roupa = 0.16
+oficio = "crianca"
 
 [node name="Collision" type="StaticBody3D" parent="People/Crianca" unique_id=1785583356]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.558, 0)
@@ -1308,6 +1316,11 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 24.8
 [node name="Figure" parent="People/Padeiro" index="0"]
 personagem = "Barbarian"
 animacao = "Unarmed_Idle"
+sem_chapeu = true
+sem_capa = true
+brilho_roupa = 1.4
+saturacao_roupa = 0.1
+oficio = "padeiro"
 
 [node name="Talk" parent="People/Padeiro" index="2"]
 action = 4
@@ -1337,6 +1350,9 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -5.1
 
 [node name="Figure" parent="People/Bras" index="0"]
 animacao = "Sit_Floor_Idle"
+brilho_roupa = 0.6
+saturacao_roupa = 0.3
+oficio = "mendigo"
 
 [node name="Talk" parent="People/Bras" index="2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
@@ -1350,6 +1366,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 12.3
 [node name="Figure" parent="People/Garoto" index="0"]
 transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, 0, 0, 0)
 personagem = "Rogue"
+cor_roupa = 0.16
+oficio = "crianca"
 
 [node name="Talk" parent="People/Garoto" index="2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
@@ -6214,6 +6232,7 @@ script = ExtResource("23_1wlkg")
 personagem = "Knight"
 animacao = "2H_Melee_Idle"
 na_mao = "2H_Sword"
+oficio = "guarda"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/GuardaPortao" unique_id=1903989494]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6234,7 +6253,9 @@ emotes = Array[String](["?", "...", "nota"])
 [node name="Figure" type="Node3D" parent="Crowd/Freguês" unique_id=316298073]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
 script = ExtResource("23_1wlkg")
-personagem = "Mage"
+cor_roupa = 0.95
+sem_capa = true
+oficio = "dona_de_casa"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Freguês" unique_id=1271632975]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6255,8 +6276,11 @@ emotes = Array[String](["?", "coracao"])
 [node name="Figure" type="Node3D" parent="Crowd/Freguês2" unique_id=2049825621]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
 script = ExtResource("23_1wlkg")
-personagem = "Barbarian"
+personagem = "Rogue"
 animacao = "Unarmed_Idle"
+cor_roupa = 0.3
+sem_capa = true
+oficio = "comprador_pao"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Freguês2" unique_id=159137891]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6277,7 +6301,12 @@ emotes = Array[String](["...", "?"])
 [node name="Figure" type="Node3D" parent="Crowd/Freguês3" unique_id=583129817]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
 script = ExtResource("23_1wlkg")
+personagem = "Barbarian"
 animacao = "Use_Item"
+cor_roupa = 0.78
+sem_chapeu = true
+saturacao_roupa = 1.1
+oficio = "mercador"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Freguês3" unique_id=67716817]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6300,6 +6329,10 @@ transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
 script = ExtResource("23_1wlkg")
 personagem = "Mage"
 animacao = "Sit_Chair_Idle"
+sem_chapeu = true
+brilho_roupa = 0.8
+saturacao_roupa = 0.35
+oficio = "velho"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Sentado" unique_id=834610338]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6321,6 +6354,9 @@ emotes = Array[String](["...", "nota"])
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
 script = ExtResource("23_1wlkg")
 animacao = "Sit_Chair_Idle"
+cor_roupa = 0.65
+sem_capa = true
+oficio = "aldea"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Sentado2" unique_id=1887149605]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6341,7 +6377,9 @@ emotes = Array[String](["...", "?"])
 [node name="Figure" type="Node3D" parent="Crowd/Hospede" unique_id=1338313809]
 transform = Transform3D(0.62, 0, 0, 0, 0.62, 0, 0, 0, 0.62, 0, 0, 0)
 script = ExtResource("23_1wlkg")
-personagem = "Mage"
+cor_roupa = 0.08
+saturacao_roupa = 0.5
+oficio = "viajante"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Hospede" unique_id=2000095484]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6364,7 +6402,9 @@ transform = Transform3D(0.64, 0, 0, 0, 0.64, 0, 0, 0, 0.64, 0, 0, 0)
 script = ExtResource("23_1wlkg")
 personagem = "Barbarian"
 animacao = "Cheer"
-na_mao = "Mug"
+cor_roupa = 0.3
+sem_chapeu = true
+oficio = "freguês_taverna"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/NaTaverna" unique_id=1159200195]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6385,7 +6425,10 @@ emotes = Array[String](["nota", "..."])
 [node name="Figure" type="Node3D" parent="Crowd/NaTaverna2" unique_id=1965342352]
 transform = Transform3D(0.64, 0, 0, 0, 0.64, 0, 0, 0, 0.64, 0, 0, 0)
 script = ExtResource("23_1wlkg")
-personagem = "Knight"
+personagem = "Barbarian"
+cor_roupa = 0.3
+sem_chapeu = true
+oficio = "freguês_taverna"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/NaTaverna2" unique_id=178294685]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6410,8 +6453,12 @@ gesto_do_som = "1H_Melee_Attack_Chop"
 transform = Transform3D(0.66, 0, 0, 0, 0.66, 0, 0, 0, 0.66, 0, 0, 0)
 script = ExtResource("23_1wlkg")
 personagem = "Barbarian"
-animacao = "Use_Item"
-na_mao = "1H_Axe"
+animacao = "1H_Melee_Attack_Chop"
+sem_chapeu = true
+sem_capa = true
+brilho_roupa = 0.5
+saturacao_roupa = 0.4
+oficio = "ferreiro"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/FerreiroTrabalhando" unique_id=1762579809]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6434,6 +6481,8 @@ transform = Transform3D(0.45, 0, 0, 0, 0.45, 0, 0, 0, 0.45, 0, 0, 0)
 script = ExtResource("23_1wlkg")
 personagem = "Rogue"
 animacao = "Cheer"
+cor_roupa = 0.16
+oficio = "crianca"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Crianca2" unique_id=1044159606]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6454,6 +6503,9 @@ emotes = Array[String](["nota", "?"])
 [node name="Figure" type="Node3D" parent="Crowd/Crianca3" unique_id=1407576644]
 transform = Transform3D(0.43, 0, 0, 0, 0.43, 0, 0, 0, 0.43, 0, 0, 0)
 script = ExtResource("23_1wlkg")
+personagem = "Rogue"
+cor_roupa = 0.16
+oficio = "crianca"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Crianca3" unique_id=453440276]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6477,6 +6529,9 @@ script = ExtResource("23_1wlkg")
 personagem = "Mage"
 animacao = "Sit_Floor_Idle"
 na_mao = "Spellbook_open"
+cor_roupa = 0.45
+sem_chapeu = true
+oficio = "leitora"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Leitora" unique_id=45936547]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6496,6 +6551,9 @@ emotes = Array[String](["gota", "..."])
 [node name="Figure" type="Node3D" parent="Crowd/NoCemiterio" unique_id=1474061766]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
 script = ExtResource("23_1wlkg")
+brilho_roupa = 0.55
+saturacao_roupa = 0.25
+oficio = "coveiro"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/NoCemiterio" unique_id=2063983706]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6518,6 +6576,12 @@ transform = Transform3D(0.62, 0, 0, 0, 0.62, 0, 0, 0, 0.62, 0, 0, 0)
 script = ExtResource("23_1wlkg")
 personagem = "Barbarian"
 animacao = "Interact"
+cor_roupa = 0.16
+sem_chapeu = true
+sem_capa = true
+brilho_roupa = 0.85
+saturacao_roupa = 0.6
+oficio = "lavrador"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Lavrador" unique_id=1520910146]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6538,8 +6602,11 @@ emotes = Array[String](["gota", "nota"])
 [node name="Figure" type="Node3D" parent="Crowd/Lavradora" unique_id=1364923169]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
 script = ExtResource("23_1wlkg")
-personagem = "Rogue"
 animacao = "PickUp"
+cor_roupa = 0.16
+sem_capa = true
+saturacao_roupa = 0.6
+oficio = "lavradora"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Lavradora" unique_id=1403709204]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6560,7 +6627,11 @@ emotes = Array[String](["...", "nota"])
 [node name="Figure" type="Node3D" parent="Crowd/Fazendeiro" unique_id=1536519547]
 transform = Transform3D(0.62, 0, 0, 0, 0.62, 0, 0, 0, 0.62, 0, 0, 0)
 script = ExtResource("23_1wlkg")
-personagem = "Knight"
+personagem = "Rogue"
+cor_roupa = 0.08
+sem_capa = true
+saturacao_roupa = 0.6
+oficio = "fazendeiro"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Fazendeiro" unique_id=1076071074]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6581,6 +6652,11 @@ transform = Transform3D(0.62, 0, 0, 0, 0.62, 0, 0, 0, 0.62, 0, 0, 0)
 script = ExtResource("23_1wlkg")
 personagem = "Barbarian"
 animacao = "Sit_Floor_Idle"
+cor_roupa = 0.08
+sem_chapeu = true
+sem_capa = true
+saturacao_roupa = 0.5
+oficio = "carregador"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Carregador" unique_id=1752799716]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6622,6 +6698,11 @@ emotes = Array[String](["..."])
 transform = Transform3D(0.62, 0, 0, 0, 0.62, 0, 0, 0, 0.62, 0, 0, 0)
 script = ExtResource("23_1wlkg")
 personagem = "Barbarian"
+sem_chapeu = true
+sem_capa = true
+brilho_roupa = 1.35
+saturacao_roupa = 0.1
+oficio = "moleiro"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Moleiro" unique_id=1094143450]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6642,7 +6723,11 @@ emotes = Array[String](["nota"])
 [node name="Figure" type="Node3D" parent="Crowd/Cavalarico" unique_id=2114833776]
 transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
 script = ExtResource("23_1wlkg")
+personagem = "Rogue"
 animacao = "Interact"
+cor_roupa = 0.45
+sem_capa = true
+oficio = "cavalarico"
 
 [node name="Collision" type="StaticBody3D" parent="Crowd/Cavalarico" unique_id=377734072]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -6663,7 +6748,9 @@ pregao = Array[String](["Olha a couve fresquinha!", "Cenoura, batata, cebola!", 
 
 [node name="Figure" parent="Crowd/Vendedor2" index="0"]
 animacao = "Unarmed_Idle"
-cor_roupa = 0.3
+cor_roupa = 0.55
+sem_capa = true
+oficio = "feirante"
 
 [node name="Talk" parent="Crowd/Vendedor2" index="2"]
 prompt_text = "Falar com o vendedor"
@@ -6679,9 +6766,10 @@ emotes = Array[String](["nota", "!"])
 pregao = Array[String](["Pão de ontem pela metade!", "Broa de milho! Broa!", "Mais barato que na padaria!"])
 
 [node name="Figure" parent="Crowd/Vendedor3" index="0"]
-personagem = "Mage"
 animacao = "Unarmed_Idle"
-cor_roupa = 0.08
+cor_roupa = 0.78
+sem_capa = true
+oficio = "feirante3"
 
 [node name="Talk" parent="Crowd/Vendedor3" index="2"]
 prompt_text = "Falar com o vendedor"
@@ -6701,6 +6789,8 @@ personagem = "Barbarian"
 animacao = "Unarmed_Idle"
 cor_roupa = 0.55
 sem_chapeu = true
+sem_capa = true
+oficio = "feirante2"
 
 [node name="Talk" parent="Crowd/Vendedor4" index="2"]
 prompt_text = "Falar com o vendedor"
@@ -12373,9 +12463,10 @@ troca = Vector2(3, 6)
 emotes = Array[String](["nota", "nota", "nota", "coracao"])
 
 [node name="Figure" parent="Atracoes/Musico" index="0"]
-personagem = "Mage"
 animacao = "Cheer"
-cor_roupa = 0.35
+cor_roupa = 0.9
+saturacao_roupa = 1.2
+oficio = "bardo"
 
 [node name="Talk" parent="Atracoes/Musico" index="2"]
 prompt_text = "Falar"

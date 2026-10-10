@@ -140,6 +140,8 @@ emotes = Array[String](["...", "?"])
 
 [node name="Figure" parent="Morador" index="0"]
 personagem = "Knight"
+na_mao = "2H_Sword"
+oficio = "guarda"
 
 [node name="Talk" parent="Morador" index="2"]
 prompt_text = "Falar"
@@ -158,8 +160,9 @@ olha = false
 [node name="Figure" parent="Morador2" index="0"]
 personagem = "Mage"
 animacao = "Sit_Chair_Idle"
-cor_roupa = 0.55
+cor_roupa = 0.9
 sem_chapeu = true
+oficio = "conselheiro"
 
 [node name="Talk" parent="Morador2" index="2"]
 prompt_text = "Falar"
