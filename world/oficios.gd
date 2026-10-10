@@ -91,6 +91,21 @@ const RUA: Array[String] = ["dona_de_casa", "aldeao", "aldea", "lavrador", "lavr
 const CASA: Array[String] = ["aldeao", "aldea", "fiel", "viuva", "mendigo", "aldea", "aldeao"]
 
 static var _cache: Dictionary = {}
+static var _kept: Array[Resource] = []
+
+
+## Carrega de uma vez os bonecos e as coisas dos ofícios (D065): na abertura da fase, e não quando uma casa entra.
+static func preload_all() -> void:
+	if not _kept.is_empty():
+		return
+	for model: String in ["Knight", "Barbarian", "Mage", "Rogue", "Rogue_Hooded"]:
+		var res := load(Figurante.MODELS % model)
+		if res:
+			_kept.append(res)
+	for key: String in OBJETOS:
+		var res := load(String(OBJETOS[key][0]))
+		if res:
+			_kept.append(res)
 
 
 ## Veste o boneco (modelo do KayKit já montado) com as coisas do ofício.
