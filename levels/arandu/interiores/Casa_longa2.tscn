@@ -185,8 +185,10 @@ olha = false
 
 [node name="Figure" parent="Morador" index="0"]
 animacao = "Sit_Chair_Idle"
-cor_roupa = 0.1
-sem_chapeu = true
+sem_capa = true
+brilho_roupa = 0.75
+saturacao_roupa = 0.35
+oficio = "fiel"
 
 [node name="Talk" parent="Morador" index="2"]
 prompt_text = "Falar"
@@ -203,9 +205,12 @@ emotes = Array[String](["zz", "zz", "zz"])
 olha = false
 
 [node name="Figure" parent="Morador2" index="0"]
+personagem = "Barbarian"
 animacao = "Lie_Idle"
-cor_roupa = 0.1
+cor_roupa = 0.45
 sem_chapeu = true
+sem_capa = true
+oficio = "aldeao"
 
 [node name="Talk" parent="Morador2" index="2"]
 prompt_text = "Falar"

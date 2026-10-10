@@ -186,8 +186,9 @@ olha = false
 
 [node name="Figure" parent="Morador" index="0"]
 animacao = "Sit_Chair_Idle"
-cor_roupa = 0.5
-sem_chapeu = true
+cor_roupa = 0.65
+sem_capa = true
+oficio = "aldea"
 
 [node name="Talk" parent="Morador" index="2"]
 prompt_text = "Falar"
@@ -205,8 +206,9 @@ olha = false
 
 [node name="Figure" parent="Morador2" index="0"]
 animacao = "Lie_Idle"
-cor_roupa = 0.5
-sem_chapeu = true
+brilho_roupa = 0.6
+saturacao_roupa = 0.3
+oficio = "mendigo"
 
 [node name="Talk" parent="Morador2" index="2"]
 prompt_text = "Falar"

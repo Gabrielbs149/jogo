@@ -54,8 +54,8 @@ emotes = Array[String](["?", "...", "nota"])
 
 [node name="Figure" parent="Morador" index="0"]
 animacao = "Use_Item"
-cor_roupa = 0.35
-sem_chapeu = true
+cor_roupa = 0.3
+oficio = "boticaria"
 
 [node name="Talk" parent="Morador" index="2"]
 prompt_text = "Falar"
