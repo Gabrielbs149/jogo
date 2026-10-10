@@ -8,6 +8,8 @@ extends Control
 
 signal _advanced
 signal _picked(index: int)
+## Uma fala começou (D064): a câmera da conversa troca de plano por quem fala ("" = narração; choosing = escolha).
+signal line_started(speaker: String, choosing: bool)
 
 ## Letras por segundo do texto aparecendo.
 @export var chars_per_second: float = 55.0
@@ -38,6 +40,7 @@ func _ready() -> void:
 ## Uma fala. speaker vazio = narração. Aceita BBCode ([color=...]).
 func say(speaker: String, text: String) -> void:
 	history.append(("%s: %s" % [speaker, text]) if speaker != "" else text)
+	line_started.emit(speaker, false)
 	if instant:
 		return
 	_show_line(speaker, text)
@@ -50,6 +53,7 @@ func say(speaker: String, text: String) -> void:
 ## Uma fala com escolhas. Devolve o índice da opção escolhida.
 func choose(speaker: String, text: String, options: Array) -> int:
 	history.append(("%s: %s" % [speaker, text]) if speaker != "" else text)
+	line_started.emit(speaker, true)
 	if instant:
 		var pick: int = auto_answers.pop_front() if not auto_answers.is_empty() else options.size() - 1
 		history.append("> " + String(options[pick]))

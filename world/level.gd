@@ -378,18 +378,72 @@ func play_cutscene(roteiro: Roteiro) -> void:
 ## (para quando é o herói que está fazendo alguma coisa, como acordar).
 func focus_talk(with_who: Node3D, from_other: bool = false) -> void:
 	if with_who == null or player == null:
-		_camera.focus_off()
+		_end_conversation()
 		return
 	var me := player.global_position
 	var other := with_who.global_position
 	turn_toward(player, other)
 	# quem fala só vira se for gente (os nós de conversa ficam dentro da pessoa)
-	if with_who.has_method("face") or with_who.get_node_or_null("Figure") != null:
-		turn_toward(with_who, me)
-	var mid := (me + other) / 2.0 + Vector3.UP * (_camera.height - 0.25)
-	var to_other := (me - other) if from_other else (other - me)
-	var look_yaw: Variant = atan2(-to_other.x, -to_other.z) if Vector2(to_other.x, to_other.z).length() > 0.3 else null
-	_camera.focus_on(mid, clampf(me.distance_to(other) + 1.6, 2.4, 3.6), look_yaw)
+	var person := _person_of(with_who)
+	if person.has_method("face") or person.get_node_or_null("Figure") != null:
+		turn_toward(person, me)
+	_start_conversation(person)
+
+
+## Câmera da conversa (D064): campo e contracampo, por quem está falando (DialogueBox.line_started).
+var _talk_camera: CameraConversa
+var _talk_token: int = 0
+var _last_line: Array = ["", false]
+
+
+func _start_conversation(person: Node3D) -> void:
+	_talk_token += 1
+	var token := _talk_token
+	_last_line = ["", false]
+	var box := _hud.dialogue
+	if not box.line_started.is_connected(_on_line_started):
+		box.line_started.connect(_on_line_started)
+	if _talk_camera == null:
+		_talk_camera = CameraConversa.new()
+		_talk_camera.name = "CameraConversa"
+		add_child(_talk_camera)
+	var names: PackedStringArray = [String(player.get("display_name")).get_slice("-", 0).get_slice(" ", 0)]
+	if player.get("hero_id") != null:
+		names.append(String(player.get("hero_id")))
+	# espera o herói (e o outro) terminarem de virar um para o outro antes de enquadrar
+	await get_tree().create_timer(0.15).timeout
+	if token != _talk_token or not is_instance_valid(person) or player == null:
+		return  # a conversa já acabou (ou começou outra)
+	_talk_camera.start(player, person, names, _camera.camera)
+	_talk_camera.shot(String(_last_line[0]), bool(_last_line[1]))
+
+
+func _on_line_started(speaker: String, choosing: bool) -> void:
+	_last_line = [speaker, choosing]
+	if _talk_camera and _talk_camera.hero != null:
+		_talk_camera.shot(speaker, choosing)
+
+
+func _end_conversation() -> void:
+	_talk_token += 1
+	if _talk_camera:
+		_talk_camera.stop()
+	if _hud and _hud.dialogue.line_started.is_connected(_on_line_started):
+		_hud.dialogue.line_started.disconnect(_on_line_started)
+	_camera.focus_off()
+	_camera.camera.make_current()
+
+
+## O nó de conversa (o "Falar" fica dentro da pessoa): a pessoa é quem tem o Figure, o Ator ou é um Combatant.
+func _person_of(node: Node3D) -> Node3D:
+	var current: Node = node
+	for i: int in 3:
+		if current == null or current == self:
+			break
+		if current is Combatant or current.has_method("face") or current.get_node_or_null("Figure") != null:
+			return current as Node3D
+		current = current.get_parent()
+	return node
 
 
 ## Vira alguém (só no giro) para olhar um ponto, num instante curto.
