@@ -113,10 +113,12 @@ emotes = Array[String](["...", "nota", "?"])
 olha = false
 
 [node name="Figure" parent="Morador" index="0"]
-personagem = "Mage"
+personagem = "Barbarian"
 animacao = "Sit_Chair_Idle"
-cor_roupa = 0.3
+cor_roupa = 0.45
 sem_chapeu = true
+sem_capa = true
+oficio = "aldeao"
 
 [node name="Talk" parent="Morador" index="2"]
 prompt_text = "Falar"
@@ -133,10 +135,10 @@ emotes = Array[String](["zz", "zz", "zz"])
 olha = false
 
 [node name="Figure" parent="Morador2" index="0"]
-personagem = "Mage"
 animacao = "Lie_Idle"
-cor_roupa = 0.3
-sem_chapeu = true
+cor_roupa = 0.65
+sem_capa = true
+oficio = "aldea"
 
 [node name="Talk" parent="Morador2" index="2"]
 prompt_text = "Falar"

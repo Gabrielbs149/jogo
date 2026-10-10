@@ -104,8 +104,10 @@ troca = Vector2(6, 14)
 emotes = Array[String](["...", "nota", "?"])
 
 [node name="Figure" parent="Morador" index="0"]
-cor_roupa = 0.1
-sem_chapeu = true
+sem_capa = true
+brilho_roupa = 0.75
+saturacao_roupa = 0.35
+oficio = "fiel"
 
 [node name="Talk" parent="Morador" index="2"]
 prompt_text = "Falar"
@@ -123,8 +125,9 @@ olha = false
 
 [node name="Figure" parent="Morador2" index="0"]
 animacao = "Lie_Idle"
-cor_roupa = 0.1
-sem_chapeu = true
+cor_roupa = 0.65
+sem_capa = true
+oficio = "aldea"
 
 [node name="Talk" parent="Morador2" index="2"]
 prompt_text = "Falar"

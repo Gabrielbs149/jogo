@@ -4,6 +4,9 @@ shader_type spatial;
 // como estão: só as cores fortes giram de matiz.
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap, repeat_enable;
+// D063: onde é pano (branco) e onde não é (pele, cabelo, couro, metal). Gerada por tools/art/mascaras_kaykit.py.
+uniform sampler2D mask_tex : hint_default_white, filter_nearest_mipmap, repeat_enable;
+uniform bool use_mask = false;
 uniform float hue_shift : hint_range(0.0, 1.0) = 0.0;
 uniform float sat_mul = 1.0;
 uniform float val_mul = 1.0;
@@ -30,7 +33,7 @@ void fragment() {
 	// pele: matiz laranja (0,02..0,11), saturação média, clara
 	float skin = (1.0 - smoothstep(0.02, 0.05, abs(hsv.x - 0.065))) * smoothstep(0.15, 0.25, hsv.y) * (1.0 - smoothstep(0.62, 0.75, hsv.y)) * smoothstep(0.45, 0.6, hsv.z);
 	float colorful = smoothstep(0.18, 0.32, hsv.y) * smoothstep(0.12, 0.25, hsv.z);
-	float amount = colorful * (1.0 - skin);
+	float amount = use_mask ? texture(mask_tex, UV).r : colorful * (1.0 - skin);
 	vec3 shifted = hsv2rgb(vec3(fract(hsv.x + hue_shift), clamp(hsv.y * sat_mul, 0.0, 1.0), clamp(hsv.z * val_mul, 0.0, 1.0)));
 	ALBEDO = mix(base.rgb, shifted, amount);
 	ROUGHNESS = roughness_value;

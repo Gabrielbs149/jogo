@@ -61,9 +61,12 @@ troca = Vector2(6, 12)
 emotes = Array[String](["?", "nota"])
 
 [node name="Figure" parent="Morador" index="0"]
-personagem = "Mage"
+personagem = "Rogue"
 animacao = "Use_Item"
-cor_roupa = 0.82
+cor_roupa = 0.78
+sem_capa = true
+saturacao_roupa = 1.2
+oficio = "alfaiate"
 
 [node name="Talk" parent="Morador" index="2"]
 prompt_text = "Falar"
