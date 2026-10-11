@@ -271,6 +271,7 @@ func _vendors() -> void:
 
 func _animals() -> void:
 	var animals := level.get_node("Animals")
+	_vary_animals(animals)
 	for child: Node in animals.get_children():
 		var a := child as Node3D
 		if a == null or a.get_script() != null and not (a.get_script() as Script).resource_path.ends_with("bicho.gd"):
@@ -284,27 +285,83 @@ func _animals() -> void:
 			a.set("bica", true)
 			a.set("raio", 3.0)
 			a.set("velocidade", 0.7)
+		elif file.begins_with("gato"):
+			# o gato preto dorme enrolado (não anda)
+			a.set("jeito", 3)
+			a.set("raio", 0.05)
+			a.set("dorme", true)
+			a.set("pula", false)
+		elif file.begins_with("porco") or file.begins_with("ovelha"):
+			# só têm "parado" e "pulo": ficam no lugar, virando de vez em quando
+			a.set("raio", 0.8)
+			a.set("velocidade", 0.15)
+			a.set("pula", false)
 		else:
-			# vaca, cavalo, porco de enfeite (sem esqueleto): andam pouco e devagar, sem pular
-			a.set("raio", 1.6)
-			a.set("velocidade", 0.25)
+			# vaca, touro, cavalo, burro, alpaca (animados): pastam devagar em volta de onde estão
+			a.set("raio", 3.0)
+			a.set("velocidade", 0.45)
 			a.set("pula", false)
 	_animal(animals, "Shiba", PP + "Animated-Animal-Pack/Shiba_Inu.glb", 0.17, Vector3(3.0, 0, 6.0), 2, 12.0, 1.2)
 	_animal(animals, "Husky", PP + "Animated-Animal-Pack/Husky.glb", 0.17, Vector3(7.0, 0, -22.0), 2, 10.0, 1.3)
-	_animal(animals, "Burro", PP + "Animated-Animal-Pack/Donkey.glb", 0.3, Vector3(60.0, 0, -22.0), 0, 3.0, 0.6)
+	_animal(animals, "Burro", PP + "Animated-Animal-Pack/Donkey.glb", 0.33, Vector3(60.0, 0, -22.0), 0, 3.0, 0.6)
 	# NÃO chamar de "Rato": o roteiro da cena do rato acha as coisas pelo nome ([na mão: Rato]) e pegava este, que ia
 	# parar gigante na fogueira e depois na mão do Tico, voando atrás dele
 	_remove("Animals/Rato")
 	var rat := _animal(animals, "Ratazana", PP + "Animated-Enemies/Rat.glb", 0.22, Vector3(-9.6, 0, -48.7), 1, 2.0, 1.4)
 	rat.set("velocidade", 1.4)
-	var cat := _animal(animals, "GatoPreguica", "res://world/props/gato.tscn", 1.0, Vector3(5.0, 0, -15.6), 3, 1.5, 0.35)
+	var cat := _animal(animals, "GatoPreguica", "res://world/props/gato.tscn", 1.0, Vector3(5.0, 0, -15.6), 3, 0.05, 0.35)
 	cat.set("dorme", true)
+	cat.set("pula", false)
 	var alley_cat := level.get_node_or_null("BecoLateral/Gato") as Node3D
 	if alley_cat:
 		alley_cat.set_script(load("res://world/vida/bicho.gd"))
 		alley_cat.set("jeito", 3)
 		alley_cat.set("raio", 0.05)
 		alley_cat.set("dorme", true)
+		alley_cat.set("pula", false)
+
+
+## Variedade (D066): parte das vacas vira touro, parte dos cavalos vira cavalo branco, parte das galinhas vira galinha
+## vermelha; ovelhas perto dos porcos e uma alpaca perto do estábulo. Sorteado pelo nome (rodar de novo dá o mesmo).
+func _vary_animals(animals: Node) -> void:
+	var swaps := {"vaca.tscn": ["touro", 3], "cavalo.tscn": ["cavalo_branco", 2], "galinha.tscn": ["galinha_vermelha", 2]}
+	var pigs: Array[Transform3D] = []
+	for child: Node in animals.get_children():
+		var a := child as Node3D
+		if a == null:
+			continue
+		var file := a.scene_file_path.get_file()
+		if file == "porco.tscn":
+			pigs.append(a.global_transform)
+		if not swaps.has(file):
+			continue
+		var roll := RandomNumberGenerator.new()
+		roll.seed = hash(String(a.name))
+		if roll.randi() % int(swaps[file][1]) != 0:
+			continue
+		_swap_animal(a, String(swaps[file][0]))
+	for k: int in mini(pigs.size(), 4):
+		var name := "Ovelha%d" % (k + 1)
+		_remove("Animals/" + name)
+		var sheep := _place("ovelha", animals, pigs[k].origin + Vector3(1.6, 0, 1.1 - k * 0.7), rng.randf() * TAU, 1.0, name)
+		sheep.global_position = pigs[k].origin + Vector3(1.6, 0, 1.1 - k * 0.7)
+	var stable := level.get_node_or_null("Buildings/Estabulo") as Node3D
+	if stable:
+		_remove("Animals/Alpaca")
+		var alpaca := _place("alpaca", animals, stable.global_position + stable.global_basis.z * 4.0, rng.randf() * TAU, 1.0, "Alpaca")
+		alpaca.global_position = stable.global_position + stable.global_basis.z * 4.0
+
+
+func _swap_animal(old: Node3D, key: String) -> void:
+	var at := old.global_transform
+	var name := String(old.name)
+	var parent := old.get_parent()
+	var index := old.get_index()
+	parent.remove_child(old)
+	old.free()
+	var piece := _place(key, parent, at.origin, 0.0, 1.0, name)
+	parent.move_child(piece, index)
+	piece.global_transform = at
 
 
 func _animal(parent: Node3D, node_name: String, model: String, size: float, at: Vector3, kind: int, radius: float, speed: float) -> Node3D:
@@ -443,6 +500,16 @@ func _street_person(parent: Node3D, person_name: String, at: Vector3, look: Vect
 
 
 # --- ajudantes ----------------------------------------------------------------------------------------
+
+## Uma peça do catálogo (world/props/<key>.tscn) na fase, com dono, no lugar e giro dados.
+func _place(key: String, parent: Node, at: Vector3, yaw: float, size: float, node_name: String) -> Node3D:
+	var piece := (load("res://world/props/%s.tscn" % key) as PackedScene).instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node3D
+	piece.name = node_name
+	parent.add_child(piece, true)
+	piece.owner = level
+	piece.global_transform = Transform3D(Basis(Vector3.UP, yaw).scaled(Vector3.ONE * size), at)
+	return piece
+
 
 func _child(parent: Node, child_name: String, spatial: bool = true) -> Node:
 	var node := parent.get_node_or_null(child_name)

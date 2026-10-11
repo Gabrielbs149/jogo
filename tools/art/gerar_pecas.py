@@ -614,10 +614,19 @@ s.mesh("Base", s.box((1.6, 0.25, 1.6)), s.mat("tabuas"), (0, 0.12, 0))
 s.glb("Medieval-Torture-Devices/Pilory", (0, 0.25, 0), math.pi, 1.3, name="Modelo")
 s.save("pelourinho")
 
-for name, path, sc in (("cavalo", "Farm-Animal-Pack/Horse", 0.25), ("vaca", "Farm-Animal-Pack/Cow", 0.25), ("porco", "Farm-Animal-Pack/Pig", 0.15),
-                       ("galinha", "Animal-Kit/Chicken", 0.8), ("cachorro", "Animal-Kit/Dog", 0.42), ("gato", "Animal-Kit/Cat", 0.4)):
+# bichos (D066): os animados da Quaternius (andam, comem, galopam), o porco e a ovelha da fazenda (com esqueleto), a
+# galinha branca e a vermelha, e o gato preto dormindo enrolado. Todos olham para +Z: giram meia volta (frente -Z).
+for name, path, sc, rot in (("cavalo", "Animated-Animal-Pack/Horse", 0.37, math.pi),
+                            ("cavalo_branco", "Animated-Animal-Pack/White_Horse", 0.37, math.pi),
+                            ("vaca", "Animated-Animal-Pack/Cow", 0.27, math.pi), ("touro", "Animated-Animal-Pack/Bull", 0.29, math.pi),
+                            ("burro", "Animated-Animal-Pack/Donkey", 0.33, math.pi), ("alpaca", "Animated-Animal-Pack/Alpaca", 0.3, math.pi),
+                            ("porco", "Farm-Animal-Pack/Pig", 0.12, math.pi), ("ovelha", "Farm-Animal-Pack/Sheep", 0.13, math.pi),
+                            ("galinha", "Animals/Chicken", 0.0026, math.pi),
+                            ("galinha_vermelha", "_avulsos/Hen_8Unya0rw9tR", 0.006, (-math.pi / 2, math.pi, 0)),
+                            ("cachorro", "Animated-Animal-Pack/Shiba_Inu", 0.17, math.pi),
+                            ("gato", "Witch-cottage-pack/Dingus_the_cat", 0.12, math.pi)):
     s = Scene(name.capitalize())
-    s.glb(path, (0, 0, 0), 0.0, sc, name="Modelo")
+    s.glb(path, (0, 0, 0), rot, sc, name="Modelo")
     s.save(name)
 
 s = Scene("Horta")

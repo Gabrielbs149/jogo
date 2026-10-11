@@ -85,6 +85,17 @@ func test_animals_and_pigeons_are_alive() -> void:
 	assert_true(flock.get("_flying"), "chegou perto: o bando voa")
 
 
+func test_animals_are_the_new_animated_ones() -> void:
+	# D066: os bichos de cima (sem esqueleto, tortos) saíram; os grandes são animados e andam com as animações deles
+	for key: String in ["vaca", "touro", "cavalo", "cavalo_branco", "burro", "alpaca", "porco", "ovelha", "cachorro"]:
+		var scene := (load("res://world/props/%s.tscn" % key) as PackedScene).instantiate() as Node3D
+		assert_false(scene.find_children("*", "AnimationPlayer", true, false).is_empty(), "%s é animado" % key)
+		scene.free()
+	for key: String in ["gato", "galinha", "galinha_vermelha"]:
+		var text := FileAccess.get_file_as_string("res://world/props/%s.tscn" % key)
+		assert_false(text.contains("Animal-Kit/"), "%s não usa mais o pacote antigo" % key)
+
+
 func test_emote_icons_are_drawn() -> void:
 	for kind: String in Emote.KINDS:
 		var tex := Emote.texture_for(kind)
