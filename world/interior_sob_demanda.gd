@@ -7,13 +7,16 @@ extends Node3D
 
 ## A cena do interior.
 @export_file("*.tscn") var cena: String = ""
-## Carrega a menos dessa distância (m) da câmera; descarrega a mais de `longe`.
-@export var perto: float = 30.0
-@export var longe: float = 44.0
+## Carrega a menos dessa distância (m) da câmera; descarrega a mais de `longe`. (D065: de 30/44 para 20/28, menos casas
+## mobiliadas carregadas ao mesmo tempo.)
+@export var perto: float = 20.0
+@export var longe: float = 28.0
 
 var _inside: Node
 var _loading: bool = false
 var _check: float = 0.0
+## Um interior entra na cena por quadro (D065): várias casas entrando juntas davam um engasgo.
+static var _frame_used: int = -1
 
 
 func _ready() -> void:
@@ -27,11 +30,15 @@ func _process(delta: float) -> void:
 	if _loading:
 		var status := ResourceLoader.load_threaded_get_status(cena)
 		if status == ResourceLoader.THREAD_LOAD_LOADED:
+			if Engine.get_process_frames() == _frame_used:
+				return  # outra casa já entrou neste quadro: fica para o próximo
+			_frame_used = Engine.get_process_frames()
 			_loading = false
 			var scene := ResourceLoader.load_threaded_get(cena) as PackedScene
 			if scene and _inside == null:
 				_inside = scene.instantiate()
 				add_child(_inside)
+				Otimizar.apply(_inside, true)
 		elif status != ResourceLoader.THREAD_LOAD_IN_PROGRESS:
 			_loading = false
 		return
@@ -61,3 +68,4 @@ func load_now() -> void:
 	if _inside == null and cena != "":
 		_inside = (load(cena) as PackedScene).instantiate()
 		add_child(_inside)
+		Otimizar.apply(_inside, true)

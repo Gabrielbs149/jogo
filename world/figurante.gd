@@ -62,6 +62,10 @@ static var _tints: Dictionary = {}
 
 var _model: Node3D
 var _player: AnimationPlayer
+## Animação por distância (D065): de perto todo quadro; longe ou fora da tela, poucas vezes por segundo.
+var _anim_acc: float = 0.0
+var _anim_step: float = 0.0
+var _anim_check: float = randf() * 0.3
 var _applying: bool = false
 
 
@@ -84,6 +88,8 @@ func _rebuild() -> void:
 	add_child(_model)  # sem dono: é refeito ao abrir, não vai para o arquivo
 	var found := _model.find_children("*", "AnimationPlayer", true, false)
 	_player = found[0] as AnimationPlayer if not found.is_empty() else null
+	if _player and not Engine.is_editor_hint():
+		_player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
 	_hide_props()
 	_dress()
 	Oficios.vestir(_model, oficio)
@@ -106,6 +112,36 @@ func _apply_oficio() -> void:
 	na_mao = String(spec.get("na_mao", ""))
 	_applying = false
 	_rebuild()
+
+
+func _process(delta: float) -> void:
+	if _player == null or Engine.is_editor_hint():
+		return
+	_anim_check -= delta
+	if _anim_check <= 0.0:
+		_anim_check = 0.3
+		_anim_step = _step_for_distance()
+	_anim_acc += delta
+	if _anim_acc >= _anim_step:
+		_player.advance(_anim_acc)
+		_anim_acc = 0.0
+
+
+func _step_for_distance() -> float:
+	var camera := get_viewport().get_camera_3d() if is_inside_tree() else null
+	if camera == null:
+		return 0.0
+	var at := global_position + Vector3.UP * 0.6
+	var d := camera.global_position.distance_to(at)
+	if not camera.is_position_in_frustum(at):
+		return 0.0 if d < 3.0 else 0.25
+	if d < 14.0:
+		return 0.0
+	if d < 30.0:
+		return 1.0 / 24.0
+	if d < 60.0:
+		return 1.0 / 12.0
+	return 0.2
 
 
 ## Animação que está tocando (para quem anima por fora, como a Rotina e o Passante).

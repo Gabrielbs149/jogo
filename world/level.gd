@@ -84,6 +84,11 @@ func _ready() -> void:
 	if noite and ciclo == null:
 		set_night(true)
 	_hide_far_details()
+	Otimizar.apply(self)  # D065: menos sombra e coisa miúda some de longe
+	Oficios.preload_all()
+	var sun := get_node_or_null("Sun") as DirectionalLight3D
+	if sun:
+		sun.directional_shadow_max_distance = minf(sun.directional_shadow_max_distance, 70.0)
 	# voltando de uma luta: no mesmo lugar do mapa, com a vida que sobrou
 	var start := _spawn.transform
 	if Game.returning and Game.return_scene == scene_file_path:
