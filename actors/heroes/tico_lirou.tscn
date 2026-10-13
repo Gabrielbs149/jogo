@@ -51,5 +51,10 @@ ability_animations = Array[StringName]([&"Dualwield_Melee_Attack_Slice", &"Dualw
 dodge = &"Dodge_Forward"
 hit = &"Hit_A"
 down = &"Death_A"
+fidgets = Array[StringName]([&"gestos/Coca_cabeca", &"gestos/Espreguica", &"gestos/Bate_pe"])
+gestures = {
+"pega": &"gestos/Pega",
+"pensa": &"gestos/Pensa"
+}
 walk_reference_speed = 3.0
 run_reference_speed = 6.0

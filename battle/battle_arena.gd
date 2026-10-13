@@ -953,6 +953,7 @@ func _dagger_animations() -> void:
 			list[0] = &"tico/Corte_X"
 			list[1] = &"tico/Estocada"
 		animator.set("ability_animations", list)
+		animator.set("combo", [] as Array[StringName])  # na luta por turnos o golpe é montado pela arena
 		var anim_player := player.find_children("*", "AnimationPlayer", true, false)
 		if not anim_player.is_empty():
 			(anim_player[0] as AnimationPlayer).play(&"tico/Guarda", 0.2)

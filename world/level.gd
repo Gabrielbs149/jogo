@@ -451,6 +451,13 @@ func _person_of(node: Node3D) -> Node3D:
 	return node
 
 
+## Gesto do herói (D068): "pega" (pegou uma coisa), "pensa" (examinando). Sem o gesto, nada acontece.
+func _gesture(kind: String) -> void:
+	var animator := player.get_node_or_null("Animator") if player else null
+	if animator and animator.has_method("gesture"):
+		animator.call("gesture", kind)
+
+
 ## Vira alguém (só no giro) para olhar um ponto, num instante curto.
 func turn_toward(who: Node3D, point: Vector3) -> void:
 	if who == null:
@@ -572,6 +579,7 @@ func _on_used(_by: Combatant, what: Interactable) -> void:
 	match what.action:
 		Interactable.Action.READ:
 			turn_toward(player, what.global_position)  # examinar: o herói vira para a coisa (D059)
+			_gesture("pensa")
 			_hud.show_thought(what.text)  # e pensa uma linha, em legenda (D062)
 		Interactable.Action.REST:
 			if in_combat():

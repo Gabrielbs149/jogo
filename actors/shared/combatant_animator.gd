@@ -21,12 +21,33 @@ extends Node
 @export var run_reference_speed: float = 7.5
 ## Corre quando passa desta fração do deslocamento do personagem (Shift).
 @export var run_threshold: float = 1.15
+## Manias de quando fica parado (D068): de vez em quando, depois de um tempo parado, toca uma delas. Andar cancela.
+@export var fidgets: Array[StringName] = []
+## Segundos parado antes de uma mania (sorteado entre x e y).
+@export var fidget_after: Vector2 = Vector2(7.0, 14.0)
+## Gestos pedidos pelo jogo (gesture("pega")): nome do gesto -> animação.
+@export var gestures: Dictionary = {}
+## Combo do ataque básico (D069): cada ataque (botão esquerdo) logo depois do outro toca o próximo golpe da lista.
+## Vazio = usa ability_animations[0].
+@export var combo: Array[StringName] = []
+## Segundos (contados do golpe anterior) em que o próximo ataque ainda continua o combo.
+@export var combo_window: float = 2.2
 
 var _me: Combatant
 var _player: AnimationPlayer
 var _one_shot: bool = false
 ## Animação presa por uma cena (sentado, comendo...): fica nela até release().
 var _held: StringName = &""
+var _idle_for: float = 0.0
+var _next_fidget: float = 10.0
+var _last_fidget: StringName = &""
+## O que está tocando agora é mania ou gesto (andar corta).
+var _cancelable: bool = false
+## Onde a caminhada está (s). Segue contando durante um golpe andando: as pernas continuam no passo (PernasAndando)
+## e, quando o golpe acaba, a caminhada volta de onde estaria.
+var walk_phase: float = 0.0
+var _combo_step: int = -1
+var _combo_at: float = -100.0
 
 
 func _ready() -> void:
@@ -52,18 +73,50 @@ func _ready() -> void:
 	_me.hurt.connect(_on_hurt)
 	_me.downed_changed.connect(_on_downed)
 	_player.play(idle)
+	_next_fidget = randf_range(fidget_after.x, fidget_after.y)
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
+	var speed := Vector2(_me.velocity.x, _me.velocity.z).length()
+	if _player.current_animation == walk:
+		walk_phase = _player.current_animation_position
+	elif _one_shot and speed > 0.3 and _player.has_animation(walk):
+		walk_phase = fmod(walk_phase + delta * clampf(speed / walk_reference_speed, 0.6, 1.8),
+			_player.get_animation(walk).length)
+	if _one_shot and _cancelable and speed > 0.3:
+		_one_shot = false  # começou a andar: a mania para na hora
+		_cancelable = false
 	if _one_shot or _me.downed or _held != &"":
 		return
-	var speed := Vector2(_me.velocity.x, _me.velocity.z).length()
 	if speed < 0.3:
+		_idle_for += delta
+		if not fidgets.is_empty() and _me.get("real_time") != false and _idle_for > _next_fidget:
+			_idle_for = 0.0
+			_next_fidget = randf_range(fidget_after.x, fidget_after.y)
+			var options := fidgets.filter(func(f: StringName) -> bool: return f != _last_fidget)
+			var pick: StringName = options[randi() % options.size()] if not options.is_empty() else fidgets[0]
+			_last_fidget = pick
+			_play_once(pick)
+			_cancelable = true
+			return
 		_loop(idle, 1.0)
 	elif speed < _me.move_speed * run_threshold:
 		_loop(walk, clampf(speed / walk_reference_speed, 0.6, 1.8))
 	else:
 		_loop(run, clampf(speed / run_reference_speed, 0.7, 1.6))
+	if speed >= 0.3:
+		_idle_for = 0.0
+
+
+## Um gesto pedido pelo jogo (pegar uma coisa, examinar): toca uma vez, e andar corta. Devolve false se não tem.
+func gesture(kind: String) -> bool:
+	var anim: StringName = StringName(gestures.get(kind, ""))
+	if _player == null or anim == &"" or not _player.has_animation(anim) or _held != &"" or _me.downed:
+		return false
+	_play_once(anim)
+	_cancelable = true
+	_idle_for = 0.0
+	return true
 
 
 func _loop(anim: StringName, speed: float) -> void:
@@ -71,6 +124,8 @@ func _loop(anim: StringName, speed: float) -> void:
 		return
 	if _player.current_animation != anim:
 		_player.play(anim, 0.15)
+		if anim == walk:
+			_player.seek(walk_phase)  # volta no passo em que as pernas estavam
 	_player.speed_scale = speed
 
 
@@ -104,12 +159,19 @@ func _play_once(anim: StringName) -> void:
 	if anim == &"" or not _player.has_animation(anim):
 		return
 	_one_shot = true
+	_cancelable = false
 	_player.speed_scale = 1.0
 	_player.play(anim, 0.08)
 	_player.seek(0.0, true)
 
 
 func _on_ability(index: int) -> void:
+	if index == 0 and not combo.is_empty():
+		var now := Time.get_ticks_msec() / 1000.0
+		_combo_step = (_combo_step + 1) % combo.size() if now - _combo_at <= combo_window else 0
+		_combo_at = now
+		_play_once(combo[_combo_step])
+		return
 	if index < ability_animations.size():
 		_play_once(ability_animations[index])
 
@@ -130,3 +192,4 @@ func _on_downed(is_down: bool) -> void:
 func _on_finished(anim: StringName) -> void:
 	if anim != down:
 		_one_shot = false
+		_cancelable = false
