@@ -70,6 +70,7 @@ var _applying: bool = false
 
 
 func _ready() -> void:
+	add_to_group(&"gente")  # D068: o herói olha para quem está perto
 	_rebuild()
 
 

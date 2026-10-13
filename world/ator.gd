@@ -14,6 +14,7 @@ var _walk: Tween
 
 
 func _ready() -> void:
+	add_to_group(&"gente")  # D068: o herói olha para quem está perto
 	var found := find_children("*", "AnimationPlayer", true, false)
 	_player = found[0] as AnimationPlayer if not found.is_empty() else null
 

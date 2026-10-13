@@ -199,6 +199,8 @@ func _update_interactable() -> void:
 
 
 func _set_interactable(node: Interactable) -> void:
+	if _me:
+		_me.set_meta("olhar", node)  # D068: a cabeça olha para a coisa que dá para usar
 	if node != _interactable:
 		_interactable = node
 		interactable_changed.emit(node)

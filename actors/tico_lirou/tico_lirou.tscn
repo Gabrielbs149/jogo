@@ -4,6 +4,8 @@
 [ext_resource type="AnimationLibrary" path="res://assets/kits/kaykit/animacoes/humanoide.res" id="2_anims"]
 [ext_resource type="Script" path="res://actors/shared/arm_rest.gd" id="3_arm"]
 [ext_resource type="AnimationLibrary" path="res://actors/tico_lirou/golpes_tico.res" id="4_golpes"]
+[ext_resource type="AnimationLibrary" path="res://actors/tico_lirou/gestos_tico.res" id="5_gestos"]
+[ext_resource type="Script" path="res://actors/shared/vida_corpo.gd" id="6_vida"]
 
 [node name="TicoLirou" type="Node3D"]
 
@@ -14,8 +16,12 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 root_node = NodePath("..")
 libraries = {
 &"": ExtResource("2_anims"),
-&"tico": ExtResource("4_golpes")
+&"tico": ExtResource("4_golpes"),
+&"gestos": ExtResource("5_gestos")
 }
 
 [node name="ArmRest" type="SkeletonModifier3D" parent="Mesh/TicoRig/GeneralSkeleton"]
 script = ExtResource("3_arm")
+
+[node name="VidaCorpo" type="SkeletonModifier3D" parent="Mesh/TicoRig/GeneralSkeleton"]
+script = ExtResource("6_vida")
