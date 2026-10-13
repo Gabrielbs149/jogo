@@ -7,7 +7,7 @@
 [ext_resource type="AnimationLibrary" path="res://actors/tico_lirou/gestos_tico.res" id="5_gestos"]
 [ext_resource type="Script" path="res://actors/shared/vida_corpo.gd" id="6_vida"]
 [ext_resource type="Script" path="res://actors/shared/pernas_andando.gd" id="7_pernas"]
-[ext_resource type="AnimationLibrary" path="res://assets/kits/quaternius/animacoes/ual.res" id="8_ual"]
+[ext_resource type="AnimationLibrary" path="res://actors/tico_lirou/ual_tico.res" id="8_ual"]
 [ext_resource type="Script" path="res://actors/shared/passada.gd" id="9_passada"]
 
 [node name="TicoLirou" type="Node3D"]

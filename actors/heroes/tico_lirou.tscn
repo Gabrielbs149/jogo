@@ -69,10 +69,10 @@ loco_blend = 0.2
 combo = Array[StringName]([&"ual/Sword_Regular_A", &"ual/Sword_Regular_B", &"ual/Sword_Regular_C"])
 combo_recover = Array[StringName]([&"ual/Sword_Regular_A_Rec", &"ual/Sword_Regular_B_Rec", &""])
 combo_speed = 1.1
-fidgets = Array[StringName]([&"gestos/Coca_cabeca", &"gestos/Espreguica", &"gestos/Bate_pe"])
+fidgets = Array[StringName]([&"ual/Idle_FoldArms", &"ual/Idle_No", &"ual/Idle_Talking"])
 gestures = {
-"pega": &"gestos/Pega",
-"pensa": &"gestos/Pensa"
+"pega": &"ual/PickUp_Table",
+"pensa": &"ual/Interact"
 }
 walk_reference_speed = 3.0
 run_reference_speed = 6.0

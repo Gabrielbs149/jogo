@@ -75,6 +75,8 @@ var loco_phase: float = 0.0
 var stride_need: float = 1.0
 var _combo_step: int = -1
 var _buffered: bool = false
+## Quando acaba a mania/gesto de agora (as que são em laço, como cruzar os braços, tocam uma volta só).
+var _shot_end: float = 0.0
 
 
 func _ready() -> void:
@@ -118,8 +120,8 @@ func _physics_process(delta: float) -> void:
 		loco_phase = _player.current_animation_position
 	elif _one_shot and speed > 0.3 and loco_anim != &"" and _player.has_animation(loco_anim):
 		loco_phase = fmod(loco_phase + delta * float(pick[1]), _player.get_animation(loco_anim).length)
-	if _one_shot and _cancelable and speed > 0.3:
-		_one_shot = false  # começou a andar: a mania (ou a recuperação do golpe) para na hora
+	if _one_shot and _cancelable and (speed > 0.3 or Time.get_ticks_msec() / 1000.0 > _shot_end):
+		_one_shot = false  # começou a andar (ou a mania deu a volta dela): para na hora
 		_cancelable = false
 	if _one_shot or _me.downed or _held != &"":
 		return
@@ -218,6 +220,7 @@ func _play_once(anim: StringName, blend: float = 0.08) -> void:
 	_player.speed_scale = 1.0
 	_player.play(anim, blend)
 	_player.seek(0.0, true)
+	_shot_end = Time.get_ticks_msec() / 1000.0 + _player.get_animation(anim).length
 
 
 func _on_ability(index: int) -> void:
