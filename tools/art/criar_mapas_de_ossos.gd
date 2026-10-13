@@ -24,6 +24,16 @@ const NAUMFODE := {
 	"RightUpperLeg": "thigh.R", "RightLowerLeg": "shin.R", "RightFoot": "foot.R", "RightToes": "toe.R",
 }
 
+## Universal Animation Library 1 e 2 da Quaternius (D070, CC0): esqueleto no estilo do manequim da Unreal.
+const UAL := {
+	"Root": "root", "Hips": "pelvis", "Spine": "spine_01", "Chest": "spine_02", "UpperChest": "spine_03",
+	"Neck": "neck_01", "Head": "Head",
+	"LeftShoulder": "clavicle_l", "LeftUpperArm": "upperarm_l", "LeftLowerArm": "lowerarm_l", "LeftHand": "hand_l",
+	"RightShoulder": "clavicle_r", "RightUpperArm": "upperarm_r", "RightLowerArm": "lowerarm_r", "RightHand": "hand_r",
+	"LeftUpperLeg": "thigh_l", "LeftLowerLeg": "calf_l", "LeftFoot": "foot_l", "LeftToes": "ball_l",
+	"RightUpperLeg": "thigh_r", "RightLowerLeg": "calf_r", "RightFoot": "foot_r", "RightToes": "ball_r",
+}
+
 
 func _initialize() -> void:
 	var kay := BoneMap.new()
@@ -41,4 +51,9 @@ func _initialize() -> void:
 	for profile_bone: String in NAUMFODE:
 		naum.set_skeleton_bone_name(profile_bone, NAUMFODE[profile_bone])
 	print("naumfode ", ResourceSaver.save(naum, "res://actors/naumfode/mapa_ossos_naumfode.tres"))
+	var ual := BoneMap.new()
+	ual.profile = SkeletonProfileHumanoid.new()
+	for profile_bone: String in UAL:
+		ual.set_skeleton_bone_name(profile_bone, UAL[profile_bone])
+	print("ual ", ResourceSaver.save(ual, "res://assets/kits/quaternius/animacoes/mapa_ossos_ual.tres"))
 	quit()

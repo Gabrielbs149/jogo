@@ -1,6 +1,7 @@
 extends GutTest
 ## O Tico troca de animação conforme o que faz: parado, andando, golpe de cada habilidade, esquiva, queda.
-## As animações vêm do KayKit pelo esqueleto humanoide (D028); os nomes ficam no Animator.
+## As animações vêm do KayKit e da Universal Animation Library (D070) pelo esqueleto humanoide (D028); os nomes ficam
+## no Animator.
 
 const TICO: PackedScene = preload("res://actors/heroes/tico_lirou.tscn")
 
@@ -29,17 +30,66 @@ func before_each() -> void:
 
 
 func test_tico_has_every_animation() -> void:
-	var names: Array[StringName] = [_anim.idle, _anim.walk, _anim.run, _anim.dodge, _anim.hit, _anim.down, &"Sit_Floor_Idle"]
+	var names: Array[StringName] = [_anim.idle, _anim.walk, _anim.run, _anim.jog, _anim.sneak, _anim.sneak_idle, _anim.dodge,
+		_anim.hit, _anim.down, &"Sit_Floor_Idle"]
 	names.append_array(_anim.ability_animations)
+	names.append_array(_anim.combo)
+	for recover: StringName in _anim.combo_recover:
+		if recover != &"":
+			names.append(recover)
 	for anim: StringName in names:
 		assert_true(_player.has_animation(anim), String(anim))
 
 
 func test_stands_still_then_walks() -> void:
 	assert_eq(_player.current_animation, String(_anim.idle))
+	_tico.desired_velocity = Vector3(0, 0, -1)
+	await wait_physics_frames(10)
+	assert_eq(_player.current_animation, String(_anim.walk), "devagar: anda")
 	_tico.desired_velocity = Vector3(0, 0, -4)
-	await wait_physics_frames(6)
-	assert_eq(_player.current_animation, String(_anim.walk))
+	await wait_physics_frames(15)
+	assert_eq(_player.current_animation, String(_anim.jog), "no passo normal: trota (D070)")
+	_tico.desired_velocity = Vector3(0, 0, -_tico.move_speed * 1.45)
+	await wait_physics_frames(15)
+	assert_eq(_player.current_animation, String(_anim.run), "com Shift: corre")
+
+
+## D070: com aceleração o Tico não sai na velocidade toda de uma vez, e freia em vez de parar seco.
+func test_accelerates_and_brakes() -> void:
+	_tico.desired_velocity = Vector3(0, 0, -5)
+	await wait_physics_frames(2)
+	var early := Vector2(_tico.velocity.x, _tico.velocity.z).length()
+	assert_between(early, 0.1, 4.0, "arranca aos poucos")
+	await wait_physics_frames(20)
+	assert_almost_eq(Vector2(_tico.velocity.x, _tico.velocity.z).length(), 5.0, 0.05)
+	_tico.desired_velocity = Vector3.ZERO
+	await wait_physics_frames(2)
+	assert_gt(Vector2(_tico.velocity.x, _tico.velocity.z).length(), 0.5, "freia, não para seco")
+
+
+## D070: C agacha: anda devagar e com as animações de furtivo.
+func test_sneaking() -> void:
+	_tico.sneaking = true
+	await wait_physics_frames(4)
+	assert_eq(_player.current_animation, String(_anim.sneak_idle))
+	_tico.desired_velocity = Vector3(0, 0, -5)
+	await wait_physics_frames(20)
+	assert_eq(_player.current_animation, String(_anim.sneak))
+	assert_lt(Vector2(_tico.velocity.x, _tico.velocity.z).length(), 5.0 * _tico.sneak_multiplier + 0.05)
+
+
+## D070: atacar de novo no meio do golpe encadeia o próximo do combo; sem ataque, o golpe termina na recuperação.
+func test_combo_chains_and_recovers() -> void:
+	_tico.ability_used.emit(0)
+	assert_eq(_player.current_animation, String(_anim.combo[0]))
+	_tico.ability_used.emit(0)  # cedo demais: fica guardado
+	assert_eq(_player.current_animation, String(_anim.combo[0]))
+	await wait_until(func() -> bool: return _player.current_animation == String(_anim.combo[1]), 2.0)
+	assert_eq(_player.current_animation, String(_anim.combo[1]), "o clique guardado vira o 2º golpe")
+	await wait_until(func() -> bool: return _player.current_animation == String(_anim.combo_recover[1]), 2.0)
+	assert_eq(_player.current_animation, String(_anim.combo_recover[1]), "sem clique: recuperação")
+	_tico.ability_used.emit(0)
+	assert_eq(_player.current_animation, String(_anim.combo[2]), "na recuperação ainda continua o combo")
 
 
 func test_each_ability_plays_its_strike() -> void:

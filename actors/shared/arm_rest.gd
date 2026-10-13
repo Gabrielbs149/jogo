@@ -8,13 +8,39 @@ extends SkeletonModifier3D
 @export_range(0.0, 60.0) var angle_degrees: float = 25.0
 @export var left_bone: StringName = &"LeftUpperArm"
 @export var right_bone: StringName = &"RightUpperArm"
+## Animações que já põem o braço do jeito certo e ficam de fora (D072): as da UAL (refeitas para o braço do Tico) e as
+## feitas por pose. Trocar de uma para outra muda o peso aos poucos (sem tranco).
+@export var skip_prefixes: PackedStringArray = ["ual/", "gestos/", "tico/"]
+
+var _player: AnimationPlayer
+var _weight: float = 1.0
 
 
-func _process_modification_with_delta(_delta: float) -> void:
+func _process_modification_with_delta(delta: float) -> void:
 	var skeleton := get_skeleton()
 	if skeleton == null or angle_degrees == 0.0:
 		return
-	var angle := deg_to_rad(angle_degrees)
+	if _player == null and not Engine.is_editor_hint():
+		var node: Node = skeleton
+		for i in 4:
+			node = node.get_parent()
+			if node == null:
+				break
+			var found := node.find_children("*", "AnimationPlayer", true, false)
+			if not found.is_empty():
+				_player = found[0] as AnimationPlayer
+				break
+	var goal := 1.0
+	if _player and not skip_prefixes.is_empty():
+		var now := String(_player.current_animation)
+		for prefix: String in skip_prefixes:
+			if now.begins_with(prefix):
+				goal = 0.0
+				break
+	_weight = move_toward(_weight, goal, delta * 5.0)
+	if _weight <= 0.001:
+		return
+	var angle := deg_to_rad(angle_degrees) * _weight
 	# o personagem olha para +Z: a esquerda dele fica em +X; baixar o braço esquerdo é girar em -Z, o direito em +Z
 	_lower(skeleton, left_bone, -angle)
 	_lower(skeleton, right_bone, angle)

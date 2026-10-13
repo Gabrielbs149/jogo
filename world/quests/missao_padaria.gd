@@ -62,7 +62,9 @@ func _process(delta: float) -> void:
 		return
 	_chase_cool -= delta
 	# expulso: pôr o pé na padaria de novo faz ele vir para cima
-	if estado() == "expulso" and not _chasing and not _busy and _chase_cool <= 0.0 and _level.ready_to_play and _inside_shop():
+	# (D070) entrando agachado enquanto ele trabalha de costas, ele não percebe
+	var unseen: bool = _level.player != null and bool(_level.player.get("sneaking")) and ia != null and ia.back_turned()
+	if estado() == "expulso" and not _chasing and not _busy and _chase_cool <= 0.0 and _level.ready_to_play and _inside_shop() and not unseen:
 		_chase(_level.player, "VOCÊ DE NOVO?! FORA DAQUI!")
 	# o prólogo (D059) solta a missão quando o Tico sai do beco
 	if not Game.flag("padaria.comecou", false) and Game.flag("comida.comecou", false):

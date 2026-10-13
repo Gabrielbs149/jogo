@@ -27,11 +27,13 @@ spell_dc = 13
 dex_save = 5
 con_save = 1
 wis_save = 1
-move_speed = 6
+move_speed = 3.8
 abilities = Array[ExtResource("a_script")]([ExtResource("ab_adaga"), ExtResource("ab_bote_das_sombras"), ExtResource("ab_espinhos"), ExtResource("ab_camuflagem")])
 dodge_name = "Ação ardilosa"
 dodge_distance = 5
 dodge_cooldown = 2.5
+acceleration = 30.0
+deceleration = 22.0
 flying = false
 color = Color(0.2, 0.5, 0.42, 1)
 greeting = "Tico-Lirou ajeita as folhas do capuz. — Ethera fica pra lá. Sozinho é que eu não vou."
@@ -44,17 +46,33 @@ shape = SubResource("Capsule_body")
 
 [node name="Animator" type="Node" parent="."]
 script = ExtResource("animator")
-idle = &"Idle"
-walk = &"Walking_A"
-run = &"Running_A"
-ability_animations = Array[StringName]([&"Dualwield_Melee_Attack_Slice", &"Dualwield_Melee_Attack_Stab", &"Spellcast_Shoot", &"Use_Item"])
-dodge = &"Dodge_Forward"
-hit = &"Hit_A"
+idle = &"ual/Idle"
+walk = &"ual/Walk"
+run = &"ual/Sprint"
+jog = &"ual/Jog_Fwd"
+sneak = &"ual/Crouch_Fwd"
+sneak_idle = &"ual/Crouch_Idle"
+ability_animations = Array[StringName]([&"ual/Sword_Regular_A", &"ual/Sword_Dash", &"Spellcast_Shoot", &"Use_Item"])
+dodge = &"ual/Roll"
+dodge_speed = 2.4
+hit = &"ual/Hit_Chest"
 down = &"Death_A"
-fidgets = Array[StringName]([&"gestos/Coca_cabeca", &"gestos/Espreguica", &"gestos/Bate_pe"])
+walk_below = 1.2
+natural_speeds = {
+&"ual/Crouch_Fwd": 0.12,
+&"ual/Jog_Fwd": 0.8,
+&"ual/Sprint": 0.96,
+&"ual/Walk": 0.25
+}
+max_play_rate = 2.7
+loco_blend = 0.2
+combo = Array[StringName]([&"ual/Sword_Regular_A", &"ual/Sword_Regular_B", &"ual/Sword_Regular_C"])
+combo_recover = Array[StringName]([&"ual/Sword_Regular_A_Rec", &"ual/Sword_Regular_B_Rec", &""])
+combo_speed = 1.1
+fidgets = Array[StringName]([&"ual/Idle_FoldArms", &"ual/Idle_No", &"ual/Idle_Talking"])
 gestures = {
-"pega": &"gestos/Pega",
-"pensa": &"gestos/Pensa"
+"pega": &"ual/PickUp_Table",
+"pensa": &"ual/Interact"
 }
 walk_reference_speed = 3.0
 run_reference_speed = 6.0

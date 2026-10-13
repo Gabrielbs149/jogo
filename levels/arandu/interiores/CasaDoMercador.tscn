@@ -76,13 +76,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2800002, 0.45, -2.2763515)
 shape = SubResource("BoxShape3D_kfci0")
 
 [node name="Mercadoria" parent="." unique_id=647103854 instance=ExtResource("7_o6dyy")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0, 1.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0, -3.19)
 
 [node name="Mercadoria2" parent="." unique_id=1980149827 instance=ExtResource("8_fxy6k")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0, 1.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 0, -3.19)
 
 [node name="Mercadoria3" parent="." unique_id=194834793 instance=ExtResource("9_ar47k")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0, 1.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0.21, -3.19)
 
 [node name="Coin_Pile2" parent="." unique_id=489843303 instance=ExtResource("10_6ph3k")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0.98, -0.2)

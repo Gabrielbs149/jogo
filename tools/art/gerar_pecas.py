@@ -533,13 +533,16 @@ def crate_of(s, item, scale, at, lying=False):
 def stall(file, title, crates=(), loaves=()):
     """Banca de feira: caixotes cheios em cima do balcão (frutas, verduras) ou pães enfileirados na tábua."""
     s = Scene(title, groups=AUTO)
-    s.glb(MV + "Market_Stand_2", (0, 0, 0), math.pi, K_MV, name="Banca")
+    # D071: o balcão comprido (3,6 m) fica de frente para quem compra (-Z da peça; a Arandu vira o -Z para a praça).
+    # Antes o modelo estava 90° girado: da praça só se via a ponta do balcão e a mercadoria ficava atravessada.
+    s.glb(MV + "Market_Stand_2", (0, 0, 0), math.pi / 2, K_MV, name="Banca")
     for k, (item, sc, lying) in enumerate(crates):
-        s.scene("Caixa_" + CRATE_NAMES[item.split("/")[-1]], crate_scene(item, sc, lying), (-0.85 + k * 0.85, COUNTER_Y, -0.25))
+        s.scene("Caixa_" + CRATE_NAMES[item.split("/")[-1]], crate_scene(item, sc, lying), (-0.9 + k * 0.9, COUNTER_Y, -0.3))
     for k, (item, sc, rot) in enumerate(loaves):
-        s.glb(item, (-1.0 + (k % 6) * 0.4, COUNTER_Y, -0.45 + (k // 6) * 0.35), (0, rot + k * 0.3, 0), sc, name="Mercadoria")
-    for x in (-1.6, 1.6):
-        s.piece("objetos/FarmCrate_Empty", (x, 0, -1.1), 0.2 * x, 1.0, name="CaixoteChao")
+        s.glb(item, (-1.1 + (k % 6) * 0.44, COUNTER_Y, -0.5 + (k // 6) * 0.32), (0, rot + k * 0.3, 0), sc, name="Mercadoria")
+    # caixotes vazios de estoque: atrás da barraca, do lado do vendedor (não na frente, no caminho de quem compra)
+    for x in (-1.25, 1.25):
+        s.piece("objetos/FarmCrate_Empty", (x, 0, 1.35), 0.2 * x, 1.0, name="CaixoteChao")
     s.save(file)
 
 
