@@ -41,6 +41,10 @@ var _look_check: float = 0.0
 var _glance_time: float = 0.0
 var _glance := Vector2.ZERO
 var _idle_time: float = 0.0
+## Fase do balanço do rabo, somada a cada quadro (D073). Antes era tempo x frequência: com o tempo já grande, qualquer
+## mudança na frequência (velocidade) fazia o rabo pular de lugar de um quadro para o outro e a ponta "piscava".
+var _tail_phase: float = 0.0
+var _yaw_wait: float = 0.0
 var _body_weight: float = 1.0
 var _first: bool = true
 
@@ -71,7 +75,7 @@ func _process_modification_with_delta(delta: float) -> void:
 		_turn(sk, spine_bone, Basis(Vector3.BACK, _lean_side.x * 0.6 * w) * Basis(Vector3.RIGHT, _lean_fwd.x * 0.55 * w))
 		_turn(sk, chest_bone, Basis(Vector3.BACK, _lean_side.x * 0.4 * w) * Basis(Vector3.RIGHT, (_lean_fwd.x * 0.45 - breath) * w))
 	if rabo > 0.0:
-		_tail(sk, run)
+		_tail(sk, run, delta)
 	if cabeca > 0.0 and _body_weight > 0.001:
 		_head(sk, delta)
 
@@ -104,19 +108,33 @@ func _read_motion(delta: float) -> void:
 		_first = false
 		_last_pos = pos
 		_last_yaw = yaw
-	var moved := pos - _last_pos
-	moved.y = 0.0
-	var speed := moved.length() / delta
+	# a velocidade vem da física (a posição só muda no passo da física: com o jogo a mais de 60 quadros por segundo,
+	# medir pela posição dava 0 num quadro e o dobro no outro, e o rabo e o tronco tremiam)
+	var speed := 0.0
+	if _me is CharacterBody3D:
+		var v := (_me as CharacterBody3D).velocity
+		speed = Vector2(v.x, v.z).length()
+	else:
+		var moved := pos - _last_pos
+		moved.y = 0.0
+		speed = moved.length() / delta
 	if speed > 30.0:
 		speed = 0.0  # teleporte (cena, porta): não é corrida
 	_accel = lerpf(_accel, (speed - _speed) / delta, minf(1.0, delta * 8.0))
 	_speed = lerpf(_speed, speed, minf(1.0, delta * 10.0))
-	var turn := wrapf(yaw - _last_yaw, -PI, PI) / delta
-	if absf(turn) > 25.0:
-		turn = 0.0
-	_yaw_rate = lerpf(_yaw_rate, turn, minf(1.0, delta * 10.0))
+	# o giro também só muda no passo da física: mede o quanto girou desde a última mudança, não por quadro
+	_yaw_wait += delta
+	var diff := wrapf(yaw - _last_yaw, -PI, PI)
+	if absf(diff) > 0.00001:
+		var turn := diff / _yaw_wait
+		if absf(turn) > 25.0:
+			turn = 0.0
+		_yaw_rate = lerpf(_yaw_rate, turn, minf(1.0, _yaw_wait * 10.0))
+		_yaw_wait = 0.0
+		_last_yaw = yaw
+	elif _yaw_wait > 0.05:
+		_yaw_rate = lerpf(_yaw_rate, 0.0, minf(1.0, delta * 10.0))  # parou de girar
 	_last_pos = pos
-	_last_yaw = yaw
 	_idle_time = _idle_time + delta if _speed < 0.25 else 0.0
 
 
@@ -129,14 +147,15 @@ func _busy() -> bool:
 	return _me != null and _me.get("real_time") == false
 
 
-func _tail(sk: Skeleton3D, run: float) -> void:
+func _tail(sk: Skeleton3D, run: float, delta: float) -> void:
 	# balanço: parado devagar e largo; andando no ritmo dos passos; cada pedaço atrasa um pouco (onda)
 	var freq := lerpf(0.42, 1.7, clampf(run, 0.0, 1.0)) + maxf(run - 1.0, 0.0) * 0.6
 	var amp := lerpf(deg_to_rad(9.0), deg_to_rad(13.0), clampf(run, 0.0, 1.5))
 	var w := rabo
+	_tail_phase = fmod(_tail_phase + delta * TAU * freq, TAU * 1000.0)
 	for i: int in tail_bones.size():
 		var k := float(i + 1) / tail_bones.size()
-		var phase := _time * TAU * freq - i * 0.75
+		var phase := _tail_phase - i * 0.75
 		var sway := sin(phase) * amp * (0.55 + 0.45 * k) + _tail_side.x * (0.45 + 0.35 * k)
 		var lift := _tail_lift.x * (1.0 - 0.35 * i) + sin(phase * 2.0) * deg_to_rad(2.5) * k
 		_turn(sk, tail_bones[i], Basis(Vector3.UP, sway * w) * Basis(Vector3.RIGHT, lift * w))
