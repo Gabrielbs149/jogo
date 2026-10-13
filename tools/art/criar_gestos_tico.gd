@@ -92,7 +92,9 @@ func _make(keys: Array) -> Animation:
 		_apply(_pose_at(keys, time), time)
 		for b: int in _sk.get_bone_count():
 			anim.rotation_track_insert_key(tracks[b], time, _sk.get_bone_pose_rotation(b))
-		anim.position_track_insert_key(hips_pos, time, _sk.get_bone_pose_position(hips))
+		# a pose lida já vem multiplicada pelo motion_scale do esqueleto (0,3); a trilha guarda sem ele, senão o
+		# quadril afunda (D068: o Tico entrava no chão ao atacar)
+		anim.position_track_insert_key(hips_pos, time, _sk.get_bone_pose_position(hips) / _sk.motion_scale)
 	return anim
 
 

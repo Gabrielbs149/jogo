@@ -77,7 +77,9 @@ func _make(keys: Array, loop: bool) -> Animation:
 		_apply(pose, time)
 		for b: int in _sk.get_bone_count():
 			anim.rotation_track_insert_key(tracks[b], time, _sk.get_bone_pose_rotation(b))
-		anim.position_track_insert_key(hips_pos, time, _sk.get_bone_pose_position(hips))
+		# a pose lida já vem multiplicada pelo motion_scale do esqueleto (0,3); a trilha guarda sem ele, senão o
+		# quadril afunda (D068: o Tico entrava no chão ao atacar)
+		anim.position_track_insert_key(hips_pos, time, _sk.get_bone_pose_position(hips) / _sk.motion_scale)
 	return anim
 
 
@@ -114,6 +116,12 @@ func _apply(pose: Dictionary, time: float) -> void:
 	_turn(_sk.find_bone("Spine"), Basis(Vector3.RIGHT, lean * 0.45))
 	_turn(_sk.find_bone("Chest"), Basis(Vector3.RIGHT, lean * 0.55))
 	_turn(_sk.find_bone("Head"), Basis(Vector3.RIGHT, -lean * 0.8))  # a cabeça compensa: olha para o alvo
+	# quem abaixa dobra os joelhos (senão os pés entram no chão): coxas para a frente, canelas para trás
+	var crouch := clampf(float(pose.get("baixa", 0.0)) / 0.13, 0.0, 1.0)
+	for side: String in ["Left", "Right"]:
+		_turn(_sk.find_bone(side + "UpperLeg"), Basis(Vector3.RIGHT, -crouch * 0.9))
+		_turn(_sk.find_bone(side + "LowerLeg"), Basis(Vector3.RIGHT, crouch * 1.5))
+		_turn(_sk.find_bone(side + "Foot"), Basis(Vector3.RIGHT, -crouch * 0.6))
 	# braços (espelhados): fora = o lado do ombro
 	for side: String in ["Left", "Right"]:
 		var upper := _sk.find_bone(side + "UpperArm")
