@@ -503,8 +503,12 @@ func _emporio() -> void:
 		_somewhere(key, ["fundo", "esq", "dir"])
 	for key: String in ["barril_macas", "barril_macas", "caixote", "sacos", "barril"]:
 		_somewhere(key, ["fundo", "esq", "dir"])
+	# D071: a mercadoria em caixotes fica encostada na parede da frente, do lado sem balcão (e o terceiro em cima do
+	# primeiro), não solta no meio da loja
+	var spots: Array[Vector3] = [Vector3(_door_x - 1.4, 0, -_d + WALL + 0.45), Vector3(_door_x - 2.1, 0, -_d + WALL + 0.45),
+		Vector3(_door_x - 1.4, 0.21, -_d + WALL + 0.45)]
 	for k: int in 3:
-		var crate := _small(PROPS + ["caixote_macas", "caixa_cenoura", "caixa_couve"][k] + ".tscn", Vector3(-1.4 + k * 1.1, 0, 1.3), 0.0)
+		var crate := _small(PROPS + ["caixote_macas", "caixa_cenoura", "caixa_couve"][k] + ".tscn", spots[k], 0.0)
 		crate.name = "Mercadoria"
 	_small(OBJ + "Coin_Pile.gltf", Vector3(_door_x + 1.9, 0.98, -0.2))
 	_person(Vector3(_door_x + 1.9 + (0.8 if _door_x < 0 else -0.8), 0, -0.2), PI / 2.0 if _door_x < 0 else -PI / 2.0, "Rogue", ["Idle", "Interact", "Use_Item"], 7.0, 19.0,

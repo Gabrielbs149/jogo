@@ -1477,7 +1477,7 @@ func _pick(screen: Vector2, deep: bool) -> Node3D:
 	if under.is_empty():
 		return _pick_rough(screen, deep)
 	var best := under[0]
-	if deep:
+	if deep and not _is_person(best):  # D071: gente se move inteira (o boneco solto deixava fala e colisão para trás)
 		var cam := _camera.camera
 		var from := cam.project_ray_origin(screen)
 		var dir := cam.project_ray_normal(screen)
@@ -1492,6 +1492,14 @@ func _pick(screen: Vector2, deep: bool) -> Node3D:
 		if inner_best:
 			return inner_best
 	return best
+
+
+## Pessoa (morador, figurante, quem tem o boneco "Figure"): no editor ela é uma peça só.
+func _is_person(node: Node) -> bool:
+	if node.get_node_or_null("Figure") != null or node is Figurante:
+		return true
+	var script := node.get_script() as Script
+	return script != null and (script.resource_path.contains("morador") or script.resource_path.contains("figurante"))
 
 
 ## O clique de antes (colisão e caixa): fica para quando o raio não passa por nenhum desenho.
@@ -1517,7 +1525,7 @@ func _pick_rough(screen: Vector2, deep: bool) -> Node3D:
 			if at != null and from.distance_to(at) < best_d:
 				best = item
 				best_d = from.distance_to(at)
-	if best and deep:
+	if best and deep and not _is_person(best):
 		var inner_best: Node3D = null
 		var inner_d := INF
 		for inner: Node in best.get_children():
