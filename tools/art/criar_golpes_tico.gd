@@ -25,37 +25,38 @@ const GUARDA_INSPIRA := {"braco": [Vector3(0.52, -0.55, 0.47), Vector3(0.32, 0.1
 ## braço de guarda recolhido junto do peito (o que não está golpeando)
 const RECOLHIDO := [Vector3(0.45, -0.75, 0.2), Vector3(0.05, 0.25, 0.97), Vector3(0.1, 0.8, 0.55)]
 
-# ---- Golpe 1: corte de direita na horizontal (da direita dele para a esquerda), pé direito à frente
+# ---- Combo do mapa (D079, refeito com mais corpo): preparo bem carregado, golpe rápido com giro do tronco e passo,
+# braço passando do ponto. O tronco inclina no máximo ~18° (cabeça grande: mais que isso vira cabeçada, D077).
+
+# Golpe 1: corte de direita na horizontal, da direita dele para a esquerda; pé direito à frente
 const G1_PREPARA := {"esq": RECOLHIDO,
-	"dir": [Vector3(0.85, 0.05, -0.45), Vector3(0.8, 0.2, -0.55), Vector3(0.45, 0.15, -0.88)],
-	"giro": -38.0, "tronco": 2.0, "baixa": 0.04, "passo": 0.15, "cabeca": Vector3(0, 0, 6)}
+	"dir": [Vector3(0.85, 0.3, -0.45), Vector3(0.7, 0.5, -0.5), Vector3(0.25, 0.45, -0.85)],
+	"giro": -55.0, "tronco": -4.0, "quadril": -0.03, "baixa": 0.05, "passo": 0.2, "cabeca": Vector3(0, 0, 4)}
 const G1_CORTA := {"esq": RECOLHIDO,
-	"dir": [Vector3(0.2, -0.05, 1.0), Vector3(-0.05, -0.05, 1.0), Vector3(-0.75, -0.05, 0.65)],
-	"giro": 22.0, "tronco": 14.0, "quadril": 0.1, "baixa": 0.06, "passo": -0.85}
+	"dir": [Vector3(0.05, 0.12, 1.0), Vector3(-0.4, 0.08, 0.92), Vector3(-0.95, 0.05, 0.3)],
+	"giro": 30.0, "tronco": 14.0, "quadril": 0.14, "baixa": 0.08, "passo": -0.95}
 const G1_SEGUE := {"esq": RECOLHIDO,
-	"dir": [Vector3(-0.55, -0.25, 0.8), Vector3(-0.85, -0.25, 0.45), Vector3(-0.55, -0.15, -0.8)],
-	"giro": 42.0, "tronco": 15.0, "quadril": 0.12, "baixa": 0.07, "passo": -0.9, "cabeca": Vector3(0, 0, -5)}
+	"dir": [Vector3(-0.8, 0.0, 0.6), Vector3(-0.95, -0.05, 0.15), Vector3(-0.55, -0.1, -0.85)],
+	"giro": 62.0, "tronco": 14.0, "quadril": 0.15, "baixa": 0.08, "passo": -0.95, "cabeca": Vector3(0, 0, -4)}
 
-# ---- Golpe 2: revés de esquerda subindo na diagonal (de baixo, à direita dele, para cima, à esquerda), pé esquerdo à frente
+# Golpe 2: revés de esquerda subindo na diagonal, de baixo (à direita dele) para cima (à esquerda); pé esquerdo à frente
 const G2_PREPARA := {"dir": RECOLHIDO,
-	"esq": [Vector3(-0.45, -0.55, 0.7), Vector3(-0.85, -0.45, 0.25), Vector3(-0.35, -0.7, -0.6)],
-	"giro": -30.0, "tronco": 16.0, "baixa": 0.07, "passo": -0.4, "cabeca": Vector3(0, -6, 0)}
+	"esq": [Vector3(-0.6, -0.5, 0.6), Vector3(-0.92, -0.38, 0.1), Vector3(-0.35, -0.65, -0.68)],
+	"giro": -50.0, "tronco": 16.0, "baixa": 0.09, "passo": -0.45, "cabeca": Vector3(0, -4, 0)}
 const G2_CORTA := {"dir": RECOLHIDO,
-	"esq": [Vector3(0.3, 0.25, 0.92), Vector3(0.35, 0.45, 0.82), Vector3(0.7, 0.6, 0.38)],
-	"giro": 24.0, "tronco": 6.0, "quadril": 0.1, "baixa": 0.03, "passo": 0.85, "cabeca": Vector3(0, 6, 0)}
+	"esq": [Vector3(0.35, 0.4, 0.85), Vector3(0.5, 0.6, 0.62), Vector3(0.85, 0.5, 0.15)],
+	"giro": 28.0, "tronco": 6.0, "quadril": 0.13, "baixa": 0.04, "passo": 0.95, "cabeca": Vector3(0, 6, 0)}
 const G2_SEGUE := {"dir": RECOLHIDO,
-	"esq": [Vector3(0.85, 0.45, 0.28), Vector3(0.75, 0.65, -0.1), Vector3(0.35, 0.9, -0.3)],
-	"giro": 40.0, "tronco": 0.0, "quadril": 0.11, "baixa": 0.02, "passo": 0.9, "cabeca": Vector3(0, 10, 0)}
+	"esq": [Vector3(0.85, 0.6, 0.0), Vector3(0.6, 0.8, -0.2), Vector3(0.25, 0.92, -0.3)],
+	"giro": 50.0, "tronco": 0.0, "quadril": 0.13, "baixa": 0.03, "passo": 0.95, "cabeca": Vector3(0, 10, 0)}
 
-# ---- Golpe 3: junta as lâminas, salta girando com os braços abertos e cai cortando em X
-const G3_CARREGA := {"braco": [Vector3(0.3, -0.45, 0.5), Vector3(-0.6, 0.2, 0.75), Vector3(-0.45, 0.6, 0.6)],
-	"tronco": 22.0, "baixa": 0.12, "giro": -20.0, "cabeca": Vector3(0, -8, 0)}
-const G3_ABRE := {"braco": [Vector3(0.95, 0.15, 0.15), Vector3(1.0, 0.12, 0.05), Vector3(0.15, -0.05, 1.0)],
-	"tronco": 4.0, "baixa": -0.07, "giro": 0.0}
-const G3_CAI := {"braco": [Vector3(0.75, 0.55, 0.35), Vector3(0.45, 0.85, 0.3), Vector3(0.1, 0.95, -0.25)],
-	"tronco": -6.0, "baixa": -0.03, "volta": 360.0, "cabeca": Vector3(0, 8, 0)}
-const G3_X := {"braco": [Vector3(0.28, -0.3, 0.92), Vector3(-0.4, -0.55, 0.75), Vector3(-0.35, -0.75, 0.55)],
-	"tronco": 26.0, "baixa": 0.13, "quadril": 0.12, "passo": 0.55, "volta": 360.0, "cabeca": Vector3(0, -4, 0)}
+# Golpe 3 (final): agacha com as duas lâminas no alto atrás, sobe e desce cortando em X na frente, agachando fundo
+const G3_CARREGA := {"braco": [Vector3(0.6, 0.72, -0.3), Vector3(0.35, 0.9, -0.25), Vector3(0.1, 0.75, -0.65)],
+	"tronco": -10.0, "baixa": 0.1, "quadril": -0.04, "cabeca": Vector3(0, 6, 0)}
+const G3_SOBE := {"braco": [Vector3(0.5, 0.85, 0.15), Vector3(0.3, 0.92, 0.25), Vector3(0.05, 0.85, 0.5)],
+	"tronco": -6.0, "baixa": -0.08, "quadril": 0.03, "cabeca": Vector3(0, 8, 0)}
+const G3_X := {"braco": [Vector3(0.12, -0.3, 0.95), Vector3(-0.55, -0.5, 0.67), Vector3(-0.45, -0.8, 0.4)],
+	"tronco": 18.0, "baixa": 0.13, "quadril": 0.16, "passo": 0.6, "cabeca": Vector3(0, -2, 0)}
 
 # ---- Luta por turnos: Corte em X (salta e corta) e Estocada dupla (avança e estoca)
 const PREPARA := {"braco": [Vector3(0.92, 0.25, 0.3), Vector3(0.75, 0.55, 0.35), Vector3(0.5, 0.85, -0.2)], "tronco": -10.0,
@@ -91,17 +92,12 @@ func _initialize() -> void:
 	_player = tico.find_children("*", "AnimationPlayer", true, false)[0] as AnimationPlayer
 	var lib := AnimationLibrary.new()
 	lib.add_animation(&"Guarda", _make([[0.0, GUARDA], [0.9, GUARDA_INSPIRA], [1.8, GUARDA]], true))
-	lib.add_animation(&"Golpe_1", _make([[0.0, GUARDA], [0.1, G1_PREPARA], [0.17, G1_CORTA, "rapido"],
-		[0.25, G1_SEGUE, "rapido"], [0.33, G1_SEGUE], [0.58, GUARDA]], false))
-	lib.add_animation(&"Golpe_2", _make([[0.0, GUARDA], [0.1, G2_PREPARA], [0.18, G2_CORTA, "rapido"],
-		[0.26, G2_SEGUE, "rapido"], [0.34, G2_SEGUE], [0.6, GUARDA]], false))
-	var meio := G3_ABRE.duplicate()
-	meio["volta"] = 200.0
-	meio["baixa"] = -0.09
-	var abre := G3_ABRE.duplicate()
-	abre["volta"] = 40.0
-	lib.add_animation(&"Golpe_3", _make([[0.0, GUARDA], [0.13, G3_CARREGA], [0.19, abre, "rapido"], [0.29, meio, "linear"],
-		[0.36, G3_CAI, "linear"], [0.42, G3_X, "rapido"], [0.56, G3_X], [0.86, _full_turn(GUARDA)]], false))
+	lib.add_animation(&"Golpe_1", _make([[0.0, GUARDA], [0.11, G1_PREPARA], [0.18, G1_CORTA, "rapido"],
+		[0.26, G1_SEGUE, "rapido"], [0.36, G1_SEGUE], [0.6, GUARDA]], false))
+	lib.add_animation(&"Golpe_2", _make([[0.0, GUARDA], [0.11, G2_PREPARA], [0.18, G2_CORTA, "rapido"],
+		[0.26, G2_SEGUE, "rapido"], [0.36, G2_SEGUE], [0.62, GUARDA]], false))
+	lib.add_animation(&"Golpe_3", _make([[0.0, GUARDA], [0.16, G3_CARREGA], [0.24, G3_SOBE, "rapido"], [0.32, G3_X, "rapido"],
+		[0.5, G3_X], [0.82, GUARDA]], false))
 	lib.add_animation(&"Corte_X", _make([[0.0, GUARDA], [0.16, PREPARA], [0.24, CRUZA, "rapido"], [0.31, SEGUE, "rapido"],
 		[0.38, SEGUE], [0.62, GUARDA]], false))
 	lib.add_animation(&"Bote", _make([[0.0, GUARDA], [0.14, AGACHA], [0.3, AGACHA]], false))
@@ -223,7 +219,9 @@ func _apply(pose: Dictionary, time: float) -> void:
 		var upper := _sk.find_bone(side + "UpperArm")
 		var lower := _sk.find_bone(side + "LowerArm")
 		var hand := _sk.find_bone(side + "Hand")
-		var out := signf((spin.inverse() * _sk.get_bone_global_pose(upper).origin).x)
+		# o lado é pelo nome do braço (a esquerda dele é +X); pela posição do ombro, com o tronco torcido no golpe o ombro
+		# ia para o meio do peito, o lado virava e o braço atravessava o corpo (D079)
+		var out := 1.0 if side == "Left" else -1.0
 		var dirs: Array = pose["esq" if side == "Left" else "dir"]
 		_aim(upper, spin * _to_space(dirs[0], out))
 		_aim(lower, spin * _to_space(dirs[1], out))
@@ -242,7 +240,7 @@ func _turn(bone: int, rot: Basis) -> void:
 	if bone < 0:
 		return
 	var parent := _sk.get_bone_parent(bone)
-	var pg := _sk.get_bone_global_pose(parent).basis.orthonormalized() if parent >= 0 else Basis()
+	var pg := _global(parent).basis.orthonormalized() if parent >= 0 else Basis()
 	var g := pg * Basis(_sk.get_bone_pose_rotation(bone))
 	_sk.set_bone_pose_rotation(bone, (pg.inverse() * (rot * g)).get_rotation_quaternion())
 
@@ -250,8 +248,19 @@ func _turn(bone: int, rot: Basis) -> void:
 ## Aponta o osso (o eixo dado, no espaço dele) para a direção pedida, no espaço do personagem.
 func _aim(bone: int, dir: Vector3, axis: Vector3 = Vector3.UP) -> void:
 	var parent := _sk.get_bone_parent(bone)
-	var pg := _sk.get_bone_global_pose(parent).basis.orthonormalized()
+	var pg := _global(parent).basis.orthonormalized()
 	var g0 := pg * _sk.get_bone_rest(bone).basis.orthonormalized()
 	var now := (g0 * axis).normalized()
 	var g := Basis(Quaternion(now, dir)) * g0
 	_sk.set_bone_pose_rotation(bone, (pg.inverse() * g).get_rotation_quaternion())
+
+
+## Pose global do osso calculada na mão (pai × pose, até a raiz). Fora do jogo o get_bone_global_pose devolve um cache
+## que não acompanha as mudanças feitas aqui (D079: os braços saíam até 45° fora e atravessavam o corpo).
+func _global(bone: int) -> Transform3D:
+	var t := _sk.get_bone_pose(bone)
+	var parent := _sk.get_bone_parent(bone)
+	while parent >= 0:
+		t = _sk.get_bone_pose(parent) * t
+		parent = _sk.get_bone_parent(parent)
+	return t

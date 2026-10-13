@@ -28,7 +28,7 @@ libraries = {
 
 [node name="PernasAndando" type="SkeletonModifier3D" parent="Mesh/TicoRig/GeneralSkeleton"]
 script = ExtResource("7_pernas")
-keep_body = Array[StringName]([&"atk/2H_Melee_Attack_Spinning"])
+keep_body = Array[StringName]([&"tico/Golpe_3"])
 
 [node name="PassoIK" type="SkeletonModifier3D" parent="Mesh/TicoRig/GeneralSkeleton"]
 script = ExtResource("9_passo")

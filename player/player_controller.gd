@@ -145,7 +145,8 @@ func _on_combo_strike(step: int) -> void:
 	_me.slow_for(0.45, strike_slow)
 	var distance: float = strike_steps[mini(step, strike_steps.size() - 1)] if not strike_steps.is_empty() else 0.0
 	if distance > 0.0:
-		await get_tree().create_timer(0.08).timeout
+		# o passo vem junto com o corte (D079): no 3º golpe, quando ele desce cortando
+		await get_tree().create_timer(0.24 if step >= 2 else 0.11).timeout
 		if is_instance_valid(_me):
 			_me.nudge(forward, distance, 0.14)
 

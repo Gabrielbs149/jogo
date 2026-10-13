@@ -65,7 +65,6 @@ func _bake(clip: String) -> Animation:
 	for f: int in frames + 1:
 		var time := minf(f / FPS, source.length)
 		_player.seek(time, true)
-		_sk.force_update_all_bone_transforms()
 		_fix_pose()
 		for b: int in _sk.get_bone_count():
 			anim.rotation_track_insert_key(tracks[b], time, _sk.get_bone_pose_rotation(b))
@@ -79,16 +78,16 @@ func _fix_pose() -> void:
 	for side: String in ["Left", "Right"]:
 		for part: String in ARM:
 			var bone := _sk.find_bone(side + part)
-			arms[bone] = _sk.get_bone_global_pose(bone).basis.orthonormalized()
+			arms[bone] = _global(bone).basis.orthonormalized()
 	# tronco: o "para cima" do peito inclina no máximo TRONCO_MAX para a frente (+Z do esqueleto)
 	var chest := _sk.find_bone("Chest")
-	var up := _sk.get_bone_global_pose(chest).basis.orthonormalized() * Vector3.UP
+	var up := _global(chest).basis.orthonormalized() * Vector3.UP
 	var fix := _limit(up, TRONCO_MAX)
 	if fix != Basis():
 		_turn(_sk.find_bone("Spine"), fix)
 	# cabeça: no máximo CABECA_MAX para baixo
 	var head := _sk.find_bone("Head")
-	var head_up := _sk.get_bone_global_pose(head).basis.orthonormalized() * Vector3.UP
+	var head_up := _global(head).basis.orthonormalized() * Vector3.UP
 	var head_fix := _limit(head_up, CABECA_MAX)
 	if head_fix != Basis():
 		_turn(head, head_fix)
@@ -96,7 +95,7 @@ func _fix_pose() -> void:
 	for side: String in ["Left", "Right"]:
 		for part: String in ARM:
 			var bone := _sk.find_bone(side + part)
-			var parent := _sk.get_bone_global_pose(_sk.get_bone_parent(bone)).basis.orthonormalized()
+			var parent := _global(_sk.get_bone_parent(bone)).basis.orthonormalized()
 			_sk.set_bone_pose_rotation(bone, (parent.inverse() * (arms[bone] as Basis)).get_rotation_quaternion())
 
 
@@ -113,7 +112,7 @@ static func _limit(up: Vector3, limit: float) -> Basis:
 
 func _turn(bone: int, rot: Basis) -> void:
 	var parent := _sk.get_bone_parent(bone)
-	var pg := _sk.get_bone_global_pose(parent).basis.orthonormalized() if parent >= 0 else Basis()
+	var pg := _global(parent).basis.orthonormalized() if parent >= 0 else Basis()
 	var g := pg * Basis(_sk.get_bone_pose_rotation(bone))
 	_sk.set_bone_pose_rotation(bone, (pg.inverse() * (rot * g)).get_rotation_quaternion())
 
@@ -125,8 +124,18 @@ func _worst_lean(clip: String) -> Vector2:
 	var worst := Vector2(-90, -90)
 	for k: int in 30:
 		_player.seek(length * k / 29.0, true)
-		_sk.force_update_all_bone_transforms()
-		var up := _sk.get_bone_global_pose(_sk.find_bone("Chest")).basis.orthonormalized() * Vector3.UP
-		var hu := _sk.get_bone_global_pose(_sk.find_bone("Head")).basis.orthonormalized() * Vector3.UP
+		var up := _global(_sk.find_bone("Chest")).basis.orthonormalized() * Vector3.UP
+		var hu := _global(_sk.find_bone("Head")).basis.orthonormalized() * Vector3.UP
 		worst = Vector2(maxf(worst.x, rad_to_deg(atan2(up.z, up.y))), maxf(worst.y, rad_to_deg(atan2(hu.z, hu.y))))
 	return worst
+
+
+## Pose global do osso calculada na mão (pai × pose, até a raiz). Fora do jogo o get_bone_global_pose devolve um cache
+## que não acompanha as mudanças feitas aqui (D079: os braços saíam até 45° fora e atravessavam o corpo).
+func _global(bone: int) -> Transform3D:
+	var t := _sk.get_bone_pose(bone)
+	var parent := _sk.get_bone_parent(bone)
+	while parent >= 0:
+		t = _sk.get_bone_pose(parent) * t
+		parent = _sk.get_bone_parent(parent)
+	return t
