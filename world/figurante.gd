@@ -206,7 +206,9 @@ func _is_oficio(node: Node) -> bool:
 func _play() -> void:
 	if _player == null or not _player.has_animation(animacao):
 		return
-	_player.get_animation(animacao).loop_mode = Animation.LOOP_LINEAR
+	var res := _player.get_animation(animacao)
+	if res.loop_mode != Animation.LOOP_LINEAR:
+		res.loop_mode = Animation.LOOP_LINEAR  # só se mudar (D067): mexer na animação, que é a mesma para todos os bonecos, refazia o cache de animação de todos
 	# já estava mexendo (troca no meio do jogo, D060): passa de uma animação para a outra devagar, do começo
 	var was_playing := _player.is_playing() and not Engine.is_editor_hint()
 	_player.play(animacao, 0.25 if was_playing else -1.0)

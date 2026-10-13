@@ -143,5 +143,7 @@ func _play(kind: String) -> void:
 	var anim: String = _anims[kind]
 	if _player_anim.current_animation == anim:
 		return
-	_player_anim.get_animation(anim).loop_mode = Animation.LOOP_LINEAR
+	var res := _player_anim.get_animation(anim)
+	if res.loop_mode != Animation.LOOP_LINEAR:
+		res.loop_mode = Animation.LOOP_LINEAR  # só se mudar (D067): mexer na animação, que é a mesma para todos os bonecos, refazia o cache de animação de todos
 	_player_anim.play(anim, 0.25)

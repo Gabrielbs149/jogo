@@ -22,7 +22,10 @@ func _ready() -> void:
 func play(anim: StringName, loop: bool = true, blend: float = 0.3) -> void:
 	if _player == null or not _player.has_animation(anim):
 		return
-	_player.get_animation(anim).loop_mode = Animation.LOOP_LINEAR if loop else Animation.LOOP_NONE
+	var res := _player.get_animation(anim)
+	var mode := Animation.LOOP_LINEAR if loop else Animation.LOOP_NONE
+	if res.loop_mode != mode:
+		res.loop_mode = mode  # só se mudar (D067): mexer na animação, que é a mesma para todos os bonecos, refazia o cache de animação de todos
 	_player.play(anim, blend)
 
 

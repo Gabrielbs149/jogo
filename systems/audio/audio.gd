@@ -142,6 +142,9 @@ func _load_banks() -> void:
 			var path := DIR + folder + "/" + file
 			if not _banks[key].has(path):
 				_banks[key].append(path)
+				if folder == "sfx":
+					# já vai carregando em segundo plano (D067): ler o som do disco na hora em que toca travava o quadro
+					ResourceLoader.load_threaded_request(path)
 
 
 func _pick(sound: String) -> AudioStream:
