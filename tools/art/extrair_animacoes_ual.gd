@@ -11,7 +11,7 @@ const OUT := "res://assets/kits/quaternius/animacoes/ual.res"
 const LOOPS := ["Crouch_Fwd", "Crouch_Idle", "Dance", "Driving", "Idle", "Idle_Talking", "Idle_Torch", "Jog_Fwd", "Jump",
 	"Pistol_Idle", "Push", "Sitting_Idle", "Sitting_Talking", "Spell_Simple_Idle", "Sprint", "Swim_Fwd", "Swim_Idle",
 	"Walk_Formal", "Walk", "Idle_FoldArms", "Idle_Lantern", "Idle_No", "Idle_Rail", "Idle_Shield", "Idle_TalkingPhone",
-	"NinjaJump_Idle", "Slide", "TreeChopping", "Walk_Carry", "Zombie_Idle", "Zombie_Walk_Fwd"]
+	"NinjaJump_Idle", "Slide", "TreeChopping", "Walk_Carry", "Zombie_Idle", "Zombie_Walk_Fwd", "Sword_Idle"]
 
 
 func _initialize() -> void:

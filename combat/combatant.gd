@@ -44,6 +44,9 @@ const DASH_SPEED := 16.0
 @export var dodge_name: String = "Esquiva"
 @export var dodge_distance: float = 4.0
 @export var dodge_cooldown: float = 3.0
+## Quanto tempo a esquiva leva (s). O impulso começa forte e vai freando até parar (D075): a distância é a mesma, mas
+## não é um tiro reto e duro.
+@export var dodge_time: float = 0.22
 
 @export_group("Movimento")
 ## Quanto ganha de velocidade por segundo (m/s²) ao arrancar e virar. 0 = na hora (como era).
@@ -90,6 +93,9 @@ var real_time: bool = true
 var sneak_ready_at: float = 0.0
 var _dash_velocity: Vector3 = Vector3.ZERO
 var _dash_time: float = 0.0
+var _dash_total: float = 0.0
+## A esquiva freia (começa no dobro da média e chega a zero); o resto (golpe, passo) é reto.
+var _dash_eased: bool = false
 ## Andando agachado (o controlador liga): mais devagar e com as animações de furtivo.
 var sneaking: bool = false
 var _slow_until: float = 0.0
@@ -216,8 +222,10 @@ func dodge(direction: Vector3) -> bool:
 	if not is_active() or dodge_left > 0.0 or direction.length_squared() < 0.01:
 		return false
 	dodge_left = dodge_cooldown
-	_dash_velocity = direction.normalized() * dodge_distance / 0.22
-	_dash_time = 0.22
+	_dash_velocity = direction.normalized() * dodge_distance / dodge_time
+	_dash_time = dodge_time
+	_dash_total = dodge_time
+	_dash_eased = true
 	add_status({"title": dodge_name, "time": 0.7, "dodging": true})
 	dodged.emit()
 	return true
@@ -282,6 +290,8 @@ func _physics_process(delta: float) -> void:
 	if dashing:
 		_dash_time -= delta
 		move = _dash_velocity
+		if _dash_eased and _dash_total > 0.0:
+			move = _dash_velocity * 2.0 * clampf(_dash_time / _dash_total, 0.0, 1.0)
 	elif is_active():
 		var factor := 0.35 if casting else 1.0
 		if sneaking:
@@ -315,6 +325,7 @@ func nudge(direction: Vector3, distance: float, duration: float) -> void:
 		return
 	_dash_velocity = direction.normalized() * distance / duration
 	_dash_time = duration
+	_dash_eased = false
 
 
 func _perform(ability: Ability, target: Combatant, point: Vector3) -> void:
@@ -368,6 +379,7 @@ func _dash_to(target: Combatant) -> void:
 		return
 	_dash_velocity = offset.normalized() * DASH_SPEED
 	_dash_time = distance / DASH_SPEED
+	_dash_eased = false
 	while _dash_time > 0.0 and is_inside_tree():
 		await get_tree().physics_frame
 

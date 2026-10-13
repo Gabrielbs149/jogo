@@ -27,10 +27,11 @@ spell_dc = 13
 dex_save = 5
 con_save = 1
 wis_save = 1
-move_speed = 3.8
+move_speed = 2.8
 abilities = Array[ExtResource("a_script")]([ExtResource("ab_adaga"), ExtResource("ab_bote_das_sombras"), ExtResource("ab_espinhos"), ExtResource("ab_camuflagem")])
 dodge_name = "Ação ardilosa"
-dodge_distance = 5
+dodge_distance = 2.2
+dodge_time = 0.42
 dodge_cooldown = 2.5
 acceleration = 30.0
 deceleration = 22.0
@@ -52,23 +53,22 @@ run = &"ual/Sprint"
 jog = &"ual/Jog_Fwd"
 sneak = &"ual/Crouch_Fwd"
 sneak_idle = &"ual/Crouch_Idle"
-ability_animations = Array[StringName]([&"ual/Sword_Regular_A", &"ual/Sword_Dash", &"Spellcast_Shoot", &"Use_Item"])
+ability_animations = Array[StringName]([&"Dualwield_Melee_Attack_Slice", &"ual/Sword_Dash", &"ual/Spell_Simple_Shoot", &"Use_Item"])
 dodge = &"ual/Roll"
 dodge_speed = 2.4
 hit = &"ual/Hit_Chest"
 down = &"Death_A"
 walk_below = 1.2
-natural_speeds = {
-&"ual/Crouch_Fwd": 0.12,
-&"ual/Jog_Fwd": 0.8,
-&"ual/Sprint": 0.96,
-&"ual/Walk": 0.25
+gaits = {
+&"ual/Crouch_Fwd": [0.65, 0.2, 1.6, 0.04, 0.0],
+&"ual/Jog_Fwd": [0.42, 0.38, 4.0, 0.09, 0.0],
+&"ual/Sprint": [0.34, 0.46, 5.0, 0.12, 0.85],
+&"ual/Walk": [0.62, 0.24, 2.2, 0.05, 0.0]
 }
-max_play_rate = 2.7
 loco_blend = 0.2
-combo = Array[StringName]([&"ual/Sword_Regular_A", &"ual/Sword_Regular_B", &"ual/Sword_Regular_C"])
-combo_recover = Array[StringName]([&"ual/Sword_Regular_A_Rec", &"ual/Sword_Regular_B_Rec", &""])
-combo_speed = 1.1
+combo = Array[StringName]([&"Dualwield_Melee_Attack_Slice", &"Dualwield_Melee_Attack_Chop", &"2H_Melee_Attack_Spinning"])
+combo_recover = Array[StringName]([&"", &"", &""])
+combo_speed = 1.35
 fidgets = Array[StringName]([&"ual/Idle_FoldArms", &"ual/Idle_No", &"ual/Idle_Talking"])
 gestures = {
 "pega": &"ual/PickUp_Table",

@@ -36,6 +36,11 @@ signal combo_strike(step: int)
 ## Velocidade (m/s) em que cada animação de andar não desliza o pé, no tamanho do personagem (D070). Com ela o ritmo
 ## da animação segue a velocidade de verdade; sem, usa walk/run_reference_speed.
 @export var natural_speeds: Dictionary = {}
+## Passada de quem tem pé no chão de verdade (PassoIK, D075): animação -> [apoio (fração do ciclo com o pé no chão),
+## passo máximo (m), passos por segundo mínimos, altura do pé no ar (m), quando o pé esquerdo pisa na animação (0..1)].
+## Os passos por segundo saem da velocidade (velocidade / passo, nunca menos que o mínimo) e a animação toca nesse ritmo:
+## dois passos por volta dela, então os braços balançam casados com as pernas.
+@export var gaits: Dictionary = {}
 ## Ritmo máximo das animações de andar (perna curta corre com passinho rápido).
 @export var max_play_rate: float = 1.8
 ## Tempo de mistura entre parado, andando e correndo.
@@ -73,6 +78,14 @@ var loco_anim: StringName = &""
 var loco_phase: float = 0.0
 ## Quanto o pé ainda deslizaria com o ritmo no máximo (1 = nada): a peça Passada alonga o passo nessa medida.
 var stride_need: float = 1.0
+## Passos por segundo agora (0 = sem passada de pé no chão) e a passada da animação de andar de agora (para o PassoIK).
+var cadence: float = 0.0
+var gait_duty: float = 0.0
+var gait_height: float = 0.0
+var gait_strike: float = 0.0
+var loco_length: float = 1.0
+## Rolando (esquiva): as pernas são da animação.
+var rolling: bool = false
 var _combo_step: int = -1
 var _buffered: bool = false
 ## Quando acaba a mania/gesto de agora (as que são em laço, como cruzar os braços, tocam uma volta só).
@@ -154,6 +167,17 @@ func _locomotion(speed: float) -> Array:
 	elif jog != &"" and speed >= walk_below:
 		anim = jog
 		reference = run_reference_speed
+	if _player.has_animation(anim):
+		loco_length = _player.get_animation(anim).length
+	if gaits.has(anim):
+		var g: Array = gaits[anim]
+		gait_duty = float(g[0])
+		gait_height = float(g[3])
+		gait_strike = float(g[4])
+		cadence = maxf(float(g[2]), speed / float(g[1]))
+		stride_need = 1.0
+		return [anim, cadence * loco_length / 2.0]
+	cadence = 0.0
 	if natural_speeds.has(anim):
 		var natural := float(natural_speeds[anim])
 		var rate := clampf(speed / natural, 0.75, max_play_rate)
@@ -217,6 +241,7 @@ func _play_once(anim: StringName, blend: float = 0.08) -> void:
 		return
 	_one_shot = true
 	_cancelable = false
+	rolling = anim == dodge
 	_player.speed_scale = 1.0
 	_player.play(anim, blend)
 	_player.seek(0.0, true)
@@ -273,6 +298,7 @@ func _on_downed(is_down: bool) -> void:
 
 
 func _on_finished(anim: StringName) -> void:
+	rolling = false
 	if anim == down:
 		return
 	var step := combo.find(anim)

@@ -343,7 +343,7 @@ static func equip_for_field(hero: Combatant) -> void:
 		var list: Array[StringName] = []
 		list.assign(animator.get("ability_animations"))
 		if not list.is_empty():
-			list[0] = &"tico/Corte_X"
+			list[0] = &"Dualwield_Melee_Attack_Slice"
 		animator.set("ability_animations", list)
 	var state := {"last": 0.0}
 	if animator and animator.has_signal("combo_strike") and not (animator.get("combo") as Array).is_empty():
@@ -359,24 +359,18 @@ static func equip_for_field(hero: Combatant) -> void:
 
 
 static func _field_strike(hero: Combatant, daggers: Array[AdagaPsiquica], state: Dictionary) -> void:
-	var arm_rest := hero.find_children("*", "SkeletonModifier3D", true, false).filter(func(m: Node) -> bool: return m is ArmRest)
-	for m: Node in arm_rest:
-		(m as SkeletonModifier3D).active = false  # o golpe já põe os braços no lugar
+	# D075: os golpes do combo são do KayKit (braço aberto): a ArmRest continua ligada e traz o braço para perto do corpo
 	for d: AdagaPsiquica in daggers:
 		if not d.visible:
 			d.visible = true
 			d.materialize()
 		d.flare(0.5)
 		d.trail(true)
-	await hero.get_tree().create_timer(0.55).timeout  # o 3º golpe do combo (D069) cai cortando em ~0,45 s
+	await hero.get_tree().create_timer(0.6).timeout  # o golpe do combo corta até ~0,6 s
 	for d: AdagaPsiquica in daggers:
 		if is_instance_valid(d):
 			d.trail(false)
 	await hero.get_tree().create_timer(0.3).timeout
-	if is_instance_valid(hero):
-		for m: Node in arm_rest:
-			if is_instance_valid(m):
-				(m as SkeletonModifier3D).active = true
 	# guarda depois de um tempo sem atacar
 	var mine: float = state["last"]
 	await hero.get_tree().create_timer(2.5).timeout

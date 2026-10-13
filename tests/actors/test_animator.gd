@@ -46,7 +46,7 @@ func test_stands_still_then_walks() -> void:
 	_tico.desired_velocity = Vector3(0, 0, -1)
 	await wait_physics_frames(10)
 	assert_eq(_player.current_animation, String(_anim.walk), "devagar: anda")
-	_tico.desired_velocity = Vector3(0, 0, -4)
+	_tico.desired_velocity = Vector3(0, 0, -_tico.move_speed)
 	await wait_physics_frames(15)
 	assert_eq(_player.current_animation, String(_anim.jog), "no passo normal: trota (D070)")
 	_tico.desired_velocity = Vector3(0, 0, -_tico.move_speed * 1.45)
@@ -79,17 +79,31 @@ func test_sneaking() -> void:
 
 
 ## D070: atacar de novo no meio do golpe encadeia o próximo do combo; sem ataque, o golpe termina na recuperação.
-func test_combo_chains_and_recovers() -> void:
+func test_combo_chains() -> void:
 	_tico.ability_used.emit(0)
 	assert_eq(_player.current_animation, String(_anim.combo[0]))
 	_tico.ability_used.emit(0)  # cedo demais: fica guardado
 	assert_eq(_player.current_animation, String(_anim.combo[0]))
 	await wait_until(func() -> bool: return _player.current_animation == String(_anim.combo[1]), 2.0)
 	assert_eq(_player.current_animation, String(_anim.combo[1]), "o clique guardado vira o 2º golpe")
-	await wait_until(func() -> bool: return _player.current_animation == String(_anim.combo_recover[1]), 2.0)
-	assert_eq(_player.current_animation, String(_anim.combo_recover[1]), "sem clique: recuperação")
-	_tico.ability_used.emit(0)
-	assert_eq(_player.current_animation, String(_anim.combo[2]), "na recuperação ainda continua o combo")
+	_tico.ability_used.emit(0)  # já passou da metade? encadeia; senão fica guardado
+	await wait_until(func() -> bool: return _player.current_animation == String(_anim.combo[2]), 2.0)
+	assert_eq(_player.current_animation, String(_anim.combo[2]), "o terceiro golpe do combo")
+	await wait_until(func() -> bool: return not _anim.combo.has(StringName(_player.current_animation)), 3.0)
+	assert_false(_anim.combo.has(StringName(_player.current_animation)), "sem clique, o combo termina")
+
+
+## D075: a esquiva do Tico é curta (2,2 m) e freia, não um tiro de 5 m.
+func test_dodge_is_short_and_brakes() -> void:
+	var start := _tico.global_position
+	_tico.dodge(Vector3.FORWARD)
+	await wait_physics_frames(2)
+	var early := Vector2(_tico.velocity.x, _tico.velocity.z).length()
+	await wait_seconds(0.3)
+	var late := Vector2(_tico.velocity.x, _tico.velocity.z).length()
+	assert_lt(late, early, "freia")
+	await wait_seconds(0.4)
+	assert_between(start.distance_to(_tico.global_position), 1.6, 2.8)
 
 
 func test_each_ability_plays_its_strike() -> void:
