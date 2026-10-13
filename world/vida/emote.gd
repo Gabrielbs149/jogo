@@ -50,9 +50,25 @@ static func head_height(who: Node3D) -> float:
 	return top
 
 
-static func texture_for(kind: String) -> ImageTexture:
+static func texture_for(kind: String) -> Texture2D:
 	if _cache.has(kind):
 		return _cache[kind]
+	# já desenhado em arquivo (tools/art/gerar_emotes.gd, D067): carregar não trava; desenhar na hora travava ~40 ms
+	if ResourceLoader.exists(file_for(kind)):
+		_cache[kind] = load(file_for(kind)) as Texture2D
+		return _cache[kind]
+	_cache[kind] = ImageTexture.create_from_image(draw(kind))
+	return _cache[kind]
+
+
+## Onde fica a imagem do ícone (os nomes com símbolo viram palavra).
+static func file_for(kind: String) -> String:
+	var name: String = {"!": "exclamacao", "?": "pergunta", "...": "reticencias"}.get(kind, kind)
+	return "res://world/vida/emotes/%s.png" % name
+
+
+## Desenha o ícone (usado pelo gerador e quando a imagem não existe).
+static func draw(kind: String) -> Image:
 	var img := Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	_bubble(img)
@@ -90,9 +106,7 @@ static func texture_for(kind: String) -> ImageTexture:
 		"...":
 			for x: float in [30.0, 48.0, 66.0]:
 				_disc(img, Vector2(x, 47), 6.0, OUTLINE)
-	var tex := ImageTexture.create_from_image(img)
-	_cache[kind] = tex
-	return tex
+	return img
 
 
 func _pop(seconds: float) -> void:

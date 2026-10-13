@@ -44,7 +44,8 @@ func _ready() -> void:
 		_player.add_animation_library(extra_library_name, extra_library)
 	for loop_name: StringName in [idle, walk, run]:
 		if _player.has_animation(loop_name):
-			_player.get_animation(loop_name).loop_mode = Animation.LOOP_LINEAR
+			if _player.get_animation(loop_name).loop_mode != Animation.LOOP_LINEAR:
+				_player.get_animation(loop_name).loop_mode = Animation.LOOP_LINEAR
 	_player.animation_finished.connect(_on_finished)
 	_me.ability_used.connect(_on_ability)
 	_me.dodged.connect(func() -> void: _play_once(dodge))
@@ -79,7 +80,9 @@ func hold(anim: StringName) -> bool:
 		return false
 	_held = anim
 	_one_shot = false
-	_player.get_animation(anim).loop_mode = Animation.LOOP_LINEAR
+	var res := _player.get_animation(anim)
+	if res.loop_mode != Animation.LOOP_LINEAR:
+		res.loop_mode = Animation.LOOP_LINEAR  # só se mudar (D067): mexer na animação, que é a mesma para todos os bonecos, refazia o cache de animação de todos
 	_player.speed_scale = 1.0
 	_player.play(anim, 0.3)
 	return true
