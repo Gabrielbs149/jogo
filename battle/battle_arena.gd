@@ -828,7 +828,7 @@ func _update_view(delta: float) -> void:
 	var shaken := _cam_eye
 	if _shake > 0.0:
 		_shake = maxf(0.0, _shake - delta)
-		shaken += Vector3(randf_range(-1, 1), randf_range(-1, 1), 0.0) * _shake * 0.35
+		shaken += Vector3(randf_range(-1, 1), randf_range(-1, 1), 0.0) * _shake * 0.35 * float(Settings.value("tremor"))
 	_camera.look_at_from_position(shaken, _cam_look)
 
 
