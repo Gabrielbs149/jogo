@@ -303,7 +303,7 @@ func say(speaker: String, text: String, hold: float = 0.0) -> void:
 		_text_tween.kill()
 	_text_tween = create_tween()
 	var chars := maxf(1.0, float(_says.get_total_character_count()))
-	_text_tween.tween_property(_says, "visible_ratio", 1.0, chars / text_speed)
+	_text_tween.tween_property(_says, "visible_ratio", 1.0, chars / (text_speed * float(Settings.value("velocidade_texto"))))
 	if hold > 0.0:
 		_text_tween.tween_interval(hold)
 	await _text_tween.finished

@@ -76,3 +76,67 @@ func test_title_with_save_continues_and_asks_before_new_game() -> void:
 	(title.get_node("%ConfirmNo") as Button).pressed.emit()
 	assert_false(title.get_node("%Confirm").visible)
 	assert_true(Game.has_save(), "cancelar não mexe no salvo")
+
+
+## D074: trocar a tecla de uma ação muda o InputMap na hora, aparece nas dicas, fica gravada e o "Restaurar padrão"
+## devolve a de fábrica.
+func test_rebinding_a_key() -> void:
+	var before := Settings.key_name(&"sprint")
+	var key := InputEventKey.new()
+	key.physical_keycode = KEY_K
+	Settings.rebind(&"sprint", key)
+	var down := InputEventKey.new()
+	down.physical_keycode = KEY_K
+	down.pressed = true
+	assert_true(InputMap.event_is_action(down, &"sprint"), "K agora corre")
+	assert_eq(Settings.key_name(&"sprint"), "K")
+	var cfg := ConfigFile.new()
+	assert_eq(cfg.load(CFG), OK)
+	assert_eq(String(cfg.get_value("teclas", "sprint")), "k:%d" % KEY_K)
+	Settings.reset_defaults()
+	assert_eq(Settings.key_name(&"sprint"), before, "volta a tecla de fábrica")
+	assert_false(InputMap.event_is_action(down, &"sprint"))
+
+
+## D074: trocar para uma tecla que já é de outra ação do mesmo grupo avisa (as duas ficam com ela).
+func test_rebinding_warns_about_a_clash() -> void:
+	var clash := Settings.rebind(&"sneak", Settings._key_event(&"dodge"))
+	assert_eq(clash, "Esquivar")
+
+
+## D074: a qualidade põe os itens dela; mexer num item vira "personalizada".
+func test_quality_presets() -> void:
+	Settings.set_value("qualidade", 0)
+	assert_eq(int(Settings.value("sombras")), 1)
+	assert_false(bool(Settings.value("oclusao")))
+	Settings.set_value("qualidade", 3)
+	assert_eq(int(Settings.value("antisserrilhado")), 4)
+	Settings.set_value("sombras", 0)
+	assert_eq(int(Settings.value("qualidade")), 4, "personalizada")
+	Settings.set_value("qualidade", 2)
+	assert_eq(int(Settings.value("sombras")), 2)
+
+
+## D074: o controle de videogame anda, gira a câmera e golpeia.
+func test_gamepad_is_mapped() -> void:
+	var stick := InputEventJoypadMotion.new()
+	stick.axis = JOY_AXIS_LEFT_Y
+	stick.axis_value = -1.0
+	assert_true(InputMap.event_is_action(stick, &"move_forward"))
+	var look := InputEventJoypadMotion.new()
+	look.axis = JOY_AXIS_RIGHT_X
+	look.axis_value = 1.0
+	assert_true(InputMap.event_is_action(look, &"look_right"))
+	var x := InputEventJoypadButton.new()
+	x.button_index = JOY_BUTTON_X
+	x.pressed = true
+	assert_true(InputMap.event_is_action(x, &"attack"))
+
+
+## D074: opções antigas (só "tela_cheia") viram o modo de tela novo.
+func test_old_fullscreen_setting_is_migrated() -> void:
+	var cfg := ConfigFile.new()
+	cfg.set_value("opcoes", "tela_cheia", true)
+	cfg.save(CFG)
+	Settings.load_file()
+	assert_eq(int(Settings.value("modo_tela")), 1)

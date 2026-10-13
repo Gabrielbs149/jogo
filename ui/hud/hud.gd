@@ -10,14 +10,15 @@ signal continue_pressed
 
 const KEYS: Array[String] = ["Botão esq.", "Q", "E", "R"]
 ## Dicas de controle mostradas ao entrar numa fase pela primeira vez: [teclas, o quê].
+## As teclas são ações (D074): aparece a tecla que o jogador escolheu nas Opções.
 const TIPS: Array = [
-	[["W", "A", "S", "D"], "andar"],
-	[["Shift"], "correr"],
-	[["C"], "agachar (andar sem ser visto)"],
-	[["Botão esq."], "golpe: acertar antes começa a luta com vantagem"],
-	[["Espaço"], "esquivar"],
-	[["F"], "conversar, ler, descansar"],
-	[["Esc"], "pausa, opções e teclas"],
+	[[&"move_forward", &"move_left", &"move_back", &"move_right"], "andar"],
+	[[&"sprint"], "correr"],
+	[[&"sneak"], "agachar (andar sem ser visto)"],
+	[[&"attack"], "golpe: acertar antes começa a luta com vantagem"],
+	[[&"dodge"], "esquivar"],
+	[[&"interact"], "conversar, ler, descansar"],
+	[[&"pause"], "pausa, opções e teclas"],
 ]
 ## Quanto tempo as dicas ficam na tela (segundos).
 @export var tips_time: float = 12.0
@@ -115,10 +116,11 @@ func setup(player: Combatant, controller: PlayerController) -> void:
 	_slots.clear()
 	if controller.field_mode:
 		# no mapa: só o golpe que começa a luta e a esquiva; as habilidades ficam para a arena
-		_slots.append(_make_slot(KEYS[0], "Golpe", 0))
+		_slots.append(_make_slot(Settings.key_name(&"attack"), "Golpe", 0))
 	else:
 		for i: int in player.abilities.size():
-			_slots.append(_make_slot(KEYS[i] if i < KEYS.size() else "", player.abilities[i].title, i))
+			var action: StringName = [&"attack", &"skill_q", &"skill_e", &"skill_r"][i] if i < 4 else &""
+			_slots.append(_make_slot(Settings.key_name(action) if action != &"" else "", player.abilities[i].title, i))
 	_slots.append(_make_slot("Espaço", player.dodge_name, -1))
 	controller.message.connect(toast)
 	controller.interactable_changed.connect(_on_interactable)
@@ -222,8 +224,8 @@ func show_tips() -> void:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 4)
 		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		for key: String in entry[0]:
-			row.add_child(OptionsMenu.keycap(key))
+		for key: Variant in entry[0]:
+			row.add_child(OptionsMenu.keycap(Settings.key_name(key) if key is StringName else String(key)))
 		var what := Label.new()
 		what.text = "  " + String(entry[1])
 		what.add_theme_font_size_override("font_size", 15)

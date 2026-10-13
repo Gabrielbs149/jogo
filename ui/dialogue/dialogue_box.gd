@@ -103,7 +103,7 @@ func _show_line(speaker: String, text: String) -> void:
 		_typing.kill()
 	var length := _text.get_total_character_count()
 	_typing = create_tween()
-	_typing.tween_property(_text, "visible_ratio", 1.0, maxf(0.15, length / chars_per_second))
+	_typing.tween_property(_text, "visible_ratio", 1.0, maxf(0.15, length / (chars_per_second * float(Settings.value("velocidade_texto")))))
 	Audio.play("fala", -14.0, 0.1)
 	_fit.call_deferred()
 

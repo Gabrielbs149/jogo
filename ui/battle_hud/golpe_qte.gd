@@ -37,7 +37,8 @@ func _ready() -> void:
 
 func ring(center: Vector2, duration: float, keys: Array[StringName], label: String, feint: bool = false, arrow: int = 0,
 		step: int = 0, steps: int = 0, window: float = 0.1) -> Dictionary:
-	_duration = maxf(duration, 0.2) + (0.45 if feint else 0.0)
+	# acessibilidade (D074): "tempo dos reflexos" deixa o anel mais lento
+	_duration = (maxf(duration, 0.2) + (0.45 if feint else 0.0)) * clampf(float(Settings.value("tempo_qte")), 1.0, 2.0)
 	_keys = keys
 	_feint = feint
 	_arrow = arrow

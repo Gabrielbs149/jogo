@@ -54,7 +54,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		var motion := event as InputEventMouseMotion
 		var turn := sensitivity * Settings.mouse_factor()
 		var up := -1.0 if Settings.value("inverter_y") else 1.0
-		yaw -= motion.relative.x * turn
+		var side := -1.0 if Settings.value("inverter_x") else 1.0
+		yaw -= motion.relative.x * turn * side
 		pitch = clampf(pitch - motion.relative.y * turn * up, min_pitch, max_pitch)
 	elif event is InputEventMouseButton and event.is_pressed():
 		var button := event as InputEventMouseButton
@@ -87,6 +88,13 @@ func _process(delta: float) -> void:
 			pitch = lerpf(pitch, -0.2, minf(1.0, delta * 3.0))
 	elif target and is_instance_valid(target):
 		global_position = global_position.lerp(target.global_position + Vector3.UP * height, minf(1.0, delta * 14.0))
+	# controle de videogame (D074): o analógico direito gira a câmera
+	if _focus == null and InputMap.has_action(&"look_left"):
+		var stick := Input.get_vector(&"look_left", &"look_right", &"look_up", &"look_down")
+		if stick != Vector2.ZERO:
+			var rate := 2.6 * float(Settings.value("sensibilidade_controle")) * delta
+			yaw -= stick.x * rate * (-1.0 if Settings.value("inverter_x") else 1.0)
+			pitch = clampf(pitch - stick.y * rate * 0.7 * (-1.0 if Settings.value("inverter_y") else 1.0), min_pitch, max_pitch)
 	rotation = Vector3(pitch, yaw, 0.0)
 	_arm.spring_length = lerpf(_arm.spring_length, length, minf(1.0, delta * (3.0 if _focus != null else 8.0)))
 
