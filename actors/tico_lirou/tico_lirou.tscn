@@ -8,7 +8,8 @@
 [ext_resource type="Script" path="res://actors/shared/vida_corpo.gd" id="6_vida"]
 [ext_resource type="Script" path="res://actors/shared/pernas_andando.gd" id="7_pernas"]
 [ext_resource type="AnimationLibrary" path="res://actors/tico_lirou/ual_tico.res" id="8_ual"]
-[ext_resource type="Script" path="res://actors/shared/passada.gd" id="9_passada"]
+[ext_resource type="Script" path="res://actors/shared/passo_ik.gd" id="9_passo"]
+[ext_resource type="AnimationLibrary" path="res://actors/tico_lirou/ataques_tico.res" id="10_atk"]
 
 [node name="TicoLirou" type="Node3D"]
 
@@ -21,15 +22,16 @@ libraries = {
 &"": ExtResource("2_anims"),
 &"tico": ExtResource("4_golpes"),
 &"gestos": ExtResource("5_gestos"),
-&"ual": ExtResource("8_ual")
+&"ual": ExtResource("8_ual"),
+&"atk": ExtResource("10_atk")
 }
 
 [node name="PernasAndando" type="SkeletonModifier3D" parent="Mesh/TicoRig/GeneralSkeleton"]
 script = ExtResource("7_pernas")
-keep_body = Array[StringName]([&"tico/Golpe_3", &"ual/Sword_Regular_C"])
+keep_body = Array[StringName]([&"tico/Golpe_3"])
 
-[node name="Passada" type="SkeletonModifier3D" parent="Mesh/TicoRig/GeneralSkeleton"]
-script = ExtResource("9_passada")
+[node name="PassoIK" type="SkeletonModifier3D" parent="Mesh/TicoRig/GeneralSkeleton"]
+script = ExtResource("9_passo")
 
 [node name="ArmRest" type="SkeletonModifier3D" parent="Mesh/TicoRig/GeneralSkeleton"]
 script = ExtResource("3_arm")

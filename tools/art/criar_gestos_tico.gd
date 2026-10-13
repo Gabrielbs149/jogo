@@ -145,7 +145,9 @@ func _apply(pose: Dictionary, time: float) -> void:
 	for side: String in ["Left", "Right"]:
 		var upper := _sk.find_bone(side + "UpperArm")
 		var lower := _sk.find_bone(side + "LowerArm")
-		var out := signf(_sk.get_bone_global_pose(upper).origin.x)
+		# o lado é pelo nome do braço (a esquerda dele é +X); pela posição do ombro, com o tronco torcido no golpe o ombro
+		# ia para o meio do peito, o lado virava e o braço atravessava o corpo (D079)
+		var out := 1.0 if side == "Left" else -1.0
 		var dirs: Array = pose["esq" if side == "Left" else "dir"]
 		_aim(upper, _to_space(dirs[0], out))
 		_aim(lower, _to_space(dirs[1], out))
@@ -159,15 +161,26 @@ func _turn(bone: int, rot: Basis) -> void:
 	if bone < 0:
 		return
 	var parent := _sk.get_bone_parent(bone)
-	var pg := _sk.get_bone_global_pose(parent).basis.orthonormalized() if parent >= 0 else Basis()
+	var pg := _global(parent).basis.orthonormalized() if parent >= 0 else Basis()
 	var g := pg * Basis(_sk.get_bone_pose_rotation(bone))
 	_sk.set_bone_pose_rotation(bone, (pg.inverse() * (rot * g)).get_rotation_quaternion())
 
 
 func _aim(bone: int, dir: Vector3, axis: Vector3 = Vector3.UP) -> void:
 	var parent := _sk.get_bone_parent(bone)
-	var pg := _sk.get_bone_global_pose(parent).basis.orthonormalized()
+	var pg := _global(parent).basis.orthonormalized()
 	var g0 := pg * _sk.get_bone_rest(bone).basis.orthonormalized()
 	var now := (g0 * axis).normalized()
 	var g := Basis(Quaternion(now, dir)) * g0
 	_sk.set_bone_pose_rotation(bone, (pg.inverse() * g).get_rotation_quaternion())
+
+
+## Pose global do osso calculada na mão (pai × pose, até a raiz). Fora do jogo o get_bone_global_pose devolve um cache
+## que não acompanha as mudanças feitas aqui (D079: os braços saíam até 45° fora e atravessavam o corpo).
+func _global(bone: int) -> Transform3D:
+	var t := _sk.get_bone_pose(bone)
+	var parent := _sk.get_bone_parent(bone)
+	while parent >= 0:
+		t = _sk.get_bone_pose(parent) * t
+		parent = _sk.get_bone_parent(parent)
+	return t

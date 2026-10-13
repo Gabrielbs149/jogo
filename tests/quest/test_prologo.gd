@@ -85,7 +85,7 @@ func test_leaving_the_alley_shows_the_street_and_starts_the_food_quest() -> void
 	await _open({"prologo.etapa": "conversou"})
 	await _put_hero(Vector3(-3.0, 0.1, -55.0))
 	await wait_until(func() -> bool: return _prologue.etapa() == "saiu", 3.0)
-	await wait_frames(2)
+	await wait_until(func() -> bool: return Game.flag("padaria.comecou", false), 2.0)  # a missão solta no _process dela
 	assert_true(Game.flag("comida.comecou", false))
 	assert_eq(Game.objective, "Conseguir comida para os dois.")
 	assert_eq(Game.objective_title, "Fome")

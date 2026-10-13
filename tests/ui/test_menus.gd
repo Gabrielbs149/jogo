@@ -117,20 +117,31 @@ func test_quality_presets() -> void:
 	assert_eq(int(Settings.value("sombras")), 2)
 
 
-## D074: o controle de videogame anda, gira a câmera e golpeia.
+## D074/D076: o controle de videogame anda, gira a câmera e golpeia, e só o controle escolhido vale (volante, pedal ou
+## joystick conectado não mexe o Tico sozinho).
 func test_gamepad_is_mapped() -> void:
+	var pad := Settings.pad_device if Settings.pad_device >= 0 else 99
 	var stick := InputEventJoypadMotion.new()
+	stick.device = pad
 	stick.axis = JOY_AXIS_LEFT_Y
 	stick.axis_value = -1.0
 	assert_true(InputMap.event_is_action(stick, &"move_forward"))
 	var look := InputEventJoypadMotion.new()
+	look.device = pad
 	look.axis = JOY_AXIS_RIGHT_X
 	look.axis_value = 1.0
 	assert_true(InputMap.event_is_action(look, &"look_right"))
 	var x := InputEventJoypadButton.new()
+	x.device = pad
 	x.button_index = JOY_BUTTON_X
 	x.pressed = true
 	assert_true(InputMap.event_is_action(x, &"attack"))
+	var other := InputEventJoypadMotion.new()
+	other.device = 42
+	other.axis = JOY_AXIS_LEFT_Y
+	other.axis_value = -1.0
+	assert_false(InputMap.event_is_action(other, &"move_forward"), "outro dispositivo (volante) não anda")
+	assert_false(InputMap.event_is_action(other, &"ui_up"), "nem mexe nos menus")
 
 
 ## D074: opções antigas (só "tela_cheia") viram o modo de tela novo.

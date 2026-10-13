@@ -95,23 +95,23 @@ func _redo_arms(anim: Animation, anim_name: String, src_player: AnimationPlayer,
 				var sb := src.find_bone(bone)
 				if b < 0 or sb < 0:
 					continue
-				var want := src.get_bone_global_pose(sb).basis.orthonormalized()
+				var want := _global_of(src, sb).basis.orthonormalized()
 				if part == "UpperArm":
 					want = _keep_out(want, out_sign)
-				var parent := _tico.get_bone_global_pose(_tico.get_bone_parent(b)).basis.orthonormalized()
+				var parent := _global_of(_tico, _tico.get_bone_parent(b)).basis.orthonormalized()
 				_tico.set_bone_pose_rotation(b, (parent.inverse() * want).get_rotation_quaternion())
 				anim.rotation_track_insert_key(tracks[bone], time, _tico.get_bone_pose_rotation(b))
 		var head := _tico.find_bone("Head")
 		var sh := src.find_bone("Head")
 		if head >= 0 and sh >= 0:
-			var want := src.get_bone_global_pose(sh).basis.orthonormalized()
+			var want := _global_of(src, sh).basis.orthonormalized()
 			var face := want * Vector3.BACK  # a frente do rosto
 			var limit := -sin(deg_to_rad(HEAD_DOWN_MAX))
 			if face.y < limit:
 				var flat := Vector3(face.x, 0.0, face.z).normalized()
 				var target := (flat * cos(deg_to_rad(HEAD_DOWN_MAX)) + Vector3.DOWN * sin(deg_to_rad(HEAD_DOWN_MAX))).normalized()
 				want = Basis(Quaternion(face.normalized(), target)) * want
-			var hp := _tico.get_bone_global_pose(_tico.get_bone_parent(head)).basis.orthonormalized()
+			var hp := _global_of(_tico, _tico.get_bone_parent(head)).basis.orthonormalized()
 			_tico.set_bone_pose_rotation(head, (hp.inverse() * want).get_rotation_quaternion())
 			anim.rotation_track_insert_key(head_track, time, _tico.get_bone_pose_rotation(head))
 
@@ -130,3 +130,14 @@ static func _keep_out(basis: Basis, out_sign: float) -> Basis:
 		return basis  # braço levantado (golpe, espreguiçar): fica como está
 	var delta := (need - now) * out_sign
 	return Basis(Vector3.BACK, delta) * basis
+
+
+## Pose global calculada na mão (pai × pose). Fora do jogo o get_bone_global_pose devolve um cache que não acompanha as
+## mudanças feitas aqui (D079).
+static func _global_of(sk: Skeleton3D, bone: int) -> Transform3D:
+	var t := sk.get_bone_pose(bone)
+	var parent := sk.get_bone_parent(bone)
+	while parent >= 0:
+		t = sk.get_bone_pose(parent) * t
+		parent = sk.get_bone_parent(parent)
+	return t

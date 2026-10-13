@@ -21,7 +21,8 @@ var _light: OmniLight3D
 var _base_energy: float = 2.2
 # rastro: as últimas posições da base e da ponta da lâmina, desenhadas como uma fita que some
 ## Quanto tempo cada pedaço do rastro dura (s).
-const TRAIL_TIME := 0.12
+## D079: 0,2 s e da base à ponta: o rastro desenha o arco do corte (só liga na hora do corte, não no preparo).
+const TRAIL_TIME := 0.2
 
 var _trail_on: bool = false
 var _trail: Array[PackedVector3Array] = []
@@ -69,7 +70,7 @@ func _process(delta: float) -> void:
 	# largos, a lâmina inteira somando luz virava um lençol branco
 	var now := Time.get_ticks_msec() / 1000.0
 	if _trail_on:
-		var root := global_transform * Vector3(0, blade_length * 0.5, 0)
+		var root := global_transform * Vector3(0, blade_length * 0.2, 0)
 		_trail.push_front(PackedVector3Array([root, tip(), Vector3(now, 0, 0)]))
 	while not _trail.is_empty() and now - _trail[_trail.size() - 1][2].x > TRAIL_TIME:
 		_trail.pop_back()
@@ -81,7 +82,7 @@ func _process(delta: float) -> void:
 		var k := clampf(1.0 - (now - _trail[i][2].x) / TRAIL_TIME, 0.0, 1.0)
 		_trail_im.surface_set_color(Color(PURPLE, 0.0))
 		_trail_im.surface_add_vertex(_trail[i][0])
-		_trail_im.surface_set_color(Color(PINK, 0.6 * k * k))
+		_trail_im.surface_set_color(Color(PINK, 0.75 * k))
 		_trail_im.surface_add_vertex(_trail[i][1])
 	_trail_im.surface_end()
 
@@ -343,13 +344,13 @@ static func equip_for_field(hero: Combatant) -> void:
 		var list: Array[StringName] = []
 		list.assign(animator.get("ability_animations"))
 		if not list.is_empty():
-			list[0] = &"tico/Corte_X"
+			list[0] = &"tico/Golpe_1"
 		animator.set("ability_animations", list)
 	var state := {"last": 0.0}
 	if animator and animator.has_signal("combo_strike") and not (animator.get("combo") as Array).is_empty():
-		animator.connect("combo_strike", func(_step: int) -> void:
+		animator.connect("combo_strike", func(step: int) -> void:
 			state["last"] = Time.get_ticks_msec() / 1000.0
-			_field_strike(hero, daggers, state))
+			_field_strike(hero, daggers, state, step))
 		return
 	hero.ability_used.connect(func(index: int) -> void:
 		if index != 0:
@@ -358,25 +359,30 @@ static func equip_for_field(hero: Combatant) -> void:
 		_field_strike(hero, daggers, state))
 
 
-static func _field_strike(hero: Combatant, daggers: Array[AdagaPsiquica], state: Dictionary) -> void:
-	var arm_rest := hero.find_children("*", "SkeletonModifier3D", true, false).filter(func(m: Node) -> bool: return m is ArmRest)
-	for m: Node in arm_rest:
-		(m as SkeletonModifier3D).active = false  # o golpe já põe os braços no lugar
+## Quando o corte de cada golpe do combo acontece (s depois do começo): [liga o rastro, desliga] (D079: o rastro e o som
+## só no corte, não no preparo).
+const CUT_WINDOWS := [[0.12, 0.3], [0.12, 0.3], [0.2, 0.4]]
+
+
+static func _field_strike(hero: Combatant, daggers: Array[AdagaPsiquica], state: Dictionary, step: int = 0) -> void:
 	for d: AdagaPsiquica in daggers:
 		if not d.visible:
 			d.visible = true
 			d.materialize()
-		d.flare(0.5)
-		d.trail(true)
-	await hero.get_tree().create_timer(0.55).timeout  # o 3º golpe do combo (D069) cai cortando em ~0,45 s
+	var window: Array = CUT_WINDOWS[clampi(step, 0, CUT_WINDOWS.size() - 1)]
+	await hero.get_tree().create_timer(float(window[0])).timeout
+	if not is_instance_valid(hero):
+		return
+	Audio.play_at("golpe", hero.global_position + Vector3.UP * 0.6, -3.0 if step < 2 else 0.0)
+	for d: AdagaPsiquica in daggers:
+		if is_instance_valid(d):
+			d.flare(0.6 if step < 2 else 0.9)
+			d.trail(true)
+	await hero.get_tree().create_timer(float(window[1]) - float(window[0])).timeout
 	for d: AdagaPsiquica in daggers:
 		if is_instance_valid(d):
 			d.trail(false)
 	await hero.get_tree().create_timer(0.3).timeout
-	if is_instance_valid(hero):
-		for m: Node in arm_rest:
-			if is_instance_valid(m):
-				(m as SkeletonModifier3D).active = true
 	# guarda depois de um tempo sem atacar
 	var mine: float = state["last"]
 	await hero.get_tree().create_timer(2.5).timeout

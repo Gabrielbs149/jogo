@@ -472,7 +472,11 @@ func _extra_action(id: int) -> void:
 			var amount := Dice.roll(2, 4) + 2
 			player.heal(amount)
 			_action_cam(player)
-			player.ability_used.emit(3)  # mesma animação de usar item
+			var drinker := player.get_node_or_null("Animator")
+			if drinker and player.find_children("*", "AnimationPlayer", true, false)[0].has_animation(&"ual/Consume"):
+				drinker.call("act", &"ual/Consume", 1.2)  # D075: leva a poção à boca
+			else:
+				player.ability_used.emit(3)
 			_fx.rising_glow(player.global_position, Color(0.5, 1.0, 0.6))
 			_fx.floating_text(player.global_position, "+%d" % amount, Color(0.6, 1.0, 0.65))
 			player.rolled.emit("%s bebe uma poção: 2d4+2 = %d" % [player.display_name, amount])
@@ -941,24 +945,25 @@ func _view_pose(kind: String) -> void:
 		dagger.flare(0.4)
 
 
-## Com as adagas, o Tico usa as animações feitas para ele (D052): guarda com as lâminas para cima, corte em X e estocada
-## dupla. A peça que baixa os braços sai (a guarda já põe os braços no lugar).
+## Com as adagas (D075): guarda com as lâminas baixas (UAL), corte duplo e estocada longa. As peças do corpo ficam (a
+## ArmRest só age nas animações do KayKit; o corpo vivo e o pé no chão se desligam sozinhos na luta por turnos).
 func _dagger_animations() -> void:
 	var animator := player.get_node_or_null("Animator")
 	if animator:
-		animator.set("idle", &"tico/Guarda")
+		animator.set("idle", &"ual/Sword_Idle")
 		var list: Array[StringName] = []
 		list.assign(animator.get("ability_animations"))
 		if list.size() >= 2:
-			list[0] = &"tico/Corte_X"
-			list[1] = &"tico/Estocada"
+			list[0] = &"atk/Dualwield_Melee_Attack_Chop"
+			list[1] = &"atk/Sword_Dash"
 		animator.set("ability_animations", list)
 		animator.set("combo", [] as Array[StringName])  # na luta por turnos o golpe é montado pela arena
 		var anim_player := player.find_children("*", "AnimationPlayer", true, false)
 		if not anim_player.is_empty():
-			(anim_player[0] as AnimationPlayer).play(&"tico/Guarda", 0.2)
+			(anim_player[0] as AnimationPlayer).play(&"ual/Sword_Idle", 0.2)
+	# só a ArmRest fica (ela já não age nas animações da UAL); o corpo vivo e o pé no chão saem na arena
 	for modifier: Node in player.find_children("*", "SkeletonModifier3D", true, false):
-		(modifier as SkeletonModifier3D).active = false
+		(modifier as SkeletonModifier3D).active = modifier is ArmRest
 
 
 ## O último inimigo caiu: câmera lenta por um instante (o golpe final pesa).
@@ -975,10 +980,10 @@ func _final_blow() -> void:
 ## Volta quando o golpe chega (o resto do _player_action aplica o dano e o efeito).
 func _dagger_rush(tgt: Combatant, ability: Ability) -> void:
 	var animator := player.get_node_or_null("Animator")
-	var strike := &"tico/Estocada" if ability.shape == Ability.Shape.DASH else &"tico/Corte_X"
-	# 1) agacha (impulso)
+	var strike := &"atk/Sword_Dash" if ability.shape == Ability.Shape.DASH else &"atk/Dualwield_Melee_Attack_Chop"
+	# 1) agacha e toma impulso (D075: o salto ninja da UAL)
 	if animator:
-		animator.call("act", &"tico/Bote", 1.3)
+		animator.call("act", &"atk/NinjaJump_Start", 1.6)
 	Audio.play_at("esquiva", player.global_position, -10.0)
 	await _wait(0.2)
 	# 2) corre
@@ -991,7 +996,7 @@ func _dagger_rush(tgt: Combatant, ability: Ability) -> void:
 	var leap := minf(1.2, total)
 	var run_to := from + flat * (total - leap)
 	if animator and total - leap > 0.2:
-		animator.call("hold", &"Running_A")
+		animator.call("hold", &"ual/Sprint")
 		var run := create_tween()
 		run.tween_property(player, "global_position", run_to, clampf((total - leap) / 9.0, 0.12, 0.35))
 		await run.finished
