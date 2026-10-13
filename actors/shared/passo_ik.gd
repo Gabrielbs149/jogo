@@ -16,6 +16,8 @@ extends SkeletonModifier3D
 @export var ankle_height: float = 0.05
 ## Quanto o quadril sobe e desce a cada passo (m).
 @export var bob: float = 0.018
+## O máximo que o quadril desce para o pé alcançar (m). Mais que isso o joelho e a roupa entram no chão.
+@export var max_drop: float = 0.04
 
 var _me: CharacterBody3D
 var _animator: Node
@@ -87,11 +89,13 @@ func _process_modification_with_delta(delta: float) -> void:
 			target = (foot["saiu"] as Vector3).lerp(land, k) + Vector3.UP * height * sin(PI * s)
 		_feet[i] = foot
 		targets.append(target)
-		# quanto o quadril precisa descer para este pé alcançar
-		var reach := _leg_length(sk, i) * 0.97
-		var flat := Vector2(target.x - hip_world.x, target.z - hip_world.z).length()
-		var need_y := sqrt(maxf(reach * reach - flat * flat, 0.0))
-		hip_drop = maxf(hip_drop, (hip_world.y - target.y) - need_y)
+		# quanto o quadril precisa descer para o pé APOIADO alcançar (o do ar não puxa o corpo: logo depois de levantar ele
+		# fica bem atrás e afundava o Tico no chão, D078); no máximo max_drop, o resto a perna estica
+		if p < duty:
+			var reach := _leg_length(sk, i) * 0.97
+			var flat := Vector2(target.x - hip_world.x, target.z - hip_world.z).length()
+			var need_y := sqrt(maxf(reach * reach - flat * flat, 0.0))
+			hip_drop = maxf(hip_drop, (hip_world.y - target.y) - need_y)
 	# o quadril: desce o que for preciso; no apoio amortece, e correndo (pé pouco tempo no chão, D077) o corpo sobe no ar
 	# entre um passo e outro, na altura de um salto de verdade com esse tempo no ar (g·t²/8)
 	var hips := sk.find_bone(hips_bone)
@@ -104,7 +108,7 @@ func _process_modification_with_delta(delta: float) -> void:
 		var hop := minf(9.8 * air * air / 8.0, 0.09)
 		bounce = -hop * sin(PI * (step_phase - duty) / (1.0 - duty))
 	var pose := sk.get_bone_pose_position(hips)
-	var down := (maxf(hip_drop, 0.0) + bounce) * _weight
+	var down := (clampf(hip_drop, 0.0, max_drop) + bounce) * _weight
 	sk.set_bone_pose_position(hips, pose - Vector3(0.0, down, 0.0))
 	for i: int in 2:
 		_solve(sk, i, to_sk * targets[i], facing, i)

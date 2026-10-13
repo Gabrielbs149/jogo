@@ -137,3 +137,19 @@ func test_enemies_have_every_animation() -> void:
 		names.append_array(anim.ability_animations)
 		for name: StringName in names:
 			assert_true(player.has_animation(name), "%s: %s" % [path.get_file(), name])
+
+
+## D078: andando e correndo o Tico não afunda no chão (o quadril descia até 7 cm e o joelho encostava).
+func test_does_not_sink_while_running() -> void:
+	var sk := _tico.find_children("*", "Skeleton3D", true, false)[0] as Skeleton3D
+	var hips := BoneAttachment3D.new()
+	hips.bone_name = "Hips"
+	sk.add_child(hips)
+	for speed: float in [_tico.move_speed, _tico.move_speed * 1.45]:
+		var lowest := 9.0
+		for i: int in 90:
+			_tico.desired_velocity = Vector3(0, 0, -speed)
+			await wait_physics_frames(1)
+			if i > 30:
+				lowest = minf(lowest, hips.global_position.y - _tico.global_position.y)
+		assert_gt(lowest, 0.18, "quadril a %.1f m/s" % speed)
