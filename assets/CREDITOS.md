@@ -6,6 +6,7 @@ Todos CC0 (domínio público): uso livre, inclusive comercial, sem crédito obri
 - **Medieval Village MegaKit** (versão Standard) — `assets/kits/quaternius/vila/`
 - **Fantasy Props MegaKit** (versão Standard) — `assets/kits/quaternius/objetos/`
 - **Stylized Nature MegaKit** (versão Standard) — `assets/kits/quaternius/natureza/`
+- **Universal Animation Library 1 e 2** (versão Standard, D070) — `assets/kits/quaternius/animacoes/` (84 animações; o Tico anda, trota, corre, agacha, rola e golpeia com elas)
 
 ## KayKit (Kay Lousberg) — https://kaylousberg.itch.io
 - **Character Pack: Adventurers** — `assets/kits/kaykit/personagens/` (Knight, Barbarian, Mage, Rogue, Rogue_Hooded, 76 animações)

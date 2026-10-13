@@ -1,6 +1,6 @@
 class_name PlayerController
 extends Node
-## Você no comando do herói (filho do Combatant). WASD anda em relação à câmera, Shift corre,
+## Você no comando do herói (filho do Combatant). WASD anda em relação à câmera, Shift corre, C/Ctrl agacha (furtivo),
 ## o mouse mira (centro da tela), botão esquerdo = ataque (segure para continuar), Q/E/R = habilidades,
 ## Espaço = esquiva, F = interagir.
 
@@ -18,15 +18,22 @@ const KEY_NAMES: Array[String] = ["Botão esq.", "Q", "E", "R"]
 @export var aim_assist: float = 0.3
 ## No mapa (D022): o botão esquerdo é só um golpe para começar a luta com vantagem; Q/E/R ficam para a arena.
 @export var field_mode: bool = true
+## Golpe do combo no mapa (D070): o passo à frente de cada golpe (m) e o quanto o corpo anda mais devagar enquanto golpeia.
+@export var strike_steps: PackedFloat32Array = [0.35, 0.45, 0.7]
+@export var strike_slow: float = 0.35
 
 var camera: ThirdPersonCamera
 var enabled: bool = true
 var _me: Combatant
 var _interactable: Interactable
+var _face_until: float = 0.0
 
 
 func _ready() -> void:
 	_me = get_parent() as Combatant
+	var animator := _me.get_node_or_null("Animator")
+	if animator and animator.has_signal("combo_strike"):
+		animator.connect("combo_strike", _on_combo_strike)
 
 
 func _physics_process(_delta: float) -> void:
@@ -36,8 +43,15 @@ func _physics_process(_delta: float) -> void:
 		return
 	var input := Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back")
 	var dir := camera.right_flat() * input.x - camera.forward_flat() * input.y
-	var speed := _me.move_speed * (sprint_multiplier if Input.is_action_pressed(&"sprint") else 1.0)
+	var running := Input.is_action_pressed(&"sprint")
+	if running:
+		_me.sneaking = false  # correr levanta
+	var speed := _me.move_speed * (sprint_multiplier if running else 1.0)
 	_me.desired_velocity = dir * speed
+	if _face_until > 0.0 and Time.get_ticks_msec() / 1000.0 > _face_until:
+		_face_until = 0.0
+		if not _me.casting:
+			_me.face_dir = Vector3.ZERO
 	if Input.is_action_pressed(&"attack") and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		try_ability(0, true)
 	_update_interactable()
@@ -52,6 +66,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				try_ability(i, false)
 			get_viewport().set_input_as_handled()
 			return
+	if event.is_action_pressed(&"sneak"):
+		_me.sneaking = not _me.sneaking
+		get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed(&"dodge"):
 		var dir := _me.desired_velocity
 		if dir.length_squared() < 0.01:
@@ -100,7 +118,7 @@ func _field_strike() -> void:
 	var now := Time.get_ticks_msec() / 1000.0
 	if now < _strike_ready_at:
 		return
-	_strike_ready_at = now + 0.7
+	_strike_ready_at = now + 0.12  # o animador guarda o clique e encadeia o combo (D070)
 	_me.ability_used.emit(0)
 	var forward := -_me.global_basis.z
 	if camera:
@@ -114,6 +132,22 @@ func _field_strike() -> void:
 				await get_tree().create_timer(0.15).timeout
 				encounter.fire(true)
 				return
+
+
+## Cada golpe do combo: vira para onde a câmera olha, dá um passo à frente e anda mais devagar enquanto golpeia.
+func _on_combo_strike(step: int) -> void:
+	if not field_mode or not is_instance_valid(_me):
+		return
+	var forward := camera.forward_flat() if camera else -_me.global_basis.z
+	_me.face_dir = forward
+	_face_until = Time.get_ticks_msec() / 1000.0 + 0.45
+	_me.sneaking = false
+	_me.slow_for(0.45, strike_slow)
+	var distance: float = strike_steps[mini(step, strike_steps.size() - 1)] if not strike_steps.is_empty() else 0.0
+	if distance > 0.0:
+		await get_tree().create_timer(0.08).timeout
+		if is_instance_valid(_me):
+			_me.nudge(forward, distance, 0.14)
 
 
 ## O alvo mais perto do centro da tela, dentro do alcance. Cura sem ninguém na mira = quem está pior (ou você).

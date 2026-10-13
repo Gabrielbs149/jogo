@@ -20,6 +20,9 @@ var _wisp: Node3D
 var _light: OmniLight3D
 var _base_energy: float = 2.2
 # rastro: as últimas posições da base e da ponta da lâmina, desenhadas como uma fita que some
+## Quanto tempo cada pedaço do rastro dura (s).
+const TRAIL_TIME := 0.12
+
 var _trail_on: bool = false
 var _trail: Array[PackedVector3Array] = []
 var _trail_mesh: MeshInstance3D
@@ -62,21 +65,23 @@ func _process(delta: float) -> void:
 		_wisp.rotate_y(delta * 3.2)  # a espiral gira em volta da lâmina
 	if _trail_mesh == null:
 		return
+	# D070: o rastro é só da metade de fora da lâmina e dura um tempo fixo (não um número de quadros): com golpes
+	# largos, a lâmina inteira somando luz virava um lençol branco
+	var now := Time.get_ticks_msec() / 1000.0
 	if _trail_on:
-		_trail.push_front(PackedVector3Array([base(), tip()]))
-	elif not _trail.is_empty():
-		_trail.pop_back()
-	while _trail.size() > 9:
+		var root := global_transform * Vector3(0, blade_length * 0.5, 0)
+		_trail.push_front(PackedVector3Array([root, tip(), Vector3(now, 0, 0)]))
+	while not _trail.is_empty() and now - _trail[_trail.size() - 1][2].x > TRAIL_TIME:
 		_trail.pop_back()
 	_trail_im.clear_surfaces()
 	if _trail.size() < 2:
 		return
 	_trail_im.surface_begin(Mesh.PRIMITIVE_TRIANGLE_STRIP)
 	for i: int in _trail.size():
-		var k := 1.0 - float(i) / (_trail.size() - 1)
-		_trail_im.surface_set_color(Color(PURPLE, 0.15 * k))
+		var k := clampf(1.0 - (now - _trail[i][2].x) / TRAIL_TIME, 0.0, 1.0)
+		_trail_im.surface_set_color(Color(PURPLE, 0.0))
 		_trail_im.surface_add_vertex(_trail[i][0])
-		_trail_im.surface_set_color(Color(PINK, 0.85 * k))
+		_trail_im.surface_set_color(Color(PINK, 0.6 * k * k))
 		_trail_im.surface_add_vertex(_trail[i][1])
 	_trail_im.surface_end()
 
@@ -94,7 +99,6 @@ func trail(on: bool) -> void:
 		var mat := StandardMaterial3D.new()
 		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 		mat.vertex_color_use_as_albedo = true
 		mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 		_trail_mesh.material_override = mat
@@ -341,10 +345,12 @@ static func equip_for_field(hero: Combatant) -> void:
 		if not list.is_empty():
 			list[0] = &"tico/Corte_X"
 		animator.set("ability_animations", list)
-		# D069: um combo de verdade (corte de direita, revés de esquerda, pulo com giro e X na queda)
-		var combo: Array[StringName] = [&"tico/Golpe_1", &"tico/Golpe_2", &"tico/Golpe_3"]
-		animator.set("combo", combo)
 	var state := {"last": 0.0}
+	if animator and animator.has_signal("combo_strike") and not (animator.get("combo") as Array).is_empty():
+		animator.connect("combo_strike", func(_step: int) -> void:
+			state["last"] = Time.get_ticks_msec() / 1000.0
+			_field_strike(hero, daggers, state))
+		return
 	hero.ability_used.connect(func(index: int) -> void:
 		if index != 0:
 			return

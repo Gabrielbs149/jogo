@@ -13,6 +13,7 @@ const KEYS: Array[String] = ["Botão esq.", "Q", "E", "R"]
 const TIPS: Array = [
 	[["W", "A", "S", "D"], "andar"],
 	[["Shift"], "correr"],
+	[["C"], "agachar (andar sem ser visto)"],
 	[["Botão esq."], "golpe: acertar antes começa a luta com vantagem"],
 	[["Espaço"], "esquivar"],
 	[["F"], "conversar, ler, descansar"],

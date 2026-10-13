@@ -45,6 +45,15 @@ const DASH_SPEED := 16.0
 @export var dodge_distance: float = 4.0
 @export var dodge_cooldown: float = 3.0
 
+@export_group("Movimento")
+## Quanto ganha de velocidade por segundo (m/s²) ao arrancar e virar. 0 = na hora (como era).
+## Com aceleração o corpo tem peso: arranca, inclina e freia em vez de começar e parar de uma vez (D070).
+@export var acceleration: float = 0.0
+## Quanto perde por segundo ao frear (m/s²). 0 = igual à aceleração.
+@export var deceleration: float = 0.0
+## Andando agachado (furtivo): fração da velocidade.
+@export var sneak_multiplier: float = 0.45
+
 @export_group("Outros")
 @export var flying: bool = false
 @export var color: Color = Color(0.85, 0.2, 0.15)
@@ -81,6 +90,10 @@ var real_time: bool = true
 var sneak_ready_at: float = 0.0
 var _dash_velocity: Vector3 = Vector3.ZERO
 var _dash_time: float = 0.0
+## Andando agachado (o controlador liga): mais devagar e com as animações de furtivo.
+var sneaking: bool = false
+var _slow_until: float = 0.0
+var _slow_factor: float = 1.0
 
 @onready var model: Node3D = get_node_or_null("Model") as Node3D
 
@@ -265,11 +278,21 @@ func _physics_process(delta: float) -> void:
 		dodge_left = maxf(dodge_left - delta, 0.0)
 		_tick_statuses(delta)
 	var move := Vector3.ZERO
-	if _dash_time > 0.0:
+	var dashing := _dash_time > 0.0
+	if dashing:
 		_dash_time -= delta
 		move = _dash_velocity
 	elif is_active():
-		move = desired_velocity * (0.35 if casting else 1.0)
+		var factor := 0.35 if casting else 1.0
+		if sneaking:
+			factor *= sneak_multiplier
+		if Time.get_ticks_msec() / 1000.0 < _slow_until:
+			factor *= _slow_factor
+		move = desired_velocity * factor
+	if acceleration > 0.0 and not dashing:
+		var now := Vector3(velocity.x, 0.0, velocity.z)
+		var rate := acceleration if move.length() >= now.length() - 0.01 else (deceleration if deceleration > 0.0 else acceleration)
+		move = now.move_toward(Vector3(move.x, 0.0, move.z), rate * delta)
 	velocity.x = move.x
 	velocity.z = move.z
 	velocity.y = -1.0 if is_on_floor() else velocity.y - GRAVITY * delta
@@ -277,6 +300,21 @@ func _physics_process(delta: float) -> void:
 	var look := face_dir if face_dir != Vector3.ZERO else Vector3(move.x, 0.0, move.z)
 	if is_active() and look.length_squared() > 0.01:
 		rotation.y = lerp_angle(rotation.y, atan2(-look.x, -look.z), minf(1.0, delta * 12.0))
+
+
+## Anda mais devagar por um tempo (golpe no mapa: o corpo pesa enquanto golpeia).
+func slow_for(seconds: float, factor: float) -> void:
+	_slow_until = Time.get_ticks_msec() / 1000.0 + seconds
+	_slow_factor = factor
+
+
+## Um passo rápido numa direção (o golpe avança um pouco), sem a esquiva.
+func nudge(direction: Vector3, distance: float, duration: float) -> void:
+	direction.y = 0.0
+	if direction.length_squared() < 0.0001 or duration <= 0.0 or _dash_time > 0.0:
+		return
+	_dash_velocity = direction.normalized() * distance / duration
+	_dash_time = duration
 
 
 func _perform(ability: Ability, target: Combatant, point: Vector3) -> void:

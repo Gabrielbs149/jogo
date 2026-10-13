@@ -9,6 +9,7 @@ signal closed
 const KEYS_MAP: Array = [
 	[["W", "A", "S", "D"], "andar"],
 	[["Shift"], "correr"],
+	[["C"], "agachar (andar sem ser visto)"],
 	[["Mouse"], "olhar em volta (a roda aproxima e afasta)"],
 	[["Botão esq."], "golpe: acertar um inimigo antes começa a luta com vantagem"],
 	[["Espaço"], "esquivar"],
