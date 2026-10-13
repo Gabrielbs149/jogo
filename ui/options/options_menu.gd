@@ -161,6 +161,12 @@ func _build_controls() -> void:
 			_header(box, group)
 		_rebind_row(box, entry[0], String(entry[1]))
 	_header(box, "Controle de videogame")
+	_toggle(box, "Usar controle de videogame", "usar_controle")
+	var pad := Label.new()
+	pad.set_meta("controle", true)
+	pad.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	pad.modulate = Color(1, 1, 1, 0.75)
+	box.add_child(pad)
 	for entry: Array in PAD:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 6)
@@ -323,6 +329,12 @@ func _refresh() -> void:
 				if index < 0 and Settings.value(key) is float:
 					index = values.find(int(Settings.value(key)))
 				(node as OptionButton).select(index)
+		elif node.has_meta("controle"):
+			var others: Array[String] = []
+			for id: int in Input.get_connected_joypads():
+				if id != Settings.pad_device:
+					others.append(Input.get_joy_name(id))
+			(node as Label).text = ("Usando: %s." % Settings.pad_name if Settings.pad_device >= 0 else "Nenhum controle em uso.") + 				(("  Ignorado (não é controle de videogame): %s." % ", ".join(others)) if not others.is_empty() else "")
 		elif node.has_meta("acao"):
 			(node as Label).text = Settings.key_name(node.get_meta("acao"))
 		elif node.has_meta("trocar") and node.get_meta("trocar") != _waiting:

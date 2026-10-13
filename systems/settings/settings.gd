@@ -37,6 +37,7 @@ const DEFAULTS := {
 	"inverter_x": false,
 	"sensibilidade_controle": 1.0,
 	"zona_morta": 0.2,
+	"usar_controle": true,
 	# jogo
 	"dicas": true,
 	"distancia_camera": 4.6,
@@ -98,6 +99,13 @@ var _fps: CanvasLayer
 var _fps_label: Label
 var _fps_wait: float = 0.0
 var _focused: bool = true
+## O controle de videogame que o jogo usa (-1 = nenhum). Volante, pedal e joystick de voo ficam de fora (D076): parados,
+## os eixos deles não ficam no zero e o Tico andava e a câmera girava sozinhos.
+var pad_device: int = -1
+var pad_name: String = ""
+## Palavras no nome de dispositivos que não são controle de videogame.
+const NOT_A_PAD := ["wheel", "racing", "driving", "g29", "g920", "g923", "pedal", "flight", "throttle", "hotas", "rudder",
+	"stick", "yoke", "shifter", "simucube", "fanatec", "thrustmaster t", "button box"]
 
 
 func _ready() -> void:
@@ -262,6 +270,35 @@ func _setup_input() -> void:
 			event = button
 		if not InputMap.action_has_event(action, event):
 			InputMap.action_add_event(action, event)
+	Input.joy_connection_changed.connect(func(_device: int, _connected: bool) -> void: _choose_pad())
+	_choose_pad()
+
+
+## Escolhe o controle de videogame (o primeiro que não for volante/pedal/joystick) e faz os eventos de controle de TODAS
+## as ações (as do jogo e as de menu, ui_*) valerem só para ele. Sem controle (ou "usar controle" desligado), nenhum vale.
+func _choose_pad() -> void:
+	pad_device = -1
+	pad_name = ""
+	if bool(_values.get("usar_controle", true)):
+		for id: int in Input.get_connected_joypads():
+			var name := Input.get_joy_name(id)
+			var low := name.to_lower()
+			var bad := false
+			for word: String in NOT_A_PAD:
+				if low.contains(word):
+					bad = true
+					break
+			if not bad and Input.is_joy_known(id):
+				pad_device = id
+				pad_name = name
+				break
+	var device := pad_device if pad_device >= 0 else 99  # 99: nenhum dispositivo tem esse número
+	for action: StringName in InputMap.get_actions():
+		for event: InputEvent in InputMap.action_get_events(action):
+			if (event is InputEventJoypadButton or event is InputEventJoypadMotion) and event.device != device:
+				InputMap.action_erase_event(action, event)
+				event.device = device
+				InputMap.action_add_event(action, event)
 
 
 ## Põe as teclas trocadas pelo jogador (e volta as de fábrica nas outras).
@@ -336,6 +373,9 @@ func _apply(key: String) -> void:
 					&"look_up", &"look_down"]:
 				if InputMap.has_action(action):
 					InputMap.action_set_deadzone(action, clampf(float(_values[key]), 0.05, 0.9))
+		"usar_controle":
+			if InputMap.has_action(&"move_left"):
+				_choose_pad()
 		"limite_fps":
 			Engine.max_fps = int(_values[key])
 		"mostrar_fps":
