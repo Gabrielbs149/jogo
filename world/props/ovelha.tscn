@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kits/polypizza/Farm-Animal-Pack/Sheep.glb" id="1_Sheep"]
+
+
+[node name="Ovelha" type="Node3D"]
+
+[node name="Modelo" parent="." instance=ExtResource("1_Sheep")]
+transform = Transform3D(-0.13, 0, 0, 0, 0.13, 0, 0, 0, -0.13, 0, 0, 0)

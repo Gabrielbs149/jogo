@@ -48,3 +48,14 @@ Baixados de https://poly.pizza por `tools/art/baixar_polypizza.py`. CC0 = domín
 - Isa Lousberg (CC0 1.0): Baguette — res://assets/kits/polypizza/Baked-Goods/Baguette.glb
 - Quaternius (CC0 1.0): Bucket — res://assets/kits/polypizza/Pirate-kit/Bucket.glb
 - CreativeTechLab (CC-BY 3.0): Book Red — res://assets/kits/polypizza/Fantasy-bundle/Book_Red.glb
+- Quaternius (CC0 1.0): Cow — res://assets/kits/polypizza/Animated-Animal-Pack/Cow.glb
+- Quaternius (CC0 1.0): Bull — res://assets/kits/polypizza/Animated-Animal-Pack/Bull.glb
+- Quaternius (CC0 1.0): Horse — res://assets/kits/polypizza/Animated-Animal-Pack/Horse.glb
+- Quaternius (CC0 1.0): White Horse — res://assets/kits/polypizza/Animated-Animal-Pack/White_Horse.glb
+- Quaternius (CC0 1.0): Alpaca — res://assets/kits/polypizza/Animated-Animal-Pack/Alpaca.glb
+- Quaternius (CC0 1.0): Sheep — res://assets/kits/polypizza/Farm-Animal-Pack/Sheep.glb
+- Poly by Google (CC-BY 3.0): Hen — res://assets/kits/polypizza/_avulsos/Hen_8Unya0rw9tR.glb
+- jeremy (CC-BY 3.0): Chicken — res://assets/kits/polypizza/Animals/Chicken.glb
+- alwayshasbean (CC-BY 3.0): Dingus the cat — res://assets/kits/polypizza/Witch-cottage-pack/Dingus_the_cat.glb
+- Poly by Google (CC-BY 3.0): Mourning dove — res://assets/kits/polypizza/_avulsos/Mourning_dove_1cF8DTp2sAi.glb
+- Poly by Google (CC-BY 3.0): Sparrow — res://assets/kits/polypizza/_avulsos/Sparrow_4uL9XFDcdQK.glb

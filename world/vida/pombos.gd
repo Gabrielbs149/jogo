@@ -2,7 +2,11 @@ class_name Pombos
 extends Node3D
 ## Um bando de pombos (D060): ciscam no chão em volta de onde o bando mora, bicam, andam aos pulinhos. Você chega
 ## perto (ou passa correndo) e o bando inteiro levanta voo batendo as asas, dá uma volta alta e pousa de novo um
-## tempo depois, longe de você. Os pombos são montados por código (corpo, cabeça, pescoço furta-cor, asas que batem).
+## tempo depois, longe de você. D066: o corpo é um modelo de pomba (e uns pardais no meio); as asas que batem no voo
+## são feitas aqui e só aparecem voando.
+
+const POMBA := "res://assets/kits/polypizza/_avulsos/Mourning_dove_1cF8DTp2sAi.glb"
+const PARDAL := "res://assets/kits/polypizza/_avulsos/Sparrow_4uL9XFDcdQK.glb"
 
 @export var quantidade: int = 9
 ## Raio (m) do chão onde o bando cisca.
@@ -83,10 +87,9 @@ func _update_ground(b: Dictionary, delta: float) -> void:
 			b["timer"] = randf_range(0.8, 4.0)
 			var angle := randf() * TAU
 			b["target"] = Vector3(cos(angle), 0, sin(angle)) * randf_range(0.2, raio)
-	# no chão as asas ficam dobradas para trás, ao longo do corpo
-	var wings: Array = b["wings"]
-	(wings[0] as Node3D).rotation = Vector3(0, -1.35, 0)
-	(wings[1] as Node3D).rotation = Vector3(0, 1.35, 0)
+	# no chão as asas do modelo bastam: as que batem ficam escondidas
+	for wing: Node3D in b["wings"]:
+		wing.visible = false
 
 
 func _take_off(from: Vector3) -> void:
@@ -120,6 +123,8 @@ func _update_air(delta: float) -> void:
 		b["phase"] = float(b["phase"]) + delta * 22.0
 		var flap := sin(float(b["phase"])) * 1.1
 		var wings: Array = b["wings"]
+		(wings[0] as Node3D).visible = true
+		(wings[1] as Node3D).visible = true
 		(wings[0] as Node3D).rotation = Vector3(0, 0, flap)
 		(wings[1] as Node3D).rotation = Vector3(0, 0, -flap)
 		(b["body"] as Node3D).rotation.x = -0.15
@@ -146,18 +151,24 @@ func _make_bird(i: int) -> Node3D:
 	var tint := randf_range(0.85, 1.12)
 	var gray := _mat("cinza%d" % int(tint * 10), Color(0.55, 0.57, 0.64) * tint)
 	var dark := _mat("escuro", Color(0.3, 0.31, 0.36))
-	var neck := _mat("pescoco", Color(0.35, 0.5, 0.45), Color(0.1, 0.25, 0.2))
-	var beak := _mat("bico", Color(0.85, 0.55, 0.3))
 	var body := Node3D.new()
 	body.name = "Corpo"
 	bird.add_child(body)
-	_part(body, _sphere(0.085, 0.15), gray, Vector3(0, 0.09, 0), Vector3(1.0, 0.85, 1.45))
-	_part(body, _sphere(0.045, 0.09), neck, Vector3(0, 0.16, -0.08), Vector3.ONE)
-	_part(body, _sphere(0.04, 0.08), gray, Vector3(0, 0.2, -0.11), Vector3.ONE)
-	_part(body, _box(Vector3(0.018, 0.018, 0.04)), beak, Vector3(0, 0.195, -0.155), Vector3.ONE)
-	_part(body, _box(Vector3(0.07, 0.015, 0.1)), dark, Vector3(0, 0.1, 0.13), Vector3.ONE).rotation.x = 0.35
+	var sparrow := i % 4 == 3
+	var model := (load(PARDAL if sparrow else POMBA) as PackedScene).instantiate() as Node3D
+	model.name = "Modelo"
+	body.add_child(model)
+	if sparrow:
+		model.scale = Vector3.ONE * 0.00045 * tint
+		model.rotation.y = PI / 2.0  # o pardal vem deitado no eixo x
+	else:
+		model.scale = Vector3.ONE * 0.13 * tint
+		model.rotation.y = PI  # a pomba olha para +Z
+	for found: Node in model.find_children("*", "GeometryInstance3D", true, false):
+		(found as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	gray = _mat("asa_pomba", Color(0.62, 0.55, 0.48) * tint)
+	dark = _mat("asa_ponta", Color(0.45, 0.4, 0.36))
 	for side: int in [-1, 1]:
-		_part(body, _box(Vector3(0.008, 0.07, 0.008)), beak, Vector3(side * 0.03, 0.03, 0.0), Vector3.ONE)
 		var pivot := Node3D.new()
 		pivot.name = "AsaE" if side < 0 else "AsaD"
 		pivot.position = Vector3(side * 0.07, 0.12, 0.0)
