@@ -27,6 +27,11 @@ extends Node
 @export var fidget_after: Vector2 = Vector2(7.0, 14.0)
 ## Gestos pedidos pelo jogo (gesture("pega")): nome do gesto -> animação.
 @export var gestures: Dictionary = {}
+## Combo do ataque básico (D069): cada ataque (botão esquerdo) logo depois do outro toca o próximo golpe da lista.
+## Vazio = usa ability_animations[0].
+@export var combo: Array[StringName] = []
+## Segundos (contados do golpe anterior) em que o próximo ataque ainda continua o combo.
+@export var combo_window: float = 2.2
 
 var _me: Combatant
 var _player: AnimationPlayer
@@ -38,6 +43,11 @@ var _next_fidget: float = 10.0
 var _last_fidget: StringName = &""
 ## O que está tocando agora é mania ou gesto (andar corta).
 var _cancelable: bool = false
+## Onde a caminhada está (s). Segue contando durante um golpe andando: as pernas continuam no passo (PernasAndando)
+## e, quando o golpe acaba, a caminhada volta de onde estaria.
+var walk_phase: float = 0.0
+var _combo_step: int = -1
+var _combo_at: float = -100.0
 
 
 func _ready() -> void:
@@ -68,6 +78,11 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	var speed := Vector2(_me.velocity.x, _me.velocity.z).length()
+	if _player.current_animation == walk:
+		walk_phase = _player.current_animation_position
+	elif _one_shot and speed > 0.3 and _player.has_animation(walk):
+		walk_phase = fmod(walk_phase + delta * clampf(speed / walk_reference_speed, 0.6, 1.8),
+			_player.get_animation(walk).length)
 	if _one_shot and _cancelable and speed > 0.3:
 		_one_shot = false  # começou a andar: a mania para na hora
 		_cancelable = false
@@ -109,6 +124,8 @@ func _loop(anim: StringName, speed: float) -> void:
 		return
 	if _player.current_animation != anim:
 		_player.play(anim, 0.15)
+		if anim == walk:
+			_player.seek(walk_phase)  # volta no passo em que as pernas estavam
 	_player.speed_scale = speed
 
 
@@ -149,6 +166,12 @@ func _play_once(anim: StringName) -> void:
 
 
 func _on_ability(index: int) -> void:
+	if index == 0 and not combo.is_empty():
+		var now := Time.get_ticks_msec() / 1000.0
+		_combo_step = (_combo_step + 1) % combo.size() if now - _combo_at <= combo_window else 0
+		_combo_at = now
+		_play_once(combo[_combo_step])
+		return
 	if index < ability_animations.size():
 		_play_once(ability_animations[index])
 

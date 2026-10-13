@@ -341,6 +341,9 @@ static func equip_for_field(hero: Combatant) -> void:
 		if not list.is_empty():
 			list[0] = &"tico/Corte_X"
 		animator.set("ability_animations", list)
+		# D069: um combo de verdade (corte de direita, revés de esquerda, pulo com giro e X na queda)
+		var combo: Array[StringName] = [&"tico/Golpe_1", &"tico/Golpe_2", &"tico/Golpe_3"]
+		animator.set("combo", combo)
 	var state := {"last": 0.0}
 	hero.ability_used.connect(func(index: int) -> void:
 		if index != 0:
@@ -350,7 +353,7 @@ static func equip_for_field(hero: Combatant) -> void:
 
 
 static func _field_strike(hero: Combatant, daggers: Array[AdagaPsiquica], state: Dictionary) -> void:
-	var arm_rest := hero.find_children("*", "SkeletonModifier3D", true, false)
+	var arm_rest := hero.find_children("*", "SkeletonModifier3D", true, false).filter(func(m: Node) -> bool: return m is ArmRest)
 	for m: Node in arm_rest:
 		(m as SkeletonModifier3D).active = false  # o golpe já põe os braços no lugar
 	for d: AdagaPsiquica in daggers:
@@ -359,7 +362,7 @@ static func _field_strike(hero: Combatant, daggers: Array[AdagaPsiquica], state:
 			d.materialize()
 		d.flare(0.5)
 		d.trail(true)
-	await hero.get_tree().create_timer(0.45).timeout
+	await hero.get_tree().create_timer(0.55).timeout  # o 3º golpe do combo (D069) cai cortando em ~0,45 s
 	for d: AdagaPsiquica in daggers:
 		if is_instance_valid(d):
 			d.trail(false)

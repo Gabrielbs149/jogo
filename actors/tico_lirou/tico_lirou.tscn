@@ -6,6 +6,7 @@
 [ext_resource type="AnimationLibrary" path="res://actors/tico_lirou/golpes_tico.res" id="4_golpes"]
 [ext_resource type="AnimationLibrary" path="res://actors/tico_lirou/gestos_tico.res" id="5_gestos"]
 [ext_resource type="Script" path="res://actors/shared/vida_corpo.gd" id="6_vida"]
+[ext_resource type="Script" path="res://actors/shared/pernas_andando.gd" id="7_pernas"]
 
 [node name="TicoLirou" type="Node3D"]
 
@@ -19,6 +20,10 @@ libraries = {
 &"tico": ExtResource("4_golpes"),
 &"gestos": ExtResource("5_gestos")
 }
+
+[node name="PernasAndando" type="SkeletonModifier3D" parent="Mesh/TicoRig/GeneralSkeleton"]
+script = ExtResource("7_pernas")
+keep_body = Array[StringName]([&"tico/Golpe_3"])
 
 [node name="ArmRest" type="SkeletonModifier3D" parent="Mesh/TicoRig/GeneralSkeleton"]
 script = ExtResource("3_arm")
