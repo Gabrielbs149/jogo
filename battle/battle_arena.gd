@@ -954,8 +954,8 @@ func _dagger_animations() -> void:
 		var list: Array[StringName] = []
 		list.assign(animator.get("ability_animations"))
 		if list.size() >= 2:
-			list[0] = &"Dualwield_Melee_Attack_Slice"
-			list[1] = &"ual/Sword_Dash"
+			list[0] = &"atk/Dualwield_Melee_Attack_Chop"
+			list[1] = &"atk/Sword_Dash"
 		animator.set("ability_animations", list)
 		animator.set("combo", [] as Array[StringName])  # na luta por turnos o golpe é montado pela arena
 		var anim_player := player.find_children("*", "AnimationPlayer", true, false)
@@ -980,10 +980,10 @@ func _final_blow() -> void:
 ## Volta quando o golpe chega (o resto do _player_action aplica o dano e o efeito).
 func _dagger_rush(tgt: Combatant, ability: Ability) -> void:
 	var animator := player.get_node_or_null("Animator")
-	var strike := &"ual/Sword_Dash" if ability.shape == Ability.Shape.DASH else &"Dualwield_Melee_Attack_Slice"
+	var strike := &"atk/Sword_Dash" if ability.shape == Ability.Shape.DASH else &"atk/Dualwield_Melee_Attack_Chop"
 	# 1) agacha e toma impulso (D075: o salto ninja da UAL)
 	if animator:
-		animator.call("act", &"ual/NinjaJump_Start", 1.6)
+		animator.call("act", &"atk/NinjaJump_Start", 1.6)
 	Audio.play_at("esquiva", player.global_position, -10.0)
 	await _wait(0.2)
 	# 2) corre

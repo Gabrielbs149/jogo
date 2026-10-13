@@ -343,7 +343,7 @@ static func equip_for_field(hero: Combatant) -> void:
 		var list: Array[StringName] = []
 		list.assign(animator.get("ability_animations"))
 		if not list.is_empty():
-			list[0] = &"Dualwield_Melee_Attack_Slice"
+			list[0] = &"atk/Dualwield_Melee_Attack_Chop"
 		animator.set("ability_animations", list)
 	var state := {"last": 0.0}
 	if animator and animator.has_signal("combo_strike") and not (animator.get("combo") as Array).is_empty():

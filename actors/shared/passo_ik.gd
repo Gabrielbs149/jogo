@@ -92,9 +92,17 @@ func _process_modification_with_delta(delta: float) -> void:
 		var flat := Vector2(target.x - hip_world.x, target.z - hip_world.z).length()
 		var need_y := sqrt(maxf(reach * reach - flat * flat, 0.0))
 		hip_drop = maxf(hip_drop, (hip_world.y - target.y) - need_y)
-	# o quadril: desce o que for preciso e balança a cada passo (mais baixo no meio do apoio)
+	# o quadril: desce o que for preciso; no apoio amortece, e correndo (pé pouco tempo no chão, D077) o corpo sobe no ar
+	# entre um passo e outro, na altura de um salto de verdade com esse tempo no ar (g·t²/8)
 	var hips := sk.find_bone(hips_bone)
-	var bounce := bob * (0.5 - 0.5 * cos(phase * TAU * 2.0))
+	var step_phase := fposmod(phase * 2.0, 1.0)
+	var bounce := 0.0
+	if step_phase < duty:
+		bounce = bob * sin(PI * step_phase / duty)
+	else:
+		var air := (1.0 - duty) / cadence
+		var hop := minf(9.8 * air * air / 8.0, 0.09)
+		bounce = -hop * sin(PI * (step_phase - duty) / (1.0 - duty))
 	var pose := sk.get_bone_pose_position(hips)
 	var down := (maxf(hip_drop, 0.0) + bounce) * _weight
 	sk.set_bone_pose_position(hips, pose - Vector3(0.0, down, 0.0))
