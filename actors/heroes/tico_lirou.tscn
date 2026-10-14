@@ -49,26 +49,27 @@ shape = SubResource("Capsule_body")
 script = ExtResource("animator")
 idle = &"ual/Idle"
 walk = &"ual/Walk"
-run = &"ual/Sprint"
-jog = &"ual/Jog_Fwd"
-sneak = &"ual/Crouch_Fwd"
-sneak_idle = &"ual/Crouch_Idle"
-ability_animations = Array[StringName]([&"tico/Golpe_1", &"atk/Sword_Dash", &"ual/Spell_Simple_Shoot", &"Use_Item"])
+run = &"atk/Sprint"
+jog = &"atk/Jog_Fwd"
+sneak = &"atk/Crouch_Fwd"
+sneak_idle = &"atk/Crouch_Idle"
+ability_animations = Array[StringName]([&"tico/Golpe_1", &"tico/Estocada", &"ual/Spell_Simple_Shoot", &"Use_Item"])
 dodge = &"ual/Roll"
 dodge_speed = 2.4
 hit = &"ual/Hit_Chest"
 down = &"Death_A"
 walk_below = 1.2
 gaits = {
-&"ual/Crouch_Fwd": [0.65, 0.2, 1.6, 0.04, 0.0],
-&"ual/Jog_Fwd": [0.22, 0.8, 3.0, 0.12, 0.0],
-&"ual/Sprint": [0.18, 1.05, 3.6, 0.15, 0.85],
+&"atk/Crouch_Fwd": [0.65, 0.2, 1.6, 0.04, 0.0],
+&"atk/Jog_Fwd": [0.22, 0.8, 3.0, 0.12, 0.0],
+&"atk/Sprint": [0.18, 1.05, 3.6, 0.15, 0.85],
 &"ual/Walk": [0.6, 0.26, 2.0, 0.05, 0.0]
 }
 loco_blend = 0.2
 combo = Array[StringName]([&"tico/Golpe_1", &"tico/Golpe_2", &"tico/Golpe_3"])
 combo_recover = Array[StringName]([&"", &"", &""])
 combo_speed = 1.0
+armed_idle = &"tico/Guarda"
 fidgets = Array[StringName]([&"ual/Idle_FoldArms", &"ual/Idle_No", &"ual/Idle_Talking"])
 gestures = {
 "pega": &"ual/PickUp_Table",

@@ -18,12 +18,21 @@ extends SceneTree
 ## Uso: godot --headless --path . -s tools/art/criar_golpes_tico.gd
 
 const OUT := "res://actors/tico_lirou/golpes_tico.res"
+## Giro da adaga na mão esquerda (o mesmo de AdagaPsiquica.GRIP_ROTATION).
+const GRIP_ROTATION := Vector3(25, 0, 90)
 const FPS := 30.0
 
-const GUARDA := {"braco": [Vector3(0.5, -0.6, 0.45), Vector3(0.3, 0.05, 0.95), Vector3(0.3, 0.45, 0.85)], "tronco": 6.0}
-const GUARDA_INSPIRA := {"braco": [Vector3(0.52, -0.55, 0.47), Vector3(0.32, 0.1, 0.93), Vector3(0.32, 0.5, 0.82)], "tronco": 4.0}
+## Guarda de quem luta com faca (D080): joelhos dobrados, pé esquerdo à frente, o peito virado um pouco para a direita
+## (o ombro esquerdo na frente); a mão da frente (esquerda) na altura do peito, a de trás recolhida perto do queixo,
+## as duas lâminas para a frente e para cima. (A antiga, simétrica de braços abertos, parecia um abraço.)
+const GUARDA := {"esq": [Vector3(0.35, -0.45, 0.82), Vector3(0.05, 0.35, 0.94), Vector3(0.1, 0.55, 0.83)],
+	"dir": [Vector3(0.6, -0.7, 0.35), Vector3(-0.3, 0.55, 0.78), Vector3(0.0, 0.75, 0.65)],
+	"tronco": 8.0, "baixa": 0.035, "passo": 0.35, "giro": -18.0}
+const GUARDA_INSPIRA := {"esq": [Vector3(0.36, -0.42, 0.83), Vector3(0.06, 0.4, 0.92), Vector3(0.1, 0.6, 0.8)],
+	"dir": [Vector3(0.6, -0.68, 0.38), Vector3(-0.28, 0.6, 0.75), Vector3(0.0, 0.78, 0.62)],
+	"tronco": 6.0, "baixa": 0.045, "passo": 0.35, "giro": -16.0}
 ## braço de guarda recolhido junto do peito (o que não está golpeando)
-const RECOLHIDO := [Vector3(0.45, -0.75, 0.2), Vector3(0.05, 0.25, 0.97), Vector3(0.1, 0.8, 0.55)]
+const RECOLHIDO := [Vector3(0.5, -0.72, 0.3), Vector3(0.35, 0.2, 0.92), Vector3(0.45, 0.5, 0.75)]  # D080: a lâmina ao lado, não na frente da cara
 
 # ---- Combo do mapa (D079, refeito com mais corpo): preparo bem carregado, golpe rápido com giro do tronco e passo,
 # braço passando do ponto. O tronco inclina no máximo ~18° (cabeça grande: mais que isso vira cabeçada, D077).
@@ -32,16 +41,21 @@ const RECOLHIDO := [Vector3(0.45, -0.75, 0.2), Vector3(0.05, 0.25, 0.97), Vector
 const G1_PREPARA := {"esq": RECOLHIDO,
 	"dir": [Vector3(0.85, 0.3, -0.45), Vector3(0.7, 0.5, -0.5), Vector3(0.25, 0.45, -0.85)],
 	"giro": -55.0, "tronco": -4.0, "quadril": -0.03, "baixa": 0.05, "passo": 0.2, "cabeca": Vector3(0, 0, 4)}
+# D080: no corte o braço estica para a frente e o pulso leva a lâmina adiante do corpo (antes ela ficava atravessada
+# na frente da barriga e, no acompanhamento, sumia atrás dele: com o braço curto do Tico o golpe não aparecia)
 const G1_CORTA := {"esq": RECOLHIDO,
-	"dir": [Vector3(0.05, 0.12, 1.0), Vector3(-0.4, 0.08, 0.92), Vector3(-0.95, 0.05, 0.3)],
+	"dir": [Vector3(0.1, 0.12, 1.0), Vector3(-0.25, 0.08, 0.96), Vector3(-0.6, 0.08, 0.8)],
 	"giro": 30.0, "tronco": 14.0, "quadril": 0.14, "baixa": 0.08, "passo": -0.95}
 const G1_SEGUE := {"esq": RECOLHIDO,
-	"dir": [Vector3(-0.8, 0.0, 0.6), Vector3(-0.95, -0.05, 0.15), Vector3(-0.55, -0.1, -0.85)],
-	"giro": 62.0, "tronco": 14.0, "quadril": 0.15, "baixa": 0.08, "passo": -0.95, "cabeca": Vector3(0, 0, -4)}
+	"dir": [Vector3(-0.45, 0.02, 0.9), Vector3(-0.8, -0.02, 0.6), Vector3(-0.8, -0.05, 0.6)],
+	"giro": 55.0, "tronco": 14.0, "quadril": 0.15, "baixa": 0.08, "passo": -0.95, "cabeca": Vector3(0, 0, -4)}
+const G1_SEGUE_FIM := {"esq": RECOLHIDO,
+	"dir": [Vector3(-0.5, 0.0, 0.86), Vector3(-0.85, -0.05, 0.5), Vector3(-0.85, -0.1, 0.5)],
+	"giro": 60.0, "tronco": 13.0, "quadril": 0.15, "baixa": 0.08, "passo": -0.95, "cabeca": Vector3(0, 0, -4)}
 
 # Golpe 2: revés de esquerda subindo na diagonal, de baixo (à direita dele) para cima (à esquerda); pé esquerdo à frente
 const G2_PREPARA := {"dir": RECOLHIDO,
-	"esq": [Vector3(-0.6, -0.5, 0.6), Vector3(-0.92, -0.38, 0.1), Vector3(-0.35, -0.65, -0.68)],
+	"esq": [Vector3(-0.6, -0.5, 0.6), Vector3(-0.92, -0.38, 0.1), Vector3(-0.4, -0.42, -0.81)],  # D080: a ponta não raspa o chão
 	"giro": -50.0, "tronco": 16.0, "baixa": 0.09, "passo": -0.45, "cabeca": Vector3(0, -4, 0)}
 const G2_CORTA := {"dir": RECOLHIDO,
 	"esq": [Vector3(0.35, 0.4, 0.85), Vector3(0.5, 0.6, 0.62), Vector3(0.85, 0.5, 0.15)],
@@ -55,7 +69,8 @@ const G3_CARREGA := {"braco": [Vector3(0.6, 0.72, -0.3), Vector3(0.35, 0.9, -0.2
 	"tronco": -10.0, "baixa": 0.1, "quadril": -0.04, "cabeca": Vector3(0, 6, 0)}
 const G3_SOBE := {"braco": [Vector3(0.5, 0.85, 0.15), Vector3(0.3, 0.92, 0.25), Vector3(0.05, 0.85, 0.5)],
 	"tronco": -6.0, "baixa": -0.08, "quadril": 0.03, "cabeca": Vector3(0, 8, 0)}
-const G3_X := {"braco": [Vector3(0.12, -0.3, 0.95), Vector3(-0.55, -0.5, 0.67), Vector3(-0.45, -0.8, 0.4)],
+# D080: o X acaba com as lâminas cruzadas na frente, para baixo e para dentro (antes elas fincavam no chão)
+const G3_X := {"braco": [Vector3(0.15, -0.25, 0.95), Vector3(-0.5, -0.15, 0.85), Vector3(-0.6, -0.1, 0.8)],
 	"tronco": 18.0, "baixa": 0.13, "quadril": 0.16, "passo": 0.6, "cabeca": Vector3(0, -2, 0)}
 
 # ---- Luta por turnos: Corte em X (salta e corta) e Estocada dupla (avança e estoca)
@@ -93,7 +108,7 @@ func _initialize() -> void:
 	var lib := AnimationLibrary.new()
 	lib.add_animation(&"Guarda", _make([[0.0, GUARDA], [0.9, GUARDA_INSPIRA], [1.8, GUARDA]], true))
 	lib.add_animation(&"Golpe_1", _make([[0.0, GUARDA], [0.11, G1_PREPARA], [0.18, G1_CORTA, "rapido"],
-		[0.26, G1_SEGUE, "rapido"], [0.36, G1_SEGUE], [0.6, GUARDA]], false))
+		[0.26, G1_SEGUE, "rapido"], [0.36, G1_SEGUE_FIM], [0.6, GUARDA]], false))
 	lib.add_animation(&"Golpe_2", _make([[0.0, GUARDA], [0.11, G2_PREPARA], [0.18, G2_CORTA, "rapido"],
 		[0.26, G2_SEGUE, "rapido"], [0.36, G2_SEGUE], [0.62, GUARDA]], false))
 	lib.add_animation(&"Golpe_3", _make([[0.0, GUARDA], [0.16, G3_CARREGA], [0.24, G3_SOBE, "rapido"], [0.32, G3_X, "rapido"],
@@ -227,7 +242,12 @@ func _apply(pose: Dictionary, time: float) -> void:
 		_aim(lower, spin * _to_space(dirs[1], out))
 		_sk.set_bone_pose_rotation(hand, _sk.get_bone_rest(hand).basis.get_rotation_quaternion())
 		# o pulso vira para a lâmina (que sai da mão no giro da empunhadura) apontar para onde a pose pede
-		var blade := Basis.from_euler(AdagaPsiquica.GRIP_ROTATION * PI / 180.0) * Vector3.UP
+		# (o mesmo que AdagaPsiquica.grip_rotation: a mão direita é o espelho da esquerda, D080; o script da adaga não
+		# compila aqui fora do jogo, porque usa o Audio)
+		var grip := GRIP_ROTATION
+		if side == "Right":
+			grip = Vector3(grip.x, -grip.y, -grip.z)
+		var blade := Basis.from_euler(grip * PI / 180.0) * Vector3.UP
 		_aim(hand, spin * _to_space(dirs[2], out), blade)
 
 

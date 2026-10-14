@@ -945,22 +945,23 @@ func _view_pose(kind: String) -> void:
 		dagger.flare(0.4)
 
 
-## Com as adagas (D075): guarda com as lâminas baixas (UAL), corte duplo e estocada longa. As peças do corpo ficam (a
+## Com as adagas (D075): a guarda do Tico (D080, a mesma do mapa; a "Sword_Idle" da UAL era de espada numa mão só e
+## deixava a outra adaga solta), corte duplo e estocada longa. As peças do corpo ficam (a
 ## ArmRest só age nas animações do KayKit; o corpo vivo e o pé no chão se desligam sozinhos na luta por turnos).
 func _dagger_animations() -> void:
 	var animator := player.get_node_or_null("Animator")
 	if animator:
-		animator.set("idle", &"ual/Sword_Idle")
+		animator.set("idle", &"tico/Guarda")
 		var list: Array[StringName] = []
 		list.assign(animator.get("ability_animations"))
 		if list.size() >= 2:
 			list[0] = &"atk/Dualwield_Melee_Attack_Chop"
-			list[1] = &"atk/Sword_Dash"
+			list[1] = &"tico/Estocada"  # D080: a Sword_Dash é de espada numa mão; a outra adaga entrava na barriga
 		animator.set("ability_animations", list)
 		animator.set("combo", [] as Array[StringName])  # na luta por turnos o golpe é montado pela arena
 		var anim_player := player.find_children("*", "AnimationPlayer", true, false)
 		if not anim_player.is_empty():
-			(anim_player[0] as AnimationPlayer).play(&"ual/Sword_Idle", 0.2)
+			(anim_player[0] as AnimationPlayer).play(&"tico/Guarda", 0.2)
 	# só a ArmRest fica (ela já não age nas animações da UAL); o corpo vivo e o pé no chão saem na arena
 	for modifier: Node in player.find_children("*", "SkeletonModifier3D", true, false):
 		(modifier as SkeletonModifier3D).active = modifier is ArmRest
@@ -980,7 +981,7 @@ func _final_blow() -> void:
 ## Volta quando o golpe chega (o resto do _player_action aplica o dano e o efeito).
 func _dagger_rush(tgt: Combatant, ability: Ability) -> void:
 	var animator := player.get_node_or_null("Animator")
-	var strike := &"atk/Sword_Dash" if ability.shape == Ability.Shape.DASH else &"atk/Dualwield_Melee_Attack_Chop"
+	var strike := &"tico/Estocada" if ability.shape == Ability.Shape.DASH else &"atk/Dualwield_Melee_Attack_Chop"
 	# 1) agacha e toma impulso (D075: o salto ninja da UAL)
 	if animator:
 		animator.call("act", &"atk/NinjaJump_Start", 1.6)
@@ -996,7 +997,7 @@ func _dagger_rush(tgt: Combatant, ability: Ability) -> void:
 	var leap := minf(1.2, total)
 	var run_to := from + flat * (total - leap)
 	if animator and total - leap > 0.2:
-		animator.call("hold", &"ual/Sprint")
+		animator.call("hold", &"atk/Sprint")
 		var run := create_tween()
 		run.tween_property(player, "global_position", run_to, clampf((total - leap) / 9.0, 0.12, 0.35))
 		await run.finished
