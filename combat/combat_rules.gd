@@ -191,11 +191,13 @@ static func _strike(user: Combatant, ability: Ability, t: Combatant, all: Array[
 			var die := d20(adv)
 			var natural := int(die["value"])
 			var bless := Dice.roll(1, user.bless_die()) if user.bless_die() > 0 else 0
-			var total := natural + user.attack_bonus + bless
-			var head := "%s+%d%s = %d vs CA %d" % [die["text"], user.attack_bonus, (" +%d bênção" % bless) if bless > 0 else "", total, t.current_ac()]
+			var height := high_ground(user, t)
+			var total := natural + user.attack_bonus + bless + height
+			var head := "%s+%d%s%s = %d vs CA %d" % [die["text"], user.attack_bonus, (" +%d bênção" % bless) if bless > 0 else "",
+				(" %+d %s" % [height, "do alto" if height > 0 else "de baixo"]) if height != 0 else "", total, t.current_ac()]
 			var crit := natural == 20
 			# o dado na tela (D048): quem rolou, as faces, o que soma e contra o quê
-			var shown := {"by": user, "rolls": die["rolls"], "kept": natural, "mod": user.attack_bonus + bless, "total": total,
+			var shown := {"by": user, "rolls": die["rolls"], "kept": natural, "mod": user.attack_bonus + bless + height, "total": total,
 				"vs": t.current_ac(), "vs_name": "CA", "target": t}
 			if natural == 1 or (not crit and total < t.current_ac()):
 				shown["verdict"] = "FALHA" if natural == 1 else "ERROU"
@@ -253,6 +255,22 @@ static func _sneak_applies(user: Combatant, ability: Ability, t: Combatant, all:
 		if c != user and c.team == user.team and c.is_active() and _flat_distance(c.global_position, t.global_position) <= SNEAK_ALLY_RANGE:
 			return true
 	return false
+
+
+## Terreno alto (D083, do Baldur's Gate 3): quem ataca de mais de HIGH_GROUND metros acima tem +2 para acertar; de
+## baixo, -2.
+const HIGH_GROUND := 2.3
+
+
+static func high_ground(user: Combatant, t: Combatant) -> int:
+	if not is_instance_valid(user) or not is_instance_valid(t):
+		return 0
+	var dy := user.global_position.y - t.global_position.y
+	if dy >= HIGH_GROUND:
+		return 2
+	if dy <= -HIGH_GROUND:
+		return -2
+	return 0
 
 
 static func _flat_distance(a: Vector3, b: Vector3) -> float:

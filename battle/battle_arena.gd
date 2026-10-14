@@ -351,6 +351,8 @@ func _player_action(index: int) -> void:
 	CombatRules.apply(player, ability, results, _fx)
 	for r: Dictionary in results:
 		_add_posture(r["target"] as Combatant, int(r["amount"]) + (8 if _last_grade == "perfeito" else 0))
+	if rush and player.is_active() and is_instance_valid(tgt) and tgt.is_active():
+		await _offhand_strike(tgt, "Mão de trás")
 	if ability.is_offensive():
 		player.remove_flag("invisible")
 	await _wait(0.3 if rush else 0.6)
@@ -432,6 +434,10 @@ const DEFEND := 100
 const POTION := 101
 const ANALYZE := 102
 const FLEE := 103
+## D083 (do Baldur's Gate 3): empurrão.
+const SHOVE := 104
+## Empurrão: quanto o alvo voa para trás (m).
+const SHOVE_DISTANCE := 1.8
 
 
 ## As ações que não são habilidade, para o menu: {"id", "key", "title", "info"}.
@@ -441,6 +447,8 @@ func extra_actions() -> Array[Dictionary]:
 		{"id": POTION, "key": "3", "title": "Poção", "info": "recupera vida (restam %d)" % potions},
 		{"id": ANALYZE, "key": "4", "title": "Analisar", "info": "mostra o próximo golpe do alvo; o seu próximo ataque tem vantagem"},
 		{"id": FLEE, "key": "5", "title": "Fugir", "info": "tenta escapar da luta" if not _boss_alive() else "não dá para fugir do chefe"},
+		{"id": SHOVE, "key": "6", "title": "Empurrar", "info": "disputa de força: joga o alvo para trás e ele fica desequilibrado (o próximo ataque contra ele tem vantagem)"
+			if not (target and is_instance_valid(target) and target.is_boss) else "o chefe é grande demais para empurrar"},
 	]
 
 
@@ -450,6 +458,8 @@ func can_use_extra(id: int) -> bool:
 			return potions > 0 and player.hp < player.max_hp
 		FLEE:
 			return not _boss_alive()
+		SHOVE:
+			return target != null and is_instance_valid(target) and target.is_active() and not target.is_boss
 	return true
 
 
@@ -489,18 +499,102 @@ func _extra_action(id: int) -> void:
 			if target and is_instance_valid(target):
 				target.add_status(_status("Exposto", {"expose": true}))
 				await _hud.say(player.display_name, _analysis(target), 1.1)
+		SHOVE:
+			await _shove(target)
 		FLEE:
 			var roll := Dice.d20()
 			var total := roll + player.dex_save
 			var ok := roll != 1 and (roll == 20 or total >= flee_dc())
 			await _hud.roll_dice([{"by": player, "rolls": [roll], "kept": roll, "mod": player.dex_save, "total": total, "vs": flee_dc(),
-				"vs_name": "CD", "target": player, "verdict": "FUGIU!" if ok else "NÃO DEU"}] as Array[Dictionary])
+				"vs_name": "CD", "target": player, "skill": true, "verdict": "ACERTOU" if ok else "ERROU"}] as Array[Dictionary])
 			if ok:
 				_fled = true
 				await _hud.say(player.display_name, "%s some no meio da poeira." % player.display_name, 0.5)
 			else:
 				await _hud.say(player.display_name, "%s tenta fugir, mas não acha saída." % player.display_name, 0.4)
 	_hud.refresh()
+
+
+## Golpe da mão de trás (D083, do Baldur's Gate 3): quem luta com duas armas golpeia com a segunda como ação bônus.
+## Rola o acerto normal, mas o dano não soma o modificador (só o dado da arma). "Riposte" é o mesmo golpe como reação.
+func _offhand_strike(tgt: Combatant, title: String) -> void:
+	var off := offhand_ability(title)
+	_face(player, tgt)
+	var results := CombatRules.resolve(player, off, tgt, tgt.global_position, CombatRules.everyone(get_tree()))
+	await _show_dice(results)
+	var animator := player.get_node_or_null("Animator")
+	if animator:
+		animator.call("act", &"tico/Golpe_2", 1.4)  # o revés da mão esquerda (a de trás)
+	await _wait(0.16)
+	Audio.play_at("golpe", player.global_position, -5.0)
+	for r: Dictionary in results:
+		var t := r["target"] as Combatant
+		if int(r["amount"]) > 0 and is_instance_valid(t):
+			var high := 1.6 if t.is_boss else 0.55
+			_fx.slash(t.global_position + Vector3.UP * high, t.global_position - player.global_position, AdagaPsiquica.PINK,
+				1.4 if t.is_boss else 0.8, 0.9)
+		elif r["kind"] == "miss" and is_instance_valid(t) and not t.is_boss:
+			t.dodged.emit()
+	CombatRules.apply(player, off, results, _fx)
+	for r: Dictionary in results:
+		_add_posture(r["target"] as Combatant, int(r["amount"]))
+	await _wait(0.35)
+
+
+## A habilidade da mão de trás: o ataque básico do herói sem o bônus no dano.
+func offhand_ability(title: String = "Mão de trás") -> Ability:
+	var off := player.abilities[0].duplicate() as Ability
+	off.title = title
+	off.bonus = 0
+	off.hits = 1
+	off.dnd_note = "Ação bônus · segunda arma (sem o modificador no dano)"
+	return off
+
+
+## Empurrão (D083, do Baldur's Gate 3): você rola d20 + ataque contra d20 + o melhor salvamento físico do alvo. Ganhou:
+## ele voa para trás e fica Desequilibrado (o próximo ataque contra ele tem vantagem, e vantagem liga o ataque furtivo).
+## O chefe é grande demais.
+func _shove(tgt: Combatant) -> void:
+	if tgt == null or not is_instance_valid(tgt) or tgt.is_boss:
+		return
+	_face(player, tgt)
+	var mine := Dice.d20()
+	var theirs := Dice.d20()
+	var my_total := mine + player.attack_bonus
+	var resist := maxi(tgt.dex_save, tgt.con_save)
+	var their_total := theirs + resist
+	var won := mine != 1 and (mine == 20 or my_total > their_total)
+	await _hud.roll_dice([{"by": player, "rolls": [mine], "kept": mine, "mod": player.attack_bonus, "total": my_total,
+		"vs": their_total, "vs_name": "%s (%d+%d)" % [tgt.display_name, theirs, resist], "target": tgt,
+		"skill": true, "verdict": "ACERTOU" if won else "ERROU"}] as Array[Dictionary])
+	_action_cam(tgt)
+	await _approach(player, tgt.global_position, 1.2)
+	var animator := player.get_node_or_null("Animator")
+	if animator:
+		animator.call("act", &"atk/Punch_Cross", 1.5)
+	await _wait(0.2)
+	if won:
+		Audio.play_at("golpe", tgt.global_position, 0.0)
+		var away := tgt.global_position - player.global_position
+		away.y = 0.0
+		away = away.normalized() if away.length() > 0.01 else -tgt.global_basis.z
+		var fly := create_tween()
+		fly.tween_property(tgt, "global_position", tgt.global_position + away * SHOVE_DISTANCE, 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+		_fx.shake(tgt)
+		_add_posture(tgt, 10)
+		tgt.add_status(_status("Desequilibrado", {"expose": true}))
+		_fx.floating_text(tgt.global_position, "Desequilibrado", Color(1.0, 0.75, 0.4))
+		player.rolled.emit("%s empurra %s: %d contra %d" % [player.display_name, tgt.display_name, my_total, their_total])
+		await fly.finished
+		await _wait(0.5)
+		if _homes.has(tgt) and tgt.is_active():
+			await _return_home(tgt)  # volta cambaleando para o lugar (empurrões seguidos o tirariam da arena)
+	else:
+		tgt.dodged.emit()
+		player.rolled.emit("%s tenta empurrar %s e não consegue: %d contra %d" % [player.display_name, tgt.display_name, my_total, their_total])
+	await _wait(0.4)
+	_action_cam(null)
+	await _return_home(player)
 
 
 func _status(title: String, extra: Dictionary) -> Dictionary:
@@ -623,6 +717,8 @@ func _enemy_turn(enemy: Combatant, extra: bool = false) -> void:
 	elif nat == 20:
 		_hud.banner("GOLPE CRÍTICO!", Color(1, 0.35, 0.3))
 	var on_me := results.filter(func(r: Dictionary) -> bool: return r["target"] == player and int(r["amount"]) > 0)
+	var missed_me := melee and not _daggers.is_empty() and results.any(
+		func(r: Dictionary) -> bool: return r["target"] == player and r["kind"] == "miss")
 	if on_me.is_empty() or auto_play:
 		# errou (ou o simulador joga): o golpe sai de uma vez; quando tem defesa, ele sai na hora dela (D082)
 		_strike(enemy, index, 0.5)
@@ -662,6 +758,11 @@ func _enemy_turn(enemy: Combatant, extra: bool = false) -> void:
 		CombatRules.apply(player, player.abilities[0], counter, _fx)
 		for r: Dictionary in counter:
 			_add_posture(enemy, int(r["amount"]) + 10)
+	if missed_me and player.is_active() and is_instance_valid(enemy) and enemy.is_active():
+		# D083 (Riposte, do Baldur's Gate 3): errou o golpe corpo a corpo em você? A mão de trás revida na hora
+		Audio.play_at("aparar", player.global_position + Vector3.UP, 0.0)
+		_fx.floating_text(player.global_position, "RIPOSTE!", Color(1, 0.85, 0.3), true)
+		await _offhand_strike(enemy, "Riposte")
 	_hud.refresh()
 	await _wait(0.4)
 	if melee and is_instance_valid(enemy) and enemy.is_active():

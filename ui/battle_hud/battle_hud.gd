@@ -83,7 +83,7 @@ func setup(arena: BattleArena) -> void:
 		button.pressed.connect(_choose.bind(i))
 		_actions.add_child(button)
 		_buttons.append(button)
-	# ações do meio da luta: uma fileira de botões menores embaixo das habilidades (2 / 3 / 4 / 5)
+	# ações do meio da luta: uma fileira de botões menores embaixo das habilidades (2 / 3 / 4 / 5 / 6)
 	var extra_row := HBoxContainer.new()
 	extra_row.add_theme_constant_override("separation", 4)
 	for action: Dictionary in arena.extra_actions():
@@ -419,7 +419,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			_choose(i)
 			return
 	if event is InputEventKey and event.is_pressed() and not event.is_echo():
-		var extra := {KEY_2: BattleArena.DEFEND, KEY_3: BattleArena.POTION, KEY_4: BattleArena.ANALYZE, KEY_5: BattleArena.FLEE}
+		var extra := {KEY_2: BattleArena.DEFEND, KEY_3: BattleArena.POTION, KEY_4: BattleArena.ANALYZE, KEY_5: BattleArena.FLEE,
+			KEY_6: BattleArena.SHOVE}
 		var code := (event as InputEventKey).keycode
 		if extra.has(code):
 			get_viewport().set_input_as_handled()
