@@ -6,11 +6,15 @@ extends SceneTree
 ## mesmos eixos, pelo perfil humanoide). O resto do corpo fica como no retarget.
 ## Depois um ajuste para o corpo redondo dele: o braço nunca entra na barriga (abre para fora o que precisar).
 ## Salva actors/tico_lirou/ual_tico.res (biblioteca "ual" do Tico).
-## Uso: godot --headless --path . -s tools/art/retarget_ual_tico.gd   (depois do extrair_animacoes_ual.gd)
+## Com "-- mixamo" faz o mesmo com as do Mixamo (D081): assets/kits/mixamo/fbx/*.fbx -> actors/tico_lirou/mixamo_tico.res
+## (biblioteca "mix"; fora do Git, ver importar_mixamo.gd).
+## Uso: godot --headless --path . -s tools/art/retarget_ual_tico.gd [-- mixamo]   (depois do extrair_animacoes_ual.gd
+## ou do importar_mixamo.gd)
 
-const SOURCES := ["res://assets/kits/quaternius/animacoes/ual1.glb", "res://assets/kits/quaternius/animacoes/ual2.glb"]
-const LIB := "res://assets/kits/quaternius/animacoes/ual.res"
-const OUT := "res://actors/tico_lirou/ual_tico.res"
+const UAL := {"sources": ["res://assets/kits/quaternius/animacoes/ual1.glb", "res://assets/kits/quaternius/animacoes/ual2.glb"],
+	"lib": "res://assets/kits/quaternius/animacoes/ual.res", "out": "res://actors/tico_lirou/ual_tico.res", "prefix": "ual"}
+const MIXAMO := {"dir": "res://assets/kits/mixamo/fbx/", "lib": "res://assets/kits/mixamo/fbx/mixamo.res",
+	"out": "res://actors/tico_lirou/mixamo_tico.res", "prefix": "mix"}
 const FPS := 30.0
 const ARM := ["UpperArm", "LowerArm", "Hand"]
 ## O braço (do ombro ao cotovelo) aponta pelo menos isto para fora do corpo (seno do ângulo com o plano do meio).
@@ -21,6 +25,9 @@ const HEAD_DOWN_MAX := 25.0
 
 var _tico: Skeleton3D
 var _tico_player: AnimationPlayer
+## Encaixe no corpo (D081): braço e lâmina não entram no corpo nem no chão. Ligado nas do Mixamo (e com "-- encaixe").
+var _fit: EncaixeCorpo
+var _fixes: int = 0
 
 
 func _initialize() -> void:
@@ -36,31 +43,46 @@ func _run() -> void:
 			child.free()
 	_tico_player = tico.find_children("*", "AnimationPlayer", true, false)[0] as AnimationPlayer
 	_tico_player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
-	var sources: Array = []
-	for path: String in SOURCES:
+	var mode: Dictionary = MIXAMO if OS.get_cmdline_user_args().has("mixamo") else UAL
+	if mode == MIXAMO or OS.get_cmdline_user_args().has("encaixe"):
+		_fit = EncaixeCorpo.new(_tico, tico)
+	var lib := (load(String(mode["lib"])) as AnimationLibrary).duplicate(true) as AnimationLibrary
+	if not _tico_player.has_animation_library(String(mode["prefix"])):
+		_tico_player.add_animation_library(String(mode["prefix"]), lib)
+	# de onde vem cada animação: [player, esqueleto, nome lá]
+	var origin := {}
+	var paths: Array = mode.get("sources", [])
+	if mode.has("dir"):
+		paths = []
+		for f: String in DirAccess.get_files_at(String(mode["dir"])):
+			if f.ends_with(".fbx"):
+				paths.append(String(mode["dir"]) + f)
+	for path: String in paths:
 		var src := (load(path) as PackedScene).instantiate() as Node3D
 		root.add_child(src)
 		var player := src.find_children("*", "AnimationPlayer", true, false)[0] as AnimationPlayer
 		player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
-		sources.append([player, src.find_children("*", "Skeleton3D", true, false)[0] as Skeleton3D])
+		var skeleton := src.find_children("*", "Skeleton3D", true, false)[0] as Skeleton3D
+		if mode.has("dir"):
+			origin[StringName(path.get_file().get_basename())] = [player, skeleton, player.get_animation_list()[0]]
+		else:
+			for n: StringName in player.get_animation_list():
+				if not origin.has(n):
+					origin[n] = [player, skeleton, n]
 	await process_frame
-	var lib := (load(LIB) as AnimationLibrary).duplicate(true) as AnimationLibrary
 	var done := 0
 	for anim_name: StringName in lib.get_animation_list():
-		var source: Array = []
-		for s: Array in sources:
-			if (s[0] as AnimationPlayer).has_animation(anim_name):
-				source = s
-				break
-		if source.is_empty():
+		if not origin.has(anim_name):
 			continue
-		_redo_arms(lib.get_animation(anim_name), String(anim_name), source[0], source[1])
+		var o: Array = origin[anim_name]
+		_redo_arms(lib.get_animation(anim_name), String(mode["prefix"]) + "/" + String(anim_name), o[0], o[1], o[2])
 		done += 1
-	print("animações com braço refeito: ", done, " salvo: ", ResourceSaver.save(lib, OUT))
+	print("ajustes do encaixe no corpo: ", _fixes)
+	print("animações com braço refeito: ", done, " salvo: ", ResourceSaver.save(lib, String(mode["out"])))
 	quit()
 
 
-func _redo_arms(anim: Animation, anim_name: String, src_player: AnimationPlayer, src: Skeleton3D) -> void:
+func _redo_arms(anim: Animation, tico_anim: String, src_player: AnimationPlayer, src: Skeleton3D, src_anim: StringName) -> void:
 	# primeiro tira todas as trilhas velhas do braço, depois cria as novas (tirar uma trilha muda o número das outras)
 	for side: String in ["Left", "Right"]:
 		for part: String in ARM:
@@ -78,11 +100,14 @@ func _redo_arms(anim: Animation, anim_name: String, src_player: AnimationPlayer,
 			tracks[side + part] = t
 	var head_track := anim.add_track(Animation.TYPE_ROTATION_3D)
 	anim.track_set_path(head_track, NodePath("%GeneralSkeleton:Head"))
-	src_player.play(anim_name)
-	_tico_player.play("ual/" + anim_name)
-	var frames := maxi(1, int(ceil(anim.length * FPS)))
+	src_player.play(src_anim)
+	_tico_player.play(tico_anim)
+	if _fit:
+		_fit.reset()
+	var fps := FPS * (2.0 if _fit else 1.0)  # com o encaixe, 60 por s: entre dois quadros a lâmina não cruza o corpo
+	var frames := maxi(1, int(ceil(anim.length * fps)))
 	for f: int in frames + 1:
-		var time := minf(f / FPS, anim.length)
+		var time := minf(f / fps, anim.length)
 		src_player.seek(time, true)
 		_tico_player.seek(time, true)
 		src.force_update_all_bone_transforms()
@@ -114,6 +139,10 @@ func _redo_arms(anim: Animation, anim_name: String, src_player: AnimationPlayer,
 			var hp := _global_of(_tico, _tico.get_bone_parent(head)).basis.orthonormalized()
 			_tico.set_bone_pose_rotation(head, (hp.inverse() * want).get_rotation_quaternion())
 			anim.rotation_track_insert_key(head_track, time, _tico.get_bone_pose_rotation(head))
+		if _fit:
+			_fixes += _fit.fit()
+			for bone: String in tracks:
+				anim.rotation_track_insert_key(tracks[bone], time, _tico.get_bone_pose_rotation(_tico.find_bone(bone)))
 
 
 ## O braço do Tico não entra na barriga: se aponta para dentro do corpo, gira (em volta da frente) até sair.

@@ -10,7 +10,7 @@ extends SkeletonModifier3D
 @export var right_bone: StringName = &"RightUpperArm"
 ## Animações que já põem o braço do jeito certo e ficam de fora (D072): as da UAL (refeitas para o braço do Tico) e as
 ## feitas por pose. Trocar de uma para outra muda o peso aos poucos (sem tranco).
-@export var skip_prefixes: PackedStringArray = ["ual/", "gestos/", "tico/", "atk/Crouch", "atk/Jog", "atk/Sprint", "atk/Sword_Dash", "atk/NinjaJump", "atk/Melee_Hook", "atk/Punch"]
+@export var skip_prefixes: PackedStringArray = ["ual/", "mix/", "gestos/", "tico/", "atk/Crouch", "atk/Jog", "atk/Sprint", "atk/Sword_Dash", "atk/NinjaJump", "atk/Melee_Hook", "atk/Punch"]
 
 var _player: AnimationPlayer
 var _weight: float = 1.0
