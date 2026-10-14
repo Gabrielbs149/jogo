@@ -102,6 +102,9 @@ func _ready() -> void:
 		_homes[c] = c.transform
 	target = enemies[0]
 	_camera = get_node_or_null("Camera3D") as Camera3D
+	if _camera:
+		# a câmera da arena é posta a cada quadro (_process): sem suavização de física (o motor avisava, D082)
+		_camera.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	_marker = Label3D.new()
 	_marker.text = "▼"
 	_marker.font_size = 96
