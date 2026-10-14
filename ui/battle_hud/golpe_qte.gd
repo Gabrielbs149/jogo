@@ -5,6 +5,8 @@ extends Control
 ## - feint: o anel engana (fecha até a metade, abre de volta e só então fecha de verdade).
 ## - arrow (-1/+1): aparece uma seta e a tecla certa é A ou D (desvio para o lado).
 ## - step/steps: "golpe 2 de 3" (bolinhas embaixo).
+## - hidden (D082, defesa como no Clair Obscur): nada na tela (só a seta, que é informação, não tempo); a hora é a do
+##   impacto do golpe do inimigo, que a arena sincroniza com o fim do anel invisível.
 ## Devolve {"key": ação apertada (vazio = não apertou), "error": segundos (negativo = cedo)}.
 
 signal _done(result: Dictionary)
@@ -25,6 +27,7 @@ var _arrow: int = 0
 var _step: int = 0
 var _steps: int = 0
 var _window: float = 0.1
+var _hidden: bool = false
 # o "estalo" do resultado (desenhado depois que termina)
 var _pop_t: float = -1.0
 var _pop_color := Color.WHITE
@@ -36,9 +39,9 @@ func _ready() -> void:
 
 
 func ring(center: Vector2, duration: float, keys: Array[StringName], label: String, feint: bool = false, arrow: int = 0,
-		step: int = 0, steps: int = 0, window: float = 0.1) -> Dictionary:
-	# acessibilidade (D074): "tempo dos reflexos" deixa o anel mais lento
-	_duration = (maxf(duration, 0.2) + (0.45 if feint else 0.0)) * clampf(float(Settings.value("tempo_qte")), 1.0, 2.0)
+		step: int = 0, steps: int = 0, window: float = 0.1, hidden: bool = false) -> Dictionary:
+	_duration = duration_for(duration, feint)
+	_hidden = hidden
 	_keys = keys
 	_feint = feint
 	_arrow = arrow
@@ -54,6 +57,17 @@ func ring(center: Vector2, duration: float, keys: Array[StringName], label: Stri
 	queue_redraw()
 	var result: Dictionary = await _done
 	return result
+
+
+## Quanto o anel leva de verdade até a hora (o que a arena usa para sincronizar o golpe do inimigo).
+## Acessibilidade (D074): "tempo dos reflexos" deixa mais lento.
+static func duration_for(duration: float, feint: bool = false) -> float:
+	return (maxf(duration, 0.2) + (0.45 if feint else 0.0)) * clampf(float(Settings.value("tempo_qte")), 1.0, 2.0)
+
+
+## Quando a finta para e quando volta a fechar (frações da duração).
+const FEINT_STOP := 0.42
+const FEINT_GO := 0.58
 
 
 ## O estalo do resultado no lugar do anel: dourado (perfeito), branco (bom) ou vermelho (errou).
@@ -88,8 +102,8 @@ func _process(delta: float) -> void:
 func _closing() -> float:
 	var t := _t
 	if _feint:
-		var fake := _duration * 0.42
-		var back := _duration * 0.58
+		var fake := _duration * FEINT_STOP
+		var back := _duration * FEINT_GO
 		if t < fake:
 			return 1.0 + 2.2 * (1.0 - t / fake * 0.6)
 		if t < back:
@@ -120,6 +134,10 @@ func _draw() -> void:
 		draw_arc(_pop_at, radius * (1.0 + k * 1.2), 0.0, TAU, 64, Color(_pop_color, 1.0 - k), 6.0 * (1.0 - k) + 1.0, true)
 		draw_circle(_pop_at, radius * 0.8 * (1.0 - k), Color(_pop_color, 0.35 * (1.0 - k)))
 	if not _active:
+		return
+	if _hidden:
+		if _arrow != 0:
+			_draw_arrow(_center, _arrow, clampf(_t / 0.12, 0.0, 1.0))
 		return
 	var c := _closing()
 	var near := clampf(1.0 - absf(c - 1.0) / 1.2, 0.0, 1.0)  # 1 quando está na hora

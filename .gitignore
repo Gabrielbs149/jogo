@@ -25,3 +25,8 @@ desktop.ini
 
 # Acervo local do editor (D043): todos os modelos do poly.pizza; só os usados vão para assets/kits/polypizza
 assets/acervo/
+
+# Mixamo (D081): a licença não deixa publicar as animações soltas e o repositório é público. Os .fbx e a biblioteca
+# convertida ficam só no PC de quem baixou (tools/art/importar_mixamo.gd refaz); sem eles o jogo usa as de sempre.
+assets/kits/mixamo/fbx/
+actors/tico_lirou/mixamo_tico.res

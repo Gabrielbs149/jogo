@@ -146,3 +146,33 @@ func test_dice_verdict_is_from_the_player_view() -> void:
 	assert_eq(view.call({"kept": 18, "verdict": "PASSOU", "save": "DES"}, true), ["RESISTIU", false], "o inimigo resiste = vermelho")
 	assert_eq(view.call({"kept": 15, "verdict": "ACERTOU"}, true), ["TE ACERTOU", false], "o inimigo acerta você = vermelho")
 	assert_eq(view.call({"kept": 6, "verdict": "ERROU"}, true), ["ESCAPOU", true], "o inimigo erra = verde")
+
+
+## D082 (como no Clair Obscur): o golpe do inimigo avisa pelo corpo e bate na hora da defesa. A animação de golpe dele
+## toca durante a espera, e o bote (o corpo indo para a frente) acontece perto da hora marcada, não antes.
+func test_enemy_strike_lands_on_the_defense_beat() -> void:
+	var arena := _arena(PackedStringArray([BEETLE]), true)
+	arena.auto_play = false  # o Tico começa e a arena fica esperando ele escolher: o inimigo não age sozinho
+	await wait_until(func() -> bool: return arena.get_node("BattleHUD").get("_choosing"), 20.0)
+	var enemy: Combatant = arena.enemies[0]
+	var anim_player := enemy.find_children("*", "AnimationPlayer", true, false)[0] as AnimationPlayer
+	var strike_anim := String((enemy.get_node("Animator").get("ability_animations") as Array)[0])
+	var at := 0.8
+	arena._strike(enemy, 0, at)
+	var played := false
+	var forward_at := -1.0
+	var start := Time.get_ticks_msec()
+	var t := 0.0
+	while t < at + 0.4:
+		await wait_process_frames(1)
+		t = (Time.get_ticks_msec() - start) / 1000.0
+		played = played or anim_player.current_animation == strike_anim
+		if forward_at < 0.0 and enemy.model.position.z < -0.3:
+			forward_at = t
+	assert_true(played, "o golpe dele tocou")
+	assert_between(forward_at, at - 0.08, at + 0.12, "a batida cai na hora de defender")
+
+
+func test_defense_ring_is_hidden_by_default() -> void:
+	assert_false(bool(Settings.value("anel_defesa")), "sem anel: lê o golpe e o som")
+	assert_almost_eq(GolpeQte.duration_for(0.8), 0.8 * clampf(float(Settings.value("tempo_qte")), 1.0, 2.0), 0.001)

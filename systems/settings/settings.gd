@@ -47,6 +47,7 @@ const DEFAULTS := {
 	# acessibilidade
 	"tamanho_interface": 1.0,
 	"tempo_qte": 1.0,
+	"anel_defesa": false,  # D082: sem anel, a defesa é lendo o golpe e o som (como no Clair Obscur)
 }
 ## Canal de áudio de cada volume.
 const BUSES := {"volume_geral": &"Master", "volume_musica": &"Musica", "volume_efeitos": &"Efeitos", "volume_ambiente": &"Ambiente"}

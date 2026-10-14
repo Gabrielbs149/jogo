@@ -155,7 +155,8 @@ func test_does_not_sink_while_running() -> void:
 		assert_gt(lowest, 0.18, "quadril a %.1f m/s" % speed)
 
 
-## D080: as duas adagas apontam para a frente (a mão direita é o espelho da esquerda) e o cabo fica dentro do punho.
+## D080/D082: a lâmina continua a mão (a 30° do eixo dela, para o lado do polegar), a direita é o espelho da esquerda e o
+## cabo fica dentro do punho.
 func test_daggers_are_mirrored_and_held() -> void:
 	var sk := _tico.find_children("*", "Skeleton3D", true, false)[0] as Skeleton3D
 	for m: Node in sk.get_children():
@@ -167,14 +168,15 @@ func test_daggers_are_mirrored_and_held() -> void:
 	sk.reset_bone_poses()
 	await wait_process_frames(3)
 	assert_eq(daggers.size(), 2)
-	var forward := (sk.global_basis * Vector3.BACK).normalized()  # o Tico olha para +Z no esqueleto
 	var to_sk := sk.global_basis.inverse()
 	var blades: Array[Vector3] = []
 	for d: AdagaPsiquica in daggers:
+		var bone := sk.find_bone((d.get_parent() as BoneAttachment3D).bone_name)
 		var blade := (d.tip() - d.base()).normalized()
 		blades.append(to_sk * blade)
-		assert_gt(blade.dot(forward), 0.85, "%s: lâmina para a frente" % d.get_parent().name)
-		var hand := sk.global_transform * sk.get_bone_global_pose(sk.find_bone((d.get_parent() as BoneAttachment3D).bone_name)).origin
+		var along := (sk.global_basis * sk.get_bone_global_pose(bone).basis.orthonormalized() * Vector3.UP).normalized()
+		assert_between(rad_to_deg(blade.angle_to(along)), 20.0, 40.0, "%s: a lâmina continua a mão" % d.get_parent().name)
+		var hand := sk.global_transform * sk.get_bone_global_pose(bone).origin
 		var grip := d.global_transform * Vector3(0, -0.055, 0)
 		assert_lt(grip.distance_to(hand), 0.03, "%s: o cabo no punho" % d.get_parent().name)
 	var mirrored := Vector3(-blades[1].x, blades[1].y, blades[1].z)

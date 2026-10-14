@@ -19,78 +19,84 @@ extends SceneTree
 
 const OUT := "res://actors/tico_lirou/golpes_tico.res"
 ## Ângulo da lâmina na mão esquerda (o mesmo de AdagaPsiquica.GRIP_ANGLE).
-const GRIP_ANGLE := 65.0
+const GRIP_ANGLE := 30.0
 ## O quanto o pulso dobra no máximo (graus).
 const WRIST_MAX := 30.0
 const FPS := 30.0
 
-## Guarda de quem luta com faca (D080): joelhos dobrados, pé esquerdo à frente, o peito virado um pouco para a direita
-## (o ombro esquerdo na frente); a mão da frente (esquerda) na altura do peito, a de trás recolhida perto do queixo,
-## as duas lâminas para a frente e para cima. (A antiga, simétrica de braços abertos, parecia um abraço.)
-const GUARDA := {"esq": [Vector3(0.35, -0.45, 0.82), Vector3(0.05, 0.35, 0.94), Vector3(0.1, 0.55, 0.83)],
-	"dir": [Vector3(0.6, -0.7, 0.35), Vector3(-0.3, 0.55, 0.78), Vector3(0.0, 0.75, 0.65)],
+## D082: a lâmina continua o antebraço (sai do punho a 30° do eixo da mão; com o pulso reto fica quase na linha do
+## braço), como golpe de adaga de jogo. Com a lâmina de través (punho fechado, 65°) o braço e a lâmina faziam um "L" e,
+## vistos de trás, os golpes pareciam ir para trás. Em toda pose o antebraço (e a lâmina) vai para onde o golpe vai, na
+## frente do corpo; nada para trás nem erguido atrás da cabeça.
+
+## Guarda de quem luta com faca: joelhos dobrados, pé esquerdo à frente, o peito virado um pouco para a direita (o ombro
+## esquerdo na frente); a mão da frente (esquerda) na altura do peito, a de trás mais perto do corpo, as duas lâminas
+## para a frente e um pouco para cima.
+const GUARDA := {"esq": [Vector3(0.4, -0.55, 0.73), Vector3(0.1, 0.5, 0.86), Vector3(0.05, 0.55, 0.83)],
+	"dir": [Vector3(0.55, -0.75, 0.36), Vector3(-0.2, 0.6, 0.77), Vector3(-0.15, 0.65, 0.74)],
 	"tronco": 8.0, "baixa": 0.035, "passo": 0.35, "giro": -18.0}
-const GUARDA_INSPIRA := {"esq": [Vector3(0.36, -0.42, 0.83), Vector3(0.06, 0.4, 0.92), Vector3(0.1, 0.6, 0.8)],
-	"dir": [Vector3(0.6, -0.68, 0.38), Vector3(-0.28, 0.6, 0.75), Vector3(0.0, 0.78, 0.62)],
+const GUARDA_INSPIRA := {"esq": [Vector3(0.41, -0.52, 0.75), Vector3(0.1, 0.55, 0.83), Vector3(0.05, 0.6, 0.8)],
+	"dir": [Vector3(0.55, -0.73, 0.4), Vector3(-0.18, 0.64, 0.75), Vector3(-0.13, 0.69, 0.71)],
 	"tronco": 6.0, "baixa": 0.045, "passo": 0.35, "giro": -16.0}
-## braço de guarda recolhido junto do peito (o que não está golpeando)
-const RECOLHIDO := [Vector3(0.5, -0.72, 0.3), Vector3(0.35, 0.2, 0.92), Vector3(0.45, 0.5, 0.75)]  # D080: a lâmina ao lado, não na frente da cara
+## braço de guarda recolhido junto do peito (o que não está golpeando): lâmina para a frente e para cima
+const RECOLHIDO := [Vector3(0.5, -0.72, 0.3), Vector3(0.0, 0.65, 0.76), Vector3(0.05, 0.7, 0.71)]
 
 # ---- Combo do mapa (D079, refeito com mais corpo): preparo bem carregado, golpe rápido com giro do tronco e passo,
 # braço passando do ponto. O tronco inclina no máximo ~18° (cabeça grande: mais que isso vira cabeçada, D077).
 
-# Golpe 1: corte de direita na horizontal, da direita dele para a esquerda; pé direito à frente
+# Golpe 1: corte de direita na horizontal, da direita dele para a esquerda, na frente; pé direito à frente.
+# Preparo: o braço abre para o lado (a lâmina para o lado e para cima, não para trás).
 const G1_PREPARA := {"esq": RECOLHIDO,
-	"dir": [Vector3(0.85, 0.3, -0.45), Vector3(0.7, 0.5, -0.5), Vector3(0.25, 0.45, -0.85)],
-	"giro": -55.0, "tronco": -4.0, "quadril": -0.03, "baixa": 0.05, "passo": 0.2, "cabeca": Vector3(0, 0, 4)}
-# D080: no corte o braço estica para a frente e o pulso leva a lâmina adiante do corpo (antes ela ficava atravessada
-# na frente da barriga e, no acompanhamento, sumia atrás dele: com o braço curto do Tico o golpe não aparecia)
+	"dir": [Vector3(0.85, 0.3, -0.3), Vector3(0.75, 0.6, 0.25), Vector3(0.6, 0.7, 0.35)],
+	"giro": -50.0, "tronco": -4.0, "quadril": -0.03, "baixa": 0.05, "passo": 0.2, "cabeca": Vector3(0, 0, 4)}
 const G1_CORTA := {"esq": RECOLHIDO,
-	"dir": [Vector3(0.1, 0.12, 1.0), Vector3(-0.25, 0.08, 0.96), Vector3(-0.6, 0.08, 0.8)],
+	"dir": [Vector3(0.25, 0.1, 0.96), Vector3(-0.2, 0.05, 0.98), Vector3(-0.35, 0.05, 0.94)],
 	"giro": 30.0, "tronco": 14.0, "quadril": 0.14, "baixa": 0.08, "passo": -0.95}
 const G1_SEGUE := {"esq": RECOLHIDO,
-	"dir": [Vector3(-0.45, 0.02, 0.9), Vector3(-0.8, -0.02, 0.6), Vector3(-0.8, -0.05, 0.6)],
-	"giro": 55.0, "tronco": 14.0, "quadril": 0.15, "baixa": 0.08, "passo": -0.95, "cabeca": Vector3(0, 0, -4)}
+	"dir": [Vector3(-0.3, 0.0, 0.95), Vector3(-0.7, -0.05, 0.71), Vector3(-0.75, -0.05, 0.66)],
+	"giro": 50.0, "tronco": 14.0, "quadril": 0.15, "baixa": 0.08, "passo": -0.95, "cabeca": Vector3(0, 0, -4)}
 const G1_SEGUE_FIM := {"esq": RECOLHIDO,
-	"dir": [Vector3(-0.5, 0.0, 0.86), Vector3(-0.85, -0.05, 0.5), Vector3(-0.85, -0.1, 0.5)],
-	"giro": 60.0, "tronco": 13.0, "quadril": 0.15, "baixa": 0.08, "passo": -0.95, "cabeca": Vector3(0, 0, -4)}
+	"dir": [Vector3(-0.35, -0.05, 0.93), Vector3(-0.75, -0.1, 0.65), Vector3(-0.8, -0.1, 0.6)],
+	"giro": 55.0, "tronco": 13.0, "quadril": 0.15, "baixa": 0.08, "passo": -0.95, "cabeca": Vector3(0, 0, -4)}
 
-# Golpe 2: revés de esquerda subindo na diagonal, de baixo (à direita dele) para cima (à esquerda); pé esquerdo à frente
+# Golpe 2: revés de esquerda subindo na diagonal, de baixo (à direita dele) para cima (à esquerda), na frente do corpo;
+# pé esquerdo à frente. Acaba com o braço no alto e À FRENTE (antes acabava erguido ao lado da cabeça: visto de trás,
+# parecia golpe para trás).
 const G2_PREPARA := {"dir": RECOLHIDO,
-	"esq": [Vector3(-0.6, -0.5, 0.6), Vector3(-0.92, -0.38, 0.1), Vector3(-0.4, -0.42, -0.81)],  # D080: a ponta não raspa o chão
-	"giro": -50.0, "tronco": 16.0, "baixa": 0.09, "passo": -0.45, "cabeca": Vector3(0, -4, 0)}
+	"esq": [Vector3(-0.4, -0.6, 0.69), Vector3(-0.7, -0.45, 0.55), Vector3(-0.65, -0.5, 0.57)],
+	"giro": -45.0, "tronco": 14.0, "baixa": 0.08, "passo": -0.45, "cabeca": Vector3(0, -4, 0)}
 const G2_CORTA := {"dir": RECOLHIDO,
-	"esq": [Vector3(0.35, 0.4, 0.85), Vector3(0.5, 0.6, 0.62), Vector3(0.85, 0.5, 0.15)],
-	"giro": 28.0, "tronco": 6.0, "quadril": 0.13, "baixa": 0.04, "passo": 0.95, "cabeca": Vector3(0, 6, 0)}
+	"esq": [Vector3(0.2, 0.25, 0.95), Vector3(0.45, 0.35, 0.82), Vector3(0.45, 0.4, 0.8)],
+	"giro": 25.0, "tronco": 6.0, "quadril": 0.13, "baixa": 0.04, "passo": 0.95, "cabeca": Vector3(0, 6, 0)}
 const G2_SEGUE := {"dir": RECOLHIDO,
-	"esq": [Vector3(0.85, 0.6, 0.0), Vector3(0.6, 0.8, -0.2), Vector3(0.25, 0.92, -0.3)],
-	"giro": 50.0, "tronco": 0.0, "quadril": 0.13, "baixa": 0.03, "passo": 0.95, "cabeca": Vector3(0, 10, 0)}
+	"esq": [Vector3(0.45, 0.45, 0.77), Vector3(0.6, 0.6, 0.52), Vector3(0.6, 0.62, 0.5)],
+	"giro": 35.0, "tronco": 2.0, "quadril": 0.13, "baixa": 0.03, "passo": 0.95, "cabeca": Vector3(0, 8, 0)}
 
-# Golpe 3 (final): agacha com as duas lâminas no alto atrás, sobe e desce cortando em X na frente, agachando fundo
-const G3_CARREGA := {"braco": [Vector3(0.6, 0.72, -0.3), Vector3(0.35, 0.9, -0.25), Vector3(0.1, 0.75, -0.65)],
+# Golpe 3 (final): agacha com as duas lâminas no alto, na frente; sobe e desce cortando em X na frente, agachando fundo
+const G3_CARREGA := {"braco": [Vector3(0.45, 0.85, 0.27), Vector3(0.25, 0.95, 0.2), Vector3(0.2, 0.95, 0.25)],
 	"tronco": -10.0, "baixa": 0.1, "quadril": -0.04, "cabeca": Vector3(0, 6, 0)}
-const G3_SOBE := {"braco": [Vector3(0.5, 0.85, 0.15), Vector3(0.3, 0.92, 0.25), Vector3(0.05, 0.85, 0.5)],
+const G3_SOBE := {"braco": [Vector3(0.4, 0.85, 0.35), Vector3(0.2, 0.85, 0.5), Vector3(0.15, 0.75, 0.65)],
 	"tronco": -6.0, "baixa": -0.08, "quadril": 0.03, "cabeca": Vector3(0, 8, 0)}
-# D080: o X acaba com as lâminas cruzadas na frente, para baixo e para dentro (antes elas fincavam no chão)
-const G3_X := {"braco": [Vector3(0.15, -0.25, 0.95), Vector3(-0.5, -0.15, 0.85), Vector3(-0.6, -0.1, 0.8)],
+# o X acaba com as lâminas cruzadas na frente, um pouco para baixo (não fincam no chão)
+const G3_X := {"braco": [Vector3(0.15, -0.2, 0.97), Vector3(-0.45, -0.25, 0.86), Vector3(-0.5, -0.25, 0.83)],
 	"tronco": 18.0, "baixa": 0.13, "quadril": 0.16, "passo": 0.6, "cabeca": Vector3(0, -2, 0)}
 
 # ---- Luta por turnos: Corte em X (salta e corta) e Estocada dupla (avança e estoca)
-const PREPARA := {"braco": [Vector3(0.92, 0.25, 0.3), Vector3(0.75, 0.55, 0.35), Vector3(0.5, 0.85, -0.2)], "tronco": -10.0,
+const PREPARA := {"braco": [Vector3(0.8, 0.45, 0.4), Vector3(0.6, 0.75, 0.3), Vector3(0.5, 0.8, 0.3)], "tronco": -10.0,
 	"quadril": -0.03, "baixa": -0.02, "cabeca": Vector3(0, 6, 0)}
-const CRUZA := {"braco": [Vector3(0.18, -0.05, 1.0), Vector3(-0.42, -0.3, 0.86), Vector3(-0.45, -0.1, 0.88)], "tronco": 22.0,
+const CRUZA := {"braco": [Vector3(0.18, -0.05, 1.0), Vector3(-0.42, -0.3, 0.86), Vector3(-0.45, -0.3, 0.84)], "tronco": 22.0,
 	"quadril": 0.16, "baixa": 0.1, "passo": 0.7}
-const SEGUE := {"braco": [Vector3(0.42, -0.5, 0.76), Vector3(0.55, -0.32, 0.77), Vector3(0.58, 0.0, 0.82)], "tronco": 18.0,
+const SEGUE := {"braco": [Vector3(0.42, -0.4, 0.81), Vector3(0.55, -0.3, 0.78), Vector3(0.6, -0.25, 0.76)], "tronco": 18.0,
 	"quadril": 0.16, "baixa": 0.1, "passo": 0.75}
-const RECOLHE := {"braco": [Vector3(0.55, -0.25, -0.35), Vector3(0.2, 0.15, 0.96), Vector3(0.08, 0.3, 0.95)], "tronco": -4.0,
+const RECOLHE := {"braco": [Vector3(0.55, -0.25, -0.35), Vector3(0.15, 0.1, 0.98), Vector3(0.1, 0.15, 0.98)], "tronco": -4.0,
 	"quadril": -0.04, "giro": -18.0, "passo": -0.3}
 const ESTOCA := {"braco": [Vector3(0.16, 0.0, 1.0), Vector3(0.04, 0.05, 1.0), Vector3(0.02, 0.05, 1.0)], "tronco": 18.0,
 	"quadril": 0.2, "baixa": 0.08, "giro": 8.0, "passo": 1.0}
 const ESTOCA_FUNDO := {"braco": [Vector3(0.12, -0.02, 1.0), Vector3(0.02, 0.02, 1.0), Vector3(0.0, 0.02, 1.0)], "tronco": 20.0,
 	"quadril": 0.22, "baixa": 0.09, "giro": 4.0, "passo": 1.0}
 
-## agacha para tomar impulso: corpo baixo e para a frente, braços para trás, lâminas para cima
-const AGACHA := {"braco": [Vector3(0.62, -0.45, -0.45), Vector3(0.45, 0.2, 0.87), Vector3(0.35, 0.75, 0.55)], "tronco": 22.0,
+## agacha para tomar impulso: corpo baixo e para a frente, braços para trás, lâminas para a frente
+const AGACHA := {"braco": [Vector3(0.62, -0.45, -0.45), Vector3(0.45, 0.2, 0.87), Vector3(0.4, 0.3, 0.86)], "tronco": 22.0,
 	"quadril": -0.05, "baixa": 0.11}
 
 const FLOATS := ["tronco", "giro", "quadril", "baixa", "passo", "volta"]
@@ -114,12 +120,12 @@ func _initialize() -> void:
 		[0.26, G1_SEGUE, "rapido"], [0.36, G1_SEGUE_FIM], [0.6, GUARDA]], false))
 	lib.add_animation(&"Golpe_2", _make([[0.0, GUARDA], [0.11, G2_PREPARA], [0.18, G2_CORTA, "rapido"],
 		[0.26, G2_SEGUE, "rapido"], [0.36, G2_SEGUE], [0.62, GUARDA]], false))
-	lib.add_animation(&"Golpe_3", _make([[0.0, GUARDA], [0.16, G3_CARREGA], [0.24, G3_SOBE, "rapido"], [0.32, G3_X, "rapido"],
-		[0.5, G3_X], [0.82, GUARDA]], false))
-	lib.add_animation(&"Corte_X", _make([[0.0, GUARDA], [0.16, PREPARA], [0.24, CRUZA, "rapido"], [0.31, SEGUE, "rapido"],
-		[0.38, SEGUE], [0.62, GUARDA]], false))
+	lib.add_animation(&"Golpe_3", _make([[0.0, GUARDA], [0.16, G3_CARREGA], [0.24, G3_SOBE, "rapido"], [0.35, G3_X, "rapido"],
+		[0.52, G3_X], [0.84, GUARDA]], false))
+	lib.add_animation(&"Corte_X", _make([[0.0, GUARDA], [0.16, PREPARA], [0.27, CRUZA, "rapido"], [0.33, SEGUE, "rapido"],
+		[0.4, SEGUE], [0.64, GUARDA]], false))
 	lib.add_animation(&"Bote", _make([[0.0, GUARDA], [0.14, AGACHA], [0.3, AGACHA]], false))
-	lib.add_animation(&"Estocada", _make([[0.0, GUARDA], [0.14, RECOLHE], [0.22, ESTOCA, "rapido"], [0.3, ESTOCA_FUNDO],
+	lib.add_animation(&"Estocada", _make([[0.0, GUARDA], [0.14, RECOLHE], [0.25, ESTOCA, "rapido"], [0.32, ESTOCA_FUNDO],
 		[0.4, ESTOCA_FUNDO], [0.66, GUARDA]], false))
 	print("salvo ", ResourceSaver.save(lib, OUT))
 	quit()
@@ -284,7 +290,9 @@ func _hold(lower: int, hand: int, want: Vector3, blade_axis: Vector3) -> void:
 	var a := now - fore * now.dot(fore)
 	var b := want.normalized() - fore * want.normalized().dot(fore)
 	if a.length() > 0.05 and b.length() > 0.2:
-		var angle := a.normalized().signed_angle_to(b.normalized(), fore)
+		# D082: com a lâmina pedida quase na direção do antebraço, o giro certo é instável (a projeção quase some) e
+		# o pulso virava de um lado para o outro entre quadros: gira menos quanto mais paralela
+		var angle := a.normalized().signed_angle_to(b.normalized(), fore) * clampf((b.length() - 0.2) / 0.4, 0.0, 1.0)
 		_turn(lower, Basis(fore, angle * 0.5))
 		_turn(hand, Basis(fore, angle * 0.5))
 		_last_twist = rad_to_deg(angle)

@@ -29,17 +29,17 @@ var _trail: Array[PackedVector3Array] = []
 var _trail_mesh: MeshInstance3D
 var _trail_im: ImmediateMesh
 
-## Giro e lugar da adaga na mão (D080). A lâmina sai do lado do polegar (punho fechado), inclinada 25° para a frente da
-## mão: o cabo atravessa a palma na diagonal, como num punho de verdade. A mão direita do esqueleto é o espelho da
+## Giro e lugar da adaga na mão (D080). A lâmina sai do lado do polegar a 30° do eixo da mão (D082): com o pulso reto ela
+## continua o antebraço, como golpe de adaga de jogo (de través, a 65°, braço e lâmina faziam um "L"). A mão direita do esqueleto é o espelho da
 ## esquerda: giro e lugar espelhados (grip_basis, grip_offset); com o mesmo giro nas duas, a lâmina da direita saía
 ## para trás e, nos golpes, o pulso torcia meia volta.
-## Ângulo da lâmina na mão (graus, em volta do eixo da frente da mão): 90 seria exatamente de través.
-const GRIP_ANGLE := 65.0
+## Ângulo da lâmina na mão (graus, em volta do eixo da frente da mão): 0 = na linha da mão, 90 = de través.
+const GRIP_ANGLE := 30.0
 ## Giro da lâmina em volta dela mesma (a face larga, medida nas fotos).
 const GRIP_ROLL := 25.0
 ## O meio do cabo (0,055 abaixo da guarda) no meio do punho: as mãos do Tico são pequenas e o meio delas fica no osso
 ## da mão (medido na malha). Antes a adaga ficava 5 cm à frente do pulso e o cabo inteiro fora da mão (D080).
-const GRIP_OFFSET := Vector3(-0.05, 0.023, 0.0)
+const GRIP_OFFSET := Vector3(-0.0275, 0.048, 0.0)
 
 
 ## Giro da adaga no osso da mão (LeftHand ou RightHand). A direita é o espelho da esquerda.

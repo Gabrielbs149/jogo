@@ -196,8 +196,10 @@ func _build_game() -> void:
 func _build_access() -> void:
 	var box := _tab("Acessibilidade")
 	_slider(box, "Tamanho da interface e do texto", "tamanho_interface", 0.8, 1.4, 0.05, "pct")
-	_slider(box, "Tempo dos reflexos na luta (anéis mais lentos)", "tempo_qte", 1.0, 2.0, 0.05, "x")
-	_note(box, "O tempo dos reflexos deixa os anéis de golpe e de defesa mais lentos, para quem precisa de mais tempo.")
+	_slider(box, "Tempo dos reflexos na luta (golpes mais lentos)", "tempo_qte", 1.0, 2.0, 0.05, "x")
+	_toggle(box, "Mostrar o anel na hora de se defender", "anel_defesa")
+	_note(box, "O tempo dos reflexos deixa o seu golpe e o golpe do inimigo mais lentos, para quem precisa de mais tempo. "
+		+ "Sem o anel, a defesa é como no Clair Obscur: olhe o golpe do inimigo e escute o assobio que vem antes dele.")
 
 
 # --- peças da tela ------------------------------------------------------------------------------------------------

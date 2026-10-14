@@ -102,6 +102,9 @@ func _ready() -> void:
 		_homes[c] = c.transform
 	target = enemies[0]
 	_camera = get_node_or_null("Camera3D") as Camera3D
+	if _camera:
+		# a câmera da arena é posta a cada quadro (_process): sem suavização de física (o motor avisava, D082)
+		_camera.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	_marker = Label3D.new()
 	_marker.text = "▼"
 	_marker.font_size = 96
@@ -619,12 +622,14 @@ func _enemy_turn(enemy: Combatant, extra: bool = false) -> void:
 			await _hud.say(enemy.display_name, "%s tropeça e erra feio!" % enemy.display_name, 0.3)
 	elif nat == 20:
 		_hud.banner("GOLPE CRÍTICO!", Color(1, 0.35, 0.3))
-	_fx.lunge(enemy)
-	Audio.play_at("golpe", enemy.global_position, -3.0)
 	var on_me := results.filter(func(r: Dictionary) -> bool: return r["target"] == player and int(r["amount"]) > 0)
+	if on_me.is_empty() or auto_play:
+		# errou (ou o simulador joga): o golpe sai de uma vez; quando tem defesa, ele sai na hora dela (D082)
+		_strike(enemy, index, 0.5)
+		await _wait(0.5)
 	var countered := false
 	if not on_me.is_empty():
-		var defense := await _defense(ability, enemy)
+		var defense := await _defense(ability, enemy, index)
 		var keep := float(defense["keep"])
 		for r: Dictionary in on_me:
 			if keep <= 0.0:
@@ -669,7 +674,7 @@ func _enemy_turn(enemy: Combatant, extra: bool = false) -> void:
 ## - Direção: uma seta mostra para onde pular; A ou D na hora = nada de dano. Lado errado = tudo.
 ## - Combo: três golpes seguidos em ritmo torto; cada um aparado/esquivado tira um terço. Os três aparados = contra-ataque.
 ## - Finta: o anel engana (para e abre); só vale a hora de verdade. Espaço = nada de dano.
-func _defense(ability: Ability, enemy: Combatant) -> Dictionary:
+func _defense(ability: Ability, enemy: Combatant, index: int = 0) -> Dictionary:
 	var kind := ability.defense_qte()
 	if auto_play:
 		var r := randf()
@@ -683,12 +688,17 @@ func _defense(ability: Ability, enemy: Combatant) -> Dictionary:
 	var windup := 0.5 + ability.windup
 	# Defendendo (D050): as janelas ficam 50% maiores
 	var easy := 1.5 if player.statuses.any(func(st: Dictionary) -> bool: return st["title"] == "Defendendo") else 1.0
+	# D082 (Clair Obscur): sem o anel, você lê o golpe; as janelas ficam um pouco maiores (aparar ~0,16 s no total)
+	var hidden := not bool(Settings.value("anel_defesa"))
+	if hidden:
+		easy *= 1.25
 	var dodge_w := dodge_window * easy
 	var parry_w := parry_window * easy
 	match kind:
 		Ability.Defesa.DIRECAO:
 			var side := -1 if randf() < 0.5 else 1
-			var res := await q.ring(at, windup + 0.15, [], "Pule para o lado da seta", false, side)
+			_strike(enemy, index, GolpeQte.duration_for(windup + 0.15))
+			var res := await q.ring(at, windup + 0.15, [], "Pule para o lado da seta", false, side, 0, 0, 0.1, hidden)
 			var right_key := &"move_right" if side > 0 else &"move_left"
 			var error := absf(float(res["error"]))
 			q.pop("bom" if res["key"] == right_key and error <= dodge_w else "falhou")
@@ -699,7 +709,9 @@ func _defense(ability: Ability, enemy: Combatant) -> Dictionary:
 			var parried := 0
 			var avoided := 0
 			for i: int in 3:
-				var res := await q.ring(at, randf_range(0.32, 0.62), [&"dodge", &"parry"], "F apara · Espaço esquiva", false, 0, i, 3)
+				var beat := randf_range(0.32, 0.62)
+				_strike(enemy, index, GolpeQte.duration_for(beat))
+				var res := await q.ring(at, beat, [&"dodge", &"parry"], "F apara · Espaço esquiva", false, 0, i, 3, 0.1, hidden)
 				var error := absf(float(res["error"]))
 				if res["key"] == &"parry" and error <= parry_w:
 					parried += 1
@@ -714,14 +726,16 @@ func _defense(ability: Ability, enemy: Combatant) -> Dictionary:
 			return {"keep": keep, "counter": parried == 3, "grade": "perfeito" if parried == 3 else ("bom" if keep < 0.5 else "falhou"),
 				"text": "aparou os três" if parried == 3 else "segurou %d de 3" % (parried + avoided)}
 		Ability.Defesa.FINTA:
-			var res := await q.ring(at, windup, [&"dodge"], "Cuidado com a finta", true)
+			_strike(enemy, index, GolpeQte.duration_for(windup, true), true)
+			var res := await q.ring(at, windup, [&"dodge"], "Cuidado com a finta", true, 0, 0, 0, 0.1, hidden)
 			var error := absf(float(res["error"]))
 			q.pop("perfeito" if res["key"] == &"dodge" and error <= parry_w else ("bom" if res["key"] == &"dodge" and error <= dodge_w else "falhou"))
 			if res["key"] == &"dodge" and error <= dodge_w:
 				return {"keep": 0.0, "counter": false, "grade": "perfeito" if error <= parry_w else "bom", "text": "pulou a onda"}
 			return {"keep": 1.0, "counter": false, "grade": "falhou", "text": ""}
 	# anel
-	var res := await q.ring(at, windup, [&"dodge", &"parry"], "F apara · Espaço esquiva")
+	_strike(enemy, index, GolpeQte.duration_for(windup))
+	var res := await q.ring(at, windup, [&"dodge", &"parry"], "F apara · Espaço esquiva", false, 0, 0, 0, 0.1, hidden)
 	var error := absf(float(res["error"]))
 	q.pop("perfeito" if res["key"] == &"parry" and error <= parry_w else ("bom" if res["key"] == &"dodge" and error <= dodge_w else "falhou"))
 	if res["key"] == &"parry" and error <= parry_w:
@@ -729,6 +743,81 @@ func _defense(ability: Ability, enemy: Combatant) -> Dictionary:
 	if res["key"] == &"dodge" and error <= dodge_w:
 		return {"keep": 0.5, "counter": false, "grade": "bom", "text": "esquivou (½)"}
 	return {"keep": 1.0, "counter": false, "grade": "falhou", "text": ""}
+
+
+## Onde, na animação de golpe do inimigo, a arma chega (fração do tempo dela; as do KayKit batem por volta da metade).
+const IMPACT_AT := 0.45
+## Quanto antes do impacto vem o aviso (brilho na arma e o assobio).
+const CUE_BEFORE := 0.3
+## O bote leva este tempo até a batida (CombatFX.lunge vai do recuo até a frente).
+const LUNGE_LEAD := 0.06
+
+
+## O golpe do inimigo com o impacto em "at" segundos (D082, como no Clair Obscur): a animação de golpe dele toca no
+## ritmo certo para a arma chegar nessa hora; um pouco antes a arma brilha e assobia (o aviso, o principal no Clair
+## Obscur); no impacto, o bote e o som do golpe. feint: o golpe para no meio (segura) e só então vem, na hora da finta.
+func _strike(enemy: Combatant, index: int, at: float, feint: bool = false) -> void:
+	var animator := enemy.get_node_or_null("Animator")
+	var anims: Array = animator.get("ability_animations") if animator else []
+	var anim: StringName = anims[index] if index < anims.size() else &""
+	var found := enemy.find_children("*", "AnimationPlayer", true, false)
+	var anim_player := found[0] as AnimationPlayer if not found.is_empty() else null
+	var hold := at * (GolpeQte.FEINT_GO - GolpeQte.FEINT_STOP) if feint else 0.0
+	if animator and anim_player and anim != &"" and anim_player.has_animation(anim):
+		var impact := anim_player.get_animation(anim).length * IMPACT_AT
+		var active := maxf(at - hold, 0.15)
+		# perto do ritmo dele: se sobra tempo, ele espera e então ataca (câmera lenta parecia golpe boiando)
+		var speed := clampf(impact / active, 0.85, 1.8)
+		var start := active - impact / speed  # > 0: começa depois; < 0: já começa adiantado
+		_strike_anim(animator, anim_player, anim, speed, start, at * GolpeQte.FEINT_STOP if feint else -1.0, hold)
+	_strike_cue(enemy, maxf(at - CUE_BEFORE, 0.0), at)
+
+
+func _strike_anim(animator: Node, anim_player: AnimationPlayer, anim: StringName, speed: float, start: float,
+		hold_at: float, hold: float) -> void:
+	if start > 0.0:
+		await _elapsed(start)
+	animator.call("act", anim, speed)
+	if start < 0.0:
+		anim_player.seek(-start * speed, true)
+	if hold > 0.0:
+		await _elapsed(maxf(hold_at - maxf(start, 0.0), 0.0))
+		anim_player.speed_scale = 0.0
+		await _elapsed(hold)
+		anim_player.speed_scale = speed
+
+
+func _strike_cue(enemy: Combatant, cue: float, at: float) -> void:
+	# o preparo se vê no corpo: recua e se ergue até o aviso (carregando o golpe), e aí vem o bote
+	if enemy.model:
+		var windup := create_tween().set_parallel()
+		windup.tween_property(enemy.model, "position:z", 0.3, maxf(cue, 0.05)).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
+		windup.tween_property(enemy.model, "position:y", 0.08, maxf(cue, 0.05)).set_ease(Tween.EASE_OUT)
+	await _elapsed(cue)
+	if not is_instance_valid(enemy):
+		return
+	# o aviso: um clarão na frente dele e o assobio (no Clair Obscur o som é o principal)
+	var height := 1.8 if enemy.is_boss else 0.8
+	var front := enemy.global_position + Vector3.UP * height + (player.global_position - enemy.global_position).normalized() * 0.7
+	_fx.sparks(front, Color(1.0, 0.95, 0.75), 28)
+	_fx.rising_glow(front, Color(1.0, 0.9, 0.6))
+	Audio.play_at("esquiva", enemy.global_position, -2.0)
+	# o bote sai um pouco antes, para a batida (o ponto mais à frente) cair na hora de defender
+	await _elapsed(maxf(at - cue - LUNGE_LEAD, 0.0))
+	if not is_instance_valid(enemy):
+		return
+	if enemy.model:
+		create_tween().tween_property(enemy.model, "position:y", 0.0, 0.12)
+	_fx.lunge(enemy)
+	Audio.play_at("golpe", enemy.global_position, -3.0)
+
+
+## Espera somando o tempo de cada quadro, como o anel (com timers, o bote chegava ~80 ms depois da hora).
+func _elapsed(seconds: float) -> void:
+	var t := 0.0
+	while t < seconds - 0.008:
+		await get_tree().process_frame
+		t += get_process_delta_time()
 
 
 # ---------- movimento na arena
@@ -961,7 +1050,11 @@ func _dagger_animations() -> void:
 		animator.set("combo", [] as Array[StringName])  # na luta por turnos o golpe é montado pela arena
 		var anim_player := player.find_children("*", "AnimationPlayer", true, false)
 		if not anim_player.is_empty():
-			(anim_player[0] as AnimationPlayer).play(&"tico/Guarda", 0.2)
+			var ap := anim_player[0] as AnimationPlayer
+			# os golpes do Mixamo (D081): só no PC de quem baixou (não vão para o Git); sem eles, só os de sempre
+			if ResourceLoader.exists(MIXAMO_LIB) and not ap.has_animation_library(&"mix"):
+				ap.add_animation_library(&"mix", load(MIXAMO_LIB))
+			ap.play(&"tico/Guarda", 0.2)
 	# só a ArmRest fica (ela já não age nas animações da UAL); o corpo vivo e o pé no chão saem na arena
 	for modifier: Node in player.find_children("*", "SkeletonModifier3D", true, false):
 		(modifier as SkeletonModifier3D).active = modifier is ArmRest
@@ -977,11 +1070,31 @@ func _final_blow() -> void:
 
 # ---------- o golpe completo do Tico (D056)
 
+const MIXAMO_LIB := "res://actors/tico_lirou/mixamo_tico.res"
+## Os golpes da arena: [animação, quando a lâmina chega (s)]. Os do Mixamo entram só se estiverem no PC (D081/D082).
+const STRIKES := {
+	"corte": [[&"atk/Dualwield_Melee_Attack_Chop", 0.56]],
+	# D082: com a lâmina na linha do braço o corte para fora e a estocada da mão da frente raspavam o chão; ficaram fora
+	"estocada": [[&"tico/Estocada", 0.25], [&"mix/stab_rear", 1.1]],
+}
+
+
+## Sorteia o golpe (variedade), entre os que o Tico tem.
+func _pick_strike(ability: Ability) -> Array:
+	var found := player.find_children("*", "AnimationPlayer", true, false)
+	var ap := found[0] as AnimationPlayer if not found.is_empty() else null
+	var options: Array = (STRIKES["estocada"] if ability.shape == Ability.Shape.DASH else STRIKES["corte"]).filter(
+		func(o: Array) -> bool: return ap != null and ap.has_animation(o[0]))
+	if options.is_empty():
+		return STRIKES["corte"][0]
+	return options[randi() % options.size()]
+
+
 ## Agacha para tomar impulso, corre até perto do alvo, salta e cai cortando (Corte em X ou estocada); poeira na queda.
 ## Volta quando o golpe chega (o resto do _player_action aplica o dano e o efeito).
 func _dagger_rush(tgt: Combatant, ability: Ability) -> void:
 	var animator := player.get_node_or_null("Animator")
-	var strike := &"tico/Estocada" if ability.shape == Ability.Shape.DASH else &"atk/Dualwield_Melee_Attack_Chop"
+	var strike: Array = _pick_strike(ability)
 	# 1) agacha e toma impulso (D075: o salto ninja da UAL)
 	if animator:
 		animator.call("act", &"atk/NinjaJump_Start", 1.6)
@@ -1003,7 +1116,12 @@ func _dagger_rush(tgt: Combatant, ability: Ability) -> void:
 		await run.finished
 	# 3) salta e já começa o corte no ar
 	if animator:
-		animator.call("act", strike, 1.25)
+		animator.call("act", strike[0], 1.25)
+		# o corte acerta quando ele cai (~0,25 s depois de saltar): começa a animação adiantada até lá
+		var found := player.find_children("*", "AnimationPlayer", true, false)
+		var skip := float(strike[1]) - 0.25 * 1.25
+		if skip > 0.0 and not found.is_empty():
+			(found[0] as AnimationPlayer).seek(skip, true)
 	for dagger: AdagaPsiquica in _daggers:
 		dagger.trail(true)
 		dagger.flare(0.7)
