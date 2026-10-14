@@ -16,8 +16,8 @@ const BODY := ["Hips", "Spine", "Chest", "Neck", "Head", "LeftUpperLeg", "RightU
 const INSIDE := 0.92
 const BLADE_LENGTH := 0.42
 ## Da guarda para o meio do cabo, na direção da lâmina (AdagaPsiquica: o cabo fica 0,055 abaixo da guarda).
-const GRIP_ANGLE := 65.0
-const GRIP_OFFSET := Vector3(-0.05, 0.023, 0.0)
+const GRIP_ANGLE := 30.0
+const GRIP_OFFSET := Vector3(-0.0275, 0.048, 0.0)
 
 var _sk: Skeleton3D
 var _ell := {}  # osso -> [centro, meio-eixos] no espaço do osso

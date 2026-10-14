@@ -1073,8 +1073,9 @@ func _final_blow() -> void:
 const MIXAMO_LIB := "res://actors/tico_lirou/mixamo_tico.res"
 ## Os golpes da arena: [animação, quando a lâmina chega (s)]. Os do Mixamo entram só se estiverem no PC (D081/D082).
 const STRIKES := {
-	"corte": [[&"atk/Dualwield_Melee_Attack_Chop", 0.56], [&"mix/outward_slash", 0.8]],
-	"estocada": [[&"tico/Estocada", 0.25], [&"mix/stab_lead", 0.62], [&"mix/stab_rear", 1.1]],
+	"corte": [[&"atk/Dualwield_Melee_Attack_Chop", 0.56]],
+	# D082: com a lâmina na linha do braço o corte para fora e a estocada da mão da frente raspavam o chão; ficaram fora
+	"estocada": [[&"tico/Estocada", 0.25], [&"mix/stab_rear", 1.1]],
 }
 
 
