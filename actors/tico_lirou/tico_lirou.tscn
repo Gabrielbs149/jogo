@@ -1,5 +1,6 @@
 [gd_scene format=3]
 
+[ext_resource type="Script" path="res://actors/shared/guarda_armada.gd" id="11_guarda"]
 [ext_resource type="PackedScene" path="res://actors/tico_lirou/tico_lirou_humanoide.glb" id="1_model"]
 [ext_resource type="AnimationLibrary" path="res://assets/kits/kaykit/animacoes/humanoide.res" id="2_anims"]
 [ext_resource type="Script" path="res://actors/shared/arm_rest.gd" id="3_arm"]
@@ -18,6 +19,7 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Mesh"]
 root_node = NodePath("..")
+deterministic = true
 libraries = {
 &"": ExtResource("2_anims"),
 &"tico": ExtResource("4_golpes"),
@@ -32,6 +34,9 @@ keep_body = Array[StringName]([&"tico/Golpe_3"])
 
 [node name="PassoIK" type="SkeletonModifier3D" parent="Mesh/TicoRig/GeneralSkeleton"]
 script = ExtResource("9_passo")
+
+[node name="GuardaArmada" type="SkeletonModifier3D" parent="Mesh/TicoRig/GeneralSkeleton"]
+script = ExtResource("11_guarda")
 
 [node name="ArmRest" type="SkeletonModifier3D" parent="Mesh/TicoRig/GeneralSkeleton"]
 script = ExtResource("3_arm")

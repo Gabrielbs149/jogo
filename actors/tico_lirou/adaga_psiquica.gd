@@ -29,9 +29,32 @@ var _trail: Array[PackedVector3Array] = []
 var _trail_mesh: MeshInstance3D
 var _trail_im: ImmediateMesh
 
-## Giro e lugar da adaga dentro da mão (medidos nas fotos: lâmina para a frente, um pouco para cima).
-const GRIP_ROTATION := Vector3(25, 0, 90)
-const GRIP_OFFSET := Vector3(0, 0.05, 0)
+## Giro e lugar da adaga na mão (D080). A lâmina sai do lado do polegar (punho fechado), inclinada 25° para a frente da
+## mão: o cabo atravessa a palma na diagonal, como num punho de verdade. A mão direita do esqueleto é o espelho da
+## esquerda: giro e lugar espelhados (grip_basis, grip_offset); com o mesmo giro nas duas, a lâmina da direita saía
+## para trás e, nos golpes, o pulso torcia meia volta.
+## Ângulo da lâmina na mão (graus, em volta do eixo da frente da mão): 90 seria exatamente de través.
+const GRIP_ANGLE := 65.0
+## Giro da lâmina em volta dela mesma (a face larga, medida nas fotos).
+const GRIP_ROLL := 25.0
+## O meio do cabo (0,055 abaixo da guarda) no meio do punho: as mãos do Tico são pequenas e o meio delas fica no osso
+## da mão (medido na malha). Antes a adaga ficava 5 cm à frente do pulso e o cabo inteiro fora da mão (D080).
+const GRIP_OFFSET := Vector3(-0.05, 0.023, 0.0)
+
+
+## Giro da adaga no osso da mão (LeftHand ou RightHand). A direita é o espelho da esquerda.
+static func grip_basis(bone: String) -> Basis:
+	var left := not bone.begins_with("Right")
+	var tilt := Basis(Vector3.BACK, deg_to_rad(GRIP_ANGLE if left else -GRIP_ANGLE))
+	var axis := tilt * Vector3.UP
+	return Basis(axis, deg_to_rad(-GRIP_ROLL if left else GRIP_ROLL)) * tilt
+
+
+## Lugar da adaga (da guarda dela) no osso da mão.
+static func grip_offset(bone: String) -> Vector3:
+	if bone.begins_with("Right"):
+		return Vector3(-GRIP_OFFSET.x, GRIP_OFFSET.y, GRIP_OFFSET.z)
+	return GRIP_OFFSET
 
 
 ## Uma adaga em cada mão do herói (osso LeftHand/RightHand). Devolve as duas.
@@ -51,9 +74,20 @@ static func attach_to(hero: Node3D) -> Array[AdagaPsiquica]:
 		var dagger := AdagaPsiquica.new()
 		dagger.name = "AdagaPsiquica"
 		holder.add_child(dagger)
-		dagger.rotation_degrees = GRIP_ROTATION
-		dagger.position = GRIP_OFFSET
+		dagger.basis = grip_basis(bone)
+		dagger.position = grip_offset(bone)
 		made.append(dagger)
+	# caído (D080): na queda a lâmina atravessava a cabeça; some e volta quando ele levanta
+	if hero.has_signal("downed_changed"):
+		hero.connect("downed_changed", func(is_down: bool) -> void:
+			for d: AdagaPsiquica in made:
+				if is_instance_valid(d) and d.visible:
+					d._fold(is_down))
+	if hero.has_signal("dodged"):
+		hero.connect("dodged", func() -> void:
+			for d: AdagaPsiquica in made:
+				if is_instance_valid(d) and d.visible:
+					d._tuck(hero))
 	return made
 
 
@@ -128,6 +162,37 @@ func materialize() -> void:
 	await tween.finished
 	await get_tree().create_timer(1.0).timeout
 	burst.queue_free()
+
+
+## Rolando (D080): a lâmina é do tamanho do Tico e atravessava a cabeça dele na cambalhota. Ela se recolhe num lampejo
+## (é psíquica: aparece e some) e volta quando ele termina de rolar.
+func _tuck(hero: Node) -> void:
+	var animator := hero.get_node_or_null("Animator")
+	var tween := create_tween()
+	tween.tween_property(self, "scale", Vector3.ONE * 0.01, 0.07).set_ease(Tween.EASE_IN)
+	await tween.finished
+	var until := Time.get_ticks_msec() + 1000
+	await get_tree().process_frame
+	while is_instance_valid(animator) and bool(animator.get("rolling")) and Time.get_ticks_msec() < until:
+		await get_tree().process_frame
+	if not visible:
+		scale = Vector3.ONE
+		return
+	flare(0.25)
+	tween = create_tween()
+	tween.tween_property(self, "scale", Vector3.ONE * 1.1, 0.1).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "scale", Vector3.ONE, 0.08)
+
+
+## Recolhe (encolhe até sumir) ou volta, num lampejo.
+func _fold(away: bool) -> void:
+	var tween := create_tween()
+	if away:
+		tween.tween_property(self, "scale", Vector3.ONE * 0.01, 0.12).set_ease(Tween.EASE_IN)
+	else:
+		flare(0.25)
+		tween.tween_property(self, "scale", Vector3.ONE * 1.1, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween.tween_property(self, "scale", Vector3.ONE, 0.08)
 
 
 ## A lâmina acende (golpe): mais brilho e luz por um instante.
@@ -369,6 +434,7 @@ static func _field_strike(hero: Combatant, daggers: Array[AdagaPsiquica], state:
 		if not d.visible:
 			d.visible = true
 			d.materialize()
+	_set_armed(hero, true)
 	var window: Array = CUT_WINDOWS[clampi(step, 0, CUT_WINDOWS.size() - 1)]
 	await hero.get_tree().create_timer(float(window[0])).timeout
 	if not is_instance_valid(hero):
@@ -391,6 +457,15 @@ static func _field_strike(hero: Combatant, daggers: Array[AdagaPsiquica], state:
 	for d: AdagaPsiquica in daggers:
 		if is_instance_valid(d) and d.visible:
 			d.vanish()
+	_set_armed(hero, false)
+
+
+## Avisa o animador que está (ou não) de adagas na mão: parado fica em guarda e andando os braços seguram as lâminas
+## (D080; com os braços soltos do andar as lâminas iam para todo lado).
+static func _set_armed(hero: Node, on: bool) -> void:
+	var animator := hero.get_node_or_null("Animator")
+	if animator and animator.get("armed") != null:
+		animator.set("armed", on)
 
 
 ## Some: encolhe e solta brilhinhos.

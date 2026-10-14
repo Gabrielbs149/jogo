@@ -153,3 +153,82 @@ func test_does_not_sink_while_running() -> void:
 			if i > 30:
 				lowest = minf(lowest, hips.global_position.y - _tico.global_position.y)
 		assert_gt(lowest, 0.18, "quadril a %.1f m/s" % speed)
+
+
+## D080: as duas adagas apontam para a frente (a mão direita é o espelho da esquerda) e o cabo fica dentro do punho.
+func test_daggers_are_mirrored_and_held() -> void:
+	var sk := _tico.find_children("*", "Skeleton3D", true, false)[0] as Skeleton3D
+	for m: Node in sk.get_children():
+		if m is SkeletonModifier3D:
+			(m as SkeletonModifier3D).active = false
+	_anim.set_physics_process(false)
+	_player.stop()
+	var daggers := AdagaPsiquica.attach_to(_tico)
+	sk.reset_bone_poses()
+	await wait_process_frames(3)
+	assert_eq(daggers.size(), 2)
+	var forward := (sk.global_basis * Vector3.BACK).normalized()  # o Tico olha para +Z no esqueleto
+	var to_sk := sk.global_basis.inverse()
+	var blades: Array[Vector3] = []
+	for d: AdagaPsiquica in daggers:
+		var blade := (d.tip() - d.base()).normalized()
+		blades.append(to_sk * blade)
+		assert_gt(blade.dot(forward), 0.85, "%s: lâmina para a frente" % d.get_parent().name)
+		var hand := sk.global_transform * sk.get_bone_global_pose(sk.find_bone((d.get_parent() as BoneAttachment3D).bone_name)).origin
+		var grip := d.global_transform * Vector3(0, -0.055, 0)
+		assert_lt(grip.distance_to(hand), 0.03, "%s: o cabo no punho" % d.get_parent().name)
+	var mirrored := Vector3(-blades[1].x, blades[1].y, blades[1].z)
+	assert_lt(rad_to_deg(blades[0].angle_to(mirrored)), 2.0, "uma é o espelho da outra")
+
+
+## D080: nos golpes e na guarda o pulso dobra como um pulso (antes dobrava 88° para a lâmina apontar).
+func test_wrists_do_not_break() -> void:
+	var sk := _tico.find_children("*", "Skeleton3D", true, false)[0] as Skeleton3D
+	for m: Node in sk.get_children():
+		if m is SkeletonModifier3D:
+			(m as SkeletonModifier3D).active = false
+	_anim.set_physics_process(false)
+	for anim: StringName in [&"tico/Guarda", &"tico/Golpe_1", &"tico/Golpe_2", &"tico/Golpe_3", &"tico/Estocada", &"tico/Corte_X"]:
+		_player.play(anim)
+		var worst := 0.0
+		for k: int in 9:
+			_player.seek(_player.current_animation_length * k / 8.0, true)
+			await wait_process_frames(1)
+			for side: String in ["Left", "Right"]:
+				var fore := sk.get_bone_global_pose(sk.find_bone(side + "LowerArm")).basis.orthonormalized()
+				var hand := sk.get_bone_global_pose(sk.find_bone(side + "Hand")).basis.orthonormalized()
+				worst = maxf(worst, rad_to_deg((fore * Vector3.UP).angle_to(hand * Vector3.UP)))
+		assert_lt(worst, 35.0, "%s: pulso" % anim)
+
+
+## D080: o osso que a animação não mexe volta para o descanso. Antes a coluna torcida de um golpe ficava no andar.
+func test_bones_do_not_leak_between_animations() -> void:
+	assert_true(_player.deterministic)
+	var sk := _tico.find_children("*", "Skeleton3D", true, false)[0] as Skeleton3D
+	var spine := sk.find_bone("Spine")
+	_anim.set_physics_process(false)
+	_player.play(&"tico/Golpe_1")
+	_player.seek(0.2, true)
+	_player.play(&"ual/Walk")
+	_player.seek(0.3, true)
+	var now := sk.get_bone_pose_rotation(spine)
+	var rest := sk.get_bone_rest(spine).basis.get_rotation_quaternion()
+	assert_lt(rad_to_deg(now.angle_to(rest)), 1.0, "a coluna do andar é a do descanso")
+
+
+## D080: de adagas na mão o Tico fica em guarda parado; sem elas, volta à idle.
+func test_armed_stands_in_guard() -> void:
+	_anim.armed = true
+	await wait_physics_frames(3)
+	assert_eq(_player.current_animation, String(_anim.armed_idle))
+	_anim.armed = false
+	await wait_physics_frames(3)
+	assert_eq(_player.current_animation, String(_anim.idle))
+
+
+## D080: apertar logo depois do fim de um golpe ainda continua o combo (andando, recomeçava sempre do primeiro).
+func test_combo_continues_right_after_a_strike() -> void:
+	_tico.ability_used.emit(0)
+	await wait_until(func() -> bool: return _player.current_animation != String(_anim.combo[0]), 2.0)
+	_tico.ability_used.emit(0)
+	assert_eq(_player.current_animation, String(_anim.combo[1]), "o segundo golpe, não o primeiro de novo")

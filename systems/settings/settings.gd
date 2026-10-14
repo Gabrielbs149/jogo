@@ -470,17 +470,22 @@ static func _is_game_camera(node: Node) -> bool:
 	return script != null and script.resource_path.ends_with("third_person_camera.gd")
 
 
-func _light(light: Light3D) -> void:
-	if not is_instance_valid(light) or _editing():
+## (Sem tipo no argumento: chamada adiada, a luz pode já ter saído; com tipo o Godot erra antes do is_instance_valid.)
+func _light(target: Variant) -> void:
+	if not is_instance_valid(target) or _editing():
 		return
+	var light := target as Light3D
 	if not light.has_meta("sombra_da_fase"):
 		light.set_meta("sombra_da_fase", light.shadow_enabled)
 	light.shadow_enabled = bool(light.get_meta("sombra_da_fase")) and int(_values["sombras"]) > 0
 
 
 ## Oclusão, brilho das luzes e névoa: só desligam o que a fase liga (nunca ligam o que a fase não usa).
-func _environment(node: WorldEnvironment) -> void:
-	if not is_instance_valid(node) or node.environment == null or _editing():
+func _environment(target: Variant) -> void:
+	if not is_instance_valid(target) or _editing():
+		return
+	var node := target as WorldEnvironment
+	if node.environment == null:
 		return
 	var env := node.environment
 	if not node.has_meta("da_fase"):
@@ -493,9 +498,10 @@ func _environment(node: WorldEnvironment) -> void:
 	env.volumetric_fog_enabled = bool(base["vfog"]) and bool(_values["nevoa"])
 
 
-func _camera(cam: Node) -> void:
-	if not is_instance_valid(cam) or _editing():
+func _camera(target: Variant) -> void:
+	if not is_instance_valid(target) or _editing():
 		return
+	var cam := target as Node
 	cam.set("distance", clampf(float(_values["distancia_camera"]), float(cam.get("min_distance")), float(cam.get("max_distance"))))
 	var lens := cam.get_node_or_null("Arm/Camera3D") as Camera3D
 	if lens:

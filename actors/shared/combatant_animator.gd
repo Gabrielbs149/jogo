@@ -61,6 +61,15 @@ signal combo_strike(step: int)
 @export var combo_open: float = 0.45
 ## Ritmo dos golpes do combo.
 @export var combo_speed: float = 1.0
+## Tolerância depois do fim de um golpe do combo (s): apertar logo depois ainda continua o combo (D080: andando, quem
+## apertava no ritmo do golpe recomeçava sempre do primeiro).
+@export var combo_grace: float = 0.35
+## Parado com as armas na mão (D080): em vez da idle (e sem as manias). Andando, os braços vão para a guarda pela
+## GuardaArmada, se o esqueleto tiver.
+@export var armed_idle: StringName = &""
+
+## De armas na mão (quem dá as armas liga e desliga).
+var armed: bool = false
 
 var _me: Combatant
 var _player: AnimationPlayer
@@ -90,6 +99,8 @@ var _combo_step: int = -1
 var _buffered: bool = false
 ## Quando acaba a mania/gesto de agora (as que são em laço, como cruzar os braços, tocam uma volta só).
 var _shot_end: float = 0.0
+var _chain_until: float = 0.0
+var _chain_next: int = 0
 
 
 func _ready() -> void:
@@ -105,7 +116,7 @@ func _ready() -> void:
 		return
 	if extra_library and not _player.has_animation_library(extra_library_name):
 		_player.add_animation_library(extra_library_name, extra_library)
-	for loop_name: StringName in [idle, walk, run, jog, sneak, sneak_idle]:
+	for loop_name: StringName in [idle, walk, run, jog, sneak, sneak_idle, armed_idle]:
 		if loop_name != &"" and _player.has_animation(loop_name):
 			if _player.get_animation(loop_name).loop_mode != Animation.LOOP_LINEAR:
 				_player.get_animation(loop_name).loop_mode = Animation.LOOP_LINEAR
@@ -140,7 +151,7 @@ func _physics_process(delta: float) -> void:
 		return
 	if speed < 0.3:
 		_idle_for += delta
-		if not fidgets.is_empty() and _me.get("real_time") != false and not _me.sneaking and _idle_for > _next_fidget:
+		if not fidgets.is_empty() and _me.get("real_time") != false and not _me.sneaking and not armed and _idle_for > _next_fidget:
 			_idle_for = 0.0
 			_next_fidget = randf_range(fidget_after.x, fidget_after.y)
 			var options := fidgets.filter(func(f: StringName) -> bool: return f != _last_fidget)
@@ -149,7 +160,10 @@ func _physics_process(delta: float) -> void:
 			_play_once(chosen)
 			_cancelable = true
 			return
-		_loop(sneak_idle if _me.sneaking and sneak_idle != &"" else idle, 1.0)
+		if _me.sneaking and sneak_idle != &"":
+			_loop(sneak_idle, 1.0)
+		else:
+			_loop(armed_idle if armed and armed_idle != &"" and _player.has_animation(armed_idle) else idle, 1.0)
 		return
 	_idle_for = 0.0
 	_loop(pick[0], float(pick[1]))
@@ -268,6 +282,9 @@ func _combo_input() -> void:
 		else:
 			_buffered = true
 		return
+	if not _one_shot and Time.get_ticks_msec() / 1000.0 < _chain_until:
+		_strike(_chain_next)
+		return
 	var recovering := combo_recover.find(now)
 	if _one_shot and recovering >= 0 and now != &"" and at < 0.6:
 		_strike(recovering + 1)
@@ -277,6 +294,7 @@ func _combo_input() -> void:
 
 func _strike(step: int) -> void:
 	step = step % combo.size()
+	_chain_until = 0.0
 	_combo_step = step
 	_buffered = false
 	_play_once(combo[step], 0.06)
@@ -303,6 +321,8 @@ func _on_finished(anim: StringName) -> void:
 		return
 	var step := combo.find(anim)
 	if step >= 0 and not _me.downed:
+		_chain_until = Time.get_ticks_msec() / 1000.0 + combo_grace
+		_chain_next = step + 1
 		if _buffered:
 			_strike(step + 1)
 			return

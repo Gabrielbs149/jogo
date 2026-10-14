@@ -4,12 +4,14 @@ extends SceneTree
 ## - o tronco (Spine/Chest) inclina no máximo TRONCO_MAX graus para a frente (o excesso é desfeito no Spine);
 ## - a cabeça inclina no máximo CABECA_MAX graus para baixo (em relação à vertical);
 ## - os braços (braço, antebraço, mão) ficam com a MESMA orientação no mundo que tinham: as adagas fazem o mesmo corte.
-## Pernas, quadril e rabo ficam como no original. Salva actors/tico_lirou/ataques_tico.res (biblioteca "atk"; mesmos nomes).
+## "clip@graus" usa outro limite para o tronco (D080: andar agachado da UAL mergulhava 53°, a cabeça grande do Tico
+## ia na frente do corpo; agachado fica no máximo 25°; o trote e a corrida, 29° e 33°, ficam em 18° e 22°). Pernas, quadril e rabo ficam como no original. Salva actors/tico_lirou/ataques_tico.res (biblioteca "atk"; mesmos nomes).
 ## Uso: godot --headless --path . -s tools/art/postura_tico.gd
 
 const OUT := "res://actors/tico_lirou/ataques_tico.res"
 const CLIPS := ["Dualwield_Melee_Attack_Slice", "Dualwield_Melee_Attack_Chop", "Dualwield_Melee_Attack_Stab",
-	"2H_Melee_Attack_Spinning", "ual/Sword_Dash", "ual/NinjaJump_Start", "ual/Melee_Hook", "ual/Punch_Jab", "ual/Punch_Cross"]
+	"2H_Melee_Attack_Spinning", "ual/Sword_Dash", "ual/NinjaJump_Start", "ual/Melee_Hook", "ual/Punch_Jab", "ual/Punch_Cross",
+	"ual/Crouch_Fwd@25", "ual/Crouch_Idle@25", "ual/Jog_Fwd@18", "ual/Sprint@22"]
 const FPS := 30.0
 const TRONCO_MAX := 10.0
 const CABECA_MAX := 12.0
@@ -17,6 +19,7 @@ const ARM := ["UpperArm", "LowerArm", "Hand"]
 
 var _sk: Skeleton3D
 var _player: AnimationPlayer
+var _trunk_max: float = TRONCO_MAX
 
 
 func _initialize() -> void:
@@ -34,7 +37,9 @@ func _run() -> void:
 	_player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
 	await process_frame
 	var lib := AnimationLibrary.new()
-	for clip: String in CLIPS:
+	for spec: String in CLIPS:
+		var clip := spec.split("@")[0]
+		_trunk_max = float(spec.split("@")[1]) if spec.contains("@") else TRONCO_MAX
 		if not _player.has_animation(clip):
 			push_warning("sem " + clip)
 			continue
@@ -82,7 +87,7 @@ func _fix_pose() -> void:
 	# tronco: o "para cima" do peito inclina no máximo TRONCO_MAX para a frente (+Z do esqueleto)
 	var chest := _sk.find_bone("Chest")
 	var up := _global(chest).basis.orthonormalized() * Vector3.UP
-	var fix := _limit(up, TRONCO_MAX)
+	var fix := _limit(up, _trunk_max)
 	if fix != Basis():
 		_turn(_sk.find_bone("Spine"), fix)
 	# cabeça: no máximo CABECA_MAX para baixo
