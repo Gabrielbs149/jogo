@@ -155,9 +155,12 @@ static func _keep_out(basis: Basis, out_sign: float) -> Basis:
 	var flat := Vector2(dir.x * out_sign, dir.y)
 	var now := atan2(flat.x, -flat.y)  # 0 = pendurado reto para baixo, + = abrindo para fora
 	var need := asin(MIN_OUT / maxf(Vector2(dir.x, dir.y).length(), 0.001)) if Vector2(dir.x, dir.y).length() > MIN_OUT else PI / 2.0
-	if dir.y > 0.0:
-		return basis  # braço levantado (golpe, espreguiçar): fica como está
-	var delta := (need - now) * out_sign
+	# braço levantado (golpe, espreguiçar) fica como está; perto da horizontal a correção some aos poucos (D081: ela
+	# desligava de uma vez quando o braço passava da horizontal e o braço dava um pulo de um quadro)
+	var fade := clampf((0.15 - dir.y) / 0.3, 0.0, 1.0)
+	if fade <= 0.0:
+		return basis
+	var delta := (need - now) * out_sign * fade
 	return Basis(Vector3.BACK, delta) * basis
 
 

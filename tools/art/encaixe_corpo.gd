@@ -26,11 +26,17 @@ var daggers: bool = true
 ## O giro e a abertura do quadro anterior, por lado: o próximo quadro começa deles. Sem isso um quadro girava para um
 ## lado e o seguinte para o outro, e entre os dois (na interpolação) a lâmina atravessava a cabeça.
 var _prev := {"Left": [0.0, 0.0], "Right": [0.0, 0.0]}
+var _first := true
+## O máximo que o giro e a abertura mudam de um quadro para o outro (graus): mais que isso o braço dava um tranco
+## (um pulo de um quadro). Melhor a lâmina raspar um instante do que o braço saltar.
+const MAX_TWIST_STEP := 30.0
+const MAX_OPEN_STEP := 8.0
 
 
 ## Começo de outra animação: esquece o quadro anterior.
 func reset() -> void:
 	_prev = {"Left": [0.0, 0.0], "Right": [0.0, 0.0]}
+	_first = true
 
 
 func _init(skeleton: Skeleton3D, mesh_owner: Node) -> void:
@@ -58,10 +64,13 @@ func fit() -> int:
 		var prev: Array = _prev[side]
 		# melhor: o mais perto do quadro anterior que deixa tudo limpo; procura abertura e giro em volta dele
 		var best := [INF, 0.0, 0.0]
-		for open_deg: float in [0.0, 8.0, 16.0, 24.0, 32.0, 44.0, 56.0]:
-			for step: int in range(-12, 13):
-				var twist := float(prev[1]) + deg_to_rad(15.0 * step)
+		for open_deg: float in [0.0, 8.0, 16.0, 24.0, 32.0, 40.0, 48.0, 56.0]:
+			for step: int in range(-24, 25):
+				var twist := float(prev[1]) + deg_to_rad(7.5 * step)
 				if absf(twist) > deg_to_rad(150.0):
+					continue
+				if not _first and (absf(twist - float(prev[1])) > deg_to_rad(MAX_TWIST_STEP) + 0.001
+						or absf(open_deg - float(prev[0])) > MAX_OPEN_STEP + 0.001):
 					continue
 				_sk.set_bone_pose_rotation(upper, keep[0])
 				_sk.set_bone_pose_rotation(lower, keep[1])
@@ -81,6 +90,7 @@ func fit() -> int:
 		if best[1] != 0.0 or best[2] != 0.0:
 			fixes += 1
 		_prev[side] = [best[1], best[2]]
+	_first = false
 	return fixes
 
 

@@ -119,7 +119,7 @@ func _initialize() -> void:
 	lib.add_animation(&"Corte_X", _make([[0.0, GUARDA], [0.16, PREPARA], [0.24, CRUZA, "rapido"], [0.31, SEGUE, "rapido"],
 		[0.38, SEGUE], [0.62, GUARDA]], false))
 	lib.add_animation(&"Bote", _make([[0.0, GUARDA], [0.14, AGACHA], [0.3, AGACHA]], false))
-	lib.add_animation(&"Estocada", _make([[0.0, GUARDA], [0.14, RECOLHE], [0.22, ESTOCA, "rapido"], [0.3, ESTOCA_FUNDO],
+	lib.add_animation(&"Estocada", _make([[0.0, GUARDA], [0.14, RECOLHE], [0.25, ESTOCA, "rapido"], [0.32, ESTOCA_FUNDO],
 		[0.4, ESTOCA_FUNDO], [0.66, GUARDA]], false))
 	print("salvo ", ResourceSaver.save(lib, OUT))
 	quit()

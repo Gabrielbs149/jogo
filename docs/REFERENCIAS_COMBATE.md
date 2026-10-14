@@ -25,8 +25,10 @@ Fontes: [maxroll (guia de combate)](https://maxroll.gg/clair-obscur-expedition-3
 [Game Rant (aparar)](https://gamerant.com/clair-obscur-expedition-33-how-time-parries/),
 [GameFAQs (tempo de aparar/esquivar)](https://gamefaqs.gamespot.com/boards/469495-clair-obscur-expedition-33/80976022).
 
-O que já temos parecido: turno, d20 para acertar (D&D), aparar/esquivar com tempo (anel), aparar a sequência inteira =
-contra-ataque (combo), quebra de postura. O que é diferente: a nossa defesa mostra o anel; a deles é só o golpe e o som.
+O que já tínhamos parecido: turno, d20 para acertar (D&D), aparar/esquivar com tempo, aparar a sequência inteira =
+contra-ataque (combo), quebra de postura. **Aplicado na D082:** a defesa sem anel (lendo o golpe: o inimigo recua no
+preparo, clarão e assobio 0,3 s antes, a batida na hora), janelas um pouco maiores sem o anel, e o anel como opção em
+Acessibilidade.
 
 ## Projetos abertos em Godot (código MIT)
 
