@@ -29,20 +29,25 @@ var _trail: Array[PackedVector3Array] = []
 var _trail_mesh: MeshInstance3D
 var _trail_im: ImmediateMesh
 
-## Giro e lugar da adaga dentro da mão ESQUERDA. A lâmina sai do lado do polegar, de través com o antebraço (punho
-## fechado). A mão direita do esqueleto é o espelho da esquerda: giro e lugar espelhados (grip_rotation, grip_offset).
-## Com o mesmo giro nas duas, a lâmina da direita saía para trás e, nos golpes, o pulso torcia meia volta (D080).
-const GRIP_ROTATION := Vector3(25, 0, 90)
+## Giro e lugar da adaga na mão (D080). A lâmina sai do lado do polegar (punho fechado), inclinada 25° para a frente da
+## mão: o cabo atravessa a palma na diagonal, como num punho de verdade. A mão direita do esqueleto é o espelho da
+## esquerda: giro e lugar espelhados (grip_basis, grip_offset); com o mesmo giro nas duas, a lâmina da direita saía
+## para trás e, nos golpes, o pulso torcia meia volta.
+## Ângulo da lâmina na mão (graus, em volta do eixo da frente da mão): 90 seria exatamente de través.
+const GRIP_ANGLE := 65.0
+## Giro da lâmina em volta dela mesma (a face larga, medida nas fotos).
+const GRIP_ROLL := 25.0
 ## O meio do cabo (0,055 abaixo da guarda) no meio do punho: as mãos do Tico são pequenas e o meio delas fica no osso
 ## da mão (medido na malha). Antes a adaga ficava 5 cm à frente do pulso e o cabo inteiro fora da mão (D080).
-const GRIP_OFFSET := Vector3(-0.055, 0.0, 0.0)
+const GRIP_OFFSET := Vector3(-0.05, 0.023, 0.0)
 
 
-## Giro da adaga na mão (osso LeftHand ou RightHand), em graus.
-static func grip_rotation(bone: String) -> Vector3:
-	if bone.begins_with("Right"):
-		return Vector3(GRIP_ROTATION.x, -GRIP_ROTATION.y, -GRIP_ROTATION.z)
-	return GRIP_ROTATION
+## Giro da adaga no osso da mão (LeftHand ou RightHand). A direita é o espelho da esquerda.
+static func grip_basis(bone: String) -> Basis:
+	var left := not bone.begins_with("Right")
+	var tilt := Basis(Vector3.BACK, deg_to_rad(GRIP_ANGLE if left else -GRIP_ANGLE))
+	var axis := tilt * Vector3.UP
+	return Basis(axis, deg_to_rad(-GRIP_ROLL if left else GRIP_ROLL)) * tilt
 
 
 ## Lugar da adaga (da guarda dela) no osso da mão.
@@ -69,7 +74,7 @@ static func attach_to(hero: Node3D) -> Array[AdagaPsiquica]:
 		var dagger := AdagaPsiquica.new()
 		dagger.name = "AdagaPsiquica"
 		holder.add_child(dagger)
-		dagger.rotation_degrees = grip_rotation(bone)
+		dagger.basis = grip_basis(bone)
 		dagger.position = grip_offset(bone)
 		made.append(dagger)
 	# caído (D080): na queda a lâmina atravessava a cabeça; some e volta quando ele levanta

@@ -167,13 +167,38 @@ func test_daggers_are_mirrored_and_held() -> void:
 	sk.reset_bone_poses()
 	await wait_process_frames(3)
 	assert_eq(daggers.size(), 2)
-	var forward := sk.global_basis * Vector3.BACK  # o Tico olha para +Z no esqueleto
+	var forward := (sk.global_basis * Vector3.BACK).normalized()  # o Tico olha para +Z no esqueleto
+	var to_sk := sk.global_basis.inverse()
+	var blades: Array[Vector3] = []
 	for d: AdagaPsiquica in daggers:
 		var blade := (d.tip() - d.base()).normalized()
-		assert_gt(blade.dot(forward.normalized()), 0.9, "%s: lâmina para a frente" % d.get_parent().name)
+		blades.append(to_sk * blade)
+		assert_gt(blade.dot(forward), 0.85, "%s: lâmina para a frente" % d.get_parent().name)
 		var hand := sk.global_transform * sk.get_bone_global_pose(sk.find_bone((d.get_parent() as BoneAttachment3D).bone_name)).origin
 		var grip := d.global_transform * Vector3(0, -0.055, 0)
 		assert_lt(grip.distance_to(hand), 0.03, "%s: o cabo no punho" % d.get_parent().name)
+	var mirrored := Vector3(-blades[1].x, blades[1].y, blades[1].z)
+	assert_lt(rad_to_deg(blades[0].angle_to(mirrored)), 2.0, "uma é o espelho da outra")
+
+
+## D080: nos golpes e na guarda o pulso dobra como um pulso (antes dobrava 88° para a lâmina apontar).
+func test_wrists_do_not_break() -> void:
+	var sk := _tico.find_children("*", "Skeleton3D", true, false)[0] as Skeleton3D
+	for m: Node in sk.get_children():
+		if m is SkeletonModifier3D:
+			(m as SkeletonModifier3D).active = false
+	_anim.set_physics_process(false)
+	for anim: StringName in [&"tico/Guarda", &"tico/Golpe_1", &"tico/Golpe_2", &"tico/Golpe_3", &"tico/Estocada", &"tico/Corte_X"]:
+		_player.play(anim)
+		var worst := 0.0
+		for k: int in 9:
+			_player.seek(_player.current_animation_length * k / 8.0, true)
+			await wait_process_frames(1)
+			for side: String in ["Left", "Right"]:
+				var fore := sk.get_bone_global_pose(sk.find_bone(side + "LowerArm")).basis.orthonormalized()
+				var hand := sk.get_bone_global_pose(sk.find_bone(side + "Hand")).basis.orthonormalized()
+				worst = maxf(worst, rad_to_deg((fore * Vector3.UP).angle_to(hand * Vector3.UP)))
+		assert_lt(worst, 35.0, "%s: pulso" % anim)
 
 
 ## D080: o osso que a animação não mexe volta para o descanso. Antes a coluna torcida de um golpe ficava no andar.

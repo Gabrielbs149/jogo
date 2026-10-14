@@ -18,8 +18,10 @@ extends SceneTree
 ## Uso: godot --headless --path . -s tools/art/criar_golpes_tico.gd
 
 const OUT := "res://actors/tico_lirou/golpes_tico.res"
-## Giro da adaga na mão esquerda (o mesmo de AdagaPsiquica.GRIP_ROTATION).
-const GRIP_ROTATION := Vector3(25, 0, 90)
+## Ângulo da lâmina na mão esquerda (o mesmo de AdagaPsiquica.GRIP_ANGLE).
+const GRIP_ANGLE := 65.0
+## O quanto o pulso dobra no máximo (graus).
+const WRIST_MAX := 30.0
 const FPS := 30.0
 
 ## Guarda de quem luta com faca (D080): joelhos dobrados, pé esquerdo à frente, o peito virado um pouco para a direita
@@ -95,6 +97,7 @@ const FLOATS := ["tronco", "giro", "quadril", "baixa", "passo", "volta"]
 
 var _sk: Skeleton3D
 var _player: AnimationPlayer
+var _last_twist: float = 0.0
 
 
 func _initialize() -> void:
@@ -241,14 +244,10 @@ func _apply(pose: Dictionary, time: float) -> void:
 		_aim(upper, spin * _to_space(dirs[0], out))
 		_aim(lower, spin * _to_space(dirs[1], out))
 		_sk.set_bone_pose_rotation(hand, _sk.get_bone_rest(hand).basis.get_rotation_quaternion())
-		# o pulso vira para a lâmina (que sai da mão no giro da empunhadura) apontar para onde a pose pede
-		# (o mesmo que AdagaPsiquica.grip_rotation: a mão direita é o espelho da esquerda, D080; o script da adaga não
-		# compila aqui fora do jogo, porque usa o Audio)
-		var grip := GRIP_ROTATION
-		if side == "Right":
-			grip = Vector3(grip.x, -grip.y, -grip.z)
-		var blade := Basis.from_euler(grip * PI / 180.0) * Vector3.UP
-		_aim(hand, spin * _to_space(dirs[2], out), blade)
+		# a lâmina sai da mão no giro da empunhadura (o mesmo que AdagaPsiquica.grip_basis: a mão direita é o espelho
+		# da esquerda, D080; o script da adaga não compila aqui fora do jogo, porque usa o Audio)
+		var blade := Basis(Vector3.BACK, deg_to_rad(GRIP_ANGLE if side == "Left" else -GRIP_ANGLE)) * Vector3.UP
+		_hold(lower, hand, spin * _to_space(dirs[2], out), blade)
 
 
 func _to_space(d: Vector3, out: float) -> Vector3:
@@ -273,6 +272,32 @@ func _aim(bone: int, dir: Vector3, axis: Vector3 = Vector3.UP) -> void:
 	var now := (g0 * axis).normalized()
 	var g := Basis(Quaternion(now, dir)) * g0
 	_sk.set_bone_pose_rotation(bone, (pg.inverse() * g).get_rotation_quaternion())
+
+
+## Punho fechado (D080): a lâmina sai de través do antebraço, então para ela apontar onde a pose pede quem gira é o
+## antebraço, em volta do próprio eixo (metade no antebraço, metade no pulso, como o rádio sobre a ulna); a mão dobra
+## no pulso só o que um pulso dobra (WRIST_MAX). Antes a mão era girada inteira até a lâmina apontar: com a lâmina
+## pedida na direção do antebraço o pulso dobrava 88° (quebrado) e no corte de direita torcia 170°.
+func _hold(lower: int, hand: int, want: Vector3, blade_axis: Vector3) -> void:
+	var fore := (_global(lower).basis.orthonormalized() * Vector3.UP).normalized()
+	var now := (_global(hand).basis.orthonormalized() * blade_axis).normalized()
+	var a := now - fore * now.dot(fore)
+	var b := want.normalized() - fore * want.normalized().dot(fore)
+	if a.length() > 0.05 and b.length() > 0.2:
+		var angle := a.normalized().signed_angle_to(b.normalized(), fore)
+		_turn(lower, Basis(fore, angle * 0.5))
+		_turn(hand, Basis(fore, angle * 0.5))
+		_last_twist = rad_to_deg(angle)
+	# o pulso dobra para a lâmina chegar mais perto, até WRIST_MAX
+	now = (_global(hand).basis.orthonormalized() * blade_axis).normalized()
+	var rest_angle := now.angle_to(want.normalized())
+	if rest_angle > 0.01:
+		var axis := now.cross(want.normalized())
+		if axis.length() > 0.001:
+			_turn(hand, Basis(axis.normalized(), minf(rest_angle, deg_to_rad(WRIST_MAX))))
+	if OS.get_environment("DEBUG_PULSO") != "":
+		now = (_global(hand).basis.orthonormalized() * blade_axis).normalized()
+		print("  %s torce %4.0f°  lâmina longe %3.0f°  lâmina %s" % [_sk.get_bone_name(hand), _last_twist, rad_to_deg(now.angle_to(want.normalized())), now.snappedf(0.1)])
 
 
 ## Pose global do osso calculada na mão (pai × pose, até a raiz). Fora do jogo o get_bone_global_pose devolve um cache
