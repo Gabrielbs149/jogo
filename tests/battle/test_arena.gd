@@ -269,7 +269,9 @@ func test_ritmo_climbs_and_drops_a_level_when_hit() -> void:
 	assert_eq([arena.ritmo, arena.ritmo_letter()], [3, "C"], "apanhou: volta ao começo do nível de baixo")
 	arena.ritmo_gain(40)
 	assert_eq(arena.ritmo_letter(), "S")
-	assert_string_contains(String(arena.get_node("BattleHUD").get("_statuses").text), "Ritmo S")
+	var letra: RitmoLetra = arena.get_node("BattleHUD").get("_ritmo_letra")
+	assert_eq(letra.letter, "S", "a letra grande na tela")
+	assert_almost_eq(arena.ritmo_progress(), 1.0, 0.001)
 
 
 ## D084 (DT_FreezeFrame): o golpe congela o tempo por um instante e depois ele volta sozinho.

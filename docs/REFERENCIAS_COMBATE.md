@@ -81,3 +81,5 @@ só para estudo, em `C:\Users\Gabriel\Tools\estudo\e33` (fora do repositório). 
 - **Gradiente:** cada PA gasto enche 5% da barra; até 3 cargas.
 
 **Aplicado na D084:** a defesa contada do aperto, a dificuldade, o congelar no golpe e o Ritmo do Tico (a Perfeição).
+**Aplicado na D085:** a sequência de golpes do inimigo (com a pegadinha), a resposta na tela a cada golpe, a letra do
+Ritmo grande e o contra-ataque em cena.
