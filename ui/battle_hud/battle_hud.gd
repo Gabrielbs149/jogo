@@ -205,6 +205,7 @@ func refresh() -> void:
 	for status: Dictionary in player.statuses:
 		if status["title"] != "":
 			names.append("%s (%d)" % [status["title"], ceili(float(status["time"]))])
+	names.insert(0, "Ritmo %s" % _arena.ritmo_letter())  # D084
 	_statuses.text = "   ".join(names)
 	for i: int in _buttons.size():
 		_buttons[i].disabled = not _choosing or not _arena.can_afford(i)

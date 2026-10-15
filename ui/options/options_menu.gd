@@ -11,6 +11,7 @@ const SHADOWS := ["Desligadas", "Baixas", "Médias", "Altas"]
 const AA := ["Desligado", "FXAA (leve)", "MSAA 2x", "MSAA 4x", "TAA (suave)"]
 const DETAIL := ["Baixo", "Médio", "Alto", "Ultra"]
 const SCREEN := ["Janela", "Tela cheia", "Tela cheia exclusiva"]
+const DIFFICULTY := ["Fácil", "Normal", "Difícil"]
 ## Controle de videogame (layout Xbox; Settings.JOYPAD): [botões, o que fazem].
 const PAD: Array = [
 	[["Analógico esq."], "andar (aperte para correr)"],
@@ -186,6 +187,9 @@ func _build_controls() -> void:
 
 func _build_game() -> void:
 	var box := _tab("Jogo")
+	_choice(box, "Dificuldade da luta", "dificuldade", DIFFICULTY, [0, 1, 2])
+	_note(box, "Fácil: a defesa fica bem mais folgada (aparar 0,35 s, esquivar 0,5 s) e os inimigos batem 4 vezes mais "
+		+ "fraco. Difícil: a defesa é a do normal, mas eles batem 2 vezes mais forte e têm 25% a mais de vida.")
 	_toggle(box, "Mostrar dicas de controle na tela", "dicas")
 	_slider(box, "Distância da câmera", "distancia_camera", 2.2, 8.0, 0.1, "m")
 	_slider(box, "Tremor da câmera na luta", "tremor", 0.0, 1.0, 0.05, "pct")
