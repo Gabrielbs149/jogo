@@ -52,3 +52,17 @@ corpo em quase todas. O `EncaixeCorpo` (tools/art/encaixe_corpo.gd) abre o braç
 lâmina sair: 7 de 15 ficaram limpas, e dessas as que ficam bonitas no Tico são o **corte para fora** e as duas
 **estocadas de faca**. As guardas abaixam a cabeça grande ou põem a lâmina na frente da cara; os combos longos giram o
 corpo todo e ainda cruzam a lâmina pelo corpo.
+
+## Baldur's Gate 3 (as regras, lidas dos arquivos do jogo)
+
+Extraídas com o LSLib (Norbyte, MIT) dos `.pak` do jogo do Gabriel, só para estudo, em `C:\Users\Gabriel\Tools\estudo\bg3`
+(fora do repositório). O que veio para cá (D083), reescrito do nosso jeito:
+- quem luta com duas armas ataca com a segunda como ação bônus, sem o modificador no dano (`Target_OffhandAttack`);
+- Riposte: reação quando o inimigo erra um corpo a corpo a até 2 m (`Interrupt_Riposte`);
+- terreno alto: +2 de mais de 2,3 m acima, -2 de baixo (`HighGroundThreshold`, `HighGroundAttackRollBonus`);
+- empurrão: 1 a 6 m conforme a força (`ShoveDistanceMin/Max`); aqui ele também desequilibra o alvo.
+
+## Expedition 33 (os arquivos)
+
+O jogo não é criptografado; o FModel (versão de agosto/2026, com .NET 10 portátil) abre e lista os 155 mil arquivos,
+mas as tabelas precisam de um mapa de campos (`.usmap`) que não é público: dá para gerar com o UE4SS rodando o jogo.

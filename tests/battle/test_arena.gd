@@ -176,3 +176,67 @@ func test_enemy_strike_lands_on_the_defense_beat() -> void:
 func test_defense_ring_is_hidden_by_default() -> void:
 	assert_false(bool(Settings.value("anel_defesa")), "sem anel: lê o golpe e o som")
 	assert_almost_eq(GolpeQte.duration_for(0.8), 0.8 * clampf(float(Settings.value("tempo_qte")), 1.0, 2.0), 0.001)
+
+
+## D083 (do Baldur's Gate 3): a mão de trás golpeia com o mesmo acerto, mas o dano não soma o modificador.
+func test_offhand_strike_has_no_damage_bonus_and_hurts() -> void:
+	var arena := _arena(PackedStringArray([BEETLE]), true)
+	arena.auto_play = false
+	await wait_until(func() -> bool: return arena.get_node("BattleHUD").get("_choosing"), 20.0)
+	var basic: Ability = arena.player.abilities[0]
+	var off := arena.offhand_ability()
+	assert_eq(off.bonus, 0, "sem o modificador no dano")
+	assert_eq(off.dice_sides, basic.dice_sides, "o mesmo dado da arma")
+	var enemy: Combatant = arena.enemies[0]
+	arena.player.attack_bonus = 60  # acerta (só o 1 natural erra)
+	var before := enemy.hp
+	for i: int in 3:
+		await arena._offhand_strike(enemy, "Mão de trás")
+		if enemy.hp < before:
+			break
+	assert_lt(enemy.hp, before, "a mão de trás tira vida")
+
+
+## D083: terreno alto dá +2 para acertar de cima e -2 de baixo.
+func test_high_ground() -> void:
+	var arena := _arena(PackedStringArray([BEETLE]), true)
+	arena.auto_play = false
+	await wait_until(func() -> bool: return arena.get_node("BattleHUD").get("_choosing"), 20.0)
+	var enemy: Combatant = arena.enemies[0]
+	assert_eq(CombatRules.high_ground(arena.player, enemy), 0, "no mesmo chão")
+	arena.player.global_position.y = enemy.global_position.y + 3.0
+	assert_eq(CombatRules.high_ground(arena.player, enemy), 2, "de cima")
+	assert_eq(CombatRules.high_ground(enemy, arena.player), -2, "de baixo")
+
+
+## D083: o empurrão deixa o alvo desequilibrado (ataques contra ele com vantagem); o chefe não dá para empurrar.
+func test_shove_unbalances_the_target() -> void:
+	var arena := _arena(PackedStringArray([BEETLE]), true)
+	arena.auto_play = false
+	await wait_until(func() -> bool: return arena.get_node("BattleHUD").get("_choosing"), 20.0)
+	var enemy: Combatant = arena.enemies[0]
+	arena.target = enemy
+	assert_true(arena.can_use_extra(BattleArena.SHOVE))
+	arena.player.attack_bonus = 60
+	for i: int in 3:
+		await arena._shove(enemy)
+		if enemy.has_flag("expose"):
+			break
+	assert_true(enemy.has_flag("expose"), "desequilibrado")
+	assert_eq(CombatRules.attack_advantage(arena.player, arena.player.abilities[0], enemy), 1, "vantagem contra ele")
+
+
+## D083 (Riposte, do Baldur's Gate 3): o inimigo erra o golpe corpo a corpo e a mão de trás revida.
+func test_riposte_when_the_enemy_misses() -> void:
+	var arena := _arena(PackedStringArray([BEETLE]), true)
+	arena.auto_play = false
+	await wait_until(func() -> bool: return arena.get_node("BattleHUD").get("_choosing"), 20.0)
+	var enemy: Combatant = arena.enemies[0]
+	arena.player.armor_class = 99  # ele erra (só o 20 natural acertaria)
+	arena.player.attack_bonus = 60
+	var before := enemy.hp
+	for i: int in 3:
+		await arena._enemy_turn(enemy)
+		if enemy.hp < before:
+			break
+	assert_lt(enemy.hp, before, "a riposte tirou vida dele")
