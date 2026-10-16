@@ -28,6 +28,8 @@ var _log: PackedStringArray = []
 var _banner_tween: Tween
 var _text_tween: Tween
 var _flash_tween: Tween
+## D085: o Ritmo grande no canto de cima, à direita, dentro da cena.
+var _ritmo_letra: RitmoLetra
 
 @onready var _order: HBoxContainer = %Order
 @onready var _player_name: Label = %PlayerName
@@ -100,6 +102,16 @@ func setup(arena: BattleArena) -> void:
 		extra_row.add_child(button)
 		_extra_buttons[int(action["id"])] = button
 	_actions.add_child(extra_row)
+	_ritmo_letra = RitmoLetra.new()
+	_ritmo_letra.name = "RitmoLetra"
+	_ritmo_letra.anchor_left = 1.0
+	_ritmo_letra.anchor_right = 1.0
+	_ritmo_letra.offset_left = -190.0
+	_ritmo_letra.offset_right = -60.0
+	_ritmo_letra.offset_top = 60.0
+	_ritmo_letra.offset_bottom = 192.0
+	$Root.add_child(_ritmo_letra)
+	$Root.move_child(_ritmo_letra, %Frame.get_index() + 1)
 	$Root/EnemyPanel.hide()  # D052: a vida fica em cima de cada inimigo
 	for enemy: Combatant in arena.enemies:
 		var bar := BarraInimigo.new()
@@ -206,6 +218,8 @@ func refresh() -> void:
 		if status["title"] != "":
 			names.append("%s (%d)" % [status["title"], ceili(float(status["time"]))])
 	_statuses.text = "   ".join(names)
+	if _ritmo_letra:
+		_ritmo_letra.set_state(_arena.ritmo_letter(), _arena.ritmo_level(), _arena.ritmo_progress())
 	for i: int in _buttons.size():
 		_buttons[i].disabled = not _choosing or not _arena.can_afford(i)
 		_buttons[i].text = _ability_label(i, int(_arena.recharge.get(i, 0)))

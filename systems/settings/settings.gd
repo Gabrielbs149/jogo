@@ -47,7 +47,8 @@ const DEFAULTS := {
 	# acessibilidade
 	"tamanho_interface": 1.0,
 	"tempo_qte": 1.0,
-	"anel_defesa": false,  # D082: sem anel, a defesa é lendo o golpe e o som (como no Clair Obscur)
+	"anel_defesa": false,
+	"dificuldade": 1,  # D084: 0 fácil, 1 normal, 2 difícil (os números do Expedition 33)  # D082: sem anel, a defesa é lendo o golpe e o som (como no Clair Obscur)
 }
 ## Canal de áudio de cada volume.
 const BUSES := {"volume_geral": &"Master", "volume_musica": &"Musica", "volume_efeitos": &"Efeitos", "volume_ambiente": &"Ambiente"}

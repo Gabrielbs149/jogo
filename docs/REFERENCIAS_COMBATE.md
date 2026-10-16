@@ -65,4 +65,21 @@ Extraídas com o LSLib (Norbyte, MIT) dos `.pak` do jogo do Gabriel, só para es
 ## Expedition 33 (os arquivos)
 
 O jogo não é criptografado; o FModel (versão de agosto/2026, com .NET 10 portátil) abre e lista os 155 mil arquivos,
-mas as tabelas precisam de um mapa de campos (`.usmap`) que não é público: dá para gerar com o UE4SS rodando o jogo.
+mas as tabelas precisam de um mapa de campos (`.usmap`) que não é público: gerado com o UE4SS rodando o jogo uma vez
+(o UE4SS foi tirado da pasta do jogo depois). As tabelas de luta foram lidas com um programinha em CUE4Parse (MIT),
+só para estudo, em `C:\Users\Gabriel\Tools\estudo\e33` (fora do repositório). O que elas dizem:
+
+- **Defesa:** apertar deixa o personagem imune por um tempo, e o golpe que chega dentro dele é aparado/esquivado.
+  Normal e difícil: aparar **0,15 s**, esquivar **0,22 s**; fácil: 0,35 s e 0,5 s. (A comunidade falava em "janela
+  de 0,15 s": é isso, mas contada do aperto para a frente, não em volta do impacto.)
+- **Dificuldade:** no fácil a vida dos inimigos é a mesma e o ataque é **×0,25**; no difícil, ataque **×2** e vida
+  **×1,25**. Chefe tem ~13× a vida de um inimigo comum do mesmo nível; elite ~6×.
+- **Congelar no golpe (hitstop):** muito leve 0,04 s, leve 0,07, médio 0,11, pesado 0,14, muito pesado 0,2 (o tempo
+  vai a 0,001 por esse instante).
+- **Perfeição do Verso:** +1 por habilidade, defender, esquivar, aparar, contra-atacar, tiro de mira livre, ataque
+  básico e QTE; levar golpe tira. Níveis D, C, B, A, S aos 0, 3, 8, 15 e 30 pontos (máximo 99).
+- **Gradiente:** cada PA gasto enche 5% da barra; até 3 cargas.
+
+**Aplicado na D084:** a defesa contada do aperto, a dificuldade, o congelar no golpe e o Ritmo do Tico (a Perfeição).
+**Aplicado na D085:** a sequência de golpes do inimigo (com a pegadinha), a resposta na tela a cada golpe, a letra do
+Ritmo grande e o contra-ataque em cena.

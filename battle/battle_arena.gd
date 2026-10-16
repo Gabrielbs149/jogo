@@ -18,9 +18,9 @@ signal finished(victory: bool)
 ## Janelas (s) do seu golpe: perfeito e bom (D048: mais apertadas).
 @export var perfect_window: float = 0.055
 @export var good_window: float = 0.14
-## Janelas (s) da defesa: esquivar é folgado, aparar é apertado.
-@export var dodge_window: float = 0.12
-@export var parry_window: float = 0.065
+## Janelas (s) da defesa: quanto a defesa fica de pé depois de apertar (D084, os números do Expedition 33 no normal).
+@export var dodge_window: float = 0.22
+@export var parry_window: float = 0.15
 @export_group("Visual")
 ## Primeira pessoa (D047). Desligado: a câmera da cena, de longe, como antes.
 @export var first_person: bool = true
@@ -97,6 +97,11 @@ func _ready() -> void:
 		if not boss:
 			slot += 1
 		enemies.append(_spawn(scene, where))
+	var hp_mult: float = ENEMY_HP[difficulty()]
+	if not is_equal_approx(hp_mult, 1.0):
+		for e: Combatant in enemies:
+			e.max_hp = ceili(e.max_hp * hp_mult)
+			e.hp = e.max_hp
 	for c: Combatant in [player] + enemies:
 		_face(c, enemies[0] if c == player else player)
 		_homes[c] = c.transform
@@ -294,6 +299,13 @@ func _player_action(index: int) -> void:
 		var outcome := await _damage_qte(ability, landed.size(), tgt)
 		_after_grade(String(outcome["grade"]))
 		CombatRules.scale_damage(results, float(outcome["mult"]), String(outcome["grade"]))
+		var bonus := ritmo_level()
+		if bonus > 0:
+			for r: Dictionary in results:
+				if int(r["amount"]) > 0:
+					r["amount"] = int(r["amount"]) + bonus
+					r["text"] = "%s +%d ritmo %s = %d" % [r["text"], bonus, ritmo_letter(), r["amount"]]
+		ritmo_gain(2 if String(outcome["grade"]) in ["perfeito", "bom"] else 1)
 		for r: Dictionary in results:
 			var t := r["target"] as Combatant
 			if is_instance_valid(t) and t.quebrado and int(r["amount"]) > 0:
@@ -348,6 +360,8 @@ func _player_action(index: int) -> void:
 		if r["kind"] == "crit":
 			_shake = 0.3
 			_hud.flash(Color(1.0, 0.82, 0.35), 0.35)
+	if ability.is_offensive() and not fumble and not landed.is_empty():
+		hitstop("pesado" if results.any(func(r: Dictionary) -> bool: return r["kind"] == "crit") else "leve")
 	CombatRules.apply(player, ability, results, _fx)
 	for r: Dictionary in results:
 		_add_posture(r["target"] as Combatant, int(r["amount"]) + (8 if _last_grade == "perfeito" else 0))
@@ -475,6 +489,7 @@ func _extra_action(id: int) -> void:
 	match id:
 		DEFEND:
 			player.add_status(_status("Defendendo", {"ac": 2}))
+			ritmo_gain()
 			_action_cam(player)
 			player.dodged.emit()
 			_fx.ring(player.global_position, 1.2, Color(0.6, 0.85, 1.0))
@@ -535,6 +550,9 @@ func _offhand_strike(tgt: Combatant, title: String) -> void:
 				1.4 if t.is_boss else 0.8, 0.9)
 		elif r["kind"] == "miss" and is_instance_valid(t) and not t.is_boss:
 			t.dodged.emit()
+	if results.any(func(r: Dictionary) -> bool: return int(r["amount"]) > 0):
+		ritmo_gain()
+		hitstop("muito_leve")
 	CombatRules.apply(player, off, results, _fx)
 	for r: Dictionary in results:
 		_add_posture(r["target"] as Combatant, int(r["amount"]))
@@ -642,6 +660,7 @@ func _add_posture(t: Combatant, amount: int) -> void:
 	if t.postura >= t.posture_limit():
 		t.postura = t.posture_limit()
 		t.quebrado = true
+		hitstop("muito_pesado")
 		_hud.banner("QUEBROU!  %s perde a vez" % t.display_name, Color(0.7, 0.85, 1.0))
 		_fx.floating_text(t.global_position, "QUEBROU!", Color(0.7, 0.85, 1.0), true)
 		t.rolled.emit("%s quebrou: perde a próxima vez e leva +50%% de dano até lá" % t.display_name)
@@ -697,7 +716,7 @@ func _enemy_turn(enemy: Combatant, extra: bool = false) -> void:
 			await _hud.say(enemy.display_name, line, 0.4)
 	var melee := ability.shape == Ability.Shape.ENEMIES_AROUND or (ability.shape == Ability.Shape.TARGET and not ability.projectile)
 	if melee:
-		await _approach(enemy, player.global_position, 2.6 if enemy.is_boss else 1.6)
+		await _approach(enemy, player.global_position, 2.9 if enemy.is_boss else 2.3)
 	if auto_play:
 		_hud.banner(ability.title, Color(1, 0.6, 0.5))
 	else:
@@ -717,6 +736,10 @@ func _enemy_turn(enemy: Combatant, extra: bool = false) -> void:
 	elif nat == 20:
 		_hud.banner("GOLPE CRÍTICO!", Color(1, 0.35, 0.3))
 	var on_me := results.filter(func(r: Dictionary) -> bool: return r["target"] == player and int(r["amount"]) > 0)
+	var level := difficulty()
+	if level != 1:
+		for r: Dictionary in on_me:
+			CombatRules.scale_damage([r] as Array[Dictionary], ENEMY_DAMAGE[level], "fácil" if level == 0 else "difícil")
 	var missed_me := melee and not _daggers.is_empty() and results.any(
 		func(r: Dictionary) -> bool: return r["target"] == player and r["kind"] == "miss")
 	if on_me.is_empty() or auto_play:
@@ -724,6 +747,7 @@ func _enemy_turn(enemy: Combatant, extra: bool = false) -> void:
 		_strike(enemy, index, 0.5)
 		await _wait(0.5)
 	var countered := false
+	var held_all := false  # aparou/esquivou tudo: a tela já respondeu golpe a golpe, nada de "errou" flutuando
 	if not on_me.is_empty():
 		var defense := await _defense(ability, enemy, index)
 		var keep := float(defense["keep"])
@@ -736,28 +760,25 @@ func _enemy_turn(enemy: Combatant, extra: bool = false) -> void:
 				CombatRules.scale_damage([r] as Array[Dictionary], keep, defense["text"])
 		countered = bool(defense["counter"])
 		_after_grade(String(defense["grade"]))
-		if countered or keep <= 0.0:
-			_view_pose("cross" if countered else "dodge")
+		var held := int(defense.get("parried", 0)) + int(defense.get("avoided", 0))
+		if held > 0:
+			ritmo_gain(held)
 		elif keep < 1.0:
-			_view_pose("dodge")
+			ritmo_gain()
 		if keep <= 0.0:
+			held_all = true
 			player.dodged.emit()
-			_fx.floating_text(player.global_position, defense["text"], Color(0.8, 0.95, 1.0))
-			_hop(player)
+			if not countered:
+				_fx.floating_text(player.global_position, defense["text"], Color(0.8, 0.95, 1.0))
 	if ability.projectile:
 		await _fx.projectile(enemy.global_position, player.global_position, ability.vfx_color, ability.projectile_scene)
 	elif ability.shape == Ability.Shape.ENEMIES_AROUND:
 		_fx.ring(enemy.global_position, ability.radius_m, ability.vfx_color)
-	CombatRules.apply(enemy, ability, results, _fx)
+	CombatRules.apply(enemy, ability, results, null if held_all else _fx)
+	if on_me.any(func(r: Dictionary) -> bool: return int(r["amount"]) > 0):
+		ritmo_hit()
 	if countered and player.is_active() and enemy.is_active():
-		Audio.play_at("aparar", player.global_position + Vector3.UP, 0.0)
-		_fx.floating_text(player.global_position, "APAROU!", Color(1, 0.85, 0.3), true)
-		player.rolled.emit("%s aparou e contra-ataca" % player.display_name)
-		player.ability_used.emit(0)
-		var counter := CombatRules.resolve(player, player.abilities[0], enemy, enemy.global_position, CombatRules.everyone(get_tree()), 1)
-		CombatRules.apply(player, player.abilities[0], counter, _fx)
-		for r: Dictionary in counter:
-			_add_posture(enemy, int(r["amount"]) + 10)
+		await _counter_scene(enemy)
 	if missed_me and player.is_active() and is_instance_valid(enemy) and enemy.is_active():
 		# D083 (Riposte, do Baldur's Gate 3): errou o golpe corpo a corpo em você? A mão de trás revida na hora
 		Audio.play_at("aparar", player.global_position + Vector3.UP, 0.0)
@@ -787,63 +808,307 @@ func _defense(ability: Ability, enemy: Combatant, index: int = 0) -> Dictionary:
 	var q := _hud.golpe()
 	var at := _screen_of(enemy)
 	var windup := 0.5 + ability.windup
+	# D084 (os números do Expedition 33): apertar levanta a defesa por um instante e o golpe tem de chegar dentro dele
+	var windows := defense_windows(difficulty(), parry_window, dodge_window)
 	# Defendendo (D050): as janelas ficam 50% maiores
-	var easy := 1.5 if player.statuses.any(func(st: Dictionary) -> bool: return st["title"] == "Defendendo") else 1.0
-	# D082 (Clair Obscur): sem o anel, você lê o golpe; as janelas ficam um pouco maiores (aparar ~0,16 s no total)
+	if player.statuses.any(func(st: Dictionary) -> bool: return st["title"] == "Defendendo"):
+		windows *= 1.5
+	var parry_w := windows.x
+	var dodge_w := windows.y
+	# D082 (Clair Obscur): sem o anel, você lê o golpe (o anel é opção de acessibilidade)
 	var hidden := not bool(Settings.value("anel_defesa"))
-	if hidden:
-		easy *= 1.25
-	var dodge_w := dodge_window * easy
-	var parry_w := parry_window * easy
 	match kind:
 		Ability.Defesa.DIRECAO:
 			var side := -1 if randf() < 0.5 else 1
 			_strike(enemy, index, GolpeQte.duration_for(windup + 0.15))
 			var res := await q.ring(at, windup + 0.15, [], "Pule para o lado da seta", false, side, 0, 0, 0.1, hidden)
 			var right_key := &"move_right" if side > 0 else &"move_left"
-			var error := absf(float(res["error"]))
-			q.pop("bom" if res["key"] == right_key and error <= dodge_w else "falhou")
-			if res["key"] == right_key and error <= dodge_w:
-				return {"keep": 0.0, "counter": false, "grade": "perfeito" if error <= parry_w else "bom", "text": "desviou"}
+			var error := float(res["error"])
+			var ok: bool = res["key"] == right_key and defense_hit(error, dodge_w)
+			q.pop("bom" if ok else "falhou")
+			if ok:
+				_dodge_fx()
+				return {"keep": 0.0, "counter": false, "grade": "perfeito" if defense_hit(error, parry_w) else "bom", "text": "desviou"}
+			_struck_fx(enemy)
 			return {"keep": 1.0, "counter": false, "grade": "falhou", "text": ""}
-		Ability.Defesa.COMBO:
-			var parried := 0
-			var avoided := 0
-			for i: int in 3:
-				var beat := randf_range(0.32, 0.62)
-				_strike(enemy, index, GolpeQte.duration_for(beat))
-				var res := await q.ring(at, beat, [&"dodge", &"parry"], "F apara · Espaço esquiva", false, 0, i, 3, 0.1, hidden)
-				var error := absf(float(res["error"]))
-				if res["key"] == &"parry" and error <= parry_w:
-					parried += 1
-					q.pop("perfeito")
-					Audio.play("aparar", -6.0, 0.0)
-				elif res["key"] == &"dodge" and error <= dodge_w:
-					avoided += 1
-					q.pop("bom")
-				else:
-					q.pop("falhou")
-			var keep := 1.0 - (parried + avoided) / 3.0
-			return {"keep": keep, "counter": parried == 3, "grade": "perfeito" if parried == 3 else ("bom" if keep < 0.5 else "falhou"),
-				"text": "aparou os três" if parried == 3 else "segurou %d de 3" % (parried + avoided)}
 		Ability.Defesa.FINTA:
 			_strike(enemy, index, GolpeQte.duration_for(windup, true), true)
 			var res := await q.ring(at, windup, [&"dodge"], "Cuidado com a finta", true, 0, 0, 0, 0.1, hidden)
-			var error := absf(float(res["error"]))
-			q.pop("perfeito" if res["key"] == &"dodge" and error <= parry_w else ("bom" if res["key"] == &"dodge" and error <= dodge_w else "falhou"))
-			if res["key"] == &"dodge" and error <= dodge_w:
-				return {"keep": 0.0, "counter": false, "grade": "perfeito" if error <= parry_w else "bom", "text": "pulou a onda"}
+			var error := float(res["error"])
+			var ok: bool = res["key"] == &"dodge" and defense_hit(error, dodge_w)
+			var grade := ("perfeito" if defense_hit(error, parry_w) else "bom") if ok else "falhou"
+			q.pop(grade)
+			if ok:
+				_dodge_fx()
+				return {"keep": 0.0, "counter": false, "grade": grade, "text": "pulou a onda"}
+			_struck_fx(enemy)
 			return {"keep": 1.0, "counter": false, "grade": "falhou", "text": ""}
-	# anel
-	_strike(enemy, index, GolpeQte.duration_for(windup))
-	var res := await q.ring(at, windup, [&"dodge", &"parry"], "F apara · Espaço esquiva", false, 0, 0, 0, 0.1, hidden)
-	var error := absf(float(res["error"]))
-	q.pop("perfeito" if res["key"] == &"parry" and error <= parry_w else ("bom" if res["key"] == &"dodge" and error <= dodge_w else "falhou"))
-	if res["key"] == &"parry" and error <= parry_w:
-		return {"keep": 0.0, "counter": true, "grade": "perfeito", "text": "aparou"}
-	if res["key"] == &"dodge" and error <= dodge_w:
-		return {"keep": 0.5, "counter": false, "grade": "bom", "text": "esquivou (½)"}
-	return {"keep": 1.0, "counter": false, "grade": "falhou", "text": ""}
+	# anel e combo: a sequência de golpes (D085)
+	return await _sequence(enemy, ability, index, at, windup, parry_w, dodge_w, hidden)
+
+
+## D085 (como no Expedition 33): o inimigo ataca em SEQUÊNCIA. Os comuns dão 2 ou 3 golpes, o chefe 4 a 6 (mais um na
+## habilidade forte e na fúria). Cada golpe se defende sozinho: aparar ou esquivar tira aquele golpe; aparar TODOS =
+## contra-ataque. No meio vem a pegadinha: ele segura o golpe (para no meio) e só então bate.
+func _sequence(enemy: Combatant, ability: Ability, index: int, at: Vector2, windup: float, parry_w: float,
+		dodge_w: float, hidden: bool) -> Dictionary:
+	var q := _hud.golpe()
+	var count := strikes_in(enemy, ability, index)
+	var parried := 0
+	var avoided := 0
+	for i: int in count:
+		var delayed := i > 0 and randf() < 0.28
+		var beat := windup if i == 0 else randf_range(0.36, 0.56)
+		var duration := GolpeQte.duration_for(beat, delayed)
+		var outcome := {"kind": "", "done": false}
+		_strike(enemy, index, duration, delayed)
+		_impact_watch(enemy, duration, outcome)
+		var res := await q.ring(at, beat, [&"dodge", &"parry"], "F apara · Espaço esquiva", delayed, 0, i, count, 0.1, hidden)
+		var error := float(res["error"])
+		if res["key"] == &"parry" and defense_hit(error, parry_w):
+			outcome["kind"] = "parry"
+			parried += 1
+			q.pop("perfeito")
+			_view_pose("cross")
+		elif res["key"] == &"dodge" and defense_hit(error, dodge_w):
+			outcome["kind"] = "dodge"
+			avoided += 1
+			q.pop("bom")
+			_dodge_fx()
+		else:
+			outcome["kind"] = "hit"
+			q.pop("falhou")
+		# apertou cedo: o anel fecha antes da batida; o próximo golpe só vem depois que este chegou
+		while not bool(outcome["done"]) and is_inside_tree():
+			await get_tree().process_frame
+		await _wait(0.08)
+	var keep := 1.0 - (parried + avoided) / float(count)
+	var all_parried := parried == count
+	return {"keep": keep, "counter": all_parried, "grade": "perfeito" if all_parried else ("bom" if keep < 0.5 else "falhou"),
+		"text": ("aparou os %d" % count) if all_parried else ("segurou %d de %d" % [parried + avoided, count]),
+		"parried": parried, "avoided": avoided}
+
+
+## Quantos golpes vêm na sequência (D085).
+func strikes_in(enemy: Combatant, ability: Ability, index: int) -> int:
+	var count := randi_range(4, 6) if enemy.is_boss else randi_range(2, 3)
+	if index > 0:
+		count += 1
+	if _fury.has(enemy):
+		count += 1
+	if ability.defense_qte() == Ability.Defesa.COMBO:
+		count = maxi(count, 3)
+	return count
+
+
+## Na hora em que o golpe chega, a tela responde ao que você fez (e não ao aperto): aparou, esquivou ou levou.
+## Espera a folga da tela depois da batida para quem apertou em cima da hora.
+func _impact_watch(enemy: Combatant, duration: float, outcome: Dictionary) -> void:
+	await _elapsed(duration)
+	var t := 0.0
+	while String(outcome["kind"]) == "" and t < DEFENSE_GRACE + 0.02:
+		await get_tree().process_frame
+		t += get_process_delta_time()
+	if not is_instance_valid(enemy) or not is_inside_tree():
+		outcome["done"] = true
+		return
+	match String(outcome["kind"]):
+		"parry":
+			_parry_fx(enemy)
+		"dodge":
+			Audio.play_at("esquiva", enemy.global_position, -2.0)  # o golpe passa assobiando
+		_:
+			_struck_fx(enemy)
+	outcome["done"] = true
+
+
+## Aparou (D085): o tempo para um instante, as lâminas batem com um estalo, faíscas douradas no meio, a tela pisca, a
+## câmera dá um tranco e ele é jogado para trás.
+func _parry_fx(enemy: Combatant) -> void:
+	# o choque é onde as adagas cruzadas estão: na frente dos olhos (de longe, a câmera da cena)
+	var clash := player.global_position.lerp(enemy.global_position, 0.6) + Vector3.UP * (1.1 if enemy.is_boss else 0.55)
+	if _camera and first_person and not _action_on:
+		clash = _camera.global_position - _camera.global_basis.z * 1.3 + _camera.global_basis.y * -0.12
+	hitstop("medio")
+	Audio.play_at("aparar", clash, 3.0)
+	Audio.play_at("golpe", clash, -4.0)
+	_hud.flash(Color(1.0, 0.93, 0.7), 0.22)
+	_fx.sparks(clash, Color(1.0, 0.82, 0.35), 48)
+	_fx.sparks(clash, Color(1.0, 1.0, 1.0), 22)
+	_shake = maxf(_shake, 0.25)
+	_fov_kick(-8.0)
+	for dagger: AdagaPsiquica in _view_daggers:
+		dagger.flare(0.9)
+	if enemy.model:
+		var push := create_tween()
+		push.tween_interval(0.04)
+		push.tween_property(enemy.model, "position:z", 0.55, 0.09).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+		push.parallel().tween_property(enemy.model, "rotation:x", -0.18, 0.09)
+		push.tween_property(enemy.model, "position:z", 0.0, 0.3).set_trans(Tween.TRANS_SINE)
+		push.parallel().tween_property(enemy.model, "rotation:x", 0.0, 0.3)
+
+
+## Esquivou: o Tico pula para o lado (a câmera vai junto), as adagas saem do caminho e o golpe passa assobiando.
+func _dodge_fx() -> void:
+	Audio.play_at("esquiva", player.global_position, 0.0)
+	_view_pose("dodge")
+	_hop(player)
+	_shake = maxf(_shake, 0.08)
+
+
+## Levou o golpe: a tela pisca vermelho, treme forte e o golpe pesa.
+func _struck_fx(enemy: Combatant) -> void:
+	Audio.play_at("golpe", player.global_position, 2.0)
+	_hud.flash(Color(0.9, 0.05, 0.08), 0.5)
+	_shake = maxf(_shake, 0.4)
+	_fov_kick(5.0)
+	hitstop("leve")
+	_fx.sparks(player.global_position + Vector3.UP * 0.6 + (enemy.global_position - player.global_position).normalized() * 0.4,
+		Color(1.0, 0.5, 0.4), 18)
+
+
+## A câmera "respira" com o impacto: fecha (ou abre) o campo de visão e volta.
+func _fov_kick(amount: float) -> void:
+	if _camera == null or not first_person or _action_on:
+		return
+	var kick := create_tween()
+	kick.tween_property(_camera, "fov", view_fov + amount, 0.05).set_ease(Tween.EASE_OUT)
+	kick.tween_property(_camera, "fov", view_fov, 0.35).set_trans(Tween.TRANS_SINE)
+
+
+## Aparou a sequência inteira (D085): o contra-ataque vira cena. A câmera mostra o Tico, ele salta no inimigo e corta
+## em X; o tempo para no impacto.
+func _counter_scene(enemy: Combatant) -> void:
+	_hud.banner("CONTRA-ATAQUE!", Color(1.0, 0.85, 0.3))
+	player.rolled.emit("%s aparou tudo e contra-ataca" % player.display_name)
+	var counter := CombatRules.resolve(player, player.abilities[0], enemy, enemy.global_position, CombatRules.everyone(get_tree()), 1)
+	var dagger_scene := not _daggers.is_empty() and not auto_play
+	if dagger_scene:
+		_action_cam(enemy)
+		await _wait(0.12)
+		await _dagger_rush(enemy, player.abilities[0])
+	else:
+		player.ability_used.emit(0)
+	ritmo_gain()
+	if counter.any(func(r: Dictionary) -> bool: return int(r["amount"]) > 0):
+		var high := 1.6 if enemy.is_boss else 0.55
+		var at := enemy.global_position + Vector3.UP * high
+		var facing := enemy.global_position - player.global_position
+		var size := 1.6 if enemy.is_boss else 1.05
+		_fx.slash(at, facing, Color(1.0, 0.85, 0.4), size, 0.75)
+		_fx.slash(at, facing, Color(1.0, 0.85, 0.4), size, -0.75)
+		_fx.sparks(at, Color(1.0, 0.85, 0.4), 40)
+		_hud.flash(Color(1.0, 0.85, 0.35), 0.18)
+		_shake = maxf(_shake, 0.35)
+		hitstop("muito_pesado")
+	CombatRules.apply(player, player.abilities[0], counter, _fx)
+	for r: Dictionary in counter:
+		_add_posture(enemy, int(r["amount"]) + 10)
+	if dagger_scene:
+		await _wait(0.4)
+		if player.is_active():
+			await _dagger_recoil(enemy)
+		_action_cam(null)
+		await _return_home(player)
+
+
+## D084 (a tabela de dificuldade do Expedition 33): apertar levanta a defesa por "window" segundos e o golpe tem de
+## chegar dentro dela. error = hora do aperto - hora do impacto: antes do golpe vale até "window"; depois dele, só a
+## folga da tela (DEFENSE_GRACE). Martelar não ajuda: só o primeiro aperto conta.
+const DEFENSE_GRACE := 0.03
+## No fácil (Expedition 33): aparar 0,35 s e esquivar 0,5 s; no normal e no difícil, parry_window e dodge_window.
+const EASY_PARRY := 0.35
+const EASY_DODGE := 0.5
+## Fácil, normal e difícil: o dano dos inimigos e a vida deles (Expedition 33: ataque ×0,25 no fácil; ×2 e vida
+## ×1,25 no difícil).
+const ENEMY_DAMAGE: Array[float] = [0.25, 1.0, 2.0]
+const ENEMY_HP: Array[float] = [1.0, 1.0, 1.25]
+
+
+static func defense_hit(error: float, window: float) -> bool:
+	return error >= -window and error <= DEFENSE_GRACE
+
+
+## 0 fácil, 1 normal, 2 difícil (a opção "dificuldade").
+static func difficulty() -> int:
+	return clampi(int(Settings.value("dificuldade")), 0, 2)
+
+
+## As janelas da defesa (aparar, esquivar) na dificuldade.
+static func defense_windows(level: int, parry: float, dodge: float) -> Vector2:
+	return Vector2(EASY_PARRY, EASY_DODGE) if level == 0 else Vector2(parry, dodge)
+
+
+## D084 (a tabela DT_FreezeFrame do Expedition 33): no golpe que entra o tempo quase para por um instante (s, tempo
+## real). O peso diz quanto: o golpe comum é leve, o crítico pesado, a quebra de postura muito pesada.
+const HITSTOP := {"muito_leve": 0.04, "leve": 0.07, "medio": 0.11, "pesado": 0.14, "muito_pesado": 0.2}
+var _hitstop_end: int = 0
+
+
+func hitstop(weight: String) -> void:
+	var seconds: float = HITSTOP.get(weight, 0.0)
+	if auto_play or seconds <= 0.0 or not is_inside_tree():
+		return
+	_hitstop_end = maxi(_hitstop_end, Time.get_ticks_msec() + int(seconds * 1000.0))
+	Engine.time_scale = 0.001
+	# o timer de tempo real chega uns ms antes; espera até o fim de verdade (de todos os congelamentos juntos)
+	while Time.get_ticks_msec() < _hitstop_end and is_inside_tree():
+		await get_tree().create_timer(maxf((_hitstop_end - Time.get_ticks_msec()) / 1000.0, 0.005), true, false, true).timeout
+	# só volta quem ainda está congelado (a câmera lenta do golpe final pode ter entrado no meio)
+	if Engine.time_scale < 0.01:
+		Engine.time_scale = 1.0
+
+
+func _exit_tree() -> void:
+	if Engine.time_scale < 0.01:
+		Engine.time_scale = 1.0
+
+
+## D084 (a Perfeição do Verso, Expedition 33): cada coisa bem feita na luta soma 1 no Ritmo (golpe, golpe no tempo,
+## aparar, esquivar, contra-atacar, defender); levar dano derruba um nível. Níveis D, C, B, A e S aos 0, 3, 8, 15 e 30
+## pontos; cada nível acima do D soma +1 no dano dos seus golpes.
+const RITMO_LEVELS: Array[int] = [0, 3, 8, 15, 30]
+const RITMO_LETTERS := ["D", "C", "B", "A", "S"]
+var ritmo: int = 0
+
+
+func ritmo_level() -> int:
+	var level := 0
+	for i: int in RITMO_LEVELS.size():
+		if ritmo >= RITMO_LEVELS[i]:
+			level = i
+	return level
+
+
+func ritmo_letter() -> String:
+	return RITMO_LETTERS[ritmo_level()]
+
+
+## Quanto do caminho até o próximo nível (0 a 1; no S, cheio).
+func ritmo_progress() -> float:
+	var level := ritmo_level()
+	if level >= RITMO_LEVELS.size() - 1:
+		return 1.0
+	return float(ritmo - RITMO_LEVELS[level]) / float(RITMO_LEVELS[level + 1] - RITMO_LEVELS[level])
+
+
+func ritmo_gain(amount: int = 1) -> void:
+	var before := ritmo_level()
+	ritmo = mini(ritmo + amount, 99)
+	if ritmo_level() > before and is_instance_valid(player):
+		Audio.play("qte_perfeito", -2.0, 0.0)
+		if _hud and ritmo_level() >= 3:
+			_hud.banner("RITMO %s!" % ritmo_letter(), Color(1.0, 0.8, 0.35))
+	if _hud:
+		_hud.refresh()
+
+
+func ritmo_hit() -> void:
+	if ritmo_level() > 0:
+		Audio.play("qte_errou", -4.0, 0.0)
+	ritmo = RITMO_LEVELS[maxi(ritmo_level() - 1, 0)]
+	if _hud:
+		_hud.refresh()
 
 
 ## Onde, na animação de golpe do inimigo, a arma chega (fração do tempo dela; as do KayKit batem por volta da metade).

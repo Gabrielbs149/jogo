@@ -240,3 +240,57 @@ func test_riposte_when_the_enemy_misses() -> void:
 		if enemy.hp < before:
 			break
 	assert_lt(enemy.hp, before, "a riposte tirou vida dele")
+
+
+## D084 (Expedition 33): apertar levanta a defesa por um instante; vale apertar antes do golpe, não depois.
+func test_defense_window_opens_on_the_press() -> void:
+	var arena := _arena(PackedStringArray([BEETLE]))
+	assert_true(BattleArena.defense_hit(-0.14, arena.parry_window), "apertou 0,14 s antes: aparou")
+	assert_false(BattleArena.defense_hit(-0.17, arena.parry_window), "cedo demais: a defesa já caiu")
+	assert_true(BattleArena.defense_hit(0.02, arena.parry_window), "na batida (folga da tela)")
+	assert_false(BattleArena.defense_hit(0.06, arena.parry_window), "depois do golpe não vale")
+	assert_true(BattleArena.defense_hit(-0.2, arena.dodge_window), "esquivar é mais folgado")
+	assert_eq(BattleArena.defense_windows(0, arena.parry_window, arena.dodge_window), Vector2(0.35, 0.5), "fácil")
+	assert_eq(BattleArena.defense_windows(2, arena.parry_window, arena.dodge_window), Vector2(0.15, 0.22), "difícil = normal")
+	assert_eq(BattleArena.difficulty(), 1, "começa no normal")
+
+
+## D084 (a Perfeição do Verso): o Ritmo sobe com o que dá certo, cai um nível quando você apanha e soma no dano.
+func test_ritmo_climbs_and_drops_a_level_when_hit() -> void:
+	var arena := _arena(PackedStringArray([BEETLE]), true)
+	arena.auto_play = false
+	await wait_until(func() -> bool: return arena.get_node("BattleHUD").get("_choosing"), 20.0)
+	assert_eq(arena.ritmo_letter(), "D")
+	arena.ritmo_gain(3)
+	assert_eq(arena.ritmo_letter(), "C")
+	arena.ritmo_gain(6)
+	assert_eq(arena.ritmo_letter(), "B")
+	arena.ritmo_hit()
+	assert_eq([arena.ritmo, arena.ritmo_letter()], [3, "C"], "apanhou: volta ao começo do nível de baixo")
+	arena.ritmo_gain(40)
+	assert_eq(arena.ritmo_letter(), "S")
+	var letra: RitmoLetra = arena.get_node("BattleHUD").get("_ritmo_letra")
+	assert_eq(letra.letter, "S", "a letra grande na tela")
+	assert_almost_eq(arena.ritmo_progress(), 1.0, 0.001)
+
+
+## D084 (DT_FreezeFrame): o golpe congela o tempo por um instante e depois ele volta sozinho.
+func test_hitstop_freezes_then_lets_go() -> void:
+	var arena := _arena(PackedStringArray([BEETLE]), true)
+	arena.auto_play = false
+	await wait_until(func() -> bool: return arena.get_node("BattleHUD").get("_choosing"), 20.0)
+	arena.hitstop("leve")
+	assert_lt(Engine.time_scale, 0.01, "congelou")
+	var start := Time.get_ticks_msec()
+	while Time.get_ticks_msec() - start < 300 and Engine.time_scale < 0.01:
+		await get_tree().process_frame
+	assert_eq(Engine.time_scale, 1.0, "voltou")
+	assert_between(Time.get_ticks_msec() - start, 50, 160, "uns 0,07 s")
+	# dois juntos (o golpe e a quebra): vale o mais longo, e o tempo volta (antes ficava parado para sempre)
+	arena.hitstop("leve")
+	arena.hitstop("muito_pesado")
+	start = Time.get_ticks_msec()
+	while Time.get_ticks_msec() - start < 500 and Engine.time_scale < 0.01:
+		await get_tree().process_frame
+	assert_eq(Engine.time_scale, 1.0, "voltou depois dos dois")
+	assert_between(Time.get_ticks_msec() - start, 170, 260, "uns 0,2 s")
