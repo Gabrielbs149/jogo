@@ -29,46 +29,52 @@ size = Vector3(0.66, 0.9, 0.66)
 [node name="Cama" parent="." unique_id=197555494 instance=ExtResource("1_tgegf")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.68, 0, 1.41)
 
-[node name="Colisao" type="StaticBody3D" parent="." unique_id=709785768]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.68, 0.4, 1.41)
+[node name="Colisao" type="StaticBody3D" parent="Cama" unique_id=709785768]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0.4, 0)
 
-[node name="@CollisionShape3D@912" type="CollisionShape3D" parent="Colisao" unique_id=604800163]
+[node name="@CollisionShape3D@912" type="CollisionShape3D" parent="Cama/Colisao" unique_id=604800163]
 shape = SubResource("BoxShape3D_itm1i")
 
 [node name="Criado" parent="." unique_id=642235846 instance=ExtResource("2_g4stk")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.67, 0, 2.43)
 
-[node name="Colisao2" type="StaticBody3D" parent="." unique_id=105798731]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.66999996, 0.6, 2.43)
+[node name="Colisao2" type="StaticBody3D" parent="Criado" unique_id=105798731]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0.6, 0)
 
-[node name="@CollisionShape3D@913" type="CollisionShape3D" parent="Colisao2" unique_id=1309680310]
+[node name="@CollisionShape3D@913" type="CollisionShape3D" parent="Criado/Colisao2" unique_id=1309680310]
 shape = SubResource("BoxShape3D_h3pt7")
 
 [node name="Lareira" parent="." unique_id=161677476 instance=ExtResource("3_2015v")]
 transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -1.18, 0, 0.5786861)
 
+[node name="Coifa" parent="Lareira" index="6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0.19999981)
+
+[node name="Luz" parent="Lareira" index="12"]
+omni_range = 4.0
+
 [node name="Mug2" parent="." unique_id=1036639554 instance=ExtResource("4_rw8o2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0.82, -0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.045991, 1.56, 0.40397263)
 
 [node name="CandleStick2" parent="." unique_id=1960810744 instance=ExtResource("5_rs3w4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.82, -0.45)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3258276, 0.8985388, -0.68354416)
 
 [node name="Bau" parent="." unique_id=1437152585 instance=ExtResource("6_xfe3q")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.25, 0, -1.7158409)
 
-[node name="Colisao3" type="StaticBody3D" parent="." unique_id=1860995288]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 0.35, -1.7158409)
+[node name="Colisao3" type="StaticBody3D" parent="Bau" unique_id=1860995288]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, 0, 0.35, 0)
 
-[node name="@CollisionShape3D@915" type="CollisionShape3D" parent="Colisao3" unique_id=1512882595]
+[node name="@CollisionShape3D@915" type="CollisionShape3D" parent="Bau/Colisao3" unique_id=1512882595]
 shape = SubResource("BoxShape3D_yjg7h")
 
 [node name="Barril" parent="." unique_id=1335974545 instance=ExtResource("7_4l1vn")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.28, 0, -0.683546)
 
-[node name="Colisao4" type="StaticBody3D" parent="." unique_id=252207753]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.28, 0.45, -0.68354595)
+[node name="Colisao4" type="StaticBody3D" parent="Barril" unique_id=252207753]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, 0, 0.45, 0)
 
-[node name="@CollisionShape3D@916" type="CollisionShape3D" parent="Colisao4" unique_id=1909852459]
+[node name="@CollisionShape3D@916" type="CollisionShape3D" parent="Barril/Colisao4" unique_id=1909852459]
 shape = SubResource("BoxShape3D_wsbj8")
 
 [node name="Shelf_Simple2" parent="." unique_id=1691819530 instance=ExtResource("8_gomb4")]
@@ -78,7 +84,7 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -1.6
 transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, -1.64, 1.6, 0)
 
 [node name="Morador" parent="." unique_id=137852992 instance=ExtResource("10_a3b7s")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0, 0.35)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.37664413, 0.00999999, -0.85320663)
 script = ExtResource("11_xj358")
 de = 7.0
 ate = 21.0
@@ -123,5 +129,10 @@ distance_fade_enabled = true
 distance_fade_begin = 32.0
 omni_range = 5.7
 
+[editable path="Cama"]
+[editable path="Criado"]
+[editable path="Lareira"]
+[editable path="Bau"]
+[editable path="Barril"]
 [editable path="Morador"]
 [editable path="Morador2"]

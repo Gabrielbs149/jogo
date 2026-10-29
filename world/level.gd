@@ -352,7 +352,7 @@ func _auto_collision() -> void:
 				continue
 			mesh.create_trimesh_collision()
 			for body: Node in mesh.get_children():
-				if body is StaticBody3D and String(body.name).ends_with("_col"):
+				if body is StaticBody3D and String(body.name).contains("_col"):  # "_col2" quando a malha já tinha uma
 					(body as StaticBody3D).collision_mask = 0
 					body.owner = null
 					for part: Node in body.get_children():

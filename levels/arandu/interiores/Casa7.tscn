@@ -30,19 +30,19 @@ size = Vector3(0.66, 0.9, 0.66)
 [node name="Cama2" parent="." unique_id=600846791 instance=ExtResource("1_lmt4s")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.68, 0, 1.41)
 
-[node name="Colisao" type="StaticBody3D" parent="." unique_id=1893011835]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6800001, 0.4, 1.41)
+[node name="Colisao" type="StaticBody3D" parent="Cama2" unique_id=1893011835]
+transform = Transform3D(-1, 0, 8.742277e-08, 0, 1, 0, -8.742277e-08, 0, -1, 0, 0.4, 0)
 
-[node name="@CollisionShape3D@1114" type="CollisionShape3D" parent="Colisao" unique_id=1754189366]
+[node name="@CollisionShape3D@1114" type="CollisionShape3D" parent="Cama2/Colisao" unique_id=1754189366]
 shape = SubResource("BoxShape3D_uq3lf")
 
 [node name="Cama3" parent="." unique_id=1875794758 instance=ExtResource("1_lmt4s")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.37, 0, 1.41)
 
-[node name="Colisao2" type="StaticBody3D" parent="." unique_id=1786960451]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.36999995, 0.4, 1.41)
+[node name="Colisao2" type="StaticBody3D" parent="Cama3" unique_id=1786960451]
+transform = Transform3D(-1, 0, 8.742277e-08, 0, 1, 0, -8.742277e-08, 0, -1, 0, 0.4, 0)
 
-[node name="@CollisionShape3D@1115" type="CollisionShape3D" parent="Colisao2" unique_id=2005114872]
+[node name="@CollisionShape3D@1115" type="CollisionShape3D" parent="Cama3/Colisao2" unique_id=2005114872]
 shape = SubResource("BoxShape3D_8yfms")
 
 [node name="Lareira" parent="." unique_id=1010872981 instance=ExtResource("2_jxp64")]
@@ -54,28 +54,28 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.2)
 [node name="Bau" parent="." unique_id=1437152585 instance=ExtResource("4_un1r3")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.25, 0, 1.9022138)
 
-[node name="Colisao3" type="StaticBody3D" parent="." unique_id=1918228075]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25, 0.35, 1.9022138)
+[node name="Colisao3" type="StaticBody3D" parent="Bau" unique_id=1918228075]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0.35, 0)
 
-[node name="@CollisionShape3D@1117" type="CollisionShape3D" parent="Colisao3" unique_id=255254419]
+[node name="@CollisionShape3D@1117" type="CollisionShape3D" parent="Bau/Colisao3" unique_id=255254419]
 shape = SubResource("BoxShape3D_owlka")
 
 [node name="Estante" parent="." unique_id=689350519 instance=ExtResource("5_i0c6g")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.42, 0, -1.7060286)
 
-[node name="Colisao4" type="StaticBody3D" parent="." unique_id=980333637]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.42, 1.25, -1.7060287)
+[node name="Colisao4" type="StaticBody3D" parent="Estante" unique_id=980333637]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 1.25, 0)
 
-[node name="@CollisionShape3D@1118" type="CollisionShape3D" parent="Colisao4" unique_id=1827833418]
+[node name="@CollisionShape3D@1118" type="CollisionShape3D" parent="Estante/Colisao4" unique_id=1827833418]
 shape = SubResource("BoxShape3D_mw7yj")
 
 [node name="Barril" parent="." unique_id=1335974545 instance=ExtResource("6_iao6y")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.28, 0, 0.36411145)
 
-[node name="Colisao5" type="StaticBody3D" parent="." unique_id=1295467134]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2800002, 0.45, 0.36411145)
+[node name="Colisao5" type="StaticBody3D" parent="Barril" unique_id=1295467134]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0.45, -4.7683716e-07)
 
-[node name="@CollisionShape3D@1119" type="CollisionShape3D" parent="Colisao5" unique_id=1990610247]
+[node name="@CollisionShape3D@1119" type="CollisionShape3D" parent="Barril/Colisao5" unique_id=1990610247]
 shape = SubResource("BoxShape3D_kufio")
 
 [node name="Shelf_Simple2" parent="." unique_id=1691819530 instance=ExtResource("7_b7blf")]
@@ -94,3 +94,9 @@ light_energy = 0.75
 distance_fade_enabled = true
 distance_fade_begin = 32.0
 omni_range = 5.7
+
+[editable path="Cama2"]
+[editable path="Cama3"]
+[editable path="Bau"]
+[editable path="Estante"]
+[editable path="Barril"]

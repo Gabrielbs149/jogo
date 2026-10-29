@@ -87,6 +87,8 @@ func test_houses_show_their_interior_and_save_it_apart() -> void:
 	var saved := (load(dir.path_join(String(inside.get_meta("_editor_interior")).get_file())) as PackedScene).instantiate() as Node3D
 	assert_almost_eq((saved.get_node(NodePath(piece.name)) as Node3D).position.x, before.x + 1.0, 0.01, "a mudança foi para a cena do interior")
 	saved.free()
+	assert_false(FileAccess.get_file_as_string(dir.path_join(String(inside.get_meta("_editor_interior")).get_file())).contains("_editor_interior"),
+		"a marca do editor não vai para o arquivo do interior")
 	assert_eq(editor.save(OUT), OK)
 	assert_false(FileAccess.get_file_as_string(OUT).contains('parent="Buildings/Taverna/Interior/'), "o interior não entra no arquivo da fase")
 	for file: String in DirAccess.get_files_at(dir):
@@ -410,3 +412,29 @@ func test_separating_a_piece_and_its_part_together() -> void:
 	assert_false(stall.is_inside_tree(), "separou a de fora")
 	editor.undo()
 	assert_true(stall.is_inside_tree())
+
+
+## D088: a colisão do móvel do interior é filha dele: arrastar o móvel leva a colisão junto (antes ficava para trás,
+## parede invisível no lugar antigo).
+func test_moving_furniture_takes_its_collision_along() -> void:
+	var editor := await _open(Game.ARANDU)
+	var tavern := editor.level.get_node("Buildings/Taverna") as Node3D
+	(editor.get("_camera") as EditorCamera).focus(tavern.global_position, 20.0)
+	await wait_until(func() -> bool: return (tavern.get_node("Interior") as Node).get_child_count() > 0, 3.0)
+	var inside := (tavern.get_node("Interior") as Node).get_child(0) as Node3D
+	var piece: Node3D = null
+	var body: StaticBody3D = null
+	for child: Node in inside.get_children():
+		for inner: Node in child.get_children():
+			if inner is StaticBody3D and String(inner.name).begins_with("Colisao"):
+				piece = child as Node3D
+				body = inner as StaticBody3D
+		if piece:
+			break
+	assert_not_null(piece, "algum móvel da taverna tem a colisão dentro dele")
+	for child: Node in inside.get_children():
+		assert_false(child is StaticBody3D and String(child.name).begins_with("Colisao"), "nenhuma colisão solta no interior")
+	var from := body.global_position
+	editor.select_nodes([piece])
+	editor.move_selection(Vector3(1, 0, 0))
+	assert_almost_eq(body.global_position.x - from.x, 1.0, 0.01, "a colisão andou junto")

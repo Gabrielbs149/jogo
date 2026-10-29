@@ -25,10 +25,10 @@ transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -1.4
 [node name="Caldeirao" parent="." unique_id=1037169479 instance=ExtResource("3_b0tgf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0, 0.6)
 
-[node name="Colisao" type="StaticBody3D" parent="." unique_id=1643518100]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.19999999, 0.4, 0.6)
+[node name="Colisao" type="StaticBody3D" parent="Caldeirao" unique_id=1643518100]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
 
-[node name="@CollisionShape3D@471" type="CollisionShape3D" parent="Colisao" unique_id=298073629]
+[node name="@CollisionShape3D@471" type="CollisionShape3D" parent="Caldeirao/Colisao" unique_id=298073629]
 shape = SubResource("BoxShape3D_ffq6x")
 
 [node name="Atril" parent="." unique_id=411929730 instance=ExtResource("4_i8rid")]
@@ -69,4 +69,5 @@ distance_fade_enabled = true
 distance_fade_begin = 32.0
 omni_range = 5.7
 
+[editable path="Caldeirao"]
 [editable path="Morador"]

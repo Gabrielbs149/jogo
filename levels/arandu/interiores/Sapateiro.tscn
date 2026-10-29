@@ -18,10 +18,10 @@ size = Vector3(0.86, 0.9, 0.82)
 [node name="Bancada" parent="." unique_id=1703361637 instance=ExtResource("1_2g5e2")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -1.12, 0, 1.4579887)
 
-[node name="Colisao" type="StaticBody3D" parent="." unique_id=1548442772]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.12, 0.45, 1.4579887)
+[node name="Colisao" type="StaticBody3D" parent="Bancada" unique_id=1548442772]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0.45, 0)
 
-[node name="@CollisionShape3D@404" type="CollisionShape3D" parent="Colisao" unique_id=984553736]
+[node name="@CollisionShape3D@404" type="CollisionShape3D" parent="Bancada/Colisao" unique_id=984553736]
 shape = SubResource("BoxShape3D_gdmyw")
 
 [node name="EstanteFerramentas" parent="." unique_id=1805422610 instance=ExtResource("2_lxhnh")]
@@ -30,17 +30,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6013774, 0, 2.42)
 [node name="Caixote" parent="." unique_id=504997077 instance=ExtResource("3_drby4")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -1.18, 0, -0.942599)
 
-[node name="Colisao2" type="StaticBody3D" parent="." unique_id=1268361609]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.18, 0.45, -0.942599)
+[node name="Colisao2" type="StaticBody3D" parent="Caixote" unique_id=1268361609]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0.45, 0)
 
-[node name="@CollisionShape3D@405" type="CollisionShape3D" parent="Colisao2" unique_id=410996170]
+[node name="@CollisionShape3D@405" type="CollisionShape3D" parent="Caixote/Colisao2" unique_id=410996170]
 shape = SubResource("BoxShape3D_1kuoe")
 
 [node name="Peg_Rack2" parent="." unique_id=1445846314 instance=ExtResource("4_mr3r8")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -1.64, 1.6, 0)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -1.789959, 1.6, -1.35)
 
 [node name="Morador" parent="." unique_id=1669150226 instance=ExtResource("5_sidyu")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.3, 0, 0.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22319412, 0, 1.4212008)
 script = ExtResource("6_xs342")
 de = 8.0
 ate = 18.0
@@ -69,4 +69,6 @@ distance_fade_enabled = true
 distance_fade_begin = 32.0
 omni_range = 5.7
 
+[editable path="Bancada"]
+[editable path="Caixote"]
 [editable path="Morador"]

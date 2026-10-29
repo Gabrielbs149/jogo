@@ -1894,7 +1894,12 @@ func save_interiors(to_dir: String = "") -> int:
 			path = to_dir.path_join(path.get_file())
 			DirAccess.make_dir_recursive_absolute(to_dir)
 		var packed := PackedScene.new()
-		if packed.pack(inside) == OK and ResourceSaver.save(packed, path) == OK:
+		# a marca do editor não vai para o arquivo do interior (D088: ia junto e ficava gravada)
+		var mark: Variant = inside.get_meta("_editor_interior")
+		inside.remove_meta("_editor_interior")
+		var packed_ok := packed.pack(inside) == OK
+		inside.set_meta("_editor_interior", mark)
+		if packed_ok and ResourceSaver.save(packed, path) == OK:
 			count += 1
 			_interior_dirty.erase(inside)
 			if to_dir == "":

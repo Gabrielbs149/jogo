@@ -30,19 +30,19 @@ size = Vector3(0.66, 0.9, 0.66)
 [node name="Cama" parent="." unique_id=197555494 instance=ExtResource("1_gxppt")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.68, 0, 1.41)
 
-[node name="Colisao" type="StaticBody3D" parent="." unique_id=272766666]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.68, 0.4, 1.41)
+[node name="Colisao" type="StaticBody3D" parent="Cama" unique_id=272766666]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0.4, 0)
 
-[node name="@CollisionShape3D@1365" type="CollisionShape3D" parent="Colisao" unique_id=95869005]
+[node name="@CollisionShape3D@1365" type="CollisionShape3D" parent="Cama/Colisao" unique_id=95869005]
 shape = SubResource("BoxShape3D_cdiqs")
 
 [node name="Criado" parent="." unique_id=642235846 instance=ExtResource("2_nypfx")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.67, 0, 2.43)
 
-[node name="Colisao2" type="StaticBody3D" parent="." unique_id=1517529432]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.66999996, 0.6, 2.43)
+[node name="Colisao2" type="StaticBody3D" parent="Criado" unique_id=1517529432]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0.6, 0)
 
-[node name="@CollisionShape3D@1366" type="CollisionShape3D" parent="Colisao2" unique_id=1102928043]
+[node name="@CollisionShape3D@1366" type="CollisionShape3D" parent="Criado/Colisao2" unique_id=1102928043]
 shape = SubResource("BoxShape3D_ei4u6")
 
 [node name="Lareira" parent="." unique_id=1791623654 instance=ExtResource("3_i555y")]
@@ -51,10 +51,10 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.18
 [node name="Mesa" parent="." unique_id=141175383 instance=ExtResource("4_gfv23")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.4)
 
-[node name="Colisao3" type="StaticBody3D" parent="." unique_id=1047620772]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.39999998)
+[node name="Colisao3" type="StaticBody3D" parent="Mesa" unique_id=1047620772]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
 
-[node name="@CollisionShape3D@1367" type="CollisionShape3D" parent="Colisao3" unique_id=1869568277]
+[node name="@CollisionShape3D@1367" type="CollisionShape3D" parent="Mesa/Colisao3" unique_id=1869568277]
 shape = SubResource("BoxShape3D_waexh")
 
 [node name="Mug2" parent="." unique_id=1036639554 instance=ExtResource("5_68meu")]
@@ -66,10 +66,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.82, -0.45)
 [node name="Barril" parent="." unique_id=1335974545 instance=ExtResource("7_yae36")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -1.28, 0, -1.3563313)
 
-[node name="Colisao4" type="StaticBody3D" parent="." unique_id=1054075199]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.28, 0.45, -1.3563313)
+[node name="Colisao4" type="StaticBody3D" parent="Barril" unique_id=1054075199]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0.45, 0)
 
-[node name="@CollisionShape3D@1368" type="CollisionShape3D" parent="Colisao4" unique_id=1158875991]
+[node name="@CollisionShape3D@1368" type="CollisionShape3D" parent="Barril/Colisao4" unique_id=1158875991]
 shape = SubResource("BoxShape3D_sctg0")
 
 [node name="Shelf_Simple2" parent="." unique_id=1691819530 instance=ExtResource("8_rw13u")]
@@ -82,7 +82,7 @@ transform = Transform3D(-2.1855694e-08, 0, -0.5, 0, 0.5, 0, 0.5, 0, -2.1855694e-
 transform = Transform3D(1, 0, 1.7484555e-07, 0, 1, 0, -1.7484555e-07, 0, 1, -0.11705631, 2, 2.64)
 
 [node name="Morador" parent="." unique_id=1660530724 instance=ExtResource("11_jv84b")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0, 0.35)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6040611, 0.00999999, -1.3889961)
 script = ExtResource("12_gj8v8")
 de = 7.0
 ate = 21.0
@@ -129,5 +129,9 @@ distance_fade_enabled = true
 distance_fade_begin = 32.0
 omni_range = 5.7
 
+[editable path="Cama"]
+[editable path="Criado"]
+[editable path="Mesa"]
+[editable path="Barril"]
 [editable path="Morador"]
 [editable path="Morador2"]

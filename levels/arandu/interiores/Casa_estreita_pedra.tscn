@@ -28,46 +28,46 @@ size = Vector3(0.86, 0.9, 0.82)
 [node name="Cama" parent="." unique_id=197555494 instance=ExtResource("1_25613")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.68, 0, 1.41)
 
-[node name="Colisao" type="StaticBody3D" parent="." unique_id=1140929844]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.68, 0.4, 1.41)
+[node name="Colisao" type="StaticBody3D" parent="Cama" unique_id=1140929844]
+transform = Transform3D(-1, 0, 8.742277e-08, 0, 1, 0, -8.742277e-08, 0, -1, 0, 0.4, 0)
 
-[node name="@CollisionShape3D@409" type="CollisionShape3D" parent="Colisao" unique_id=600327488]
+[node name="@CollisionShape3D@409" type="CollisionShape3D" parent="Cama/Colisao" unique_id=600327488]
 shape = SubResource("BoxShape3D_oo8f0")
 
 [node name="Criado" parent="." unique_id=642235846 instance=ExtResource("2_q7gw4")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.67, 0, 2.43)
 
-[node name="Colisao2" type="StaticBody3D" parent="." unique_id=447339077]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.66999996, 0.6, 2.43)
+[node name="Colisao2" type="StaticBody3D" parent="Criado" unique_id=447339077]
+transform = Transform3D(-1, 0, 8.742277e-08, 0, 1, 0, -8.742277e-08, 0, -1, 0, 0.6, 0)
 
-[node name="@CollisionShape3D@410" type="CollisionShape3D" parent="Colisao2" unique_id=1156317167]
+[node name="@CollisionShape3D@410" type="CollisionShape3D" parent="Criado/Colisao2" unique_id=1156317167]
 shape = SubResource("BoxShape3D_lmiwa")
 
 [node name="Lareira" parent="." unique_id=227301631 instance=ExtResource("3_468dr")]
 transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -1.18, 0, -0.5485213)
 
 [node name="Mug2" parent="." unique_id=1036639554 instance=ExtResource("4_e3jkt")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0.82, -0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5027237, 0.82, -0.31681252)
 
 [node name="CandleStick2" parent="." unique_id=1960810744 instance=ExtResource("5_jmcnq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.82, -0.45)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9842224, 0.82, -0.32081604)
 
 [node name="Bau" parent="." unique_id=1437152585 instance=ExtResource("6_dr1gb")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -1.25, 0, 1.0982995)
 
-[node name="Colisao3" type="StaticBody3D" parent="." unique_id=1442353483]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.25, 0.35, 1.0982995)
+[node name="Colisao3" type="StaticBody3D" parent="Bau" unique_id=1442353483]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0.35, 0)
 
-[node name="@CollisionShape3D@412" type="CollisionShape3D" parent="Colisao3" unique_id=612241703]
+[node name="@CollisionShape3D@412" type="CollisionShape3D" parent="Bau/Colisao3" unique_id=612241703]
 shape = SubResource("BoxShape3D_hjhfj")
 
 [node name="Caixote" parent="." unique_id=504997077 instance=ExtResource("7_hw8cd")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.18, 0, -0.44080657)
 
-[node name="Colisao4" type="StaticBody3D" parent="." unique_id=1006706757]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.18, 0.45, -0.44080657)
+[node name="Colisao4" type="StaticBody3D" parent="Caixote" unique_id=1006706757]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0.45, 0)
 
-[node name="@CollisionShape3D@413" type="CollisionShape3D" parent="Colisao4" unique_id=175141935]
+[node name="@CollisionShape3D@413" type="CollisionShape3D" parent="Caixote/Colisao4" unique_id=175141935]
 shape = SubResource("BoxShape3D_panbn")
 
 [node name="Shelf_Simple2" parent="." unique_id=1691819530 instance=ExtResource("8_flyb8")]
@@ -86,3 +86,8 @@ light_energy = 0.75
 distance_fade_enabled = true
 distance_fade_begin = 32.0
 omni_range = 5.7
+
+[editable path="Cama"]
+[editable path="Criado"]
+[editable path="Bau"]
+[editable path="Caixote"]
