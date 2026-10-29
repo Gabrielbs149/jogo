@@ -359,10 +359,12 @@ func _auto_collision() -> void:
 						part.owner = null
 
 
-## Toca uma cena (Roteiro) com você parado; o painel do jogo some enquanto isso.
+## Toca uma cena (Roteiro) com você parado; o painel do jogo some enquanto isso. No fim, quem estava andando volta
+## a andar (o jantar com a Tika deixava o Tico travado: a cena desligava o controle e ninguém religava).
 func play_cutscene(roteiro: Roteiro) -> void:
 	if roteiro == null:
 		return
+	var was_playing := controller != null and controller.enabled
 	if controller:
 		controller.enabled = false
 	_hud.visible = false
@@ -376,6 +378,9 @@ func play_cutscene(roteiro: Roteiro) -> void:
 	em_cena = false
 	cutscene.queue_free()
 	_hud.visible = true
+	if was_playing and controller:
+		controller.enabled = true
+		_camera.capture(true)
 
 
 ## Conversa (D059): o herói e quem fala se viram um para o outro e a câmera chega um pouco mais perto, mirando entre

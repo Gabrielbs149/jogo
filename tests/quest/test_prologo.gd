@@ -224,6 +224,7 @@ func test_bringing_food_back_ends_the_day_and_tika_stays() -> void:
 	assert_false(Game.has_item("comida"))
 	assert_eq(Game.objective, "")
 	assert_true(_prologue.tika.visible, "a Tika não some no primeiro dia")
+	assert_true(_level.controller.enabled, "depois do jantar dá para andar (a cena travava o Tico)")
 
 
 ## D060: voltando com comida antes de escurecer, a Tika guarda para o jantar; dá para esperar o sol baixar com ela.

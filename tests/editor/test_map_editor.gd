@@ -307,3 +307,106 @@ func test_separate_splits_a_stall_into_its_parts() -> void:
 	editor.undo()
 	assert_true(stall.is_inside_tree(), "Ctrl+Z junta de novo")
 	assert_false(crate.is_inside_tree())
+
+
+## D087: clicar num campo do painel prendia o teclado (WASD parava, Del apagava letra). Clicar no mapa devolve.
+func test_clicking_the_map_frees_the_keyboard() -> void:
+	var editor := await _open(Game.ETHERA)
+	editor.select_nodes([editor.items()[0]])
+	await wait_process_frames(1)
+	var field := editor._inspector.find_children("*", "LineEdit", true, false)[0] as LineEdit
+	field.grab_focus()
+	assert_eq(editor.get_viewport().gui_get_focus_owner(), field)
+	var center := Vector2(editor.get_viewport().get_visible_rect().size) / 2.0
+	for pressed: bool in [true, false]:
+		var click := InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.pressed = pressed
+		click.position = center
+		editor.get_viewport().push_input(click)
+	assert_null(editor.get_viewport().gui_get_focus_owner(), "o teclado voltou para o editor")
+
+
+## D087: com um botão/lista do painel com foco, Q ainda gira a peça (antes o botão ficava com a tecla).
+func test_editor_keys_work_with_a_button_focused() -> void:
+	var editor := await _open(Game.ETHERA)
+	var piece := editor.place("arvore", Vector3(3, 0, 3))
+	editor.select_nodes([piece])
+	var yaw := piece.rotation.y
+	editor._grid_pick.grab_focus()
+	var key := InputEventKey.new()
+	key.keycode = KEY_Q
+	key.pressed = true
+	editor.get_viewport().push_input(key)
+	assert_null(editor.get_viewport().gui_get_focus_owner())
+	assert_ne(piece.rotation.y, yaw, "Q girou a peça")
+
+
+## D087: soltar o mouse em cima de um painel terminava nada: o editor achava que ainda estava arrastando.
+func test_releasing_over_a_panel_ends_the_drag() -> void:
+	var editor := await _open(Game.ETHERA)
+	var piece := editor.place("arvore", Vector3(3, 0, 3))
+	editor.select_nodes([piece])
+	editor._pressing = true
+	editor._dragging = true
+	editor._drag_from = [piece.global_transform] as Array[Transform3D]
+	piece.global_position += Vector3(4, 0, 0)
+	var release := InputEventMouseButton.new()
+	release.button_index = MOUSE_BUTTON_LEFT
+	release.pressed = false
+	release.position = Vector2(60, 300)  # em cima da Biblioteca
+	editor._input(release)
+	assert_false(editor._dragging)
+	assert_false(editor._pressing)
+	editor.undo()
+	assert_almost_eq(piece.global_position.x, 3.0, 0.01, "o arrasto entrou no desfazer")
+
+
+## D087: antes de gravar por cima, uma cópia da versão anterior; e o rascunho automático volta se o jogo travar.
+func test_backup_and_autosave_recovery() -> void:
+	var editor := await _open(Game.ETHERA)
+	assert_eq(editor.save(OUT), OK)
+	var copy := editor.backup(OUT)
+	assert_true(copy != "" and FileAccess.file_exists(copy), "cópia guardada em %s" % copy)
+	DirAccess.remove_absolute(copy)
+	editor.dirty = true
+	editor._autosave_left = 0.0
+	editor._autosave(0.1)
+	var auto := MapEditor.autosave_path(editor.level_path)
+	assert_true(FileAccess.file_exists(auto), "rascunho automático")
+	editor._offer_recovery()
+	assert_true(editor._recover.visible, "na próxima vez pergunta se quer recuperar")
+	editor._recover.hide()
+	editor._drop_autosave()
+	assert_false(FileAccess.file_exists(auto))
+
+
+## D087: apagar uma peça que outra usa (o padeiro e a padaria) avisa ao salvar.
+func test_saving_warns_about_broken_references() -> void:
+	var editor := await _open(Game.ARANDU)
+	assert_true(editor.broken_references().is_empty(), "Arandu sem nada quebrado")
+	var ia := editor.level.get_node("People/Padeiro/IA")
+	var shop := ia.get("padaria") as Node3D
+	assert_not_null(shop)
+	editor.select_nodes([editor._item_of(shop) if editor._item_of(shop) else shop])
+	editor.delete_selection()
+	var broken := editor.broken_references()
+	assert_false(broken.is_empty(), "o padeiro perdeu a padaria")
+	assert_eq(editor.save(), ERR_BUSY, "não grava a fase de cara: pergunta antes")
+	assert_true(editor._broken_dialog.visible)
+	assert_string_contains(editor._broken_dialog.dialog_text, "padaria")
+	editor._broken_dialog.hide()
+	editor.undo()
+	assert_true(editor.broken_references().is_empty())
+
+
+## D087: separar a peça e uma parte dela juntas (Ctrl+A e X) não dá erro.
+func test_separating_a_piece_and_its_part_together() -> void:
+	var editor := await _open(Game.ARANDU)
+	var stall := editor.place("res://world/props/banca_frutas.tscn", Vector3(60, 0, 60))
+	var part := stall.get_child(0) as Node3D
+	editor.select_nodes([stall, part])
+	editor.separate_selection()
+	assert_false(stall.is_inside_tree(), "separou a de fora")
+	editor.undo()
+	assert_true(stall.is_inside_tree())

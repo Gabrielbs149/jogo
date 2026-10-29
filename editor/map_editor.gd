@@ -6,6 +6,8 @@ extends Node3D
 ## centro fica no meio das células), a pegada aparece no chão (verde = livre, vermelho = batendo em outra coisa).
 ## Direita: tudo o que dá para mudar na peça escolhida. Embaixo: as teclas do que dá para fazer agora.
 ## Salvar grava a própria .tscn da fase. Testar joga a fase como está (sem salvar); F2 lá volta para cá.
+## D087: o teclado nunca fica preso num campo do painel, Ctrl+S salva de qualquer lugar, toda gravação guarda
+## antes uma cópia da versão anterior, e um rascunho automático (a cada AUTOSAVE_EVERY s) volta se o jogo travar.
 
 signal selection_changed
 
@@ -22,6 +24,14 @@ const ACTION_NAMES: Array[String] = ["Mostrar texto", "Descansar", "Chamar heró
 const GRIDS: Array[float] = [0.5, 1.0, 2.0, 4.0]
 ## Peças pequenas dos kits (menos que isso, em metros) não ganham colisão.
 const KIT_MIN_COLLISION := 0.6
+## D087: cópias da fase antes de cada gravação (as últimas BACKUP_KEEP de cada fase) e o rascunho automático.
+const BACKUP_DIR := "user://editor_copias/"
+const BACKUP_KEEP := 10
+const AUTOSAVE_EVERY := 90.0
+## Duplicar mais que isso de uma vez (Ctrl+A e Ctrl+D) enchia o depurador de erros e travava.
+const MAX_DUPLICATE := 150
+## Campos que mudam as etiquetas do mapa (os outros não precisam refazer as etiquetas a cada letra).
+const LABEL_FIELDS: Array[String] = ["name", "prompt_text", "target_scene", "action", "hero_id", "encounter_id"]
 ## Nomes dos campos no painel (o que não estiver aqui aparece com o nome do código).
 const FIELD_NAMES: Dictionary[String, String] = {
 	"chapter_title": "Nome da fase", "intro_lines": "Abertura", "start_story": "Texto do começo",
@@ -94,6 +104,13 @@ var _size_label: Label3D
 var _level_cameras: Array[Camera3D] = []
 ## A pegada pintada no chão (verde = livre, vermelho = batendo, amarelo = escolhida).
 var _footprint_fill: MeshInstance3D
+## D087: rascunho automático, refazer a lista/etiquetas uma vez por quadro, e o aviso que fica na tela.
+var _autosave_left: float = AUTOSAVE_EVERY
+var _refresh_queued: bool = false
+var _toast_tween: Tween
+var _recover: ConfirmationDialog
+## Pergunta antes de salvar quando alguém da fase perde uma peça que foi apagada (a missão perde a Tika, D087).
+var _broken_dialog: ConfirmationDialog
 
 # interface (montada em _build_ui)
 var _ui: Control
@@ -167,6 +184,7 @@ func _ready() -> void:
 		_toast_text("Voltou do teste: o que não foi salvo continua aqui")
 	else:
 		open_level(path)
+		_offer_recovery()
 	Game.edit_draft = ""
 	_build_inspector()
 	_update_status()
@@ -378,8 +396,28 @@ func _build_ui() -> void:
 	layer.add_child(_new_dialog)
 	_confirm = ConfirmationDialog.new()
 	_confirm.title = "Sair sem salvar?"
-	_confirm.confirmed.connect(func() -> void: _after_confirm.call())
+	_confirm.confirmed.connect(func() -> void:
+		_drop_autosave()  # saiu sem salvar de propósito: o rascunho automático não precisa voltar
+		_after_confirm.call())
 	layer.add_child(_confirm)
+	_recover = ConfirmationDialog.new()
+	_recover.title = "Recuperar o que não foi salvo?"
+	_recover.ok_button_text = "Recuperar"
+	_recover.cancel_button_text = "Descartar"
+	_recover.confirmed.connect(func() -> void:
+		var auto := autosave_path(level_path)
+		open_level(level_path, auto)
+		dirty = true
+		_update_status()
+		_toast_text("Recuperado. Salve (Ctrl+S) para gravar na fase.", 5.0))
+	_recover.canceled.connect(_drop_autosave)
+	layer.add_child(_recover)
+	_broken_dialog = ConfirmationDialog.new()
+	_broken_dialog.title = "Salvar mesmo assim?"
+	_broken_dialog.ok_button_text = "Salvar mesmo assim"
+	_broken_dialog.cancel_button_text = "Voltar (Ctrl+Z desfaz)"
+	_broken_dialog.confirmed.connect(func() -> void: save("", true))
+	layer.add_child(_broken_dialog)
 	_fill_items()
 
 
@@ -503,21 +541,123 @@ func open_level(path: String, source: String = "") -> void:
 	_refresh_all()
 
 
-## Grava a fase no arquivo dela (ou em outro caminho, nos testes).
-func save(path: String = "") -> Error:
+## Grava a fase no arquivo dela (ou em outro caminho, nos testes). Antes de gravar por cima, guarda uma cópia da
+## versão anterior em BACKUP_DIR (D087).
+func save(path: String = "", even_if_broken: bool = false) -> Error:
+	if path == "" and level == null:
+		return ERR_UNCONFIGURED
 	if path == "":
 		path = level_path
+	var broken := broken_references()
+	if path == level_path and not broken.is_empty() and not even_if_broken and _broken_dialog:
+		_broken_dialog.dialog_text = "Ao salvar, isto se perde (a peça foi apagada):
+
+- %s%s
+
+Isso pode quebrar uma missão ou cena. Ctrl+Z traz a peça de volta." % [
+			"
+- ".join(broken.slice(0, 8)), ("
+(e mais %d)" % (broken.size() - 8)) if broken.size() > 8 else ""]
+		_broken_dialog.popup_centered()
+		return ERR_BUSY
+	if path == level_path:
+		backup(path)
 	var err := _write(path)
 	if err != OK:
-		_toast_text("Não deu para salvar (%s). Salvar só funciona rodando o jogo pelo Godot." % error_string(err))
+		_toast_text("NÃO SALVOU (%s). Salvar só funciona rodando o jogo pelo Godot. O rascunho automático continua guardado." % error_string(err), 8.0)
+		push_warning("Editor de mapas: não salvou %s (%s)" % [path, error_string(err)])
 		return err
 	if path == level_path:
 		dirty = false
 		save_interiors()
 		var promoted := promote_acervo(path)
-		_toast_text("Salvo em %s%s" % [path, ("  (%d modelo(s) do acervo copiados para o projeto)" % promoted) if promoted > 0 else ""])
+		_drop_autosave()
+		var note := ("  (%d modelo(s) do acervo copiados para o projeto)" % promoted) if promoted > 0 else ""
+		if broken.is_empty():
+			_toast_text("Salvo em %s%s" % [path, note])
+		else:
+			_toast_text("Salvo, mas atenção: %s" % "; ".join(broken.slice(0, 3)), 8.0)
 	_update_status()
 	return OK
+
+
+## Copia o arquivo da fase (como está no disco) para BACKUP_DIR, com a hora no nome; guarda as últimas BACKUP_KEEP.
+func backup(path: String) -> String:
+	if not FileAccess.file_exists(path):
+		return ""
+	DirAccess.make_dir_recursive_absolute(BACKUP_DIR)
+	var base := path.get_file().get_basename()
+	var stamp := Time.get_datetime_string_from_system().replace(":", "-").replace("T", "_")
+	var target := BACKUP_DIR + "%s_%s.tscn" % [base, stamp]
+	if DirAccess.copy_absolute(ProjectSettings.globalize_path(path), ProjectSettings.globalize_path(target)) != OK:
+		return ""
+	var mine: Array[String] = []
+	for file: String in DirAccess.get_files_at(BACKUP_DIR):
+		if file.begins_with(base + "_") and file.ends_with(".tscn"):
+			mine.append(file)
+	mine.sort()
+	while mine.size() > BACKUP_KEEP:
+		DirAccess.remove_absolute(BACKUP_DIR + mine.pop_front())
+	return target
+
+
+## O que vai se perder ao salvar: alguém da fase aponta (campo de nó) para uma peça que foi apagada.
+func broken_references() -> Array[String]:
+	var result: Array[String] = []
+	if level == null:
+		return result
+	for node: Node in [level] + level.find_children("*", "", true, false):
+		if node.get_script() == null:
+			continue
+		for prop: Dictionary in node.get_property_list():
+			if not (int(prop["usage"]) & PROPERTY_USAGE_SCRIPT_VARIABLE) or int(prop["type"]) != TYPE_OBJECT:
+				continue
+			var value: Variant = node.get(String(prop["name"]))
+			if value is Node and is_instance_valid(value) and not (value as Node).is_inside_tree():
+				result.append("%s perdeu \"%s\" (%s foi apagado)" % [node.name, prop["name"], (value as Node).name])
+	return result
+
+
+## Onde fica o rascunho automático desta fase.
+static func autosave_path(path: String) -> String:
+	return "user://editor_auto_%s.tscn" % path.get_file().get_basename()
+
+
+func _autosave(delta: float) -> void:
+	if not dirty or level == null or _dragging or _placing != "":
+		_autosave_left = AUTOSAVE_EVERY
+		return
+	_autosave_left -= delta
+	if _autosave_left > 0.0:
+		return
+	_autosave_left = AUTOSAVE_EVERY
+	if _write(autosave_path(level_path)) == OK:
+		_toast_text("Rascunho automático guardado (se travar, ele volta)", 1.6)
+
+
+func _drop_autosave() -> void:
+	var auto := autosave_path(level_path)
+	if FileAccess.file_exists(auto):
+		DirAccess.remove_absolute(auto)
+
+
+## Tem um rascunho automático mais novo que a fase (o jogo travou ou fechou sem salvar): pergunta se quer de volta.
+func _offer_recovery() -> void:
+	var auto := autosave_path(level_path)
+	if not FileAccess.file_exists(auto) or _recover == null:
+		return
+	if FileAccess.get_modified_time(auto) < FileAccess.get_modified_time(level_path):
+		_drop_autosave()
+		return
+	var when := Time.get_datetime_string_from_unix_time(FileAccess.get_modified_time(auto) - _utc_offset(), true)
+	_recover.dialog_text = "Achei mudanças em %s que não foram salvas (rascunho automático de %s).\nQuer continuar de onde parou?" % [
+		level_path.get_file(), when]
+	_recover.popup_centered()
+
+
+func _utc_offset() -> int:
+	return Time.get_unix_time_from_datetime_dict(Time.get_datetime_dict_from_system(true)) \
+		- Time.get_unix_time_from_datetime_dict(Time.get_datetime_dict_from_system())
 
 
 ## Joga a fase como está agora (sem mexer no arquivo). F2 no jogo volta para cá.
@@ -592,7 +732,7 @@ func _write(path: String) -> Error:
 		return err
 	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
 	err = ResourceSaver.save(packed, path)
-	if err == OK:
+	if err == OK and path.begins_with("res://"):
 		packed.take_over_path(path)  # quem carregar a fase depois (Testar, F2) pega a versão nova
 	return err
 
@@ -837,10 +977,41 @@ func _blocked(rect: Rect2, ignore: Array) -> bool:
 
 # --- entrada (mouse e teclado) --------------------------------------------------------------
 
+## Antes da interface (D087). O teclado ficava preso no campo/botão clicado no painel: WASD parava, Del apagava letra,
+## Q/E viravam texto, Espaço apertava o botão de novo. Agora: Ctrl+S salva de qualquer lugar; Esc tira o cursor do
+## campo; com um botão ou lista com foco, a tecla é do editor; e soltar o mouse em cima de um painel termina o arrasto.
+func _input(event: InputEvent) -> void:
+	if level == null:
+		return
+	if event is InputEventMouseButton:
+		var button := event as InputEventMouseButton
+		if button.button_index == MOUSE_BUTTON_LEFT and not button.pressed and (_pressing or _dragging or _boxing):
+			_finish_press(button.position, button.shift_pressed)
+		return
+	if not (event is InputEventKey and event.is_pressed()):
+		return
+	var key := event as InputEventKey
+	if key.ctrl_pressed and key.keycode == KEY_S and not key.echo:
+		save()
+		get_viewport().set_input_as_handled()
+		return
+	var focus := get_viewport().gui_get_focus_owner()
+	if focus == null or not _ui.is_ancestor_of(focus):
+		return
+	if focus is LineEdit or focus is TextEdit:
+		if key.keycode == KEY_ESCAPE:
+			focus.release_focus()
+			get_viewport().set_input_as_handled()
+		return
+	focus.release_focus()  # botão, lista, caixa de marcar: a tecla segue para o editor
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if level == null:
 		return
 	if event is InputEventMouseButton:
+		if (event as InputEventMouseButton).pressed:
+			get_viewport().gui_release_focus()  # clicou no mapa: o teclado volta para o editor
 		_on_mouse_button(event as InputEventMouseButton)
 	elif event is InputEventMouseMotion:
 		_on_mouse_motion(event as InputEventMouseMotion)
@@ -925,33 +1096,44 @@ func _on_mouse_button(event: InputEventMouseButton) -> void:
 		for node: Node3D in selection:
 			_drag_from.append(node.global_transform)
 		_drag_center = _bounds(selection[0]).get_center()
-	else:
-		if _dragging:
-			var to: Array = []
-			for node: Node3D in selection:
-				to.append(node.transform)
-			var from: Array = []
-			for i: int in selection.size():
-				from.append(selection[i].get_parent_node_3d().global_transform.affine_inverse() * _drag_from[i])
-			_push({"kind": "xf", "nodes": selection.duplicate(), "from": from, "to": to})
-			_cycle_pos = Vector2(-999, -999)  # mexeu: o próximo clique começa a lista de novo
+	elif _pressing or _dragging or _boxing:
+		_finish_press(event.position, event.shift_pressed)
+
+
+## Soltou o botão (no mapa ou em cima de um painel): termina o arrasto (com desfazer) ou a caixa de escolher.
+func _finish_press(at: Vector2, shift: bool) -> void:
+	if _dragging:
+		var nodes: Array = []
+		var from: Array = []
+		var to: Array = []
+		for i: int in selection.size():
+			var node := selection[i]
+			if i >= _drag_from.size() or not is_instance_valid(node) or not node.is_inside_tree():
+				continue
+			nodes.append(node)
+			from.append(node.get_parent_node_3d().global_transform.affine_inverse() * _drag_from[i])
+			to.append(node.transform)
+			_mark_edited(node)
+		if not nodes.is_empty():
+			_push({"kind": "xf", "nodes": nodes, "from": from, "to": to})
 			dirty = true
-			_update_status()
-			_build_inspector()
-		elif _boxing and _press_pos.distance_to(event.position) > 6.0:
-			var rect := Rect2(_press_pos, event.position - _press_pos).abs()
-			var inside: Array[Node3D] = []
-			if event.shift_pressed:
-				inside.assign(selection)
-			for item: Node3D in items():
-				var screen := _camera.camera.unproject_position(item.global_position)
-				if rect.has_point(screen) and not _camera.camera.is_position_behind(item.global_position) and not inside.has(item):
-					inside.append(item)
-			select_nodes(inside)
-		_pressing = false
-		_dragging = false
-		_boxing = false
-		_box.visible = false
+		_cycle_pos = Vector2(-999, -999)  # mexeu: o próximo clique começa a lista de novo
+		_update_status()
+		_build_inspector()
+	elif _boxing and _press_pos.distance_to(at) > 6.0:
+		var rect := Rect2(_press_pos, at - _press_pos).abs()
+		var inside: Array[Node3D] = []
+		if shift:
+			inside.assign(selection)
+		for item: Node3D in items():
+			var screen := _camera.camera.unproject_position(item.global_position)
+			if rect.has_point(screen) and not _camera.camera.is_position_behind(item.global_position) and not inside.has(item):
+				inside.append(item)
+		select_nodes(inside)
+	_pressing = false
+	_dragging = false
+	_boxing = false
+	_box.visible = false
 
 
 func _vary_ghost_keep() -> void:
@@ -1093,7 +1275,7 @@ func _on_key(event: InputEventKey) -> void:
 			else:
 				select_nodes([])
 		KEY_F2:
-			_leave(func() -> void: test_level())
+			test_level()  # o Testar guarda tudo num rascunho: nada se perde, não precisa perguntar
 		_:
 			return
 	get_viewport().set_input_as_handled()
@@ -1165,9 +1347,20 @@ func duplicate_selection() -> void:
 	var parents: Array = []
 	var indexes: Array = []
 	var owned: Array = []
+	if selection.size() > MAX_DUPLICATE:
+		_toast_text("%d peças é coisa demais para duplicar de uma vez (até %d)" % [selection.size(), MAX_DUPLICATE], 4.0)
+		return
 	for node: Node3D in selection:
-		if node == level:
+		if node == level or not is_instance_valid(node) or not node.is_inside_tree():
 			continue
+		# o interior carregado da casa não vai junto (a cópia carrega o dela quando chegar perto): sai da casa antes de
+		# copiar e volta depois. D087: antes a cópia levava e apagava no meio do laço, e o erro congelava o jogo.
+		var detached: Array[Array] = []
+		for inside: Node3D in _interiors:
+			if is_instance_valid(inside) and node.is_ancestor_of(inside):
+				var holder := inside.get_parent()
+				holder.remove_child(inside)
+				detached.append([holder, inside])
 		var paths := _owned_paths(node)
 		var home := _home(node)
 		var editable: Array[NodePath] = []
@@ -1175,15 +1368,16 @@ func duplicate_selection() -> void:
 			if home.is_editable_instance(inner):
 				editable.append(node.get_path_to(inner))
 		var copy := node.duplicate() as Node3D
-		for inside: Node in copy.find_children("*", "", true, false):
-			if inside.has_meta("_editor_interior"):
-				inside.free()  # o interior carregado da casa não vai junto: a cópia carrega o dela quando chegar perto
+		for pair: Array in detached:
+			(pair[0] as Node).add_child(pair[1] as Node)
 		if copy.get("encounter_id") is String:
 			copy.set("encounter_id", "")  # grupo novo: vencer um não some com o outro
 		node.get_parent().add_child(copy, true)
 		_restore_owned(copy, paths)
 		for rel: NodePath in editable:
-			home.set_editable_instance(copy.get_node(rel), true)
+			var inner_copy := copy.get_node_or_null(rel)
+			if inner_copy:
+				home.set_editable_instance(inner_copy, true)
 		# a cópia vai para o lado, encostada na original (largura da pegada), já na grade
 		var box := _bounds(node)
 		var right := _camera.ground_axes()[1]
@@ -1236,9 +1430,8 @@ func set_prop(object: Object, property: String, value: Variant, merge: bool = tr
 		_push({"kind": "prop", "object": object, "property": property, "from": before, "to": value})
 	dirty = true
 	_update_status()
-	if property == "name":
-		_refresh_tree()
-	_refresh_labels()
+	if LABEL_FIELDS.has(property):
+		_queue_refresh()
 
 
 func undo() -> void:
@@ -1277,8 +1470,9 @@ func _apply(entry: Dictionary, backwards: bool) -> void:
 				if is_instance_valid(nodes[i]):
 					(nodes[i] as Node3D).transform = values[i]
 		"prop":
-			(entry["object"] as Object).set(entry["property"], entry["from"] if backwards else entry["to"])
-			_refresh_tree()
+			if is_instance_valid(entry["object"]):
+				(entry["object"] as Object).set(entry["property"], entry["from"] if backwards else entry["to"])
+			_queue_refresh()
 		"add", "del":
 			_swap_nodes(entry, (entry["kind"] == "add") == backwards)
 			_refresh_all()
@@ -1295,12 +1489,17 @@ func _apply(entry: Dictionary, backwards: bool) -> void:
 func _swap_nodes(entry: Dictionary, removing: bool) -> void:
 	var nodes: Array = entry.get("nodes", [])
 	for i: int in nodes.size():
+		if not is_instance_valid(nodes[i]):
+			continue
 		var node := nodes[i] as Node
 		if removing:
 			if node.get_parent():
 				node.get_parent().remove_child(node)
 		else:
 			var parent := entry["parents"][i] as Node
+			if not is_instance_valid(parent) or node.get_parent() != null:
+				continue
+			node.owner = null  # o dono volta logo abaixo (_restore_owned); antes o Godot avisava "dono inconsistente"
 			parent.add_child(node)
 			parent.move_child(node, mini(int(entry["indexes"][i]), parent.get_child_count() - 1))
 			_restore_owned(node, entry["owned"][i])
@@ -1313,9 +1512,14 @@ func separate_selection() -> void:
 	var whole := {"nodes": [], "parents": [], "indexes": [], "owned": []}
 	var parts := {"nodes": [], "parents": [], "indexes": [], "owned": []}
 	var made: Array[Node3D] = []
-	for node: Node3D in selection.duplicate():
+	var chosen := selection.duplicate()
+	for node: Node3D in chosen:
+		if not is_instance_valid(node) or not node.is_inside_tree():
+			continue  # já saiu junto com outra peça separada antes
 		if node == level or node.owner != _home(node) or node.scene_file_path == "":
 			continue
+		if chosen.any(func(other: Node3D) -> bool: return other != node and is_instance_valid(other) and other.is_ancestor_of(node)):
+			continue  # é parte de outra peça escolhida: separa a de fora
 		var models: Array[Node3D] = []
 		var rest: Array[Node] = []
 		for child: Node in node.get_children():
@@ -1651,15 +1855,21 @@ func _load_near_interiors(delta: float) -> void:
 	_interior_check -= delta
 	if _interior_check > 0.0 or level == null:
 		return
-	_interior_check = 0.5
+	_interior_check = 0.25
 	var center := _camera.global_position
+	# um por vez, o mais perto primeiro (vários de uma vez travavam a tela ao passar pela cidade)
+	var nearest: InteriorSobDemanda = null
+	var nearest_d := 45.0
 	for found: Node in level.find_children("Interior", "", true, false):
 		var loader := found as InteriorSobDemanda
 		if loader == null or loader.cena == "" or loader.get_child_count() > 0:
 			continue
-		if loader.global_position.distance_to(center) > 45.0:
-			continue
-		load_interior(loader)
+		var d := loader.global_position.distance_to(center)
+		if d < nearest_d:
+			nearest = loader
+			nearest_d = d
+	if nearest:
+		load_interior(nearest)
 
 
 func load_interior(loader: InteriorSobDemanda) -> Node3D:
@@ -1819,6 +2029,7 @@ func _bounds(node: Node3D) -> AABB:
 
 func _process(_delta: float) -> void:
 	_load_near_interiors(_delta)
+	_autosave(_delta)
 	var mesh := _lines.mesh as ImmediateMesh
 	mesh.clear_surfaces()
 	mesh.surface_begin(Mesh.PRIMITIVE_LINES)
@@ -1963,9 +2174,23 @@ func _refresh_labels() -> void:
 # --- painéis --------------------------------------------------------------------------------
 
 func _refresh_all() -> void:
+	_queue_refresh()
+	_update_status()
+
+
+## A lista "Na fase" e as etiquetas são caras numa fase grande (Arandu tem 45 mil nós): refaz uma vez só, no fim do
+## quadro, mesmo que várias coisas mudem juntas (D087).
+func _queue_refresh() -> void:
+	if _refresh_queued:
+		return
+	_refresh_queued = true
+	_do_refresh.call_deferred()
+
+
+func _do_refresh() -> void:
+	_refresh_queued = false
 	_refresh_tree()
 	_refresh_labels()
-	_update_status()
 
 
 func _update_status() -> void:
@@ -1975,7 +2200,7 @@ func _update_status() -> void:
 		"   ·   %d escolhida(s)" % selection.size() if selection.size() > 1 else ""]
 
 
-func _toast_text(text: String) -> void:
+func _toast_text(text: String, seconds: float = 2.4) -> void:
 	if _toast == null:
 		return
 	_toast.text = text
@@ -1983,9 +2208,11 @@ func _toast_text(text: String) -> void:
 	_toast.offset_left = -width / 2.0
 	_toast.offset_right = width / 2.0
 	_toast.modulate.a = 1.0
-	var tween := create_tween()
-	tween.tween_interval(2.4)
-	tween.tween_property(_toast, "modulate:a", 0.0, 0.6)
+	if _toast_tween:
+		_toast_tween.kill()  # o aviso de antes não apaga o novo no meio
+	_toast_tween = create_tween()
+	_toast_tween.tween_interval(seconds)
+	_toast_tween.tween_property(_toast, "modulate:a", 0.0, 0.6)
 
 
 ## "Na fase": a fase inteira em árvore (o mesmo que o Godot mostra). Clique escolhe qualquer nó.
@@ -2043,8 +2270,9 @@ func _find_tree_item(item: TreeItem, node: Node) -> TreeItem:
 
 
 func _on_tree_selected() -> void:
-	if _syncing_tree:
+	if _syncing_tree or _tree.get_selected() == null:
 		return
+	_tree.release_focus.call_deferred()  # as setas são do editor (mover a peça), não da lista
 	var node: Variant = _tree.get_selected().get_metadata(0)
 	if node is Node3D:
 		select_nodes([node])
