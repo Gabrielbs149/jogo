@@ -383,6 +383,22 @@ func play_cutscene(roteiro: Roteiro) -> void:
 		_camera.capture(true)
 
 
+var _marca: MarcaObjetivo
+
+
+## Marca onde fica o objetivo (D091): o losango dourado com a distância. null = tira a marca.
+func marcar_objetivo(alvo: Node3D) -> void:
+	if _marca == null:
+		_marca = MarcaObjetivo.new()
+		add_child(_marca)
+	_marca.alvo = alvo
+
+
+## O que a marca do objetivo está marcando (null = nada).
+func alvo_do_objetivo() -> Node3D:
+	return _marca.alvo if _marca else null
+
+
 ## A câmera que está filmando uma cena (D089): a da cutscene, um plano fixo ou a da conversa. null = a câmera do jogo.
 func camera_de_cena() -> Camera3D:
 	var cam := get_viewport().get_camera_3d()

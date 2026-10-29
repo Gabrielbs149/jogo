@@ -128,19 +128,30 @@ func _start() -> void:
 	_objetivo()
 
 
+## O objetivo na tela e a marca dourada em cima do lugar (D091: sem ela, o celeiro não se achava).
 func _objetivo() -> void:
+	var alvo: Node3D = null
 	match etapa():
 		"sumiu":
 			if Game.flag("capitulo.bras", false):
-				Game.set_objective("Ir até o celeiro, do outro lado da rua.", "A Tika sumiu")
+				Game.set_objective("Ir até o celeiro da cidade, a leste da esquina do Seu Brás. Olhar o chão perto da carroça.",
+					"A Tika sumiu")
+				alvo = pista
 			else:
-				Game.set_objective("Procurar a Tika. Alguém na rua pode ter visto alguma coisa.", "A Tika sumiu")
+				Game.set_objective("Procurar a Tika. O Seu Brás, na esquina perto do beco, vê tudo que passa na rua.",
+					"A Tika sumiu")
+				alvo = bras
 		"celeiro":
-			Game.set_objective("Ir até o celeiro. Os capangas da Forja estão lá.", "A Forja")
+			Game.set_objective("Ir até a carroça do celeiro, de noite. Os capangas da Forja estão lá.", "A Forja")
+			alvo = carroca
 		"lutou":
 			Game.set_objective("Pegar as suas coisas no barraco.", "A Forja")
+			alvo = mochila
 		"pronto":
 			Game.set_objective("Sair de Arandu pelo portão do norte.", "A Forja")
+			alvo = portao
+	if _level:
+		_level.marcar_objetivo(alvo)
 
 
 func _process(delta: float) -> void:

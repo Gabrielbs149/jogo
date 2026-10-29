@@ -121,3 +121,15 @@ func test_take_your_things_and_leave_through_the_gate() -> void:
 	assert_string_contains(Game.objective, "portão")
 	assert_true(_level.controller.enabled, "depois de pegar as coisas dá para andar")
 	assert_eq(_chapter.portao.action, Interactable.Action.QUEST)
+
+
+## D091: a marca dourada mostra onde ir (o celeiro não se achava só pelo texto).
+func test_the_gold_mark_points_the_way() -> void:
+	await _open(_first_day_done().merged({"capitulo.etapa": "sumiu"}))
+	assert_eq(_level.alvo_do_objetivo(), _chapter.bras, "primeiro: o Seu Brás, que vê tudo")
+	var bras := _level.get_node("Missoes/MendigoBras") as ConversaMendigo
+	await bras._talk(bras._conversa, bras.falar.get_parent() as Node3D)
+	assert_eq(_level.alvo_do_objetivo(), _chapter.pista, "depois: o chão perto da carroça do celeiro")
+	Game.set_flag("capitulo.etapa", "celeiro")
+	_chapter._objetivo()
+	assert_eq(_level.alvo_do_objetivo(), _chapter.carroca, "de noite: a carroça")
