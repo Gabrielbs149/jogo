@@ -28,6 +28,8 @@ signal finished(victory: bool)
 ## Quanto a câmera fica atrás do herói (ele está invisível; só a sombra aparece).
 @export var eye_back: float = 0.5
 @export var view_fov: float = 50.0
+## De perto, a câmera olha esta altura (m) de quem veio bater (o peito), para ele caber inteiro na tela.
+const CLOSE_LOOK_HEIGHT := 0.85
 @export_group("Teste e simulador")
 ## A IA joga por você e "aperta" os QTE com estas chances.
 @export var auto_play: bool = false
@@ -1306,10 +1308,19 @@ func _first_person_view() -> void:
 	_update_view(1.0)
 
 
+static func _flat_distance(a: Vector3, b: Vector3) -> float:
+	return Vector2(a.x - b.x, a.z - b.z).length()
+
+
 ## Para onde olhar: quem está atacando, ou o meio dos inimigos vivos, na altura do corpo deles (o chefe é mais alto).
 func _group_center() -> Vector3:
 	if _focus and is_instance_valid(_focus) and _focus.hp > 0:
-		return _focus.global_position + Vector3.UP * (1.5 if _focus.is_boss else 0.1)
+		if _focus.is_boss:
+			return _focus.global_position + Vector3.UP * 1.5
+		# quem veio bater chega a ~2,3 m: olhando o pé dele, a câmera baixa (do olho do kobold) cortava a cabeça e ele
+		# enchia a tela, gigante. De perto, olha a altura do peito: cabe do chão à cabeça.
+		var near := clampf((4.5 - _flat_distance(_focus.global_position, player.global_position)) / 2.0, 0.0, 1.0)
+		return _focus.global_position + Vector3.UP * lerpf(0.1, CLOSE_LOOK_HEIGHT, near)
 	var alive := alive_enemies()
 	if alive.is_empty():
 		return _look
