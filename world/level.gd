@@ -383,6 +383,14 @@ func play_cutscene(roteiro: Roteiro) -> void:
 		_camera.capture(true)
 
 
+## A câmera que está filmando uma cena (D089): a da cutscene, um plano fixo ou a da conversa. null = a câmera do jogo.
+func camera_de_cena() -> Camera3D:
+	var cam := get_viewport().get_camera_3d()
+	if cam == null or (_camera and cam == _camera.camera and not em_cena):
+		return null
+	return cam
+
+
 ## Conversa (D059): o herói e quem fala se viram um para o outro e a câmera chega um pouco mais perto, mirando entre
 ## os dois. null = acabou a conversa (a câmera volta). from_other: a câmera fica do lado de quem fala, olhando o herói
 ## (para quando é o herói que está fazendo alguma coisa, como acordar).

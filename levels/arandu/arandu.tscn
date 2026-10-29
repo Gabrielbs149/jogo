@@ -33,6 +33,7 @@
 [ext_resource type="Script" path="res://world/quests/missao_padaria.gd" id="20_ra3w5"]
 [ext_resource type="PackedScene" path="res://assets/beco/prateleira.gltf" id="20_rfcu5"]
 [ext_resource type="Script" path="res://world/quests/conversa_mendigo.gd" id="21_g045v"]
+[ext_resource type="Script" path="res://world/quests/truque_folhas.gd" id="truque_folhas"]
 [ext_resource type="PackedScene" path="res://world/props/casa_estreita_pedra.tscn" id="21_l2c7x"]
 [ext_resource type="PackedScene" path="res://assets/kits/polypizza/Halloween-Bits/Candle_Melted.glb" id="21_q1o0k"]
 [ext_resource type="PackedScene" path="res://assets/kits/polypizza/Bottles/Old_Bottle.glb" id="22_fd77n"]
@@ -1342,8 +1343,8 @@ shape = SubResource("CapsuleShape3D_99")
 [node name="Talk" type="Node3D" parent="People/Crianca" unique_id=252168432]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("inter")
+action = 4
 prompt_text = "Falar com a criança"
-text = "— Moço-planta! Faz de novo aquele truque das folhas?"
 
 [node name="Padeiro" parent="People" unique_id=916468253 instance=ExtResource("16_j5u7p")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 24.875998, 0, -11.301999)
@@ -1508,6 +1509,10 @@ plano_acordar = NodePath("../../CenaTico/Plano1")
 [node name="MendigoBras" type="Node" parent="Missoes" unique_id=1567946830 node_paths=PackedStringArray("falar")]
 script = ExtResource("21_g045v")
 falar = NodePath("../../People/Bras/Talk")
+
+[node name="TruqueFolhas" type="Node" parent="Missoes" unique_id=1907315562 node_paths=PackedStringArray("falar")]
+script = ExtResource("truque_folhas")
+falar = NodePath("../../People/Crianca/Talk")
 
 [node name="BicoCaixas" type="Node" parent="Missoes" unique_id=2015082906 node_paths=PackedStringArray("carregador", "na_carroca", "na_pilha", "pegar", "largar", "marca")]
 script = ExtResource("22_ra3w5")

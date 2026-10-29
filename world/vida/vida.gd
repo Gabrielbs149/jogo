@@ -27,6 +27,10 @@ const FALAS_NOITE: Array[String] = ["Boa noite...", "Vai pra casa, pequeno. A no
 	"Ouviu isso? ...Nada. Deve ser o vento.", "As estrelas tão esquisitas hoje."]
 const FALAS_ESBARRAO: Array[String] = ["Licença!", "Ô, olha por onde anda!", "Com licença, pequeno.", "Ei!", "Dá passagem?"]
 const FALAS_SUSTO: Array[String] = ["Ai! Que susto!", "Calma, pequeno!", "Vai tirar o pai da forca?", "Devagar!"]
+## Numa cena sem ninguém em foco no quadro, quem entra nele até esta distância da câmera some (m).
+const LONGE_DA_CENA := 30.0
+## Quem passa até esta distância (m) atrás de quem está em cena também some: do lado deles, atrapalha igual.
+const ATRAS_DA_CENA := 2.5
 
 var people: Array[Passante] = []
 var _spots: Array[Dictionary] = []
@@ -37,6 +41,9 @@ var _map: RID
 var _last_talk: float = -99.0
 var _clock: float = 0.0
 var _check: float = 0.0
+## Os bichos que andam (os parados e os que dormem não atrapalham cena nenhuma) e quem está escondido do quadro.
+var _bichos: Array[Node3D] = []
+var _fora_do_quadro: Array[Node3D] = []
 
 
 func _ready() -> void:
@@ -57,12 +64,18 @@ func _start() -> void:
 			break
 	_read_spots()
 	_spawn()
+	for node: Node in _level.find_children("*", "Node3D", true, false):
+		if node is Bicho and (node as Bicho).raio >= 1.0 and not (node as Bicho).dorme:
+			_bichos.append(node as Node3D)
 
 
 func _process(delta: float) -> void:
 	_clock += delta
 	_check -= delta
-	if _check > 0.0 or _level == null or _level.player == null:
+	if _level == null:
+		return
+	_clear_shot()
+	if _check > 0.0 or _level.player == null:
 		return
 	_check = 0.25
 	var me := _level.player
@@ -76,6 +89,52 @@ func _process(delta: float) -> void:
 			_say(person, FALAS_SUSTO)
 		elif d < raio_fala and randf() < 0.05:
 			_say(person, FALAS_NOITE if _is_night() else FALAS_DIA)
+
+
+## Ninguém passa na frente da cena (D089): com uma cutscene, um plano fixo ou a câmera da conversa no ar, quem anda
+## pela rua (e os bichos que andam) e fica entre a câmera e quem está em cena, ou logo atrás, some até sair do quadro.
+## Só o corpo some: a vida da pessoa continua, e ela reaparece onde estaria. Em cena: os dois da conversa, o "foco"
+## que o plano diz (meta "foco") ou o herói; sem ninguém em cena no quadro, todo mundo até LONGE_DA_CENA.
+func _clear_shot() -> void:
+	var cam := _level.camera_de_cena()
+	var hide: Array[Node3D] = []
+	if cam:
+		var focus: Array = [_level.player]
+		if cam is CameraConversa:
+			focus = [(cam as CameraConversa).hero, (cam as CameraConversa).other]
+		elif cam.has_meta("foco"):
+			focus = cam.get_meta("foco")
+		var near := 0.0
+		for who: Variant in focus:
+			var node := who as Node3D
+			if node and is_instance_valid(node) and cam.is_position_in_frustum(node.global_position + Vector3.UP * 0.6):
+				near = maxf(near, cam.global_position.distance_to(node.global_position))
+		var limit := near + ATRAS_DA_CENA if near > 0.0 else LONGE_DA_CENA
+		for person: Passante in people:
+			var body := person.get_node_or_null("Figure") as Node3D
+			if body and person.visible and not focus.has(person) and _in_shot(cam, person.global_position, limit):
+				hide.append(body)
+		for bicho: Node3D in _bichos:
+			if is_instance_valid(bicho) and _in_shot(cam, bicho.global_position, limit):
+				hide.append(bicho)
+	for node: Node3D in _fora_do_quadro:
+		if is_instance_valid(node) and not hide.has(node):
+			node.visible = true
+	for node: Node3D in hide:
+		node.visible = false
+	_fora_do_quadro = hide
+
+
+## Algum pedaço (pé, meio, cabeça, um lado ou outro) aparece no quadro da câmera, a menos de `limit` m dela.
+static func _in_shot(cam: Camera3D, feet: Vector3, limit: float) -> bool:
+	if cam.global_position.distance_to(feet) > limit + 0.5:
+		return false
+	var side := cam.global_basis.x * 0.4
+	for point: Vector3 in [feet + Vector3.UP * 0.1, feet + Vector3.UP * 0.9, feet + Vector3.UP * 1.7,
+			feet + Vector3.UP * 0.9 + side, feet + Vector3.UP * 0.9 - side]:
+		if cam.is_position_in_frustum(point):
+			return true
+	return false
 
 
 # --- pontos e caminhos --------------------------------------------------------------------------------
@@ -233,7 +292,7 @@ func react_blocked(person: Passante) -> void:
 
 
 func _say(person: Node3D, lines: Array) -> void:
-	if _clock - _last_talk < folga_fala:
+	if _clock - _last_talk < folga_fala or _level.camera_de_cena() != null:  # ninguém fala por cima de cena
 		return
 	_last_talk = _clock
 	var line := String(lines[randi() % lines.size()])

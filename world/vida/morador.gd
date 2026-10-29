@@ -84,7 +84,7 @@ func _process(delta: float) -> void:
 			rotation.y = lerp_angle(rotation.y, _home_yaw, minf(1.0, delta * 1.5))
 			if d > 8.0:
 				_greeted = false
-	if not pregao.is_empty() and d < 14.0:
+	if not pregao.is_empty() and d < 14.0 and _level.camera_de_cena() == null:  # pregão não atravessa cena
 		_shout -= delta
 		if _shout <= 0.0:
 			_shout = randf_range(7.0, 13.0)
