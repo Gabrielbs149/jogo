@@ -57,12 +57,13 @@ static func perfil(speaker: String) -> Dictionary:
 
 ## O perfil de quem fala solto no mundo (passante, morador): pelo boneco (criança, bárbaro, maga...) e pelo nome.
 static func perfil_de(who: Node) -> Dictionary:
+	# get() de quem não tem a propriedade dá null (o Morador não tem "crianca", o Combatant não tem Figure)
 	var fig := who.get_node_or_null("Figure")
-	var model := String(fig.get("personagem")) if fig else ""
-	var oficio := String(fig.get("oficio")) if fig else ""
+	var model: Variant = fig.get("personagem") if fig else null
+	var oficio: Variant = fig.get("oficio") if fig else null
 	var h := absi(String(who.name).hash())
 	var jitter := float(h % 7) * 0.03 - 0.09
-	if oficio == "crianca" or bool(who.get("crianca")):
+	if oficio == "crianca" or who.get("crianca") == true:
 		return {"timbre": "suave", "tom": 1.3 + jitter, "ritmo": 1.2}
 	match model:
 		"Barbarian", "Knight":

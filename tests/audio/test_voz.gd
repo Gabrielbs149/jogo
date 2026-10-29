@@ -42,3 +42,30 @@ func test_syllables_follow_the_words() -> void:
 	assert_eq(Voz._vogal("Moço", 0), "o")
 	assert_eq(Voz._vogal("Pão", 0), "a", "acento vira a vogal")
 	assert_eq(Voz._vogal("é", 0), "e")
+
+
+## O crash do pregão (29/10): quem fala na rua pode ser Morador (sem "crianca"), Passante ou alguém sem Figure.
+func test_street_voices_from_anyone() -> void:
+	var morador := Node3D.new()
+	morador.set_script(load("res://world/vida/morador.gd"))
+	var fig := Node3D.new()
+	fig.name = "Figure"
+	fig.set_script(load("res://world/figurante.gd"))
+	morador.add_child(fig)
+	add_child_autofree(morador)
+	fig.set("personagem", "Barbarian")
+	assert_eq(Voz.perfil_de(morador)["timbre"], "grave", "vendedor bárbaro, voz grossa")
+	fig.set("oficio", "crianca")
+	assert_eq(Voz.perfil_de(morador)["timbre"], "suave", "criança pelo ofício")
+	var passante := Passante.new()
+	passante.crianca = true
+	add_child_autofree(passante)
+	assert_eq(Voz.perfil_de(passante)["timbre"], "suave", "criança da rua")
+	var sem_boneco := Node3D.new()
+	add_child_autofree(sem_boneco)
+	assert_false(Voz.perfil_de(sem_boneco).is_empty(), "sem boneco também tem voz")
+	Voz.balbucio(sem_boneco, "Ei!")
+	Fala.say(morador, "Peixe! Peixe fresco!")
+	Missao.shout(sem_boneco, "Pega ele!")
+	await wait_seconds(0.3)
+	assert_true(true, "nada travou")
