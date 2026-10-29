@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="Roteiro" format=3]
+
+[ext_resource type="Script" path="res://story/roteiro.gd" id="1_roteiro"]
+
+[resource]
+script = ExtResource("1_roteiro")
+texto = "# D086: a manhã depois do primeiro dia. Texto do Gabriel: \"Certo dia, Tico acorda e não vê Tika do seu lado,
+# em cima de seu papelão.\" Falas *(proposta)*. Câmeras e marcas no nó CenaTico da fase Arandu.
+[tela preta 0]
+[para som]
+[hora: 6.6 dia]
+[esconde: Tika]
+[esconde: Fogueirinha/Fogo]
+[esconde: MeioPaoTico]
+[esconde: MeioPaoTika]
+[coloca: Tico TicoDeitado]
+[anima: Tico Lie_Idle]
+[corta: Plano1]
+> Na manhã seguinte.
+
+[som: cidade | (a cidade acordando)]
+[abre 2]
+[pausa 1.5]
+Tico: \"Mmmf... Tika. Já é dia.\"
+Tico: \"Hoje a gente vai ver a tal gente nova, lembra? Depois do café.\"
+[pausa 1.2]
+Tico: \"...Que café. Eu sei, eu sei.\"
+[pausa 2.0]
+Tico: \"Tika?\"
+[anima: Tico Lie_StandUp]
+[pausa 2.2]
+[solta: Tico]
+[corta: Plano5]
+[legenda: O canto dela está vazio. O papelão ainda tem a marca de onde ela dormiu.]
+[pausa 3.0]
+[legenda:]
+[corta: Plano2]
+Tico: \"Tika! TIKA!\"
+[pausa 1.2]
+[corta: Plano5]
+[legenda: Ninguém responde.]
+[pausa 2.2]
+[legenda:]
+[corta: Plano2]
+Tico: \"...Ela foi ver a gente nova sozinha. Só pode.\"
+Tico: \"Sua teimosa.\"
+"

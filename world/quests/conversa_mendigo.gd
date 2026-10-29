@@ -15,6 +15,9 @@ func _setup() -> void:
 
 
 func _conversa() -> void:
+	if CapituloArandu.ativo() and CapituloArandu.atual:
+		await CapituloArandu.atual.fala_bras()  # D086: depois que a Tika some
+		return
 	var d := _hud.dialogue
 	if Game.has_item("comida"):
 		await d.say(BRAS, "Hm... cheiro de comida. Vai dividir com a pequena, né? Faz bem. Vai logo, antes que esfrie.")

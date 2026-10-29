@@ -52,6 +52,12 @@ var _shake: float = 0.0
 ## Quem a câmera olha agora (o inimigo que está atacando); vazio = o grupo todo.
 var _focus: Combatant
 var _last_grade: String = ""
+## Luta tutorial (D086, a primeira do Tico, no celeiro de Arandu): dicas na hora de cada coisa, o anel da defesa
+## aparece e as janelas são as do fácil. As dicas já dadas ficam aqui.
+var _tutorial: bool = false
+var _taught: Dictionary = {}
+## Falas do começo no lugar de "as adagas acendem" (Game.battle["intro"]: [[quem, fala], ...]).
+var _intro_lines: Array = []
 var _fury: Dictionary = {}
 ## Poções por luta (D050).
 var potions: int = 2
@@ -83,6 +89,8 @@ func _ready() -> void:
 	if data.is_empty():
 		data = {"id": "teste", "enemies": PackedStringArray(["res://actors/enemies/escaravelho_de_cinza.tscn"]), "first_strike": false}
 	_first_strike = bool(data.get("first_strike", false))
+	_tutorial = bool(data.get("tutorial", false))
+	_intro_lines.assign(data.get("intro", []))
 	player = _spawn(Game.hero_scene(Game.chosen), _player_slot.transform)
 	if Game.hero_hp >= 0:
 		player.hp = clampi(Game.hero_hp, 1, player.max_hp)
@@ -195,7 +203,12 @@ func _run() -> void:
 	for dagger: AdagaPsiquica in _daggers + _view_daggers:
 		dagger.materialize()
 	if not auto_play:
-		if not _view_daggers.is_empty():
+		if not _intro_lines.is_empty():
+			Audio.play("aparar", -6.0, 0.0)
+			for line: Variant in _intro_lines:
+				await _hud.say(String(line[0]), String(line[1]), 0.3)
+				await _teach_wait(String(line[1]).length() / 25.0 + 1.2)
+		elif not _view_daggers.is_empty():
 			Audio.play("aparar", -6.0, 0.0)
 			await _hud.say(player.display_name, "As adagas psíquicas acendem nas mãos de %s." % player.display_name, 0.3)
 		await _hud.say("", _intro_text(), 0.5)
@@ -270,6 +283,7 @@ func _player_turn() -> void:
 		index = _auto_choice()
 		await get_tree().process_frame
 	else:
+		await _teach_turn()
 		_hud.say(player.display_name, "O que %s vai fazer?" % player.display_name)
 		index = await _hud.choose_action()
 	if index >= EXTRA_BASE:
@@ -396,6 +410,7 @@ func _damage_qte(ability: Ability, hits: int, on: Combatant) -> Dictionary:
 		var r := randf()
 		return _grade("perfeito" if r < auto_perfect else ("bom" if r < auto_perfect + auto_good else "fraco"), best)
 	var count := (hits if hits > 1 else 3) if kind == Ability.Golpe.RAJADA else 1
+	await _teach("golpe", "Acertou! Agora o anel diz QUANTO entra: aperte a tecla que aparece na hora em que o anel fechar. No tempo certo é PERFEITO (mais dano).")
 	var q := _hud.golpe()
 	var at := _screen_of(on)
 	var total := 0.0
@@ -749,6 +764,7 @@ func _enemy_turn(enemy: Combatant, extra: bool = false) -> void:
 	var countered := false
 	var held_all := false  # aparou/esquivou tudo: a tela já respondeu golpe a golpe, nada de "errou" flutuando
 	if not on_me.is_empty():
+		await _teach("defesa", "Ele vai atacar, e são VÁRIOS golpes seguidos. Aperte F logo ANTES de cada golpe chegar para APARAR (o anel mostra a hora). Espaço ESQUIVA, mais fácil, mas não devolve nada.")
 		var defense := await _defense(ability, enemy, index)
 		var keep := float(defense["keep"])
 		for r: Dictionary in on_me:
@@ -779,11 +795,13 @@ func _enemy_turn(enemy: Combatant, extra: bool = false) -> void:
 		ritmo_hit()
 	if countered and player.is_active() and enemy.is_active():
 		await _counter_scene(enemy)
+		await _teach("contra", "Aparou TODOS os golpes: CONTRA-ATAQUE. Sempre que você apara a sequência inteira, o Tico devolve na hora.")
 	if missed_me and player.is_active() and is_instance_valid(enemy) and enemy.is_active():
 		# D083 (Riposte, do Baldur's Gate 3): errou o golpe corpo a corpo em você? A mão de trás revida na hora
 		Audio.play_at("aparar", player.global_position + Vector3.UP, 0.0)
 		_fx.floating_text(player.global_position, "RIPOSTE!", Color(1, 0.85, 0.3), true)
 		await _offhand_strike(enemy, "Riposte")
+		await _teach("riposte", "Ele errou o golpe em você: a outra adaga revida sozinha (RIPOSTE).")
 	_hud.refresh()
 	await _wait(0.4)
 	if melee and is_instance_valid(enemy) and enemy.is_active():
@@ -813,10 +831,12 @@ func _defense(ability: Ability, enemy: Combatant, index: int = 0) -> Dictionary:
 	# Defendendo (D050): as janelas ficam 50% maiores
 	if player.statuses.any(func(st: Dictionary) -> bool: return st["title"] == "Defendendo"):
 		windows *= 1.5
+	if _tutorial:
+		windows = windows.max(Vector2(EASY_PARRY, EASY_DODGE))
 	var parry_w := windows.x
 	var dodge_w := windows.y
-	# D082 (Clair Obscur): sem o anel, você lê o golpe (o anel é opção de acessibilidade)
-	var hidden := not bool(Settings.value("anel_defesa"))
+	# D082 (Clair Obscur): sem o anel, você lê o golpe (o anel é opção de acessibilidade); no tutorial ele aparece
+	var hidden := not bool(Settings.value("anel_defesa")) and not _tutorial
 	match kind:
 		Ability.Defesa.DIRECAO:
 			var side := -1 if randf() < 0.5 else 1
@@ -1062,6 +1082,41 @@ func hitstop(weight: String) -> void:
 func _exit_tree() -> void:
 	if Engine.time_scale < 0.01:
 		Engine.time_scale = 1.0
+
+
+## Dica da luta tutorial (D086): uma vez por luta, na caixa de texto; espera a pessoa ler (Enter, F ou 1 passam).
+func _teach(key: String, text: String) -> void:
+	if not _tutorial or auto_play or _taught.has(key):
+		return
+	_taught[key] = true
+	await _hud.say("Dica", text)
+	await _teach_wait(text.length() / 22.0 + 2.0)
+
+
+## Espera a pessoa ler: Enter, F, Espaço ou 1 passam antes do tempo.
+func _teach_wait(seconds: float) -> void:
+	var t := 0.0
+	await get_tree().process_frame
+	while t < seconds and is_inside_tree():
+		await get_tree().process_frame
+		t += get_process_delta_time()
+		for action: StringName in [&"ui_accept", &"interact", &"battle_attack"]:
+			if InputMap.has_action(action) and Input.is_action_just_pressed(action):
+				return
+
+
+## As dicas do começo da sua vez: atacar, os golpes especiais, o Ritmo e a postura (cada uma quando aparece).
+func _teach_turn() -> void:
+	if not _tutorial:
+		return
+	if not _taught.has("atacar"):
+		await _teach("atacar", "Sua vez. Aperte 1 para atacar com as adagas. O d20 decide se acerta a CA dele; as setas trocam de alvo.")
+		return
+	await _teach("especiais", "Q, E e R são golpes especiais: mais fortes, mas depois ficam alguns turnos recarregando. 2 DEFENDE (a defesa fica mais folgada), 6 EMPURRA.")
+	if ritmo_level() > 0:
+		await _teach("ritmo", "O RITMO (a letra no canto) sobe com cada coisa bem feita: golpe no tempo, aparar, esquivar. Cada letra soma dano. Apanhar derruba uma letra.")
+	if enemies.any(func(e: Combatant) -> bool: return is_instance_valid(e) and e.quebrado):
+		await _teach("quebra", "A barrinha azul embaixo da vida dele é a POSTURA. Cheia, ele QUEBRA: perde a vez e leva mais dano.")
 
 
 ## D084 (a Perfeição do Verso, Expedition 33): cada coisa bem feita na luta soma 1 no Ritmo (golpe, golpe no tempo,

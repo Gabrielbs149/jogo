@@ -81,7 +81,7 @@ func _process(_delta: float) -> void:
 		"conversou":
 			if me.distance_to(cama.global_position) > raio_beco:
 				_left_alley()
-	falar_tika.enabled = etapa() in ["acordou", "saiu", "fim"] and not tika.is_walking()
+	falar_tika.enabled = etapa() in ["acordou", "saiu", "fim"] and not tika.is_walking() and not CapituloArandu.ativo()
 	_update_marks()
 	# depois do primeiro dia: de noite ela dorme, de dia fica sentada no barraco
 	if etapa() == "fim" and _sleeping() != _was_sleeping:
@@ -99,6 +99,10 @@ func _start() -> void:
 
 ## Põe a Tika onde ela deve estar nesta etapa (abrir o jogo salvo no meio do prólogo).
 func _place_tika() -> void:
+	if CapituloArandu.ativo():
+		tika.visible = false  # D086: ela sumiu
+		falar_tika.enabled = false
+		return
 	tika.visible = true
 	if fogueira:
 		fogueira.visible = true
@@ -298,7 +302,7 @@ func _wait_evening() -> void:
 	_end_of_day()
 
 
-## Depois do primeiro dia (o resto da história ainda não foi escrito): de dia ela fica no barraco.
+## Depois do primeiro dia, até o capítulo começar (D086, CapituloArandu): de dia ela fica no barraco.
 func _next_days() -> void:
 	var d := _hud.dialogue
 	await d.say(TIKA, String(["Hoje eu tô com preguiça até de ter fome.",

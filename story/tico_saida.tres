@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="Roteiro" format=3]
+
+[ext_resource type="Script" path="res://story/roteiro.gd" id="1_roteiro"]
+
+[resource]
+script = ExtResource("1_roteiro")
+texto = "# D086: o Tico pega as coisas no barraco antes de sair de Arandu. {fita} vira a linha da fita (capitulo_arandu.gd).
+# Falas *(proposta)*.
+[tela preta 0.8]
+[coloca: Tico TicoSentado]
+[anima: Tico Sit_Floor_Idle]
+[corta: Plano1]
+[abre 1.0]
+[legenda: Ele enrola o saco de dormir. Na mochila vão a colher torta, o botão e o toco de vela.]
+[pausa 3.0]
+[legenda: {fita}]
+[pausa 2.6]
+[legenda:]
+[corta: Plano2]
+Tico: \"O papelão fica. Pra quando a gente voltar.\"
+[pausa 1.2]
+Tico: \"Eu vou te achar, Tika. Nem que eu tenha que derrubar essa forja com os dentes.\"
+[corta: Plano5]
+[pausa 1.5]
+[solta: Tico]
+"

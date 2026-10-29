@@ -178,6 +178,9 @@ func _figure_anim(anim: StringName) -> void:
 # --- depois ---------------------------------------------------------------------------------------
 
 func _garoto_depois() -> void:
+	if CapituloArandu.ativo() and CapituloArandu.atual:
+		await CapituloArandu.atual.fala_pipo()  # D086
+		return
 	var d := _hud.dialogue
 	match String(Game.flag("feira.jeito", "")):
 		"ajudou":
@@ -195,6 +198,9 @@ func _garoto_depois() -> void:
 
 
 func _vendedor_depois() -> void:
+	if CapituloArandu.ativo() and CapituloArandu.atual:
+		await CapituloArandu.atual.fala_vendedor()  # D086
+		return
 	var d := _hud.dialogue
 	if Game.flag("feira.vendedor_bravo", false):
 		await d.say(VENDEDOR, "Some daqui, kobold. Você e os seus amiguinhos.")

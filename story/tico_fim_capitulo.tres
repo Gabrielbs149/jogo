@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Roteiro" format=3]
+
+[ext_resource type="Script" path="res://story/roteiro.gd" id="1_roteiro"]
+
+[resource]
+script = ExtResource("1_roteiro")
+texto = "# D086: o Tico sai de Arandu pelo portão do norte (fim do capítulo). Depois a estrada leva a Ethera (por enquanto).
+# Falas *(proposta)*.
+[tela preta 1.5]
+[para som]
+> Tico-Lirou deixa Arandu pela estrada do norte.
+> Atrás dele, a cidade continua igual.
+> Na frente, nada vai ser igual.
+
+> Fim do capítulo: Arandu
+"

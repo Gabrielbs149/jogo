@@ -1,0 +1,64 @@
+[gd_resource type="Resource" script_class="Roteiro" format=3]
+
+[ext_resource type="Script" path="res://story/roteiro.gd" id="1_roteiro"]
+
+[resource]
+script = ExtResource("1_roteiro")
+texto = "# D086: o Tico procura e ninguém viu nada; meses depois (texto do Gabriel: \"Após meses, Tico descobre, por meio de
+# mendigos conhecidos, que um pessoal de Cindralight anda sequestrando mendigos para alimentar uma forja\").
+# O rato sozinho: ele guarda o bumbum pra ela. Falas *(proposta)*.
+[tela preta 1.5]
+[para som]
+> Ele procurou em cada canto de Arandu.
+> No portão do leste, na feira, nos telhados, nos esgotos.
+> Ninguém tinha visto nada. Ninguém queria ter visto.
+
+[hora: 20.6 dia]
+[esconde: Tika]
+[mostra: Rato]
+[mostra: Fogueirinha]
+[mostra: Fogueirinha/Fogo]
+[coloca: Rato EspetoNoFogo]
+[coloca: Tico TicoSentado]
+[anima: Tico Sit_Floor_Idle]
+> Meses depois.
+
+[som: fogo | (o fogo estalando baixinho)]
+[corta: Plano5]
+[abre 2]
+[pausa 2.0]
+[corta: Plano1]
+[na mão: Rato]
+Tico: \"Pronto. Crocante.\"
+[pausa 1.2]
+[corta: Plano2]
+Tico: \"...Fica com o bumbum.\"
+[pausa 2.5]
+[corta: Plano1]
+[legenda: Ninguém pega. Ele guarda o pedaço de trás num pano, em cima do papelão dela. Como todo dia.]
+[esconde: Rato/Traseiro]
+[pausa 3.5]
+[legenda:]
+[coloca: Bras BrasNoBeco]
+[anima: Bras Sit_Floor_Idle]
+[olha: Tico Bras]
+Seu Brás: \"Tico.\"
+[corta: Plano2]
+Tico: \"Brás? Você nunca vem aqui no beco.\"
+[corta: Plano3]
+Seu Brás: \"Hoje eu vim. Escuta, menino.\"
+Seu Brás: \"Aquela carroça coberta. Voltou.\"
+Seu Brás: \"Andei perguntando por aí. É gente de Cindralight. Uma organização.\"
+Seu Brás: \"Levam quem ninguém vai procurar: mendigo, órfão, bêbado de beira de rua.\"
+Seu Brás: \"Pra alimentar uma forja. Não me pergunta como. Ninguém que foi voltou pra contar.\"
+[corta: Plano2]
+[pausa 1.5]
+Tico: \"...A Tika.\"
+[corta: Plano3]
+Seu Brás: \"Hoje à noite eles tão no celeiro. Esperando escurecer pra encher a carroça de novo.\"
+Seu Brás: \"Eu não tô te mandando ir. Tô te contando porque você ia descobrir de qualquer jeito.\"
+[corta: Plano1]
+[pausa 1.0]
+[solta: Tico]
+[esconde: Rato]
+"
