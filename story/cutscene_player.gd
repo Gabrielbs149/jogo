@@ -235,16 +235,11 @@ func _say(who: String, text: String) -> void:
 	_dialogue.show()
 	_name.text = who
 	_line.text = text
-	Audio.play("fala", -12.0, 0.1)
 	_hint.modulate.a = 0.0
-	_line.visible_ratio = 0.0
 	if not auto:
-		var tween := create_tween()
-		tween.tween_property(_line, "visible_ratio", 1.0, maxf(text.length() / LETTERS_PER_SECOND, 0.2))
+		# na voz de quem fala, no ritmo dela (D090); um clique mostra a fala inteira
 		_advance = false
-		while tween.is_running() and not _advance and not _skip:
-			await get_tree().process_frame
-		tween.kill()
+		await Voz.digitar(_line, who, func() -> bool: return _advance or _skip, LETTERS_PER_SECOND / Voz.LETRAS_POR_SEGUNDO)
 	_line.visible_ratio = 1.0
 	_hint.modulate.a = 1.0
 	await _wait_input()

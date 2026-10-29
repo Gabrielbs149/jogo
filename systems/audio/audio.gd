@@ -19,6 +19,9 @@ var _ambient: AudioStreamPlayer
 var _ambient_name: String = ""
 var _pool: Array[AudioStreamPlayer] = []
 var _next: int = 0
+## As sílabas das falas (D090): dois tocadores revezando, para uma sílaba não cortar o rabo da outra.
+var _voices: Array[AudioStreamPlayer] = []
+var _next_voice: int = 0
 
 
 func _ready() -> void:
@@ -37,6 +40,11 @@ func _ready() -> void:
 		player.bus = _bus(BUS_SFX)
 		add_child(player)
 		_pool.append(player)
+	for i: int in 2:
+		var voice := AudioStreamPlayer.new()
+		voice.bus = _bus(BUS_SFX)
+		add_child(voice)
+		_voices.append(voice)
 	get_tree().node_added.connect(_on_node_added)
 
 
@@ -102,13 +110,13 @@ func play(sound: String, volume_db: float = 0.0, pitch_jitter: float = 0.06) -> 
 
 
 ## Efeito no mundo (passos, golpes): soa de onde aconteceu.
-func play_at(sound: String, position: Vector3, volume_db: float = 0.0, pitch_jitter: float = 0.08) -> void:
+func play_at(sound: String, position: Vector3, volume_db: float = 0.0, pitch_jitter: float = 0.08) -> AudioStreamPlayer3D:
 	var stream := _pick(sound)
 	var scene: Node = get_tree().current_scene
 	if scene == null or not scene.is_inside_tree():
 		scene = get_tree().root
 	if stream == null:
-		return
+		return null
 	var player := AudioStreamPlayer3D.new()
 	player.stream = stream
 	player.bus = _bus(BUS_SFX)
@@ -120,6 +128,31 @@ func play_at(sound: String, position: Vector3, volume_db: float = 0.0, pitch_jit
 	player.global_position = position
 	player.finished.connect(player.queue_free)
 	player.play()
+	return player
+
+
+## Uma sílaba de fala (Voz, D090): o tom de quem fala e o volume das vozes nas opções.
+func play_voice(sound: String, pitch: float, volume_db: float) -> void:
+	var stream := _pick(sound)
+	var level := float(Settings.value("volume_vozes"))
+	if stream == null or level <= 0.001:
+		return
+	var player := _voices[_next_voice]
+	_next_voice = (_next_voice + 1) % _voices.size()
+	player.stream = stream
+	player.pitch_scale = pitch
+	player.volume_db = volume_db + linear_to_db(level)
+	player.play()
+
+
+## Uma sílaba de quem fala solto no mundo (o "bom dia" de quem passa): soa de onde a pessoa está.
+func play_voice_at(sound: String, position: Vector3, pitch: float, volume_db: float) -> void:
+	var level := float(Settings.value("volume_vozes"))
+	if level <= 0.001 or not _banks.has(sound):
+		return
+	var player := play_at(sound, position, volume_db + linear_to_db(level), 0.0)
+	if player:
+		player.pitch_scale = pitch
 
 
 func has_sound(sound: String) -> bool:

@@ -206,15 +206,14 @@ func _run() -> void:
 		if not _intro_lines.is_empty():
 			Audio.play("aparar", -6.0, 0.0)
 			for line: Variant in _intro_lines:
-				await _hud.say(String(line[0]), String(line[1]), 0.3)
-				await _teach_wait(String(line[1]).length() / 25.0 + 1.2)
+				await _hud.say(String(line[0]), String(line[1]), 0.3, true)
 		elif not _view_daggers.is_empty():
 			Audio.play("aparar", -6.0, 0.0)
 			await _hud.say(player.display_name, "As adagas psíquicas acendem nas mãos de %s." % player.display_name, 0.3)
 		await _hud.say("", _intro_text(), 0.5)
 		var line := _battle_line(enemies[0])
 		if line != "":
-			await _hud.say(enemies[0].display_name, line, 0.7)
+			await _hud.say(enemies[0].display_name, line, 0.7, true)
 	else:
 		await _wait(0.8)
 	while not is_over():

@@ -31,4 +31,5 @@ static func say(who: Node3D, text: String, seconds: float = 2.6) -> Fala:
 	tween.parallel().tween_property(label, "position:y", label.position.y + 0.25, seconds)
 	tween.tween_property(label, "modulate:a", 0.0, 0.35)
 	tween.tween_callback(label.queue_free)
+	Voz.balbucio(who, text)  # D090: umas sílabas na voz da pessoa, de onde ela está
 	return label

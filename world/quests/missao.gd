@@ -112,6 +112,7 @@ static func shout(who: Node3D, text: String, color: Color = Color(1, 0.45, 0.35)
 	tween.tween_property(label, "position:y", height + 0.3, 2.4)
 	tween.parallel().tween_property(label, "modulate:a", 0.0, 0.6).set_delay(1.8)
 	tween.tween_callback(label.queue_free)
+	Voz.balbucio(who, text, -8.0)  # D090: grito sai mais alto
 
 
 func _wait(seconds: float) -> void:

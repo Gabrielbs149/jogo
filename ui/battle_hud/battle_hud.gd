@@ -13,8 +13,10 @@ const KEY_ACTIONS: Array[StringName] = [&"battle_attack", &"skill_q", &"skill_e"
 
 ## Rolagens escritas embaixo do texto (D052: nenhuma; o dado na tela já mostra).
 @export var log_lines: int = 0
-## Letras por segundo na caixa de texto.
+## Letras por segundo na caixa de texto (a narração da luta; fala de gente vai no ritmo de quem fala, D090).
 @export var text_speed: float = 90.0
+## Letras por segundo que dá para ler: a fala fica na tela pelo menos 0,6 s + o texto nesse ritmo (D090).
+const READ_SPEED := 26.0
 
 var _arena: BattleArena
 var _buttons: Array[Button] = []
@@ -26,7 +28,8 @@ var _bars: Dictionary = {}
 var _choosing: bool = false
 var _log: PackedStringArray = []
 var _banner_tween: Tween
-var _text_tween: Tween
+## A fala da caixa de texto que está valendo (D090): outra fala, ou o mouse num golpe, corta a anterior.
+var _say_id: int = 0
 var _flash_tween: Tween
 ## D085: o Ritmo grande no canto de cima, à direita, dentro da cena.
 var _ritmo_letra: RitmoLetra
@@ -282,9 +285,12 @@ func _hover_info(info: String) -> void:
 	if info == "":
 		if _hover_base != "":
 			_says.text = _hover_base
+			_says.visible_ratio = 1.0
 			_hover_base = ""
 		return
 	if _hover_base == "":
+		_say_id += 1  # para de escrever: a fala inteira e a descrição embaixo
+		_says.visible_ratio = 1.0
 		_hover_base = _says.text
 	_says.text = _hover_base + "
 
@@ -301,7 +307,8 @@ func _extra_info(id: int) -> String:
 var _hover_base: String = ""
 
 
-func say(speaker: String, text: String, hold: float = 0.0) -> void:
+## falada: é gente falando (com a voz de quem fala); senão é a narração da luta, sem voz.
+func say(speaker: String, text: String, hold: float = 0.0, falada: bool = false) -> void:
 	_hover_base = ""
 	_speaker.text = speaker if speaker != "" else "Luta"
 	%SpeakerTag.modulate.a = 1.0 if speaker != "" else 0.55
@@ -312,15 +319,21 @@ func say(speaker: String, text: String, hold: float = 0.0) -> void:
 		for i: int in parts.size():
 			shown += ("[color=#e8505a]%s[/color]" % parts[i]) if i % 2 == 1 else parts[i]
 	_says.text = shown
-	_says.visible_ratio = 0.0
-	if _text_tween:
-		_text_tween.kill()
-	_text_tween = create_tween()
-	var chars := maxf(1.0, float(_says.get_total_character_count()))
-	_text_tween.tween_property(_says, "visible_ratio", 1.0, chars / (text_speed * float(Settings.value("velocidade_texto"))))
-	if hold > 0.0:
-		_text_tween.tween_interval(hold)
-	await _text_tween.finished
+	_say_id += 1
+	var id := _say_id
+	var start := Time.get_ticks_msec()
+	await Voz.digitar(_says, speaker if falada else "", func() -> bool: return id != _say_id,
+		1.0 if falada else text_speed / Voz.LETRAS_POR_SEGUNDO)
+	# tempo de ler: escrever rápido não é ler rápido (Espaço/F passa)
+	var typed := (Time.get_ticks_msec() - start) / 1000.0
+	var left := maxf(hold, 0.6 + _says.get_total_character_count() / READ_SPEED - typed)
+	if DisplayServer.get_name() == "headless":
+		left = hold  # testes e simulação: sem tempo de leitura
+	while left > 0.0 and id == _say_id and is_inside_tree():
+		await get_tree().process_frame
+		left -= get_process_delta_time()
+		if Input.is_action_just_pressed(&"ui_accept") or Input.is_action_just_pressed(&"interact"):
+			break
 
 
 ## A tela pisca vermelho (você apanhou).

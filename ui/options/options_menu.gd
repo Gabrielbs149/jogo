@@ -142,6 +142,7 @@ func _build_audio() -> void:
 	_slider(box, "Música", "volume_musica")
 	_slider(box, "Efeitos", "volume_efeitos")
 	_slider(box, "Ambiente (vento, fogo)", "volume_ambiente")
+	_slider(box, "Vozes (as falas)", "volume_vozes")
 	_toggle(box, "Som com a janela fora de foco", "som_sem_foco")
 
 

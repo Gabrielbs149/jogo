@@ -11,16 +11,19 @@ signal _picked(index: int)
 ## Uma fala começou (D064): a câmera da conversa troca de plano por quem fala ("" = narração; choosing = escolha).
 signal line_started(speaker: String, choosing: bool)
 
-## Letras por segundo do texto aparecendo.
-@export var chars_per_second: float = 55.0
+## Letras por segundo do texto aparecendo (antes do ritmo de quem fala, D090: systems/audio/voz.gd).
+@export var chars_per_second: float = 40.0
 
 var instant: bool = false
 var auto_answers: Array[int] = []
 ## Tudo que foi dito (para os testes conferirem).
 var history: PackedStringArray = []
 
-var _typing: Tween
 var _waiting: bool = false
+## A fala ainda está aparecendo (D090); _rush = o primeiro clique pediu para mostrar tudo.
+var _typing_now: bool = false
+var _rush: bool = false
+var _line_id: int = 0
 var _choosing: bool = false
 
 @onready var _speaker: Label = %Speaker
@@ -60,6 +63,11 @@ func choose(speaker: String, text: String, options: Array) -> int:
 		return pick
 	_show_line(speaker, text)
 	_hint.hide()
+	# a pergunta aparece falada; as opções só depois (um clique mostra a pergunta inteira)
+	_waiting = true
+	while _typing_now:
+		await get_tree().process_frame
+	_waiting = false
 	for child: Node in _choices.get_children():
 		child.queue_free()
 	for i: int in options.size():
@@ -76,9 +84,6 @@ func choose(speaker: String, text: String, options: Array) -> int:
 	_choices.show()
 	_fit.call_deferred()
 	_choosing = true
-	if _typing:
-		_typing.kill()
-	_text.visible_ratio = 1.0
 	(_choices.get_child(0) as Button).grab_focus.call_deferred()
 	var picked: int = await _picked
 	_choosing = false
@@ -89,6 +94,8 @@ func choose(speaker: String, text: String, options: Array) -> int:
 
 
 func close() -> void:
+	_line_id += 1
+	_typing_now = false
 	hide()
 
 
@@ -98,14 +105,23 @@ func _show_line(speaker: String, text: String) -> void:
 	_speaker.text = speaker
 	_speaker.visible = speaker != ""
 	_text.text = text
-	_text.visible_ratio = 0.0
-	if _typing:
-		_typing.kill()
-	var length := _text.get_total_character_count()
-	_typing = create_tween()
-	_typing.tween_property(_text, "visible_ratio", 1.0, maxf(0.15, length / (chars_per_second * float(Settings.value("velocidade_texto")))))
-	Audio.play("fala", -14.0, 0.1)
+	_text.visible_characters = 0
+	if Voz.perfil(speaker).is_empty():
+		Audio.play("fala", -16.0, 0.1)  # narração: só o toque de fala nova
 	_fit.call_deferred()
+	_line_id += 1
+	_type(speaker, _line_id)
+
+
+## O texto aparecendo na voz de quem fala (D090).
+func _type(speaker: String, id: int) -> void:
+	_typing_now = true
+	_rush = false
+	await Voz.digitar(_text, speaker, func() -> bool: return _rush or id != _line_id,
+		chars_per_second / Voz.LETRAS_POR_SEGUNDO)
+	if id == _line_id:
+		_text.visible_ratio = 1.0
+		_typing_now = false
 
 
 ## A caixa fica do tamanho do que mostra, presa embaixo (sem espaço vazio em cima).
@@ -129,9 +145,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		or (event is InputEventMouseButton and event.is_pressed() and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT)
 	if _waiting and go:
 		get_viewport().set_input_as_handled()
-		if _text.visible_ratio < 1.0:
-			if _typing:
-				_typing.kill()
-			_text.visible_ratio = 1.0  # primeiro toque mostra a fala inteira
+		if _typing_now:
+			_rush = true  # primeiro toque mostra a fala inteira
 		else:
 			_advanced.emit()

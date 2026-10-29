@@ -30,6 +30,7 @@ const DEFAULTS := {
 	"volume_musica": 0.8,
 	"volume_efeitos": 1.0,
 	"volume_ambiente": 0.8,
+	"volume_vozes": 1.0,  # D090: as sílabas das falas
 	"som_sem_foco": true,  # falso = fica mudo quando a janela perde o foco
 	# controles
 	"sensibilidade": 1.0,
